@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+
+# Eval artifacts
+eval_audio_cache/
+*.manifest.jsonl
+results/*.json
+!results/.gitkeep
+
+# Model / data blobs
+*.nemo
+*.wav
+*.parquet
+
+# Logs
+*.log
+*.err
+*.out
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "danish-asr-leaderboard"
+version = "0.1.0"
+description = "Reproducible benchmark and leaderboard for Danish automatic speech recognition"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Emil Schledermann / RyeAI" }]
+keywords = ["asr", "speech-recognition", "danish", "benchmark", "leaderboard", "wer"]
+
+# Core dependencies shared by every backend. Backend-specific extras (NeMo,
+# transformers, API SDKs, ...) live in requirements/requirements_<backend>.txt
+# so users only install what they need.
+dependencies = [
+    "datasets>=2.19.0",
+    "huggingface_hub>=0.23.0",
+    "jiwer>=3.0.4",
+    "pandas>=2.0.0",
+    "pyarrow>=14.0.0",
+    "soundfile>=0.12.1",
+]
+
+[project.urls]
+Homepage = "https://github.com/Rye-A1/danish-asr-leaderboard"
+Leaderboard = "https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard"
+Results = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard"
+
+[project.scripts]
+danish-asr-eval = "danish_asr_leaderboard.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["danish_asr_leaderboard*"]
