@@ -141,11 +141,26 @@ Applied identically to hypothesis and reference before scoring:
 5. Collapse whitespace
 
 Broadly consistent with the Open ASR Leaderboard's `BasicTextNormalizer`, with
-the addition of Danish digit handling.
+the addition of Danish digit handling. The guiding principle is **consistency**:
+the exact same transform is applied to every model's hypothesis and to every
+reference, so scores stay comparable across the board.
 
 > Digit–word equivalence (`"4"` vs `"fire"`) is **not** normalised. A model that
 > consistently emits one form when the reference uses the other will incur
 > errors — a known limitation shared by most public ASR leaderboards.
+
+**Future improvement — digit↔word normalisation.** A robust fix would convert
+between digits and number words on *both* the hypothesis and the reference at
+scoring time (e.g. `"fire"` ↔ `"4"`), so models aren't penalised for a valid but
+differently-formatted numeral. This needs a correct Danish number↔word converter
+that handles years, ordinals, decimals, and phone numbers. The critical
+requirement is symmetry: it must be applied identically to refs and hyps.
+Applying it to only one side (e.g. normalising training transcripts but not the
+eval references) silently inflates WER — see the VoxPopuli regression documented
+on [RASMUS/Finnish-ASR-Canary-v2](https://huggingface.co/RASMUS/Finnish-ASR-Canary-v2),
+where training-only number normalisation drove an apparent 4.5% → 13.9% WER jump
+that was purely a normalisation artefact. Until such a converter is in place we
+deliberately normalise neither side, which keeps the benchmark consistent.
 
 ### Metrics
 Corpus-level **WER** and **CER** (%), lower is better, computed with `jiwer`:
