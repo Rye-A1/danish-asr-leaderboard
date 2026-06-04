@@ -1,12 +1,12 @@
 ---
 title: Danish ASR Leaderboard
-emoji: 🇩🇰
+emoji: 🏆
 colorFrom: red
 colorTo: gray
 sdk: gradio
 sdk_version: 5.50.0
 app_file: app.py
-thumbnail: cover.jpeg
+thumbnail: https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/resolve/main/cover.jpeg
 pinned: false
 license: mit
 ---
