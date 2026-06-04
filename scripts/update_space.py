@@ -21,7 +21,7 @@ from huggingface_hub import HfApi
 SPACE_REPO_ID = "RyeAI/danish-asr-leaderboard"
 SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
 
-FILES = ["app.py", "README.md", "requirements.txt"]
+FILES = ["app.py", "README.md", "requirements.txt", "cover.jpeg"]
 
 
 def main() -> None:

@@ -44,15 +44,15 @@ ALL_COLS  = ["#"] + list(COL_MAP.values())
 HIDE_COLS = ["Submitted"]
 DATATYPES = ["str", "markdown", "number", "number", "number", "number", "number",
              "number", "number", "number", "number", "str"]
-WIDTHS    = ["50px", "240px", "70px", "100px", "100px", "100px", "110px",
-             "110px", "100px", "110px", "110px", "90px"]
+WIDTHS    = ["46px", "240px", "62px", "90px", "90px", "88px", "92px",
+             "88px", "82px", "80px", "92px", "90px"]
 
 CER_ALL_COLS  = ["#"] + list(CER_COL_MAP.values())
 CER_HIDE_COLS = ["Submitted"]
 CER_DATATYPES = ["str", "markdown", "number", "str", "number", "number", "number",
                  "number", "number", "number", "str"]
-CER_WIDTHS    = ["50px", "240px", "70px", "100px", "100px", "130px", "130px",
-                 "120px", "120px", "130px", "90px"]
+CER_WIDTHS    = ["46px", "240px", "62px", "88px", "90px", "120px", "118px",
+                 "112px", "108px", "120px", "90px"]
 
 
 _MD_LINK_RE = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
@@ -153,6 +153,12 @@ footer {{ display: none !important; }}
 #cer-col .block:has(input[placeholder*="Separate"]) {{ display: none !important; }}
 /* Scrollable tables */
 #lb-col, #cer-col {{ overflow-x: auto; }}
+/* Fit columns to content instead of stretching to full width */
+#lb-col table, #cer-col table {{ width: max-content !important; min-width: 0 !important; }}
+/* Cover banner */
+#cover {{ max-width: 1000px; margin: 0 auto 0.75rem auto; }}
+#cover img {{ width: 100%; height: auto; border-radius: 14px; display: block; }}
+#cover button {{ display: none !important; }}
 """
 
 ABOUT_MD = """
@@ -202,7 +208,15 @@ Eval code: [github.com/Rye-A1/danish-asr-leaderboard](https://github.com/Rye-A1/
 """
 
 with gr.Blocks(css=CSS, title="Danish ASR Leaderboard") as demo:
-    gr.Markdown("# \U0001f1e9\U0001f1f0 Danish ASR Leaderboard")
+    gr.Image(
+        "cover.jpeg",
+        show_label=False,
+        container=False,
+        interactive=False,
+        show_download_button=False,
+        show_fullscreen_button=False,
+        elem_id="cover",
+    )
     gr.Markdown(
         "Benchmarking Danish ASR models — open-source and proprietary — on five independent test sets. "
         "**Lower WER is better.** Mean WER is macro-averaged across all five sets. "
