@@ -1,5 +1,7 @@
 # Danish ASR Leaderboard
 
+![Danish ASR Leaderboard cover](space/cover.jpeg)
+
 Reproducible benchmark and open leaderboard for **Danish automatic speech
 recognition**, scored across five independent public test sets. Modelled on the
 [HF Open ASR Leaderboard](https://github.com/huggingface/open_asr_leaderboard).
