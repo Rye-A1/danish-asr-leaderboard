@@ -1,4 +1,5 @@
 import os
+import re
 
 import gradio as gr
 import pandas as pd
@@ -27,8 +28,8 @@ COL_MAP = {
 
 CER_COL_MAP = {
     "model":                  "Model",
-    "access":                 "Access",
     "params_b":               "Size (B)",
+    "access":                 "Access",
     "mean_cer":               "Mean CER ↓",
     "coral_conversation_cer": "CoRal Conv. CER",
     "coral_read_aloud_cer":   "CoRal Read CER",
@@ -38,17 +39,40 @@ CER_COL_MAP = {
     "submitted":              "Submitted",
 }
 
+# "#" is "str" so it can hold medals (🥇🥈🥉); "Model" is markdown (HTML links).
 ALL_COLS  = ["#"] + list(COL_MAP.values())
-HIDE_COLS = ["Size (B)", "Submitted"]
-DATATYPES = ["number", "markdown", "str", "number", "number", "number", "number",
-             "number", "number", "number", "number", "number", "str"]
-WIDTHS    = ["50px", "240px", "100px", "80px", "100px", "100px", "110px",
-             "120px", "120px", "110px", "110px", "120px", "90px"]
+HIDE_COLS = ["Submitted"]
+DATATYPES = ["str", "markdown", "number", "number", "number", "number", "number",
+             "number", "number", "number", "number", "str"]
+WIDTHS    = ["50px", "240px", "70px", "100px", "100px", "100px", "110px",
+             "110px", "100px", "110px", "110px", "90px"]
 
 CER_ALL_COLS  = ["#"] + list(CER_COL_MAP.values())
-CER_HIDE_COLS = ["Size (B)", "Submitted"]
-CER_DATATYPES = ["number", "markdown", "str", "number", "number", "number", "number", "number", "number", "str"]
-CER_WIDTHS    = ["50px", "240px", "100px", "90px", "130px", "130px", "120px", "120px", "130px", "90px"]
+CER_HIDE_COLS = ["Submitted"]
+CER_DATATYPES = ["str", "markdown", "number", "str", "number", "number", "number",
+                 "number", "number", "number", "str"]
+CER_WIDTHS    = ["50px", "240px", "70px", "100px", "100px", "130px", "130px",
+                 "120px", "120px", "130px", "90px"]
+
+
+_MD_LINK_RE = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
+_MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
+
+
+def _linkify(value):
+    """Turn a markdown link into an HTML anchor that opens in a new tab."""
+    if not isinstance(value, str):
+        return value
+    m = _MD_LINK_RE.fullmatch(value.strip())
+    if not m:
+        return value
+    text, url = m.group(1), m.group(2)
+    return f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>'
+
+
+def _rank_column(n: int) -> list[str]:
+    """Rank labels: medals for the top three, plain numbers afterwards."""
+    return [_MEDALS.get(i, str(i)) for i in range(1, n + 1)]
 
 
 def _base_df() -> pd.DataFrame:
@@ -71,7 +95,8 @@ def load_results() -> pd.DataFrame:
         df = (df[list(COL_MAP.values())]
               .sort_values("Mean WER ↓", ascending=True, na_position="last")
               .reset_index(drop=True))
-        df.insert(0, "#", range(1, len(df) + 1))
+        df["Model"] = df["Model"].map(_linkify)
+        df.insert(0, "#", _rank_column(len(df)))
         return df[ALL_COLS]
     except Exception:
         return pd.DataFrame(columns=ALL_COLS)
@@ -87,20 +112,22 @@ def load_cer_results() -> pd.DataFrame:
         df = (df[list(CER_COL_MAP.values())]
               .sort_values("Mean CER ↓", ascending=True, na_position="last")
               .reset_index(drop=True))
-        df.insert(0, "#", range(1, len(df) + 1))
+        df["Model"] = df["Model"].map(_linkify)
+        df.insert(0, "#", _rank_column(len(df)))
         return df[CER_ALL_COLS]
     except Exception:
         return pd.DataFrame(columns=CER_ALL_COLS)
 
 
-_step = (0.10 - 0.02) / 9
+_TOP_N = 5
+_step = (0.10 - 0.02) / (_TOP_N - 1)
 _gradient_rows = "\n".join(
     f"#lb-col table tbody tr:nth-child({i}) td {{ background-color: rgba(34, 197, 94, {0.10 - (i-1)*_step:.3f}) !important; }}"
-    for i in range(1, 11)
+    for i in range(1, _TOP_N + 1)
 )
 _gradient_cer = "\n".join(
     f"#cer-col table tbody tr:nth-child({i}) td {{ background-color: rgba(34, 197, 94, {0.10 - (i-1)*_step:.3f}) !important; }}"
-    for i in range(1, 11)
+    for i in range(1, _TOP_N + 1)
 )
 
 CSS = f"""
