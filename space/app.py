@@ -1,12 +1,29 @@
+import base64
+import functools
 import os
 import re
+from pathlib import Path
 
 import gradio as gr
 import pandas as pd
+import requests
 from gradio_leaderboard import Leaderboard
 from huggingface_hub import login
 
 DATASET = "RyeAI/danish-asr-leaderboard"
+
+
+def _cover_data_uri() -> str:
+    """Inline the banner as a base64 data URI so it renders without relying on
+    the Space's file server (Spaces return 401 on /resolve for repo files)."""
+    try:
+        raw = (Path(__file__).resolve().parent / "cover.jpeg").read_bytes()
+        return "data:image/jpeg;base64," + base64.b64encode(raw).decode("ascii")
+    except Exception:
+        return ""
+
+
+COVER_SRC = _cover_data_uri()
 
 _token = os.environ.get("HF_TOKEN")
 if _token:
@@ -44,30 +61,60 @@ ALL_COLS  = ["#"] + list(COL_MAP.values())
 HIDE_COLS = ["Submitted"]
 DATATYPES = ["str", "markdown", "number", "number", "number", "number", "number",
              "number", "number", "number", "number", "str"]
-WIDTHS    = ["46px", "240px", "62px", "90px", "90px", "88px", "92px",
-             "88px", "82px", "80px", "92px", "90px"]
+WIDTHS    = ["48px", "320px", "80px", "104px", "104px", "104px", "108px",
+             "104px", "94px", "92px", "108px", "100px"]
 
 CER_ALL_COLS  = ["#"] + list(CER_COL_MAP.values())
 CER_HIDE_COLS = ["Submitted"]
 CER_DATATYPES = ["str", "markdown", "number", "str", "number", "number", "number",
                  "number", "number", "number", "str"]
-CER_WIDTHS    = ["46px", "240px", "62px", "88px", "90px", "120px", "118px",
-                 "112px", "108px", "120px", "90px"]
+CER_WIDTHS    = ["48px", "320px", "80px", "88px", "104px", "132px", "130px",
+                 "118px", "118px", "130px", "100px"]
 
 
 _MD_LINK_RE = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
 _MEDALS = {1: "🥇", 2: "🥈", 3: "🥉"}
 
 
+@functools.lru_cache(maxsize=256)
+def _provider_logo(org: str) -> str:
+    """Best-effort Hugging Face avatar URL for an org/user handle (cached)."""
+    for kind in ("organizations", "users"):
+        try:
+            resp = requests.get(
+                f"https://huggingface.co/api/{kind}/{org}/avatar", timeout=4
+            )
+            if resp.ok:
+                avatar = resp.json().get("avatarUrl")
+                if avatar:
+                    return avatar
+        except Exception:
+            continue
+    return ""
+
+
 def _linkify(value):
-    """Turn a markdown link into an HTML anchor that opens in a new tab."""
+    """Model cell: provider logo + an anchor that opens the model in a new tab."""
     if not isinstance(value, str):
         return value
     m = _MD_LINK_RE.fullmatch(value.strip())
     if not m:
         return value
     text, url = m.group(1), m.group(2)
-    return f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>'
+    anchor = f'<a href="{url}" target="_blank" rel="noopener noreferrer">{text}</a>'
+    org = text.split("/", 1)[0] if "/" in text else ""
+    logo = _provider_logo(org) if org else ""
+    if not logo:
+        return anchor
+    img = (
+        f'<img src="{logo}" alt="" loading="lazy" '
+        'style="width:18px;height:18px;border-radius:4px;object-fit:cover;'
+        'vertical-align:middle;margin-right:7px;flex:0 0 auto">'
+    )
+    return (
+        '<span style="display:inline-flex;align-items:center;line-height:1.2">'
+        f'{img}{anchor}</span>'
+    )
 
 
 def _rank_column(n: int) -> list[str]:
@@ -147,13 +194,15 @@ footer {{ display: none !important; }}
 #lb-col .block:has(input[placeholder*="Separate"]),
 #cer-col .block:has(textarea[placeholder*="Separate"]),
 #cer-col .block:has(input[placeholder*="Separate"]) {{ display: none !important; }}
+/* Headers sized to their labels (widths below) and never clipped. */
+#lb-col table thead th, #cer-col table thead th {{ white-space: nowrap !important; }}
 /* Scrollable tables, constrained so columns aren't stretched across the full
-   page width (which is what made every column look too wide). */
-#lb-col, #cer-col {{ overflow-x: auto; max-width: 1180px; margin-left: auto; margin-right: auto; }}
+   page width (which is what made every column look too wide). Horizontal
+   scroll kicks in on narrow screens instead of squashing the columns. */
+#lb-col, #cer-col {{ overflow-x: auto; max-width: 1320px; margin-left: auto; margin-right: auto; }}
 /* Cover banner */
 #cover {{ max-width: 1000px; margin: 0 auto 0.75rem auto; }}
 #cover img {{ width: 100%; height: auto; border-radius: 14px; display: block; }}
-#cover button {{ display: none !important; }}
 """
 
 ABOUT_MD = """
@@ -203,15 +252,11 @@ Eval code: [github.com/Rye-A1/danish-asr-leaderboard](https://github.com/Rye-A1/
 """
 
 with gr.Blocks(css=CSS, title="Danish ASR Leaderboard") as demo:
-    gr.Image(
-        "cover.jpeg",
-        show_label=False,
-        container=False,
-        interactive=False,
-        show_download_button=False,
-        show_fullscreen_button=False,
-        elem_id="cover",
-    )
+    if COVER_SRC:
+        gr.HTML(
+            f'<img src="{COVER_SRC}" alt="Danish ASR Leaderboard">',
+            elem_id="cover",
+        )
     gr.Markdown(
         "Benchmarking Danish ASR models — open-source and proprietary — on five independent test sets. "
         "**Lower WER is better.** Mean WER is macro-averaged across all five sets. "
