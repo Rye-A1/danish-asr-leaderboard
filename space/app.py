@@ -147,10 +147,9 @@ footer {{ display: none !important; }}
 #lb-col .block:has(input[placeholder*="Separate"]),
 #cer-col .block:has(textarea[placeholder*="Separate"]),
 #cer-col .block:has(input[placeholder*="Separate"]) {{ display: none !important; }}
-/* Scrollable tables */
-#lb-col, #cer-col {{ overflow-x: auto; }}
-/* Fit columns to content instead of stretching to full width */
-#lb-col table, #cer-col table {{ width: max-content !important; min-width: 0 !important; }}
+/* Scrollable tables, constrained so columns aren't stretched across the full
+   page width (which is what made every column look too wide). */
+#lb-col, #cer-col {{ overflow-x: auto; max-width: 1180px; margin-left: auto; margin-right: auto; }}
 /* Cover banner */
 #cover {{ max-width: 1000px; margin: 0 auto 0.75rem auto; }}
 #cover img {{ width: 100%; height: auto; border-radius: 14px; display: block; }}
