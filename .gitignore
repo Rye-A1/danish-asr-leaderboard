@@ -25,7 +25,13 @@ results/*.json
 *.err
 *.out
 
-# OS / editor
+# OS / editor / tooling
 .DS_Store
 .idea/
 .vscode/
+.claude/
+
+# AppMap instrumentation + local temp
+appmap.yml
+tmp/
+**/tmp/
