@@ -16,7 +16,7 @@ import os
 import sys
 from pathlib import Path
 
-from huggingface_hub import HfApi
+from huggingface_hub import HfApi, get_token
 
 SPACE_REPO_ID = "RyeAI/danish-asr-leaderboard"
 SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
@@ -25,9 +25,15 @@ FILES = ["app.py", "README.md", "requirements.txt", "cover.jpeg"]
 
 
 def main() -> None:
-    token = os.environ.get("HF_TOKEN")
+    # Prefer an explicit HF_TOKEN, else fall back to a cached `huggingface-cli
+    # login` token so anyone already logged in can deploy without re-exporting.
+    token = os.environ.get("HF_TOKEN") or get_token()
     if not token:
-        print("ERROR: set HF_TOKEN with write access to the Space.", file=sys.stderr)
+        print(
+            "ERROR: no HF credentials found. Set HF_TOKEN or run `huggingface-cli login` "
+            "with write access to the Space.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     api = HfApi(token=token)
