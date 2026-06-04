@@ -136,16 +136,12 @@ footer {{ display: none !important; }}
 {_gradient_cer}
 /* About tab: no gradient */
 #about-col table td {{ background-color: transparent !important; }}
-/* Disable sort on # and Model columns */
-#lb-col table thead tr th:nth-child(1),
-#lb-col table thead tr th:nth-child(2),
-#cer-col table thead tr th:nth-child(1),
-#cer-col table thead tr th:nth-child(2) {{ pointer-events: none !important; cursor: default !important; }}
-#lb-col table thead tr th:nth-child(1) span, #lb-col table thead tr th:nth-child(1) button, #lb-col table thead tr th:nth-child(1) svg,
-#lb-col table thead tr th:nth-child(2) span, #lb-col table thead tr th:nth-child(2) button, #lb-col table thead tr th:nth-child(2) svg,
-#cer-col table thead tr th:nth-child(1) span, #cer-col table thead tr th:nth-child(1) button, #cer-col table thead tr th:nth-child(1) svg,
-#cer-col table thead tr th:nth-child(2) span, #cer-col table thead tr th:nth-child(2) button, #cer-col table thead tr th:nth-child(2) svg
-{{ pointer-events: none !important; }}
+/* Locked ranking: the board is always sorted by Mean WER (WER tab) / Mean CER
+   (CER tab). Disable click-to-sort on every column and hide the sort arrows, so
+   the medals (top 3) and the top-5 gradient — both anchored to that ranking —
+   can never desync from what's displayed. */
+#lb-col table thead th, #cer-col table thead th {{ pointer-events: none !important; cursor: default !important; }}
+#lb-col table thead th svg, #cer-col table thead th svg {{ display: none !important; }}
 /* Hide search box rendered by gradio_leaderboard */
 #lb-col .block:has(textarea[placeholder*="Separate"]),
 #lb-col .block:has(input[placeholder*="Separate"]),
