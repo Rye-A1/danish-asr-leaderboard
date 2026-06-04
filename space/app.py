@@ -144,7 +144,7 @@ ABOUT_MD = """
 ### Text normalisation
 Applied identically to hypothesis and reference before scoring:
 1. Unicode NFC
-2. Number formatting — thousand separators stripped (e.g. `1.234` → `1234`), decimal comma standardised (e.g. `3.14` → `3,14`)
+2. Number formatting — digit separators removed so a numeral scores identically regardless of formatting: thousand separators (e.g. `1.234` → `1234`) and decimal separators (e.g. `3,14` and `3.14` → `314`)
 3. Lowercase
 4. Strip punctuation (all punctuation including apostrophes)
 5. Collapse whitespace

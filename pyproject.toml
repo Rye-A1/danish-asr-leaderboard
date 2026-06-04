@@ -13,8 +13,8 @@ authors = [{ name = "Emil Schledermann / RyeAI" }]
 keywords = ["asr", "speech-recognition", "danish", "benchmark", "leaderboard", "wer"]
 
 # Core dependencies shared by every backend. Backend-specific extras (NeMo,
-# transformers, API SDKs, ...) live in requirements/requirements_<backend>.txt
-# so users only install what they need.
+# transformers, API SDKs, ...) live in requirements/<backend>.txt so users
+# only install what they need.
 dependencies = [
     "datasets>=2.19.0",
     "huggingface_hub>=0.23.0",
