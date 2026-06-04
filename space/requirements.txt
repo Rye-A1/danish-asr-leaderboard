@@ -1,0 +1,6 @@
+# Hugging Face Space (Gradio) — runtime dependencies
+gradio>=5.0.0
+gradio_leaderboard>=0.0.13
+pandas>=2.0.0
+pyarrow>=14.0.0
+huggingface_hub>=0.23.0

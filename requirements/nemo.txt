@@ -1,0 +1,4 @@
+# backends: nemo (Canary / Parakeet) and nemo-salm
+-r base.txt
+torch>=2.0.0
+nemo_toolkit[asr]>=2.4.0

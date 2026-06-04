@@ -1,0 +1,4 @@
+# backend: wav2vec2 (CTC models, incl. MMS adapters)
+-r base.txt
+torch>=2.0.0
+transformers>=4.54.0

@@ -1,0 +1,4 @@
+# backend: cohere-asr (custom modelling code on the Hub)
+-r base.txt
+torch>=2.0.0
+transformers>=5.4.0

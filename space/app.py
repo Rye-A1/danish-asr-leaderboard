@@ -1,0 +1,214 @@
+import os
+
+import gradio as gr
+import pandas as pd
+from gradio_leaderboard import Leaderboard
+from huggingface_hub import login
+
+DATASET = "RyeAI/danish-asr-leaderboard"
+
+_token = os.environ.get("HF_TOKEN")
+if _token:
+    login(token=_token, add_to_git_credential=False)
+
+COL_MAP = {
+    "model":                  "Model",
+    "params_b":               "Size (B)",
+    "mean_wer":               "Mean WER ↓",
+    "mean_cer":               "Mean CER ↓",
+    "speed_x":                "Speed (x) ↑",
+    "coral_conversation_wer": "CoRal Conv.",
+    "coral_read_aloud_wer":   "CoRal Read",
+    "ftspeech_wer":           "FTSpeech",
+    "cv17_da_wer":            "CV17 (da)",
+    "fleurs_da_wer":          "FLEURS (da)",
+    "submitted":              "Submitted",
+}
+
+CER_COL_MAP = {
+    "model":                  "Model",
+    "access":                 "Access",
+    "params_b":               "Size (B)",
+    "mean_cer":               "Mean CER ↓",
+    "coral_conversation_cer": "CoRal Conv. CER",
+    "coral_read_aloud_cer":   "CoRal Read CER",
+    "ftspeech_cer":           "FTSpeech CER",
+    "cv17_da_cer":            "CV17 (da) CER",
+    "fleurs_da_cer":          "FLEURS (da) CER",
+    "submitted":              "Submitted",
+}
+
+ALL_COLS  = ["#"] + list(COL_MAP.values())
+HIDE_COLS = ["Size (B)", "Submitted"]
+DATATYPES = ["number", "markdown", "str", "number", "number", "number", "number",
+             "number", "number", "number", "number", "number", "str"]
+WIDTHS    = ["50px", "240px", "100px", "80px", "100px", "100px", "110px",
+             "120px", "120px", "110px", "110px", "120px", "90px"]
+
+CER_ALL_COLS  = ["#"] + list(CER_COL_MAP.values())
+CER_HIDE_COLS = ["Size (B)", "Submitted"]
+CER_DATATYPES = ["number", "markdown", "str", "number", "number", "number", "number", "number", "number", "str"]
+CER_WIDTHS    = ["50px", "240px", "100px", "90px", "130px", "130px", "120px", "120px", "130px", "90px"]
+
+
+def _base_df() -> pd.DataFrame:
+    df = pd.read_parquet(f"hf://datasets/{DATASET}/data/results.parquet")
+    if "rtf" in df.columns and "speed_x" not in df.columns:
+        df["speed_x"] = (1.0 / df["rtf"]).round(1)
+        df = df.drop(columns=["rtf"])
+    if "access" not in df.columns:
+        df["access"] = "open"  # backwards compat
+    return df
+
+
+def load_results() -> pd.DataFrame:
+    try:
+        df = _base_df()
+        df = df.rename(columns=COL_MAP)
+        for col in list(COL_MAP.values()):
+            if col not in df.columns:
+                df[col] = None
+        df = (df[list(COL_MAP.values())]
+              .sort_values("Mean WER ↓", ascending=True, na_position="last")
+              .reset_index(drop=True))
+        df.insert(0, "#", range(1, len(df) + 1))
+        return df[ALL_COLS]
+    except Exception:
+        return pd.DataFrame(columns=ALL_COLS)
+
+
+def load_cer_results() -> pd.DataFrame:
+    try:
+        df = _base_df()
+        df = df.rename(columns=CER_COL_MAP)
+        for col in list(CER_COL_MAP.values()):
+            if col not in df.columns:
+                df[col] = None
+        df = (df[list(CER_COL_MAP.values())]
+              .sort_values("Mean CER ↓", ascending=True, na_position="last")
+              .reset_index(drop=True))
+        df.insert(0, "#", range(1, len(df) + 1))
+        return df[CER_ALL_COLS]
+    except Exception:
+        return pd.DataFrame(columns=CER_ALL_COLS)
+
+
+_step = (0.10 - 0.02) / 9
+_gradient_rows = "\n".join(
+    f"#lb-col table tbody tr:nth-child({i}) td {{ background-color: rgba(34, 197, 94, {0.10 - (i-1)*_step:.3f}) !important; }}"
+    for i in range(1, 11)
+)
+_gradient_cer = "\n".join(
+    f"#cer-col table tbody tr:nth-child({i}) td {{ background-color: rgba(34, 197, 94, {0.10 - (i-1)*_step:.3f}) !important; }}"
+    for i in range(1, 11)
+)
+
+CSS = f"""
+footer {{ display: none !important; }}
+{_gradient_rows}
+{_gradient_cer}
+/* About tab: no gradient */
+#about-col table td {{ background-color: transparent !important; }}
+/* Disable sort on # and Model columns */
+#lb-col table thead tr th:nth-child(1),
+#lb-col table thead tr th:nth-child(2),
+#cer-col table thead tr th:nth-child(1),
+#cer-col table thead tr th:nth-child(2) {{ pointer-events: none !important; cursor: default !important; }}
+#lb-col table thead tr th:nth-child(1) span, #lb-col table thead tr th:nth-child(1) button, #lb-col table thead tr th:nth-child(1) svg,
+#lb-col table thead tr th:nth-child(2) span, #lb-col table thead tr th:nth-child(2) button, #lb-col table thead tr th:nth-child(2) svg,
+#cer-col table thead tr th:nth-child(1) span, #cer-col table thead tr th:nth-child(1) button, #cer-col table thead tr th:nth-child(1) svg,
+#cer-col table thead tr th:nth-child(2) span, #cer-col table thead tr th:nth-child(2) button, #cer-col table thead tr th:nth-child(2) svg
+{{ pointer-events: none !important; }}
+/* Hide search box rendered by gradio_leaderboard */
+#lb-col .block:has(textarea[placeholder*="Separate"]),
+#lb-col .block:has(input[placeholder*="Separate"]),
+#cer-col .block:has(textarea[placeholder*="Separate"]),
+#cer-col .block:has(input[placeholder*="Separate"]) {{ display: none !important; }}
+/* Scrollable tables */
+#lb-col, #cer-col {{ overflow-x: auto; }}
+"""
+
+ABOUT_MD = """
+## Test sets
+
+| Column | Dataset | Split | Domain |
+|--------|---------|-------|--------|
+| **CoRal Conv.** | [CoRal-project/coral-v3](https://huggingface.co/datasets/CoRal-project/coral-v3) — conversation | test | Spontaneous conversation |
+| **CoRal Read** | [CoRal-project/coral-v3](https://huggingface.co/datasets/CoRal-project/coral-v3) — read_aloud | test | Read-aloud speech |
+| **CV17 (da)** | [mozilla-foundation/common_voice_17_0](https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0) — da | test | Crowd-sourced read speech |
+| **FLEURS (da)** | [google/fleurs](https://huggingface.co/datasets/google/fleurs) — da_dk | test | Read speech |
+| **FTSpeech** | [alexandrainst/ftspeech](https://huggingface.co/datasets/alexandrainst/ftspeech) | test_balanced | Parliamentary / broadcast |
+
+## Methodology
+
+### Text normalisation
+Applied identically to hypothesis and reference before scoring:
+1. Unicode NFC
+2. Number formatting — thousand separators stripped (e.g. `1.234` → `1234`), decimal comma standardised (e.g. `3.14` → `3,14`)
+3. Lowercase
+4. Strip punctuation (all punctuation including apostrophes)
+5. Collapse whitespace
+
+This matches the normalization applied to training targets and is broadly consistent with the [HF Open ASR Leaderboard](https://github.com/huggingface/open_asr_leaderboard) (`BasicTextNormalizer`), with the addition of Danish digit formatting.
+
+> **Note:** digit–word equivalence (e.g. `"4"` vs `"fire"`) is **not** normalised. Both forms are accepted as correct by human transcribers, but a model that consistently outputs one form when the reference uses the other will incur errors. This is a known limitation shared by most public ASR leaderboards; a robust fix requires a domain-specific Danish number-to-word converter that handles edge cases (years, phone numbers, ordinals) correctly.
+
+### Metric
+**WER** (Word Error Rate, %) and **CER** (Character Error Rate, %) — lower is better.
+
+`WER = (substitutions + deletions + insertions) / reference_words × 100`
+
+`CER = (char substitutions + deletions + insertions) / reference_chars × 100`
+
+**Mean WER** and **Mean CER** are macro-averages across all five test sets (equally weighted).
+
+### Speed
+**Speed (x)** = total audio duration / total inference time.
+A value of 30x means 30 seconds of audio processed per wall-clock second.
+Measured on an NVIDIA RTX Pro 5000 Blackwell (48 GB) — not directly comparable across hardware.
+
+### Code & data
+Results: [RyeAI/danish-asr-leaderboard](https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard)
+Eval code: [github.com/Rye-A1/danish-asr-leaderboard](https://github.com/Rye-A1/danish-asr-leaderboard)
+
+> Want your model added? Open a [discussion](https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/discussions).
+"""
+
+with gr.Blocks(css=CSS, title="Danish ASR Leaderboard") as demo:
+    gr.Markdown("# \U0001f1e9\U0001f1f0 Danish ASR Leaderboard")
+    gr.Markdown(
+        "Benchmarking Danish ASR models — open-source and proprietary — on five independent test sets. "
+        "**Lower WER is better.** Mean WER is macro-averaged across all five sets. "
+        "**Speed (x)** = times faster than real-time (network-bound for API models)."
+    )
+
+    with gr.Tabs():
+        with gr.Tab("\U0001f3c6 Leaderboard"):
+            with gr.Column(elem_id="lb-col"):
+                leaderboard = Leaderboard(
+                    value=load_results(),
+                    search_columns=["Model"],
+                    hide_columns=HIDE_COLS,
+                    datatype=DATATYPES,
+                    column_widths=WIDTHS,
+                )
+            refresh_btn = gr.Button("\U0001f504 Refresh results", size="sm", variant="secondary")
+            refresh_btn.click(fn=load_results, outputs=leaderboard)
+
+        with gr.Tab("\U0001f524 CER Breakdown"):
+            with gr.Column(elem_id="cer-col"):
+                cer_leaderboard = Leaderboard(
+                    value=load_cer_results(),
+                    search_columns=["Model"],
+                    hide_columns=CER_HIDE_COLS,
+                    datatype=CER_DATATYPES,
+                    column_widths=CER_WIDTHS,
+                )
+            cer_refresh_btn = gr.Button("\U0001f504 Refresh results", size="sm", variant="secondary")
+            cer_refresh_btn.click(fn=load_cer_results, outputs=cer_leaderboard)
+
+        with gr.Tab("ℹ️ About"):
+            with gr.Column(elem_id="about-col"):
+                gr.Markdown(ABOUT_MD)
+
+demo.launch()
