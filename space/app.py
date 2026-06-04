@@ -59,14 +59,14 @@ CER_COL_MAP = {
 # "#" is "str" so it can hold medals (🥇🥈🥉); "Model" is markdown (HTML links).
 ALL_COLS  = ["#"] + list(COL_MAP.values())
 HIDE_COLS = ["Submitted"]
-DATATYPES = ["str", "markdown", "number", "number", "number", "number", "number",
+DATATYPES = ["str", "markdown", "str", "number", "number", "number", "number",
              "number", "number", "number", "number", "str"]
 WIDTHS    = ["48px", "320px", "80px", "104px", "104px", "104px", "108px",
              "104px", "94px", "92px", "108px", "100px"]
 
 CER_ALL_COLS  = ["#"] + list(CER_COL_MAP.values())
 CER_HIDE_COLS = ["Submitted"]
-CER_DATATYPES = ["str", "markdown", "number", "str", "number", "number", "number",
+CER_DATATYPES = ["str", "markdown", "str", "str", "number", "number", "number",
                  "number", "number", "number", "str"]
 CER_WIDTHS    = ["48px", "320px", "80px", "88px", "104px", "132px", "130px",
                  "118px", "118px", "130px", "100px"]
@@ -117,6 +117,18 @@ def _linkify(value):
     )
 
 
+def _fmt_size(x) -> str:
+    """Size column: 1 decimal (2 for sub-0.1B models so tiny nets aren't '0.0'),
+    em dash for API / unknown sizes (stored as 0 or NaN)."""
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return "—"
+    if pd.isna(v) or v <= 0:
+        return "—"
+    return f"{v:.2f}" if v < 0.1 else f"{v:.1f}"
+
+
 def _rank_column(n: int) -> list[str]:
     """Rank labels: medals for the top three, plain numbers afterwards."""
     return [_MEDALS.get(i, str(i)) for i in range(1, n + 1)]
@@ -143,6 +155,7 @@ def load_results() -> pd.DataFrame:
               .sort_values("Mean WER ↓", ascending=True, na_position="last")
               .reset_index(drop=True))
         df["Model"] = df["Model"].map(_linkify)
+        df["Size (B)"] = df["Size (B)"].map(_fmt_size)
         df.insert(0, "#", _rank_column(len(df)))
         return df[ALL_COLS]
     except Exception:
@@ -160,6 +173,7 @@ def load_cer_results() -> pd.DataFrame:
               .sort_values("Mean CER ↓", ascending=True, na_position="last")
               .reset_index(drop=True))
         df["Model"] = df["Model"].map(_linkify)
+        df["Size (B)"] = df["Size (B)"].map(_fmt_size)
         df.insert(0, "#", _rank_column(len(df)))
         return df[CER_ALL_COLS]
     except Exception:
