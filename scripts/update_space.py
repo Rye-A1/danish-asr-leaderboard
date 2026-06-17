@@ -32,6 +32,11 @@ SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
 UPLOAD = ["index.html", "leaderboard.json", "README.md", "cover.jpeg"]
 OBSOLETE = ["app.py", "requirements.txt"]
 
+# Orgs to drop from the published board (case-insensitive match on the model's
+# "<org>/..." prefix). Temporary: RyeAI models aren't public yet — clear this
+# set (or remove the org) once the model repos are published.
+EXCLUDE_ORGS = {"ryeai"}
+
 _MD_LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
 
 
@@ -92,6 +97,18 @@ def build_leaderboard_json() -> dict:
         df = df.drop(columns=["rtf"])
     if "access" not in df.columns:
         df["access"] = "open"
+
+    # Drop excluded orgs before ranking so ranks stay contiguous.
+    if EXCLUDE_ORGS:
+        def _org(cell) -> str:
+            name, _ = _parse_model(cell)
+            return name.split("/", 1)[0].lower() if "/" in name else ""
+
+        keep = ~df["model"].map(_org).isin(EXCLUDE_ORGS)
+        dropped = int((~keep).sum())
+        df = df[keep].reset_index(drop=True)
+        if dropped:
+            print(f"  excluded {dropped} row(s) from orgs: {sorted(EXCLUDE_ORGS)}")
 
     def build_rows(df_sorted: pd.DataFrame, metric_cols: list[str]) -> list[dict]:
         rows = []
