@@ -176,6 +176,7 @@
 
     /* Column classes */
     .c-rank { width: 52px; text-align: center; font-size: 17px; }
+    .c-submitted { width: 96px; white-space: nowrap; font-size: 12px; opacity: 0.6; }
     .c-model { min-width: 220px; max-width: 360px; }
     .c-model a {
       display: inline-flex;
@@ -516,6 +517,8 @@ const WER_COLS = [
     tip:'WER on Common Voice 17 (Danish).' },
   { key:'fleurs_da_wer',           label:'FLEURS (da)',
     tip:'WER on FLEURS (Danish).' },
+  { key:'submitted',               label:'Submitted',      cls:'c-submitted',
+    tip:'Date the evaluation results were submitted to the leaderboard.' },
 ];
 
 const CER_COLS = [
@@ -539,6 +542,8 @@ const CER_COLS = [
     tip:'CER on Common Voice 17 (Danish).' },
   { key:'fleurs_da_cer',           label:'FLEURS (da) CER',
     tip:'CER on FLEURS (Danish).' },
+  { key:'submitted',               label:'Submitted',      cls:'c-submitted',
+    tip:'Date the evaluation results were submitted to the leaderboard.' },
 ];
 
 /* Score cell: number + inline bar. Color: green <15, yellow <25, red ≥25 */
