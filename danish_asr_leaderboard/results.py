@@ -23,16 +23,12 @@ class EvalResult:
     cv17_da_wer: float | None
     fleurs_da_wer: float | None
     ftspeech_wer: float | None
-    alvenir_oss_wer: float | None
-    alvenir_wiki_wer: float | None
     mean_wer: float       # macro-average over the core-5 datasets
     coral_conversation_cer: float | None
     coral_read_aloud_cer: float | None
     cv17_da_cer: float | None
     fleurs_da_cer: float | None
     ftspeech_cer: float | None
-    alvenir_oss_cer: float | None
-    alvenir_wiki_cer: float | None
     mean_cer: float       # macro-average over the core-5 datasets
     speed_x: float | None  # audio_duration / inference_time (higher = faster)
     submitted: str        # ISO date

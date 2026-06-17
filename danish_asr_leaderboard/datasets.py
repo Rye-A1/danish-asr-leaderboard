@@ -6,8 +6,7 @@ JSONL manifest so subsequent runs skip the download/transcode step.
 
 The five *core* test sets (whose macro-average forms ``mean_wer`` / ``mean_cer``)
 are CoRal-v3 conversation, CoRal-v3 read-aloud, Common Voice 17 (da), FLEURS
-(da_dk) and FTSpeech. Two optional Alvenir subsets can also be scored; they are
-reported per-set but excluded from the core means so runs stay comparable.
+(da_dk) and FTSpeech.
 """
 from __future__ import annotations
 
@@ -201,23 +200,6 @@ def load_ftspeech(audio_dir: Path, max_samples: int = 0) -> list[Row]:
     )
 
 
-def _alvenir_loader(subset: str) -> Loader:
-    def load(audio_dir: Path, max_samples: int = 0) -> list[Row]:
-        from datasets import Audio, load_dataset
-
-        def load_ds():
-            ds = load_dataset("Alvenir/alvenir_asr_da_eval", subset, split="test", num_proc=4)
-            return ds.cast_column("audio", Audio(decode=False))
-
-        return _materialise(
-            slug=f"alvenir_{subset}", label=f"Alvenir/{subset} test split",
-            audio_dir=audio_dir, load_ds=load_ds, text_keys=("text",),
-            max_samples=max_samples, progress_every=200,
-        )
-
-    return load
-
-
 # ---------------------------------------------------------------------------
 # Registry
 # ---------------------------------------------------------------------------
@@ -251,12 +233,6 @@ DATASETS: dict[str, DatasetSpec] = {
         DatasetSpec("ftspeech", "ftspeech",
                     "FTSpeech", "alexandrainst/ftspeech", "test_balanced", True,
                     load_ftspeech),
-        DatasetSpec("alvenir_oss", "alvenir_oss",
-                    "Alvenir (oss)", "Alvenir/alvenir_asr_da_eval", "test", False,
-                    _alvenir_loader("oss")),
-        DatasetSpec("alvenir_wiki", "alvenir_wiki",
-                    "Alvenir (wiki)", "Alvenir/alvenir_asr_da_eval", "test", False,
-                    _alvenir_loader("wiki")),
     ]
 }
 

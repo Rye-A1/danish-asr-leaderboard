@@ -31,8 +31,6 @@ Each row is one evaluated model. Scores are WER / CER (%) — lower is better.
 | `cv17_da` | [mozilla-foundation/common_voice_17_0](https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0) — da | test | Crowd-sourced read speech |
 | `fleurs_da` | [google/fleurs](https://huggingface.co/datasets/google/fleurs) — da_dk | test | Read speech |
 
-Two Alvenir subsets (`alvenir_oss`, `alvenir_wiki`) can be included in runs but are excluded from the core means.
-
 ## Schema
 
 | Column | Type | Description |
@@ -47,15 +45,11 @@ Two Alvenir subsets (`alvenir_oss`, `alvenir_wiki`) can be included in runs but 
 | `ftspeech_wer` | float\|null | WER on FTSpeech |
 | `cv17_da_wer` | float\|null | WER on Common Voice 17 (Danish) |
 | `fleurs_da_wer` | float\|null | WER on FLEURS (Danish) |
-| `alvenir_oss_wer` | float\|null | WER on Alvenir OSS (excluded from mean) |
-| `alvenir_wiki_wer` | float\|null | WER on Alvenir Wiki (excluded from mean) |
 | `coral_conversation_cer` | float\|null | CER on CoRal v3 conversation |
 | `coral_read_aloud_cer` | float\|null | CER on CoRal v3 read-aloud |
 | `ftspeech_cer` | float\|null | CER on FTSpeech |
 | `cv17_da_cer` | float\|null | CER on Common Voice 17 (Danish) |
 | `fleurs_da_cer` | float\|null | CER on FLEURS (Danish) |
-| `alvenir_oss_cer` | float\|null | CER on Alvenir OSS (excluded from mean) |
-| `alvenir_wiki_cer` | float\|null | CER on Alvenir Wiki (excluded from mean) |
 | `speed_x` | float\|null | Audio seconds / wall-clock second (higher = faster). Measured on one RTX Pro 5000 Blackwell; network-bound for API models. `NaN` if not measured. |
 | `submitted` | string | ISO 8601 date the result was submitted (`YYYY-MM-DD`) |
 

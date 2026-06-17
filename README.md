@@ -27,9 +27,6 @@ The leaderboard reports a per-dataset and a macro-averaged score over five
 | `fleurs_da` | [google/fleurs](https://huggingface.co/datasets/google/fleurs) — da_dk | test | Read speech |
 | `ftspeech` | [alexandrainst/ftspeech](https://huggingface.co/datasets/alexandrainst/ftspeech) | test_balanced | Parliamentary / broadcast |
 
-Two additional Alvenir subsets (`alvenir_oss`, `alvenir_wiki`) can be evaluated
-but are **excluded** from the core means.
-
 ## Installation
 
 System dependency (audio decoding):
