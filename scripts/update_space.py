@@ -37,7 +37,34 @@ OBSOLETE = ["app.py", "requirements.txt"]
 # set (or remove the org) once the model repos are published.
 EXCLUDE_ORGS = {"ryeai"}
 
+# Hosted/API models have no HF repo, so the "huggingface.co/<name>" link 404s.
+# Point them at the provider's docs instead (substring match on the model name,
+# case-insensitive). Unmatched API models get no link rather than a broken one.
+PROVIDER_DOCS = {
+    "scribe_v": "https://elevenlabs.io/docs/capabilities/speech-to-text",
+    "gpt-4o": "https://platform.openai.com/docs/guides/speech-to-text",
+    "chirp": "https://cloud.google.com/speech-to-text/v2/docs/chirp_3-model",
+    "soniox": "https://soniox.com/docs/stt/get-started/transcribe-audio-file",
+    "azure": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models",
+}
+
 _MD_LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
+# A size the model advertises in its own name: 24B, 1.7B, 0.6b, 315m, …
+_SIZE_IN_NAME = re.compile(r"(\d+(?:\.\d+)?)\s*([bBmM])(?![a-zA-Z])")
+
+# Manual size overrides (in B), highest precedence. For models whose official
+# size isn't in their name and differs from the safetensors count. Keyed by the
+# exact model name as it appears on the board.
+OFFICIAL_SIZE: dict[str, float] = {
+    "syvai/hviske-v5": 2.0,
+    "syvai/hviske-v5.3": 2.0,
+    "syvai/hviske-v3-conversation": 2.0,
+    "capacit-ai/saga": 1.7,
+    "pluttodk/milo-asr": 1.7,
+    "microsoft/VibeVoice-ASR-HF": 8.0,
+    "facebook/seamless-m4t-v2-large": 2.0,
+    "openai/whisper-large-v3": 2.0,
+}
 
 
 @functools.lru_cache(maxsize=256)
@@ -66,6 +93,37 @@ def _fmt_size(x) -> str:
     if pd.isna(v) or v <= 0:
         return "—"
     return f"{v:.2f}" if v < 0.1 else f"{v:.1f}"
+
+
+def _size_from_name(name: str) -> float | None:
+    """Parameter count (in B) a model advertises in its own name, or None.
+
+    e.g. ``Voxtral-Small-24B`` -> 24.0, ``Qwen3-ASR-1.7B`` -> 1.7,
+    ``roest-v3-wav2vec2-315m`` -> 0.315. ``m``/``M`` is treated as millions.
+    """
+    matches = _SIZE_IN_NAME.findall(name)
+    if not matches:
+        return None
+    num, unit = matches[-1]
+    val = float(num)
+    return val / 1000.0 if unit in "mM" else val
+
+
+def _official_size(name: str, params_b) -> str:
+    """Manual override > size advertised in the model name > computed count."""
+    if name in OFFICIAL_SIZE:
+        return _fmt_size(OFFICIAL_SIZE[name])
+    named = _size_from_name(name)
+    return _fmt_size(named if named is not None else params_b)
+
+
+def _api_docs_url(name: str) -> str:
+    """Provider-docs URL for a hosted/API model name, or '' if unknown."""
+    low = name.lower()
+    for key, url in PROVIDER_DOCS.items():
+        if key in low:
+            return url
+    return ""
 
 
 def _num(x) -> float | None:
@@ -114,8 +172,12 @@ def build_leaderboard_json() -> dict:
         rows = []
         for rank, (_, row) in enumerate(df_sorted.iterrows(), 1):
             name, url = _parse_model(row.get("model", ""))
-            org = name.split("/", 1)[0] if "/" in name else ""
+            is_repo = "/" in name
+            org = name.split("/", 1)[0] if is_repo else ""
             logo = _provider_logo(org) if org else ""
+            # Hosted/API models aren't HF repos → use provider docs, not a 404 link.
+            if not is_repo:
+                url = _api_docs_url(name)
             submitted = row.get("submitted")
             entry: dict = {
                 "rank": rank,
@@ -123,7 +185,7 @@ def build_leaderboard_json() -> dict:
                 "url": url,
                 "logo": logo,
                 "access": str(row.get("access", "open")),
-                "size": _fmt_size(row.get("params_b")),
+                "size": _official_size(name, row.get("params_b")),
                 "submitted": str(submitted)[:10] if pd.notna(submitted) else "",
             }
             for col in metric_cols:
