@@ -6,11 +6,12 @@ recognition errors rather than formatting differences.
 
 Steps (in order):
   1. Unicode NFC
-  2. Danish number canonicalisation — thousand separators stripped and decimal
-     separators collapsed so that ``1.234`` and ``1,234`` (thousands) both become
-     ``1234`` and ``3.14`` / ``3,14`` (decimals) both reduce to the same token.
-     This prevents punctuation-only formatting differences in numerals from
-     inflating WER.
+  2. Danish number canonicalisation — separators *within* a numeral are removed so
+     that punctuation-only formatting differences don't inflate WER. Thousands and
+     decimals are both stripped: ``1.234`` and ``1,234`` -> ``1234``; ``3.14`` and
+     ``3,14`` -> ``314``. The decimal separator is not preserved, so ``3,14``
+     collides with the integer ``314`` — a negligible, symmetric edge case (the
+     same transform is applied to reference and hypothesis).
   3. Lowercase
   4. Punctuation/symbol removal. Apostrophes *inside* a word (e.g. ``det's``) are
      preserved; all other punctuation and symbols are removed.
@@ -30,25 +31,17 @@ _NUMBER_TOKEN_RE = re.compile(r"\d[\d.,]*")
 
 
 def normalize_numbers_da(text: str) -> str:
-    """Strip thousand separators and collapse decimal separators in numerals."""
+    """Remove ``.`` / ``,`` separators within a numeral (``1.234`` -> ``1234``,
+    ``3,14`` -> ``314``).
 
-    def _fmt(m: re.Match) -> str:
-        token = m.group(0)
-        # Thousand-separated integer: 1.234.567 or 1,234,567
-        if re.fullmatch(r"\d{1,3}(?:[.,]\d{3})+", token):
-            return token.replace(".", "").replace(",", "")
-        # Decimal number with a single separator: 3,14 or 3.14
-        sep_count = token.count(".") + token.count(",")
-        if sep_count == 1:
-            left, _, right = (
-                token.partition(".") if "." in token else token.partition(",")
-            )
-            if left.isdigit() and right.isdigit():
-                return f"{left},{right}"
-        # Anything else: strip separators
-        return token.replace(".", "").replace(",", "")
-
-    return _NUMBER_TOKEN_RE.sub(_fmt, text)
+    Both thousand and decimal separators are stripped, so a numeral scores
+    identically regardless of formatting. (The downstream punctuation strip would
+    remove these characters anyway; this step makes the numeral handling explicit
+    and independent of that implementation.)
+    """
+    return _NUMBER_TOKEN_RE.sub(
+        lambda m: m.group(0).replace(".", "").replace(",", ""), text
+    )
 
 
 def normalise(text: str) -> str:

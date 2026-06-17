@@ -123,7 +123,7 @@ Pulls existing results from the HF dataset, merges your local JSONs (local wins
 on conflict), rebuilds `data/results.parquet`, and uploads everything. Safe on a
 fresh clone — nothing is lost.
 
-To redeploy the Gradio app after editing `space/app.py`:
+To redeploy the static Space after editing `space/index.html`:
 
 ```bash
 HF_TOKEN=hf_... python scripts/update_space.py
@@ -150,6 +150,12 @@ reference, so scores stay comparable across the board.
 > Digit–word equivalence (`"4"` vs `"fire"`) is **not** normalised. A model that
 > consistently emits one form when the reference uses the other will incur
 > errors — a known limitation shared by most public ASR leaderboards.
+
+> Danish orthographic variants (`aa`↔`å`, `oe`↔`ø`, `ae`↔`æ`) are **not**
+> normalised either — the digraphs occur legitimately as letter sequences
+> (`ekstraarbejde`, place names like `Aarhus`), so a blind substitution would
+> introduce errors. Different Unicode encodings of the *same* letter **are**
+> unified by NFC.
 
 **Future improvement — digit↔word normalisation.** A robust fix would convert
 between digits and number words on *both* the hypothesis and the reference at
@@ -178,8 +184,11 @@ to avoid divide-by-zero.
 
 ### Speed
 `speed_x` = total audio duration / total inference time. 30x means 30 seconds of
-audio per wall-clock second. Hardware-dependent and network-bound for APIs — not
-directly comparable across machines.
+audio per wall-clock second. Only the transcription call is timed (model load is
+excluded). Hardware-dependent and network-bound for APIs — not directly
+comparable across machines. There is **no warm-up run**: one-off costs (CUDA lazy
+init, kernel autotuning) fall into the first batch, which slightly understates
+throughput, more so on smaller test sets.
 
 ## Repository layout
 
@@ -198,7 +207,7 @@ danish_asr_leaderboard/
 run_eval.py         # thin CLI entry point
 requirements/       # base.txt + one file per backend
 scripts/            # push_results.py, update_space.py
-space/              # Gradio leaderboard app (deployed to the HF Space)
+space/              # Static HTML leaderboard (deployed to the HF Space)
 results/            # generated result JSONs (git-ignored)
 ```
 

@@ -3,9 +3,8 @@ title: Danish ASR Leaderboard
 emoji: 🏆
 colorFrom: red
 colorTo: gray
-sdk: gradio
-sdk_version: 5.50.0
-app_file: app.py
+sdk: static
+app_file: index.html
 thumbnail: https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/resolve/main/cover.jpeg
 pinned: false
 license: mit
@@ -13,19 +12,20 @@ license: mit
 
 # Danish ASR Leaderboard
 
-Gradio app for the [RyeAI/danish-asr-leaderboard](https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard)
-results dataset. It reads `data/results.parquet` from that dataset and renders
-WER and CER leaderboards over five Danish test sets.
+Static leaderboard for the [RyeAI/danish-asr-leaderboard](https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard)
+results dataset. WER and CER rankings across five Danish test sets.
 
 Source code and evaluation harness:
 [github.com/Rye-A1/danish-asr-leaderboard](https://github.com/Rye-A1/danish-asr-leaderboard)
 
-## Local development
+## Deploying updates
+
+Run the deploy script after pushing new results to the dataset:
 
 ```bash
-pip install -r requirements.txt
-python app.py
+export HF_TOKEN=hf_...
+python scripts/update_space.py
 ```
 
-The app pulls results from the public HF dataset at startup; no token is
-required to view it.
+This bakes `leaderboard.json` from the parquet (resolving provider logos and
+formatting sizes server-side) and uploads the static files to the Space.
