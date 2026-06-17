@@ -25,7 +25,8 @@ import pandas as pd
 import requests
 from huggingface_hub import HfApi, get_token
 
-SPACE_REPO_ID = "RyeAI/danish-asr-leaderboard"
+SPACE_REPO_ID   = "RyeAI/danish-asr-leaderboard"
+DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 DATASET_PARQUET = "hf://datasets/RyeAI/danish-asr-leaderboard/data/results.parquet"
 SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
 
@@ -281,6 +282,18 @@ def main() -> None:
             commit_message=f"Update {name}",
         )
         print(f"  ✓ {name}")
+
+    dataset_card = SPACE_DIR / "dataset_README.md"
+    if dataset_card.exists():
+        print("\nUploading dataset card …")
+        api.upload_file(
+            path_or_fileobj=str(dataset_card),
+            path_in_repo="README.md",
+            repo_id=DATASET_REPO_ID,
+            repo_type="dataset",
+            commit_message="Update dataset card",
+        )
+        print("  ✓ dataset README.md")
 
     print("\nRemoving obsolete gradio files …")
     space_files = set(api.list_repo_files(repo_id=SPACE_REPO_ID, repo_type="space"))
