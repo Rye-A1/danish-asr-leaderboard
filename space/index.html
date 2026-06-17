@@ -605,6 +605,7 @@ function buildRow(row, cols, maxVals) {
         img.src = row.logo;
         img.alt = '';
         img.loading = 'lazy';
+        img.onerror = () => img.remove();
         a.appendChild(img);
       }
       const nm = document.createElement('span');

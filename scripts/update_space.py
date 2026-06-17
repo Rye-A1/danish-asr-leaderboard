@@ -36,6 +36,8 @@ OBSOLETE = ["app.py", "requirements.txt"]
 # "<org>/..." prefix). Temporary: RyeAI models aren't public yet — clear this
 # set (or remove the org) once the model repos are published.
 EXCLUDE_ORGS = {"ryeai"}
+# Specific models to drop from the board (case-insensitive, exact model name).
+EXCLUDE_MODELS = {"syvai/hviske-v5.2"}
 
 # Hosted/API models have no HF repo, so the "huggingface.co/<name>" link 404s.
 # Point them at the provider's docs instead (substring match on the model name,
@@ -46,6 +48,16 @@ PROVIDER_DOCS = {
     "chirp": "https://cloud.google.com/speech-to-text/v2/docs/chirp_3-model",
     "soniox": "https://soniox.com/docs/stt/get-started/transcribe-audio-file",
     "azure": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models",
+}
+
+# Logos for hosted/API models (no HF avatar). Same substring keys as PROVIDER_DOCS.
+PROVIDER_LOGO = {
+    "scribe_v": "https://elevenlabs.io/_next/image?url=https%3A%2F%2Feleven-public-cdn.elevenlabs.io%2Fpayloadcms%2Felevenlabs-official-logo-11-icon.webp&w=1920&q=95",
+}
+
+# API models that have an HF org — fetch the avatar the same way as HF repos.
+PROVIDER_HF_ORG = {
+    "gpt-4o": "openai",
 }
 
 _MD_LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
@@ -126,6 +138,18 @@ def _api_docs_url(name: str) -> str:
     return ""
 
 
+def _api_logo(name: str) -> str:
+    """Provider logo URL for a hosted/API model name, or '' if unknown."""
+    low = name.lower()
+    for key, url in PROVIDER_LOGO.items():
+        if key in low:
+            return url
+    for key, org in PROVIDER_HF_ORG.items():
+        if key in low:
+            return _provider_logo(org)
+    return ""
+
+
 def _num(x) -> float | None:
     """JSON-safe float rounded to 2 decimal places, or None."""
     try:
@@ -156,17 +180,21 @@ def build_leaderboard_json() -> dict:
     if "access" not in df.columns:
         df["access"] = "open"
 
-    # Drop excluded orgs before ranking so ranks stay contiguous.
-    if EXCLUDE_ORGS:
-        def _org(cell) -> str:
-            name, _ = _parse_model(cell)
-            return name.split("/", 1)[0].lower() if "/" in name else ""
+    # Drop excluded orgs and models before ranking so ranks stay contiguous.
+    if EXCLUDE_ORGS or EXCLUDE_MODELS:
+        excl_models = {m.lower() for m in EXCLUDE_MODELS}
 
-        keep = ~df["model"].map(_org).isin(EXCLUDE_ORGS)
+        def _drop(cell) -> bool:
+            name, _ = _parse_model(cell)
+            org = name.split("/", 1)[0].lower() if "/" in name else ""
+            return org in EXCLUDE_ORGS or name.lower() in excl_models
+
+        keep = ~df["model"].map(_drop)
         dropped = int((~keep).sum())
         df = df[keep].reset_index(drop=True)
         if dropped:
-            print(f"  excluded {dropped} row(s) from orgs: {sorted(EXCLUDE_ORGS)}")
+            print(f"  excluded {dropped} row(s) "
+                  f"(orgs={sorted(EXCLUDE_ORGS)}, models={sorted(EXCLUDE_MODELS)})")
 
     def build_rows(df_sorted: pd.DataFrame, metric_cols: list[str]) -> list[dict]:
         rows = []
@@ -174,10 +202,12 @@ def build_leaderboard_json() -> dict:
             name, url = _parse_model(row.get("model", ""))
             is_repo = "/" in name
             org = name.split("/", 1)[0] if is_repo else ""
-            logo = _provider_logo(org) if org else ""
-            # Hosted/API models aren't HF repos → use provider docs, not a 404 link.
-            if not is_repo:
+            # Hosted/API models aren't HF repos → provider docs + logo, not a 404.
+            if is_repo:
+                logo = _provider_logo(org)
+            else:
                 url = _api_docs_url(name)
+                logo = _api_logo(name)
             submitted = row.get("submitted")
             entry: dict = {
                 "rank": rank,

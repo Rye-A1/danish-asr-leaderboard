@@ -21,23 +21,6 @@
     },
     {
       "rank": 2,
-      "name": "syvai/hviske-v5.2",
-      "url": "https://huggingface.co/syvai/hviske-v5.2",
-      "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
-      "access": "open",
-      "size": "2.1",
-      "submitted": "2026-04-27",
-      "mean_wer": 14.19,
-      "mean_cer": 7.5,
-      "speed_x": 215.8,
-      "coral_conversation_wer": 20.43,
-      "coral_read_aloud_wer": 10.39,
-      "ftspeech_wer": 20.11,
-      "cv17_da_wer": 10.19,
-      "fleurs_da_wer": 9.83
-    },
-    {
-      "rank": 3,
       "name": "syvai/hviske-v5.3",
       "url": "https://huggingface.co/syvai/hviske-v5.3",
       "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
@@ -54,7 +37,7 @@
       "fleurs_da_wer": 10.13
     },
     {
-      "rank": 4,
+      "rank": 3,
       "name": "capacit-ai/saga",
       "url": "https://huggingface.co/capacit-ai/saga",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/69b7cdab8f61eb5ff23c91db/Rr6Mwd7dYmooItMGUE6mH.png",
@@ -71,10 +54,10 @@
       "fleurs_da_wer": 13.35
     },
     {
-      "rank": 5,
+      "rank": 4,
       "name": "scribe_v2",
       "url": "https://elevenlabs.io/docs/capabilities/speech-to-text",
-      "logo": "",
+      "logo": "https://elevenlabs.io/_next/image?url=https%3A%2F%2Feleven-public-cdn.elevenlabs.io%2Fpayloadcms%2Felevenlabs-official-logo-11-icon.webp&w=1920&q=95",
       "access": "proprietary",
       "size": "—",
       "submitted": "2026-05-25",
@@ -88,7 +71,7 @@
       "fleurs_da_wer": 6.56
     },
     {
-      "rank": 6,
+      "rank": 5,
       "name": "CoRal-project/roest-v3-whisper-1.5b",
       "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
@@ -105,7 +88,7 @@
       "fleurs_da_wer": 10.29
     },
     {
-      "rank": 7,
+      "rank": 6,
       "name": "mistralai/Voxtral-Small-24B-2507",
       "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
@@ -122,10 +105,10 @@
       "fleurs_da_wer": 8.67
     },
     {
-      "rank": 8,
+      "rank": 7,
       "name": "gpt-4o-mini-transcribe-benchmark",
       "url": "https://platform.openai.com/docs/guides/speech-to-text",
-      "logo": "",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "proprietary",
       "size": "—",
       "submitted": "2026-05-26",
@@ -139,10 +122,10 @@
       "fleurs_da_wer": 6.22
     },
     {
-      "rank": 9,
+      "rank": 8,
       "name": "gpt-4o-transcribe-benchmark",
       "url": "https://platform.openai.com/docs/guides/speech-to-text",
-      "logo": "",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "proprietary",
       "size": "—",
       "submitted": "2026-05-25",
@@ -156,7 +139,7 @@
       "fleurs_da_wer": 6.32
     },
     {
-      "rank": 10,
+      "rank": 9,
       "name": "openai/whisper-large-v3",
       "url": "https://huggingface.co/openai/whisper-large-v3",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
@@ -173,7 +156,7 @@
       "fleurs_da_wer": 12.13
     },
     {
-      "rank": 11,
+      "rank": 10,
       "name": "CoRal-project/roest-v2-wav2vec2-2B",
       "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
@@ -190,7 +173,7 @@
       "fleurs_da_wer": 17.36
     },
     {
-      "rank": 12,
+      "rank": 11,
       "name": "CoRal-project/roest-v3-wav2vec2-315m",
       "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
@@ -207,7 +190,7 @@
       "fleurs_da_wer": 21.59
     },
     {
-      "rank": 13,
+      "rank": 12,
       "name": "syvai/hviske-v3-conversation",
       "url": "https://huggingface.co/syvai/hviske-v3-conversation",
       "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
@@ -224,7 +207,7 @@
       "fleurs_da_wer": 16.87
     },
     {
-      "rank": 14,
+      "rank": 13,
       "name": "CoRal-project/roest-v2-wav2vec2-1B",
       "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
@@ -241,7 +224,7 @@
       "fleurs_da_wer": 19.15
     },
     {
-      "rank": 15,
+      "rank": 14,
       "name": "mistralai/Voxtral-Mini-3B-2507",
       "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
@@ -258,7 +241,7 @@
       "fleurs_da_wer": 12.96
     },
     {
-      "rank": 16,
+      "rank": 15,
       "name": "openai/whisper-large-v3-turbo",
       "url": "https://huggingface.co/openai/whisper-large-v3-turbo",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
@@ -275,7 +258,7 @@
       "fleurs_da_wer": 13.19
     },
     {
-      "rank": 17,
+      "rank": 16,
       "name": "nvidia/canary-1b-v2",
       "url": "https://huggingface.co/nvidia/canary-1b-v2",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
@@ -292,7 +275,7 @@
       "fleurs_da_wer": 11.78
     },
     {
-      "rank": 18,
+      "rank": 17,
       "name": "Qwen/Qwen3-ASR-1.7B",
       "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/620760a26e3b7210c2ff1943/-s1gyJfvbE1RgO5iBeNOi.png",
@@ -309,7 +292,7 @@
       "fleurs_da_wer": 21.07
     },
     {
-      "rank": 19,
+      "rank": 18,
       "name": "pluttodk/milo-asr",
       "url": "https://huggingface.co/pluttodk/milo-asr",
       "logo": "https://huggingface.co/avatars/fb98e261fd3502e46564b9ce125e868c.svg",
@@ -326,7 +309,7 @@
       "fleurs_da_wer": 13.81
     },
     {
-      "rank": 20,
+      "rank": 19,
       "name": "nvidia/parakeet-tdt-0.6b-v3",
       "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
@@ -343,7 +326,7 @@
       "fleurs_da_wer": 18.77
     },
     {
-      "rank": 21,
+      "rank": 20,
       "name": "facebook/seamless-m4t-v2-large",
       "url": "https://huggingface.co/facebook/seamless-m4t-v2-large",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1592839207516-noauth.png",
@@ -360,7 +343,7 @@
       "fleurs_da_wer": 12.84
     },
     {
-      "rank": 22,
+      "rank": 21,
       "name": "facebook/mms-1b-all",
       "url": "https://huggingface.co/facebook/mms-1b-all",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1592839207516-noauth.png",
@@ -377,7 +360,7 @@
       "fleurs_da_wer": 23.6
     },
     {
-      "rank": 23,
+      "rank": 22,
       "name": "microsoft/VibeVoice-ASR-HF",
       "url": "https://huggingface.co/microsoft/VibeVoice-ASR-HF",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1583646260758-5e64858c87403103f9f1055d.png",
@@ -394,7 +377,7 @@
       "fleurs_da_wer": 30.53
     },
     {
-      "rank": 24,
+      "rank": 23,
       "name": "openai/whisper-small",
       "url": "https://huggingface.co/openai/whisper-small",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
@@ -411,7 +394,7 @@
       "fleurs_da_wer": 33.13
     },
     {
-      "rank": 25,
+      "rank": 24,
       "name": "openai/whisper-base",
       "url": "https://huggingface.co/openai/whisper-base",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
@@ -428,7 +411,7 @@
       "fleurs_da_wer": 62.87
     },
     {
-      "rank": 26,
+      "rank": 25,
       "name": "openai/whisper-tiny",
       "url": "https://huggingface.co/openai/whisper-tiny",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
@@ -463,21 +446,6 @@
     },
     {
       "rank": 2,
-      "name": "syvai/hviske-v5.2",
-      "url": "https://huggingface.co/syvai/hviske-v5.2",
-      "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
-      "access": "open",
-      "size": "2.1",
-      "submitted": "2026-04-27",
-      "mean_cer": 7.5,
-      "coral_conversation_cer": 12.06,
-      "coral_read_aloud_cer": 4.14,
-      "ftspeech_cer": 13.68,
-      "cv17_da_cer": 3.71,
-      "fleurs_da_cer": 3.91
-    },
-    {
-      "rank": 3,
       "name": "syvai/hviske-v5.3",
       "url": "https://huggingface.co/syvai/hviske-v5.3",
       "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
@@ -492,7 +460,7 @@
       "fleurs_da_cer": 4.27
     },
     {
-      "rank": 4,
+      "rank": 3,
       "name": "CoRal-project/roest-v3-wav2vec2-315m",
       "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
@@ -507,7 +475,7 @@
       "fleurs_da_cer": 6.37
     },
     {
-      "rank": 5,
+      "rank": 4,
       "name": "CoRal-project/roest-v2-wav2vec2-2B",
       "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
@@ -522,7 +490,7 @@
       "fleurs_da_cer": 5.17
     },
     {
-      "rank": 6,
+      "rank": 5,
       "name": "CoRal-project/roest-v2-wav2vec2-1B",
       "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
@@ -537,7 +505,7 @@
       "fleurs_da_cer": 5.81
     },
     {
-      "rank": 7,
+      "rank": 6,
       "name": "capacit-ai/saga",
       "url": "https://huggingface.co/capacit-ai/saga",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/69b7cdab8f61eb5ff23c91db/Rr6Mwd7dYmooItMGUE6mH.png",
@@ -552,10 +520,10 @@
       "fleurs_da_cer": 5.14
     },
     {
-      "rank": 8,
+      "rank": 7,
       "name": "scribe_v2",
       "url": "https://elevenlabs.io/docs/capabilities/speech-to-text",
-      "logo": "",
+      "logo": "https://elevenlabs.io/_next/image?url=https%3A%2F%2Feleven-public-cdn.elevenlabs.io%2Fpayloadcms%2Felevenlabs-official-logo-11-icon.webp&w=1920&q=95",
       "access": "proprietary",
       "size": "—",
       "submitted": "2026-05-25",
@@ -567,7 +535,7 @@
       "fleurs_da_cer": 2.87
     },
     {
-      "rank": 9,
+      "rank": 8,
       "name": "mistralai/Voxtral-Small-24B-2507",
       "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
@@ -582,7 +550,7 @@
       "fleurs_da_cer": 3.28
     },
     {
-      "rank": 10,
+      "rank": 9,
       "name": "openai/whisper-large-v3",
       "url": "https://huggingface.co/openai/whisper-large-v3",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
@@ -597,7 +565,7 @@
       "fleurs_da_cer": 4.37
     },
     {
-      "rank": 11,
+      "rank": 10,
       "name": "CoRal-project/roest-v3-whisper-1.5b",
       "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
@@ -612,7 +580,7 @@
       "fleurs_da_cer": 3.77
     },
     {
-      "rank": 12,
+      "rank": 11,
       "name": "syvai/hviske-v3-conversation",
       "url": "https://huggingface.co/syvai/hviske-v3-conversation",
       "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
@@ -627,10 +595,10 @@
       "fleurs_da_cer": 7.52
     },
     {
-      "rank": 13,
+      "rank": 12,
       "name": "gpt-4o-mini-transcribe-benchmark",
       "url": "https://platform.openai.com/docs/guides/speech-to-text",
-      "logo": "",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "proprietary",
       "size": "—",
       "submitted": "2026-05-26",
@@ -642,10 +610,10 @@
       "fleurs_da_cer": 2.63
     },
     {
-      "rank": 14,
+      "rank": 13,
       "name": "gpt-4o-transcribe-benchmark",
       "url": "https://platform.openai.com/docs/guides/speech-to-text",
-      "logo": "",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "proprietary",
       "size": "—",
       "submitted": "2026-05-25",
@@ -657,7 +625,7 @@
       "fleurs_da_cer": 2.64
     },
     {
-      "rank": 15,
+      "rank": 14,
       "name": "mistralai/Voxtral-Mini-3B-2507",
       "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
@@ -672,7 +640,7 @@
       "fleurs_da_cer": 5.09
     },
     {
-      "rank": 16,
+      "rank": 15,
       "name": "Qwen/Qwen3-ASR-1.7B",
       "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/620760a26e3b7210c2ff1943/-s1gyJfvbE1RgO5iBeNOi.png",
@@ -687,7 +655,7 @@
       "fleurs_da_cer": 8.33
     },
     {
-      "rank": 17,
+      "rank": 16,
       "name": "openai/whisper-large-v3-turbo",
       "url": "https://huggingface.co/openai/whisper-large-v3-turbo",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
@@ -702,7 +670,7 @@
       "fleurs_da_cer": 4.61
     },
     {
-      "rank": 18,
+      "rank": 17,
       "name": "facebook/mms-1b-all",
       "url": "https://huggingface.co/facebook/mms-1b-all",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1592839207516-noauth.png",
@@ -717,7 +685,7 @@
       "fleurs_da_cer": 6.91
     },
     {
-      "rank": 19,
+      "rank": 18,
       "name": "pluttodk/milo-asr",
       "url": "https://huggingface.co/pluttodk/milo-asr",
       "logo": "https://huggingface.co/avatars/fb98e261fd3502e46564b9ce125e868c.svg",
@@ -732,7 +700,7 @@
       "fleurs_da_cer": 5.86
     },
     {
-      "rank": 20,
+      "rank": 19,
       "name": "nvidia/parakeet-tdt-0.6b-v3",
       "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
@@ -747,7 +715,7 @@
       "fleurs_da_cer": 6.66
     },
     {
-      "rank": 21,
+      "rank": 20,
       "name": "nvidia/canary-1b-v2",
       "url": "https://huggingface.co/nvidia/canary-1b-v2",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
@@ -762,7 +730,7 @@
       "fleurs_da_cer": 4.57
     },
     {
-      "rank": 22,
+      "rank": 21,
       "name": "facebook/seamless-m4t-v2-large",
       "url": "https://huggingface.co/facebook/seamless-m4t-v2-large",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1592839207516-noauth.png",
@@ -777,7 +745,7 @@
       "fleurs_da_cer": 6.66
     },
     {
-      "rank": 23,
+      "rank": 22,
       "name": "microsoft/VibeVoice-ASR-HF",
       "url": "https://huggingface.co/microsoft/VibeVoice-ASR-HF",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1583646260758-5e64858c87403103f9f1055d.png",
@@ -792,7 +760,7 @@
       "fleurs_da_cer": 14.1
     },
     {
-      "rank": 24,
+      "rank": 23,
       "name": "openai/whisper-small",
       "url": "https://huggingface.co/openai/whisper-small",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
@@ -807,7 +775,7 @@
       "fleurs_da_cer": 11.99
     },
     {
-      "rank": 25,
+      "rank": 24,
       "name": "openai/whisper-base",
       "url": "https://huggingface.co/openai/whisper-base",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
@@ -822,7 +790,7 @@
       "fleurs_da_cer": 28.77
     },
     {
-      "rank": 26,
+      "rank": 25,
       "name": "openai/whisper-tiny",
       "url": "https://huggingface.co/openai/whisper-tiny",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
