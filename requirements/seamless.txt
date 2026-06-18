@@ -1,4 +1,0 @@
-# backend: seamless (Meta SeamlessM4T)
--r base.txt
-torch>=2.0.0
-transformers>=4.54.0

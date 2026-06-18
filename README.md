@@ -35,25 +35,27 @@ System dependency (audio decoding):
 apt install ffmpeg     # macOS: brew install ffmpeg
 ```
 
-Core library:
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) if you haven't already, then install the core library and whichever backend(s) you need:
 
 ```bash
-pip install -e .
+uv pip install -e ".[transformers]"    # Whisper, Røst, hviske, …
+uv pip install -e ".[nemo]"            # Canary / Parakeet / SALM
+uv pip install -e ".[faster-whisper]"
+uv pip install -e ".[qwen-asr]"
+uv pip install -e ".[voxtral]"
+uv pip install -e ".[elevenlabs]"      # API backends
+uv pip install -e ".[azure-openai]"
+uv pip install -e ".[google-chirp]"
+uv pip install -e ".[soniox]"
 ```
 
-Then add the requirements for the backend(s) you want to run. Each file pulls
-in `base.txt` plus that backend's framework, so you only install what you need:
+Available extras match the `--backend` names: `transformers`, `wav2vec2`,
+`faster-whisper`, `qwen-asr`, `nemo`, `voxtral`, `seamless`, `cohere-asr`,
+`vibevoice`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`.
 
-```bash
-pip install -r requirements/transformers.txt     # Whisper, Røst, hviske, …
-pip install -r requirements/nemo.txt              # Canary / Parakeet / SALM
-pip install -r requirements/faster_whisper.txt
-pip install -r requirements/elevenlabs.txt        # API backend
-# ... see requirements/ for the full list
-```
-
-> **NeMo note:** install `nemo_toolkit[asr]` *first* (before other packages) to
-> avoid dependency-resolver conflicts. `uv pip install` is much faster than pip.
+> **NeMo note:** install `nemo_toolkit[asr]` *first* to avoid
+> dependency-resolver conflicts: `uv pip install "nemo_toolkit[asr]"` then
+> `uv pip install -e ".[nemo]"`.
 
 Log in for pushing results (read access is anonymous):
 

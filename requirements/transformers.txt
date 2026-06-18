@@ -1,4 +1,0 @@
-# backend: transformers (Whisper, generic seq2seq ASR pipelines)
--r base.txt
-torch>=2.0.0
-transformers>=4.54.0

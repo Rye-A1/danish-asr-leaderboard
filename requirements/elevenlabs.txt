@@ -1,3 +1,0 @@
-# backend: elevenlabs (Scribe API)
--r base.txt
-elevenlabs>=1.0.0

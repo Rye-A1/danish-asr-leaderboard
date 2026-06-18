@@ -1,5 +1,0 @@
-# backend: voxtral (Mistral Voxtral, decoder-only)
--r base.txt
-torch>=2.0.0
-transformers>=4.54.0
-mistral-common[audio]>=1.8.1

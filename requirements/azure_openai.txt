@@ -1,3 +1,0 @@
-# backend: azure-openai (gpt-4o-transcribe family)
--r base.txt
-openai>=1.0.0

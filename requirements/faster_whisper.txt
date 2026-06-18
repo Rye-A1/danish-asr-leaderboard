@@ -1,3 +1,0 @@
-# backend: faster-whisper (CTranslate2 Whisper)
--r base.txt
-faster-whisper>=1.0.3

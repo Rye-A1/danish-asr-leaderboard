@@ -1,5 +1,0 @@
-# backend: qwen-asr (Qwen3-ASR and fine-tunes)
--r base.txt
-torch>=2.0.0
-transformers>=4.54.0
-qwen-asr>=0.0.6

@@ -1,3 +1,0 @@
-# backend: soniox
--r base.txt
-soniox>=0.1.0

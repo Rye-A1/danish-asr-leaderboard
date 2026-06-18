@@ -1,3 +1,0 @@
-# backend: google-chirp (Cloud Speech-to-Text v2, Chirp 3)
--r base.txt
-google-cloud-speech>=2.26.0
