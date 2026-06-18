@@ -93,6 +93,30 @@ class NemoBackend(Backend):
         return _text_of(output[0]) if output else ""
 
 
+def _hf_nemo_file(model_ref: str) -> str | None:
+    """If ``model_ref`` is an HF repo whose only payload is a ``.nemo`` file,
+    download it and return the local path; otherwise None.
+
+    ``ASRModel.from_pretrained`` only handles repos NeMo publishes as unpacked
+    model cards. Fine-tunes are commonly uploaded as a single raw ``.nemo``
+    archive (no ``model_config.yaml``), which ``from_pretrained`` can't restore —
+    those need ``hf_hub_download`` + ``restore_from`` instead.
+    """
+    if "/" not in model_ref or Path(model_ref).expanduser().exists():
+        return None
+    try:
+        from huggingface_hub import HfApi, hf_hub_download
+
+        files = HfApi().list_repo_files(model_ref)
+        nemo_files = [f for f in files if f.endswith(".nemo")]
+        if len(nemo_files) != 1:
+            return None  # native model card, or ambiguous — let from_pretrained try
+        print(f"  HF repo ships a raw .nemo ({nemo_files[0]}); downloading…")
+        return hf_hub_download(repo_id=model_ref, filename=nemo_files[0])
+    except Exception:
+        return None  # not resolvable as an HF repo — fall back to from_pretrained
+
+
 @register("nemo")
 def load(model_ref: str, options: LoadOptions) -> Backend:
     import torch
@@ -102,6 +126,8 @@ def load(model_ref: str, options: LoadOptions) -> Backend:
     ref_path = Path(model_ref).expanduser()
     if ref_path.exists() and ref_path.suffix == ".nemo":
         model = ASRModel.restore_from(restore_path=str(ref_path))
+    elif (hf_nemo := _hf_nemo_file(model_ref)) is not None:
+        model = ASRModel.restore_from(restore_path=hf_nemo)
     else:
         model = ASRModel.from_pretrained(model_name=model_ref)
     if options.device == "cuda" and torch.cuda.is_available():
