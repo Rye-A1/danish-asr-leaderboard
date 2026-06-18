@@ -33,5 +33,6 @@ results/*.json
 
 # AppMap instrumentation + local temp
 appmap.yml
+uv.lock
 tmp/
 **/tmp/

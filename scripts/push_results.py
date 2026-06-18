@@ -9,7 +9,8 @@ Run after run_eval.py has written one or more result JSONs:
   python scripts/push_results.py
 
 Requires:
-  pip install pandas pyarrow huggingface_hub
+  uv run --with pandas --with pyarrow --with huggingface_hub python scripts/push_results.py
+  # or: pip install pandas pyarrow huggingface_hub && python scripts/push_results.py
   huggingface-cli login  (with RyeAI org write token)
 """
 from __future__ import annotations

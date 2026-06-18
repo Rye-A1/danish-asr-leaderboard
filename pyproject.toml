@@ -32,5 +32,11 @@ Results = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard"
 [project.scripts]
 danish-asr-eval = "danish_asr_leaderboard.cli:main"
 
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
 [tool.setuptools.packages.find]
 include = ["danish_asr_leaderboard*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
