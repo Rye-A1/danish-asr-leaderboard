@@ -433,6 +433,28 @@
       above 100 % on a given dataset indicate the model is not usable for that domain.
     </blockquote>
 
+    <h3>Speed</h3>
+    <p><strong>Speed (x)</strong> = total audio duration / total inference time.
+    A value of 30x means 30 seconds of audio processed per wall-clock second.
+    Only the transcription call is timed — model load time is excluded.
+    Measured on an NVIDIA RTX Pro 5000 Blackwell (48 GB).</p>
+    <blockquote>
+      <strong>Speed reflects the serving stack, not just the model.</strong>
+      Some models are run through high-throughput engines such as
+      <strong>vLLM</strong> (continuous batching, paged KV cache), which can be
+      several times faster than a plain <code>transformers</code> generation loop
+      for the <em>same</em> weights. Treat Speed as "best-effort real-world
+      throughput on this GPU" rather than an intrinsic model property — it is
+      <strong>not comparable across different serving stacks or hardware</strong>,
+      and API models are network-bound.
+    </blockquote>
+    <blockquote>
+      <strong>No warm-up run.</strong> Timing starts on the first batch, so
+      one-off costs (CUDA lazy init, kernel autotuning, graph capture) are folded
+      into the measurement. This slightly <em>understates</em> throughput, more so
+      on smaller test sets where the fixed overhead is less amortised.
+    </blockquote>
+
     <h3>Code &amp; data</h3>
     <p>
       Results dataset:
@@ -445,7 +467,8 @@
     <ol>
       <li><strong>PR (preferred):</strong> commit your <code>results/&lt;model-slug&gt;.json</code>
         to the <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">GitHub repo</a>
-        and open a pull request. Include the exact command you ran and whether the model is
+        and open a pull request. Include the exact command you ran, the hardware
+        (for <code>speed_x</code> context), and whether the model is
         <code>open</code> or <code>proprietary</code>.</li>
       <li><strong>Discussion:</strong> if you can't run the eval yourself, open a
         <a href="https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/discussions" target="_blank" rel="noopener">Space discussion</a>
@@ -487,6 +510,10 @@ const WER_COLS = [
     tip:'Word Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_cer',               label:'Mean CER ↓',
     tip:'Character Error Rate, macro-averaged over the five test sets. Lower is better.' },
+  { key:'speed_x',                label:'Speed (x) ↑',
+    tip:'Audio seconds processed per wall-clock second on one RTX Pro 5000 Blackwell. '
+      + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
+      + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
     tip:'WER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_wer',    label:'CoRal Read',
@@ -607,6 +634,9 @@ function buildRow(row, cols, maxVals) {
     } else if (c.key === 'mean_wer' || c.key === 'mean_cer') {
       td.textContent = v != null ? v.toFixed(2) : '—';
       td.style.fontWeight = '700';
+
+    } else if (c.key === 'speed_x') {
+      td.textContent = v != null ? v.toFixed(1) + 'x' : '—';
 
     } else if (typeof v === 'number') {
       td.textContent = v.toFixed(2);
