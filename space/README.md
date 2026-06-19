@@ -8,6 +8,15 @@ app_file: index.html
 thumbnail: https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/resolve/main/cover.jpeg
 pinned: false
 license: mit
+short_description: Open leaderboard for Danish ASR models.
+tags:
+  - leaderboard
+  - automatic-speech-recognition
+  - speech-recognition
+  - danish
+  - evaluation
+  - benchmark
+  - static
 ---
 
 # Danish ASR Leaderboard
