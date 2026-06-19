@@ -6,7 +6,7 @@ colorTo: gray
 sdk: static
 app_file: index.html
 thumbnail: https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/resolve/main/cover.jpeg
-pinned: false
+pinned: true
 license: mit
 short_description: Open leaderboard for Danish ASR models.
 tags:
