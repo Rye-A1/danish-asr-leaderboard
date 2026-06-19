@@ -340,18 +340,62 @@
     .delta-eq { color: var(--muted); }
     .c-delta   { width: 56px; text-align: center; }
 
+    /* ── CI toggle button ──────────────────────────────────────────── */
+    .ci-btn {
+      padding: 5px 11px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      transition: background .12s, color .12s, border-color .12s;
+      white-space: nowrap;
+    }
+    .ci-btn.active { background: var(--surf2); color: var(--text); border-color: var(--accent); }
+    .ci-btn:hover:not(.active) { color: var(--text); }
+
+    /* ── CI inline text in cells ────────────────────────────────────── */
+    .ci-val { font-size: 10.5px; color: var(--muted); font-weight: 400; display: block; line-height: 1.4; }
+
     /* ── Size chart ─────────────────────────────────────────────── */
     .chart-section { margin-top: 28px; }
     .chart-section h3 {
       font-size: 14px; font-weight: 600; color: var(--text);
       margin-bottom: 10px;
     }
-    #size-chart-wrap {
+    .chart-with-panel { display: flex; gap: 12px; align-items: flex-start; }
+    .chart-plot-wrap {
+      flex: 1; min-width: 0;
       background: var(--surf);
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 6px 6px 4px;
     }
+    .pareto-panel {
+      width: 195px; flex: 0 0 195px;
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 10px 12px;
+      font-size: 12px;
+      max-height: 316px;
+      overflow-y: auto;
+    }
+    .pareto-panel-title {
+      font-size: 10.5px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+    .pareto-item {
+      display: flex; align-items: center; gap: 7px;
+      padding: 5px 0; border-bottom: 1px solid var(--border);
+    }
+    .pareto-item:last-child { border-bottom: none; }
+    .pareto-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 8px; }
+    .pareto-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-weight: 500; }
+    .pareto-meta { color: var(--muted); white-space: nowrap; font-size: 11px; text-align: right; line-height: 1.4; }
     #chart-tip {
       position: fixed;
       background: var(--surf2);
@@ -405,6 +449,7 @@
         <button class="tog-btn" id="tog-wer-borda">Avg. Rank</button>
         <button class="tog-btn" id="tog-wer-bt">Win Rate</button>
       </div>
+      <button class="ci-btn" id="tog-ci-wer" title="95% bootstrap CI: the 5 test datasets are resampled with replacement 1000 times. The interval shows where the metric would fall if a different random draw of datasets were used. Wide CIs mean the ranking is sensitive to which datasets are included — treat close rankings with caution.">95% CI <span class="i-icon" aria-hidden="true">i</span></button>
       <span id="updated-ts" class="count" style="margin-left:auto"></span>
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
@@ -413,8 +458,11 @@
     </p>
     <div class="chart-section">
       <h3>Performance vs. Model Size</h3>
-      <div id="size-chart-wrap">
-        <svg id="size-chart" style="width:100%;display:block;overflow:visible"></svg>
+      <div class="chart-with-panel">
+        <div id="size-chart-wrap-wer" class="chart-plot-wrap">
+          <svg id="size-chart-wer" style="width:100%;display:block;overflow:visible"></svg>
+        </div>
+        <div id="pareto-panel-wer" class="pareto-panel"></div>
       </div>
     </div>
   </div>
@@ -430,8 +478,18 @@
         <button class="tog-btn" id="tog-cer-borda">Avg. Rank</button>
         <button class="tog-btn" id="tog-cer-bt">Win Rate</button>
       </div>
+      <button class="ci-btn" id="tog-ci-cer" title="95% bootstrap CI: the 5 test datasets are resampled with replacement 1000 times. The interval shows where the metric would fall if a different random draw of datasets were used. Wide CIs mean the ranking is sensitive to which datasets are included — treat close rankings with caution.">95% CI <span class="i-icon" aria-hidden="true">i</span></button>
     </div>
     <div class="table-scroll"><table id="table-cer"></table></div>
+    <div class="chart-section">
+      <h3>Performance vs. Model Size</h3>
+      <div class="chart-with-panel">
+        <div id="size-chart-wrap-cer" class="chart-plot-wrap">
+          <svg id="size-chart-cer" style="width:100%;display:block;overflow:visible"></svg>
+        </div>
+        <div id="pareto-panel-cer" class="pareto-panel"></div>
+      </div>
+    </div>
   </div>
 
   <!-- About tab -->
@@ -589,6 +647,15 @@
 
 <script>
 const MEDALS = ['🥇','🥈','🥉'];
+let showCI = false;
+
+function appendCI(td, ci, fmt) {
+  if (!showCI || !ci || ci.lo == null) return;
+  const sm = document.createElement('small');
+  sm.className = 'ci-val';
+  sm.textContent = `[${fmt(ci.lo)}–${fmt(ci.hi)}]`;
+  td.appendChild(sm);
+}
 
 const WER_COLS = [
   { key:'#',                      label:'#',             cls:'c-rank',
@@ -707,12 +774,18 @@ function buildRow(row, cols, maxVals) {
       else             { td.innerHTML = `<span class="delta-eq">=</span>`; }
 
     } else if (c.key === 'borda_score') {
-      td.textContent = v != null && isFinite(v) ? v.toFixed(1) : '—';
       td.style.fontWeight = '700';
+      if (v != null && isFinite(v)) {
+        td.textContent = v.toFixed(1);
+        appendCI(td, row.borda_score_ci, x => x.toFixed(1));
+      } else { td.textContent = '—'; }
 
     } else if (c.key === 'bt_score') {
-      td.textContent = v != null ? v.toFixed(1) + '%' : '—';
       td.style.fontWeight = '700';
+      if (v != null) {
+        td.textContent = v.toFixed(1) + '%';
+        appendCI(td, row.bt_score_ci, x => x.toFixed(1) + '%');
+      } else { td.textContent = '—'; }
 
     } else if (c.key === 'model') {
       const a = document.createElement('a');
@@ -740,8 +813,11 @@ function buildRow(row, cols, maxVals) {
       td.appendChild(b);
 
     } else if (c.key === 'mean_wer' || c.key === 'mean_cer') {
-      td.textContent = v != null ? v.toFixed(2) : '—';
       td.style.fontWeight = '700';
+      if (v != null) {
+        td.textContent = v.toFixed(2);
+        appendCI(td, row[c.key + '_ci'], x => x.toFixed(2));
+      } else { td.textContent = '—'; }
 
     } else if (c.key === 'speed_x') {
       td.textContent = v != null ? v.toFixed(1) + 'x' : '—';
@@ -891,6 +967,94 @@ function addBradleyTerry(rows, datasetCols, iterations=200) {
   rows.forEach(r => { r.bt_delta = r.mean_rank - r.bt_rank; });
 }
 
+/* ── Bootstrap CI (resample 5 datasets with replacement) ────────── */
+function _meanFn(rows, cols) {
+  return rows.map(r => {
+    const vs = cols.map(c => r[c]).filter(v => v != null);
+    return vs.length ? vs.reduce((s, v) => s + v, 0) / vs.length : null;
+  });
+}
+
+function _bordaFn(rows, cols) {
+  const n = rows.length;
+  const sums = new Array(n).fill(0), counts = new Array(n).fill(0);
+  for (const col of cols) {
+    const vals = rows.map((r, i) => ({i, v: r[col]}))
+                     .filter(x => x.v != null).sort((a, b) => a.v - b.v);
+    vals.forEach((x, j) => { sums[x.i] += j + 1; counts[x.i]++; });
+  }
+  return rows.map((_, i) => counts[i] > 0 ? sums[i] / counts[i] : null);
+}
+
+function _btFn(rows, cols) {
+  const n = rows.length;
+  const wins = Array.from({length: n}, () => new Float64Array(n));
+  for (const col of cols) {
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const vi = rows[i][col], vj = rows[j][col];
+        if (vi == null || vj == null) continue;
+        if (vi < vj) wins[i][j]++; else if (vj < vi) wins[j][i]++;
+        else { wins[i][j] += 0.5; wins[j][i] += 0.5; }
+      }
+    }
+  }
+  const W = rows.map((_, i) => wins[i].reduce((s, v) => s + v, 0));
+  let w = new Float64Array(n).fill(1);
+  for (let it = 0; it < 50; it++) {
+    const w2 = new Float64Array(n);
+    for (let i = 0; i < n; i++) {
+      let d = 0;
+      for (let j = 0; j < n; j++) {
+        if (i === j) continue;
+        const nij = wins[i][j] + wins[j][i];
+        if (nij > 0) d += nij / (w[i] + w[j]);
+      }
+      w2[i] = d > 0 ? W[i] / d : 0;
+    }
+    const tot = w2.reduce((s, v) => s + v, 0);
+    for (let i = 0; i < n; i++) w[i] = tot > 0 ? w2[i] / tot * n : 1;
+  }
+  return rows.map((_, i) => {
+    let ws = 0;
+    for (let j = 0; j < n; j++) if (i !== j) ws += w[i] / (w[i] + w[j]);
+    return ws / (n - 1) * 100;
+  });
+}
+
+function addBootstrapCI(rows, datasetCols, meanKey, B=1000) {
+  const K = datasetCols.length;
+  const nM = rows.length;
+  const meanS = Array.from({length: nM}, () => []);
+  const bordaS = Array.from({length: nM}, () => []);
+  const btS = Array.from({length: nM}, () => []);
+
+  for (let b = 0; b < B; b++) {
+    const bootCols = Array.from({length: K}, () => datasetCols[Math.floor(Math.random() * K)]);
+    const mv = _meanFn(rows, bootCols);
+    const bv = _bordaFn(rows, bootCols);
+    const tv = _btFn(rows, bootCols);
+    for (let i = 0; i < nM; i++) {
+      if (mv[i] != null) meanS[i].push(mv[i]);
+      if (bv[i] != null) bordaS[i].push(bv[i]);
+      if (tv[i] != null && isFinite(tv[i])) btS[i].push(tv[i]);
+    }
+  }
+
+  const pct = (arr) => {
+    arr.sort((a, b) => a - b);
+    const n = arr.length;
+    if (n < 20) return {lo: null, hi: null};
+    return { lo: arr[Math.floor(n * 0.025)], hi: arr[Math.floor(n * 0.975)] };
+  };
+
+  rows.forEach((r, i) => {
+    r[meanKey + '_ci']   = pct(meanS[i]);
+    r.borda_score_ci     = pct(bordaS[i]);
+    r.bt_score_ci        = pct(btS[i]);
+  });
+}
+
 /* ── Dynamic column sets per ranking method ─────────────────────── */
 const BORDA_EXTRA_WER = [
   { key:'borda_delta', label:'Δ', cls:'c-delta',
@@ -931,7 +1095,7 @@ function getCerCols(method) {
 }
 
 /* ── Size vs. Performance chart ────────────────────────────────── */
-let _chartRows = [], _chartMethod = 'mean';
+let _chartState = { wer: { rows: [], method: 'mean' }, cer: { rows: [], method: 'mean' } };
 
 function niceTicks(lo, hi, n) {
   const rough = (hi - lo) / n;
@@ -944,9 +1108,40 @@ function niceTicks(lo, hi, n) {
   return ticks;
 }
 
-function _drawChart(rows, method) {
-  const wrap  = document.getElementById('size-chart-wrap');
-  const svgEl = document.getElementById('size-chart');
+function computePareto(pts, yUp) {
+  const sorted = [...pts].sort((a, b) => a.sz - b.sz);
+  const front = [];
+  let best = yUp ? -Infinity : Infinity;
+  for (const p of sorted) {
+    if (yUp ? p.yv > best : p.yv < best) { front.push(p); best = p.yv; }
+  }
+  return front;
+}
+
+function updateParetoPanel(pareto, tab, yLbl, method) {
+  const panel = document.getElementById(`pareto-panel-${tab}`);
+  if (!panel) return;
+  const fmt = v => method === 'borda' ? v.toFixed(1) : method === 'bt' ? v.toFixed(1) + '%' : v.toFixed(2) + '%';
+  panel.innerHTML = `<div class="pareto-panel-title">Pareto Optimal</div>`;
+  if (!pareto.length) {
+    panel.innerHTML += `<p style="color:var(--muted);font-size:11px;margin-top:4px">No open models with size data.</p>`;
+    return;
+  }
+  for (const p of pareto) {
+    const item = document.createElement('div');
+    item.className = 'pareto-item';
+    const col = p.r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+    item.innerHTML =
+      `<span class="pareto-dot" style="background:${col}"></span>` +
+      `<span class="pareto-name" title="${p.r.name}">${p.r.name}</span>` +
+      `<span class="pareto-meta">${p.r.size}B<br>${fmt(p.yv)}</span>`;
+    panel.appendChild(item);
+  }
+}
+
+function _drawChart(rows, method, tab) {
+  const wrap  = document.getElementById(`size-chart-wrap-${tab}`);
+  const svgEl = document.getElementById(`size-chart-${tab}`);
   if (!wrap || !svgEl) return;
   const W = wrap.clientWidth;
   if (W < 20) return;
@@ -967,21 +1162,24 @@ function _drawChart(rows, method) {
   };
   const tx = (t, a, p) => { const el = mk('text', a, p); el.textContent = t; return el; };
 
-  const yKey = method === 'mean' ? 'mean_wer' : method === 'borda' ? 'borda_score' : 'bt_score';
-  const yLbl = method === 'mean' ? 'Mean WER (%)'  : method === 'borda' ? 'Avg. Rank' : 'Win Rate (%)';
-  const yUp  = method === 'bt'; // higher value = better = visually higher
+  const meanKey = tab === 'cer' ? 'mean_cer' : 'mean_wer';
+  const yKey   = method === 'mean' ? meanKey         : method === 'borda' ? 'borda_score'    : 'bt_score';
+  const yCIKey = method === 'mean' ? meanKey + '_ci' : method === 'borda' ? 'borda_score_ci' : 'bt_score_ci';
+  const yLbl   = method === 'mean' ? (tab === 'cer' ? 'Mean CER (%)' : 'Mean WER (%)') : method === 'borda' ? 'Avg. Rank' : 'Win Rate (%)';
+  const yUp    = method === 'bt';
+  const fmt    = v => method === 'borda' ? v.toFixed(1) : method === 'bt' ? v.toFixed(1) + '%' : v.toFixed(2) + '%';
 
-  /* ── data points ── */
   const pts = rows
     .map(r => ({ r, sz: parseFloat(r.size), yv: r[yKey] }))
     .filter(({ sz, yv }) => !isNaN(sz) && sz > 0 && yv != null);
 
   if (pts.length < 2) {
     tx('Not enough size data to plot.', { x: W / 2, y: H / 2, 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '13' }, svgEl);
+    updateParetoPanel([], tab, yLbl, method);
     return;
   }
 
-  /* ── X scale: log ── */
+  /* ── scales ── */
   const xMin = Math.min(...pts.map(d => d.sz));
   const xMax = Math.max(...pts.map(d => d.sz));
   const xSpan = Math.log10(xMax) - Math.log10(xMin) || 1;
@@ -989,14 +1187,11 @@ function _drawChart(rows, method) {
   const xR = Math.log10(xMax) + xSpan * 0.12;
   const sx = sz => ML + (Math.log10(sz) - xL) / (xR - xL) * cW;
 
-  /* ── Y scale: linear, better always visually up ── */
   const yVals = pts.map(d => d.yv);
   const yDMin = Math.min(...yVals), yDMax = Math.max(...yVals);
   const ySpan = yDMax - yDMin || 1;
   const yLo   = yDMin - ySpan * 0.18;
   const yHi   = yDMax + ySpan * 0.18;
-  /* for lower-is-better: low value → mapY near 0 → screen top (MT) = good visual pos
-     for higher-is-better: high value → mapY near 0 → screen top                        */
   const sy = v => MT + (yUp
     ? (1 - (v - yLo) / (yHi - yLo)) * cH
     :      (v - yLo) / (yHi - yLo)  * cH);
@@ -1004,31 +1199,31 @@ function _drawChart(rows, method) {
   /* ── background ── */
   mk('rect', { x: ML, y: MT, width: cW, height: cH, fill: 'var(--surf2)', rx: 3 }, svgEl);
 
-  /* ── Y grid + tick labels ── */
+  /* ── Y grid + labels ── */
   for (const v of niceTicks(yLo, yHi, 5)) {
     const yc = sy(v);
     if (yc < MT - 1 || yc > MT + cH + 1) continue;
     mk('line', { x1: ML, y1: yc, x2: ML + cW, y2: yc, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
-    const lbl = method === 'borda' ? v.toFixed(1) : Math.round(v) + '%';
-    tx(lbl, { x: ML - 6, y: yc + 4, 'text-anchor': 'end', fill: 'var(--muted)', 'font-size': '11' }, svgEl);
+    tx(method === 'borda' ? v.toFixed(1) : Math.round(v) + '%',
+      { x: ML - 6, y: yc + 4, 'text-anchor': 'end', fill: 'var(--muted)', 'font-size': '11' }, svgEl);
   }
 
-  /* ── X grid + tick labels (log) ── */
+  /* ── X grid + labels (log) ── */
   for (const v of [0.03,0.05,0.1,0.15,0.2,0.3,0.5,0.7,1,1.5,2,3,5,7,10,15,20,30]) {
     const lv = Math.log10(v);
     if (lv < xL || lv > xR) continue;
     const xc = sx(v);
     mk('line', { x1: xc, y1: MT, x2: xc, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
     mk('line', { x1: xc, y1: MT + cH, x2: xc, y2: MT + cH + 4, stroke: 'var(--muted)', 'stroke-width': '1' }, svgEl);
-    const lbl = v < 1 ? v.toString() : String(v);
-    tx(lbl, { x: xc, y: MT + cH + 16, 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '11' }, svgEl);
+    tx(v < 1 ? v.toString() : String(v),
+      { x: xc, y: MT + cH + 16, 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '11' }, svgEl);
   }
 
   /* ── axis borders ── */
   mk('line', { x1: ML, y1: MT, x2: ML, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
   mk('line', { x1: ML, y1: MT + cH, x2: ML + cW, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
 
-  /* ── best proprietary reference line (horizontal) ── */
+  /* ── best proprietary reference line ── */
   const propRows = rows.filter(r => r.access === 'proprietary' && r[yKey] != null);
   if (propRows.length) {
     const best = propRows.reduce((b, r) => yUp ? (r[yKey] > b[yKey] ? r : b) : (r[yKey] < b[yKey] ? r : b));
@@ -1036,31 +1231,61 @@ function _drawChart(rows, method) {
     if (yp >= MT && yp <= MT + cH) {
       mk('line', { x1: ML, y1: yp, x2: ML + cW, y2: yp,
         stroke: '#f97316', 'stroke-width': '1.5', 'stroke-dasharray': '5 3' }, svgEl);
-      const val = method === 'borda' ? best[yKey].toFixed(1)
-                : method === 'bt'   ? best[yKey].toFixed(1) + '%'
-                :                     best[yKey].toFixed(2) + '%';
       const ly = yp > MT + 18 ? yp - 5 : yp + 14;
-      tx(`Best proprietary: ${best.name} (${val})`,
+      tx(`Best proprietary: ${best.name} (${fmt(best[yKey])})`,
         { x: ML + 6, y: ly, fill: '#f97316', 'font-size': '11', 'font-weight': '600' }, svgEl);
     }
   }
+
+  /* ── Pareto frontier (open models only) ── */
+  const openPts = pts.filter(p => p.r.access === 'open');
+  const pareto  = computePareto(openPts, yUp);
+  if (pareto.length >= 2) {
+    let d = `M ${ML} ${sy(pareto[0].yv).toFixed(1)} H ${sx(pareto[0].sz).toFixed(1)}`;
+    for (let i = 1; i < pareto.length; i++)
+      d += ` V ${sy(pareto[i].yv).toFixed(1)} H ${sx(pareto[i].sz).toFixed(1)}`;
+    d += ` H ${ML + cW}`;
+    mk('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': '1.5', 'stroke-dasharray': '5 3', opacity: '0.5' }, svgEl);
+  }
+  updateParetoPanel(pareto, tab, yLbl, method);
 
   /* ── data points ── */
   const CTIP = document.getElementById('chart-tip');
   for (const { r, sz, yv } of pts) {
     const xc = sx(sz), yc = sy(yv);
     if (xc < ML - 8 || xc > ML + cW + 8 || yc < MT - 8 || yc > MT + cH + 8) continue;
+
+    /* error bars — clamped to plot area */
+    if (showCI) {
+      const ci = r[yCIKey];
+      if (ci && ci.lo != null) {
+        const rawYt = Math.min(sy(ci.lo), sy(ci.hi));
+        const rawYb = Math.max(sy(ci.lo), sy(ci.hi));
+        const yt = Math.max(MT, rawYt);
+        const yb = Math.min(MT + cH, rawYb);
+        if (yb > yt) {
+          const ecol = r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+          mk('line', { x1: xc, y1: yt, x2: xc, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
+          if (rawYt >= MT)    mk('line', { x1: xc-4, y1: yt, x2: xc+4, y2: yt, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
+          if (rawYb <= MT+cH) mk('line', { x1: xc-4, y1: yb, x2: xc+4, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
+        }
+      }
+    }
+
     const circ = mk('circle', {
       cx: xc, cy: yc, r: '6',
       fill: r.access === 'open' ? 'var(--accent)' : '#94a3b8',
       stroke: 'var(--bg)', 'stroke-width': '1.5',
       style: 'cursor:pointer',
     }, svgEl);
-    const valStr = method === 'borda' ? yv.toFixed(1)
-                 : method === 'bt'   ? yv.toFixed(1) + '%'
-                 :                     yv.toFixed(2) + '%';
-    const tipText = `${r.name}  ·  ${r.size}B  ·  ${yLbl}: ${valStr}`;
-    circ.addEventListener('mouseenter', () => { CTIP.textContent = tipText; CTIP.classList.add('show'); });
+
+    let tipHTML = `<strong>${r.name}</strong>  ·  ${r.size}B  ·  ${yLbl}: <strong>${fmt(yv)}</strong>`;
+    if (showCI) {
+      const ci = r[yCIKey];
+      if (ci && ci.lo != null)
+        tipHTML += `<br><span style="color:var(--muted);font-size:11px">95% CI: [${fmt(ci.lo)}–${fmt(ci.hi)}]</span>`;
+    }
+    circ.addEventListener('mouseenter', () => { CTIP.innerHTML = tipHTML; CTIP.classList.add('show'); });
     circ.addEventListener('mousemove', e => {
       const tw = CTIP.offsetWidth, th = CTIP.offsetHeight;
       let cx = e.clientX + 14, cy = e.clientY + 14;
@@ -1080,15 +1305,18 @@ function _drawChart(rows, method) {
     fill: 'var(--muted)', 'font-size': '10' }, svgEl);
 }
 
-function renderSizeChart(rows, method) {
-  _chartRows = rows; _chartMethod = method;
-  requestAnimationFrame(() => _drawChart(rows, method));
+function renderSizeChart(rows, method, tab = 'wer') {
+  _chartState[tab] = { rows, method };
+  requestAnimationFrame(() => _drawChart(rows, method, tab));
 }
 
 let _chartResizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(_chartResizeTimer);
-  _chartResizeTimer = setTimeout(() => _drawChart(_chartRows, _chartMethod), 150);
+  _chartResizeTimer = setTimeout(() => {
+    _drawChart(_chartState.wer.rows, _chartState.wer.method, 'wer');
+    _drawChart(_chartState.cer.rows, _chartState.cer.method, 'cer');
+  }, 150);
 });
 
 async function init() {
@@ -1099,6 +1327,11 @@ async function init() {
     addBordaRanks(data.cer, CER_DS_COLS);
     addBradleyTerry(data.wer, WER_DS_COLS);
     addBradleyTerry(data.cer, CER_DS_COLS);
+    addBootstrapCI(data.wer, WER_DS_COLS, 'mean_wer');
+    addBootstrapCI(data.cer, CER_DS_COLS, 'mean_cer');
+    /* CER rows have per-dataset CER cols; copy their CI to WER rows by name */
+    const cerCIMap = new Map(data.cer.map(r => [r.name, r.mean_cer_ci]));
+    data.wer.forEach(r => { r.mean_cer_ci = cerCIMap.get(r.name) ?? null; });
 
     const maxVals = {
       wer: Math.max(...data.wer.map(r => r.mean_wer || 0)),
@@ -1108,23 +1341,28 @@ async function init() {
     const werEl = document.getElementById('table-wer');
     const cerEl = document.getElementById('table-cer');
 
+    let werMethod = 'mean', cerMethod = 'mean';
+
     function applyWer(method) {
+      werMethod = method;
       const sorted = method === 'borda' ? [...data.wer].sort((a, b) => a.borda_score - b.borda_score)
                    : method === 'bt'    ? [...data.wer].sort((a, b) => b.bt_score - a.bt_score)
                    :                     [...data.wer].sort((a, b) => (a.mean_wer ?? Infinity) - (b.mean_wer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
       renderTable(werEl, sorted, getWerCols(method), maxVals);
       wireSearch('search-wer', 'count-wer', 'table-wer');
-      renderSizeChart(sorted, method);
+      renderSizeChart(sorted, method, 'wer');
     }
 
     function applyCer(method) {
+      cerMethod = method;
       const sorted = method === 'borda' ? [...data.cer].sort((a, b) => a.borda_score - b.borda_score)
                    : method === 'bt'    ? [...data.cer].sort((a, b) => b.bt_score - a.bt_score)
                    :                     [...data.cer].sort((a, b) => (a.mean_cer ?? Infinity) - (b.mean_cer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
       renderTable(cerEl, sorted, getCerCols(method), maxVals);
       wireSearch('search-cer', 'count-cer', 'table-cer');
+      renderSizeChart(sorted, method, 'cer');
     }
 
     applyWer('mean');
@@ -1145,6 +1383,17 @@ async function init() {
         applyCer(method);
       });
     });
+
+    /* CI toggle */
+    function toggleCI() {
+      showCI = !showCI;
+      document.getElementById('tog-ci-wer').classList.toggle('active', showCI);
+      document.getElementById('tog-ci-cer').classList.toggle('active', showCI);
+      applyWer(werMethod);
+      applyCer(cerMethod);
+    }
+    document.getElementById('tog-ci-wer').addEventListener('click', toggleCI);
+    document.getElementById('tog-ci-cer').addEventListener('click', toggleCI);
 
     /* Last updated */
     if (data.updated) {
