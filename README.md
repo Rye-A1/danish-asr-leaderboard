@@ -204,7 +204,6 @@ danish_asr_leaderboard/
     base.py         # Backend ABC + LoadOptions + registry
     api/            # hosted-API backends
 run_eval.py         # thin CLI entry point
-requirements/       # base.txt + one file per backend
 scripts/            # push_results.py, update_space.py
 space/              # Static HTML leaderboard (deployed to the HF Space)
 results/            # generated result JSONs (git-ignored)
@@ -215,8 +214,8 @@ results/            # generated result JSONs (git-ignored)
 Create `danish_asr_leaderboard/backends/<name>_backend.py`, subclass `Backend`,
 implement `transcribe_one` (and optionally `transcribe_batch`), and decorate the
 loader with `@register("<name>")`. Import it from `backends/__init__.py` so it
-registers on package import, add a `requirements/<name>.txt`, and it becomes a
-valid `--backend` choice automatically.
+registers on package import, add a `<name>` extra to `pyproject.toml`
+`[project.optional-dependencies]`, and it becomes a valid `--backend` choice automatically.
 
 ## Contributing
 
