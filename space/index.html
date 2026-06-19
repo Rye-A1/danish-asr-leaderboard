@@ -308,6 +308,67 @@
     .about table { white-space: normal; }
     .about thead th { cursor: default; text-transform: none; letter-spacing: 0; font-size: 13px; }
     .about tbody td { color: var(--muted); }
+
+    /* ── Ranking toggle ─────────────────────────────────────────────── */
+    .tog-wrap {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px;
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .tog-label { color: var(--muted); font-size: 12px; padding: 0 6px 0 4px; }
+    .tog-btn {
+      padding: 5px 13px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background .12s, color .12s;
+    }
+    .tog-btn.active { background: var(--surf2); color: var(--text); }
+    .tog-btn:hover:not(.active) { color: var(--text); }
+
+    /* ── Rank delta cell ────────────────────────────────────────────── */
+    .delta-up { color: #4ade80; font-weight: 700; }
+    .delta-dn { color: #f87171; font-weight: 700; }
+    .delta-eq { color: var(--muted); }
+    .c-delta   { width: 56px; text-align: center; }
+
+    /* ── Size chart ─────────────────────────────────────────────── */
+    .chart-section { margin-top: 28px; }
+    .chart-section h3 {
+      font-size: 14px; font-weight: 600; color: var(--text);
+      margin-bottom: 10px;
+    }
+    #size-chart-wrap {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 6px 6px 4px;
+    }
+    #chart-tip {
+      position: fixed;
+      background: var(--surf2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 6px 10px;
+      border-radius: 8px;
+      max-width: 360px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.12s;
+    }
+    #chart-tip.show { opacity: 1; }
   </style>
 </head>
 <body>
@@ -338,9 +399,21 @@
     <div class="toolbar">
       <input type="search" id="search-wer" class="search" placeholder="Filter models…">
       <span id="count-wer" class="count"></span>
+      <div class="tog-wrap">
+        <span class="tog-label">Rank by</span>
+        <button class="tog-btn active" id="tog-wer-mean">Mean</button>
+        <button class="tog-btn" id="tog-wer-borda">Avg. Rank</button>
+        <button class="tog-btn" id="tog-wer-bt">Win Rate</button>
+      </div>
       <span id="updated-ts" class="count" style="margin-left:auto"></span>
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
+    <div class="chart-section">
+      <h3>Performance vs. Model Size</h3>
+      <div id="size-chart-wrap">
+        <svg id="size-chart" style="width:100%;display:block;overflow:visible"></svg>
+      </div>
+    </div>
   </div>
 
   <!-- CER tab -->
@@ -348,6 +421,12 @@
     <div class="toolbar">
       <input type="search" id="search-cer" class="search" placeholder="Filter models…">
       <span id="count-cer" class="count"></span>
+      <div class="tog-wrap">
+        <span class="tog-label">Rank by</span>
+        <button class="tog-btn active" id="tog-cer-mean">Mean</button>
+        <button class="tog-btn" id="tog-cer-borda">Avg. Rank</button>
+        <button class="tog-btn" id="tog-cer-bt">Win Rate</button>
+      </div>
     </div>
     <div class="table-scroll"><table id="table-cer"></table></div>
   </div>
@@ -503,13 +582,14 @@
 </div><!-- /app -->
 
 <div id="col-tip"></div>
+<div id="chart-tip"></div>
 
 <script>
 const MEDALS = ['🥇','🥈','🥉'];
 
 const WER_COLS = [
   { key:'#',                      label:'#',             cls:'c-rank',
-    tip:'Rank by Mean WER. Lower is better.' },
+    tip:'Rank by the selected method (Mean WER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',         cls:'c-model',
     tip:'Click to open the model on Hugging Face (opens in new tab).' },
   { key:'size',                    label:'Size (B)',
@@ -540,7 +620,7 @@ const WER_COLS = [
 
 const CER_COLS = [
   { key:'#',                      label:'#',              cls:'c-rank',
-    tip:'Rank by Mean CER. Lower is better.' },
+    tip:'Rank by the selected method (Mean CER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',          cls:'c-model',
     tip:'Click to open the model on Hugging Face (opens in new tab).' },
   { key:'size',                    label:'Size (B)',
@@ -615,6 +695,21 @@ function buildRow(row, cols, maxVals) {
 
     if (c.key === '#') {
       td.textContent = row.rank <= 3 ? MEDALS[row.rank - 1] : String(row.rank);
+
+    } else if (c.key === 'borda_delta' || c.key === 'bt_delta') {
+      const d = row[c.key];
+      if (d == null) { td.textContent = '—'; }
+      else if (d > 0) { td.innerHTML = `<span class="delta-up">↑${d}</span>`; }
+      else if (d < 0) { td.innerHTML = `<span class="delta-dn">↓${Math.abs(d)}</span>`; }
+      else             { td.innerHTML = `<span class="delta-eq">=</span>`; }
+
+    } else if (c.key === 'borda_score') {
+      td.textContent = v != null && isFinite(v) ? v.toFixed(1) : '—';
+      td.style.fontWeight = '700';
+
+    } else if (c.key === 'bt_score') {
+      td.textContent = v != null ? v.toFixed(1) + '%' : '—';
+      td.style.fontWeight = '700';
 
     } else if (c.key === 'model') {
       const a = document.createElement('a');
@@ -715,23 +810,338 @@ function wireSearch(searchId, countId, tableId) {
       ? total + ' models'
       : vis + ' / ' + total + ' models';
   };
-  inp.addEventListener('input', refresh);
+  if (!inp.dataset.searchWired) {
+    inp.addEventListener('input', refresh);
+    inp.dataset.searchWired = '1';
+  }
   refresh();
+  return refresh;
 }
+
+/* ── Ranking computations ───────────────────────────────────────── */
+const WER_DS_COLS = ['coral_conversation_wer','coral_read_aloud_wer','ftspeech_wer','cv17_da_wer','fleurs_da_wer'];
+const CER_DS_COLS = ['coral_conversation_cer','coral_read_aloud_cer','ftspeech_cer','cv17_da_cer','fleurs_da_cer'];
+
+function addBordaRanks(rows, datasetCols) {
+  const n = rows.length;
+  const rankSums   = new Array(n).fill(0);
+  const rankCounts = new Array(n).fill(0);
+  for (const col of datasetCols) {
+    const vals = rows.map((r, i) => ({i, v: r[col]}))
+                     .filter(x => x.v != null)
+                     .sort((a, b) => a.v - b.v);
+    vals.forEach((x, j) => { rankSums[x.i] += j + 1; rankCounts[x.i]++; });
+  }
+  rows.forEach((r, i) => {
+    r.borda_score = rankCounts[i] > 0 ? rankSums[i] / rankCounts[i] : Infinity;
+    r.mean_rank   = r.rank;
+  });
+  [...rows].sort((a, b) => a.borda_score - b.borda_score)
+           .forEach((r, i) => { r.borda_rank = i + 1; });
+  rows.forEach(r => { r.borda_delta = r.mean_rank - r.borda_rank; });
+}
+
+function addBradleyTerry(rows, datasetCols, iterations=200) {
+  const n = rows.length;
+  /* wins[i][j] = number of datasets where model i beats model j (lower score = win) */
+  const wins = Array.from({length:n}, () => new Float64Array(n));
+  for (const col of datasetCols) {
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        const vi = rows[i][col], vj = rows[j][col];
+        if (vi == null || vj == null) continue;
+        if      (vi < vj) { wins[i][j]++; }
+        else if (vj < vi) { wins[j][i]++; }
+        else              { wins[i][j] += 0.5; wins[j][i] += 0.5; }
+      }
+    }
+  }
+  const W = rows.map((_, i) => wins[i].reduce((s, v) => s + v, 0));
+
+  /* MM (Minorization-Maximization) iterations */
+  let w = new Float64Array(n).fill(1.0);
+  for (let iter = 0; iter < iterations; iter++) {
+    const w2 = new Float64Array(n);
+    for (let i = 0; i < n; i++) {
+      let denom = 0;
+      for (let j = 0; j < n; j++) {
+        if (i === j) continue;
+        const n_ij = wins[i][j] + wins[j][i];
+        if (n_ij > 0) denom += n_ij / (w[i] + w[j]);
+      }
+      w2[i] = denom > 0 ? W[i] / denom : 0;
+    }
+    const total = w2.reduce((s, v) => s + v, 0);
+    for (let i = 0; i < n; i++) w[i] = total > 0 ? w2[i] / total * n : 1;
+  }
+
+  /* Win rate %: expected fraction of head-to-head matchups won */
+  rows.forEach((r, i) => {
+    let winSum = 0;
+    for (let j = 0; j < n; j++) {
+      if (i !== j) winSum += w[i] / (w[i] + w[j]);
+    }
+    r.bt_score = winSum / (n - 1) * 100;
+  });
+  [...rows].sort((a, b) => b.bt_score - a.bt_score)
+           .forEach((r, i) => { r.bt_rank = i + 1; });
+  rows.forEach(r => { r.bt_delta = r.mean_rank - r.bt_rank; });
+}
+
+/* ── Dynamic column sets per ranking method ─────────────────────── */
+const BORDA_EXTRA_WER = [
+  { key:'borda_delta', label:'Δ', cls:'c-delta',
+    tip:'Spots gained (↑) or lost (↓) vs Mean WER rank. Green = ranks higher under Avg. Rank.' },
+  { key:'borda_score', label:'Avg. Rank ↓',
+    tip:'Average rank across the 5 datasets (lower = better). Equivalent to Borda count — a score of 1.0 means ranked first on every dataset.' },
+];
+const BT_EXTRA_WER = [
+  { key:'bt_delta',  label:'Δ', cls:'c-delta',
+    tip:'Spots gained (↑) or lost (↓) vs Mean WER rank. Green = ranks higher under Win Rate.' },
+  { key:'bt_score',  label:'Win Rate ↑',
+    tip:'Estimated probability (%) of beating a randomly chosen model on a randomly chosen dataset. Derived from the Bradley-Terry pairwise model (MM algorithm). Higher is better.' },
+];
+const BORDA_EXTRA_CER = [
+  { key:'borda_delta', label:'Δ', cls:'c-delta',
+    tip:'Spots gained (↑) or lost (↓) vs Mean CER rank. Green = ranks higher under Avg. Rank.' },
+  { key:'borda_score', label:'Avg. Rank ↓',
+    tip:'Average rank across the 5 datasets (lower = better). Equivalent to Borda count.' },
+];
+const BT_EXTRA_CER = [
+  { key:'bt_delta',  label:'Δ', cls:'c-delta',
+    tip:'Spots gained (↑) or lost (↓) vs Mean CER rank. Green = ranks higher under Win Rate.' },
+  { key:'bt_score',  label:'Win Rate ↑',
+    tip:'Estimated probability (%) of beating a randomly chosen model on a randomly chosen dataset. Derived from the Bradley-Terry pairwise model (MM algorithm). Higher is better.' },
+];
+
+function getWerCols(method) {
+  const [head, ...rest] = WER_COLS;
+  if (method === 'borda') return [head, ...BORDA_EXTRA_WER, ...rest];
+  if (method === 'bt')    return [head, ...BT_EXTRA_WER,    ...rest];
+  return WER_COLS;
+}
+function getCerCols(method) {
+  const [head, ...rest] = CER_COLS;
+  if (method === 'borda') return [head, ...BORDA_EXTRA_CER, ...rest];
+  if (method === 'bt')    return [head, ...BT_EXTRA_CER,    ...rest];
+  return CER_COLS;
+}
+
+/* ── Size vs. Performance chart ────────────────────────────────── */
+let _chartRows = [], _chartMethod = 'mean';
+
+function niceTicks(lo, hi, n) {
+  const rough = (hi - lo) / n;
+  const mag   = Math.pow(10, Math.floor(Math.log10(rough || 1)));
+  const step  = [1, 2, 2.5, 5, 10].map(s => s * mag).find(s => (hi - lo) / s <= n + 1) ?? mag;
+  const start = Math.ceil((lo - 1e-9) / step) * step;
+  const ticks = [];
+  for (let v = start; v <= hi + step * 0.01; v = Math.round((v + step) * 1e9) / 1e9)
+    ticks.push(v);
+  return ticks;
+}
+
+function _drawChart(rows, method) {
+  const wrap  = document.getElementById('size-chart-wrap');
+  const svgEl = document.getElementById('size-chart');
+  if (!wrap || !svgEl) return;
+  const W = wrap.clientWidth;
+  if (W < 20) return;
+  const H = 300;
+  svgEl.setAttribute('width',  W);
+  svgEl.setAttribute('height', H);
+  svgEl.innerHTML = '';
+
+  const ML = 58, MR = 28, MT = 22, MB = 50;
+  const cW = W - ML - MR, cH = H - MT - MB;
+
+  const ns = 'http://www.w3.org/2000/svg';
+  const mk = (tag, a, p) => {
+    const el = document.createElementNS(ns, tag);
+    for (const [k, v] of Object.entries(a || {})) el.setAttribute(k, v);
+    if (p) p.appendChild(el);
+    return el;
+  };
+  const tx = (t, a, p) => { const el = mk('text', a, p); el.textContent = t; return el; };
+
+  const yKey = method === 'mean' ? 'mean_wer' : method === 'borda' ? 'borda_score' : 'bt_score';
+  const yLbl = method === 'mean' ? 'Mean WER (%)'  : method === 'borda' ? 'Avg. Rank' : 'Win Rate (%)';
+  const yUp  = method === 'bt'; // higher value = better = visually higher
+
+  /* ── data points ── */
+  const pts = rows
+    .map(r => ({ r, sz: parseFloat(r.size), yv: r[yKey] }))
+    .filter(({ sz, yv }) => !isNaN(sz) && sz > 0 && yv != null);
+
+  if (pts.length < 2) {
+    tx('Not enough size data to plot.', { x: W / 2, y: H / 2, 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '13' }, svgEl);
+    return;
+  }
+
+  /* ── X scale: log ── */
+  const xMin = Math.min(...pts.map(d => d.sz));
+  const xMax = Math.max(...pts.map(d => d.sz));
+  const xSpan = Math.log10(xMax) - Math.log10(xMin) || 1;
+  const xL = Math.log10(xMin) - xSpan * 0.12;
+  const xR = Math.log10(xMax) + xSpan * 0.12;
+  const sx = sz => ML + (Math.log10(sz) - xL) / (xR - xL) * cW;
+
+  /* ── Y scale: linear, better always visually up ── */
+  const yVals = pts.map(d => d.yv);
+  const yDMin = Math.min(...yVals), yDMax = Math.max(...yVals);
+  const ySpan = yDMax - yDMin || 1;
+  const yLo   = yDMin - ySpan * 0.18;
+  const yHi   = yDMax + ySpan * 0.18;
+  /* for lower-is-better: low value → mapY near 0 → screen top (MT) = good visual pos
+     for higher-is-better: high value → mapY near 0 → screen top                        */
+  const sy = v => MT + (yUp
+    ? (1 - (v - yLo) / (yHi - yLo)) * cH
+    :      (v - yLo) / (yHi - yLo)  * cH);
+
+  /* ── background ── */
+  mk('rect', { x: ML, y: MT, width: cW, height: cH, fill: 'var(--surf2)', rx: 3 }, svgEl);
+
+  /* ── Y grid + tick labels ── */
+  for (const v of niceTicks(yLo, yHi, 5)) {
+    const yc = sy(v);
+    if (yc < MT - 1 || yc > MT + cH + 1) continue;
+    mk('line', { x1: ML, y1: yc, x2: ML + cW, y2: yc, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
+    const lbl = method === 'borda' ? v.toFixed(1) : Math.round(v) + '%';
+    tx(lbl, { x: ML - 6, y: yc + 4, 'text-anchor': 'end', fill: 'var(--muted)', 'font-size': '11' }, svgEl);
+  }
+
+  /* ── X grid + tick labels (log) ── */
+  for (const v of [0.03,0.05,0.1,0.15,0.2,0.3,0.5,0.7,1,1.5,2,3,5,7,10,15,20,30]) {
+    const lv = Math.log10(v);
+    if (lv < xL || lv > xR) continue;
+    const xc = sx(v);
+    mk('line', { x1: xc, y1: MT, x2: xc, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
+    mk('line', { x1: xc, y1: MT + cH, x2: xc, y2: MT + cH + 4, stroke: 'var(--muted)', 'stroke-width': '1' }, svgEl);
+    const lbl = v < 1 ? v.toString() : String(v);
+    tx(lbl, { x: xc, y: MT + cH + 16, 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '11' }, svgEl);
+  }
+
+  /* ── axis borders ── */
+  mk('line', { x1: ML, y1: MT, x2: ML, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
+  mk('line', { x1: ML, y1: MT + cH, x2: ML + cW, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
+
+  /* ── best proprietary reference line (horizontal) ── */
+  const propRows = rows.filter(r => r.access === 'proprietary' && r[yKey] != null);
+  if (propRows.length) {
+    const best = propRows.reduce((b, r) => yUp ? (r[yKey] > b[yKey] ? r : b) : (r[yKey] < b[yKey] ? r : b));
+    const yp = sy(best[yKey]);
+    if (yp >= MT && yp <= MT + cH) {
+      mk('line', { x1: ML, y1: yp, x2: ML + cW, y2: yp,
+        stroke: '#f97316', 'stroke-width': '1.5', 'stroke-dasharray': '5 3' }, svgEl);
+      const val = method === 'borda' ? best[yKey].toFixed(1)
+                : method === 'bt'   ? best[yKey].toFixed(1) + '%'
+                :                     best[yKey].toFixed(2) + '%';
+      const ly = yp > MT + 18 ? yp - 5 : yp + 14;
+      tx(`Best proprietary: ${best.name} (${val})`,
+        { x: ML + 6, y: ly, fill: '#f97316', 'font-size': '11', 'font-weight': '600' }, svgEl);
+    }
+  }
+
+  /* ── data points ── */
+  const CTIP = document.getElementById('chart-tip');
+  for (const { r, sz, yv } of pts) {
+    const xc = sx(sz), yc = sy(yv);
+    if (xc < ML - 8 || xc > ML + cW + 8 || yc < MT - 8 || yc > MT + cH + 8) continue;
+    const circ = mk('circle', {
+      cx: xc, cy: yc, r: '6',
+      fill: r.access === 'open' ? 'var(--accent)' : '#94a3b8',
+      stroke: 'var(--bg)', 'stroke-width': '1.5',
+      style: 'cursor:pointer',
+    }, svgEl);
+    const valStr = method === 'borda' ? yv.toFixed(1)
+                 : method === 'bt'   ? yv.toFixed(1) + '%'
+                 :                     yv.toFixed(2) + '%';
+    const tipText = `${r.name}  ·  ${r.size}B  ·  ${yLbl}: ${valStr}`;
+    circ.addEventListener('mouseenter', () => { CTIP.textContent = tipText; CTIP.classList.add('show'); });
+    circ.addEventListener('mousemove', e => {
+      const tw = CTIP.offsetWidth, th = CTIP.offsetHeight;
+      let cx = e.clientX + 14, cy = e.clientY + 14;
+      if (cx + tw > window.innerWidth  - 8) cx = e.clientX - tw - 14;
+      if (cy + th > window.innerHeight - 8) cy = e.clientY - th - 14;
+      CTIP.style.left = cx + 'px'; CTIP.style.top = cy + 'px';
+    });
+    circ.addEventListener('mouseleave', () => CTIP.classList.remove('show'));
+  }
+
+  /* ── axis labels ── */
+  tx(yLbl, { 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '12',
+    transform: `translate(${ML - 46} ${MT + cH / 2}) rotate(-90)` }, svgEl);
+  tx('Size (B params, log scale)', { x: ML + cW / 2, y: H - 8,
+    'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '12' }, svgEl);
+  tx('Better ↑', { x: ML - 6, y: MT - 6, 'text-anchor': 'end',
+    fill: 'var(--muted)', 'font-size': '10' }, svgEl);
+}
+
+function renderSizeChart(rows, method) {
+  _chartRows = rows; _chartMethod = method;
+  requestAnimationFrame(() => _drawChart(rows, method));
+}
+
+let _chartResizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(_chartResizeTimer);
+  _chartResizeTimer = setTimeout(() => _drawChart(_chartRows, _chartMethod), 150);
+});
 
 async function init() {
   try {
     const data = await fetch('leaderboard.json', {cache: 'reload'}).then(r => r.json());
+
+    addBordaRanks(data.wer, WER_DS_COLS);
+    addBordaRanks(data.cer, CER_DS_COLS);
+    addBradleyTerry(data.wer, WER_DS_COLS);
+    addBradleyTerry(data.cer, CER_DS_COLS);
 
     const maxVals = {
       wer: Math.max(...data.wer.map(r => r.mean_wer || 0)),
       cer: Math.max(...data.cer.map(r => r.mean_cer || 0)),
     };
 
-    renderTable(document.getElementById('table-wer'), data.wer, WER_COLS, maxVals);
-    renderTable(document.getElementById('table-cer'), data.cer, CER_COLS, maxVals);
-    wireSearch('search-wer', 'count-wer', 'table-wer');
-    wireSearch('search-cer', 'count-cer', 'table-cer');
+    const werEl = document.getElementById('table-wer');
+    const cerEl = document.getElementById('table-cer');
+
+    function applyWer(method) {
+      const sorted = method === 'borda' ? [...data.wer].sort((a, b) => a.borda_score - b.borda_score)
+                   : method === 'bt'    ? [...data.wer].sort((a, b) => b.bt_score - a.bt_score)
+                   :                     [...data.wer].sort((a, b) => (a.mean_wer ?? Infinity) - (b.mean_wer ?? Infinity));
+      sorted.forEach((r, i) => { r.rank = i + 1; });
+      renderTable(werEl, sorted, getWerCols(method), maxVals);
+      wireSearch('search-wer', 'count-wer', 'table-wer');
+      renderSizeChart(sorted, method);
+    }
+
+    function applyCer(method) {
+      const sorted = method === 'borda' ? [...data.cer].sort((a, b) => a.borda_score - b.borda_score)
+                   : method === 'bt'    ? [...data.cer].sort((a, b) => b.bt_score - a.bt_score)
+                   :                     [...data.cer].sort((a, b) => (a.mean_cer ?? Infinity) - (b.mean_cer ?? Infinity));
+      sorted.forEach((r, i) => { r.rank = i + 1; });
+      renderTable(cerEl, sorted, getCerCols(method), maxVals);
+      wireSearch('search-cer', 'count-cer', 'table-cer');
+    }
+
+    applyWer('mean');
+    applyCer('mean');
+
+    /* Ranking toggles */
+    const WER_TOGS = ['tog-wer-mean','tog-wer-borda','tog-wer-bt'];
+    const CER_TOGS = ['tog-cer-mean','tog-cer-borda','tog-cer-bt'];
+    [['tog-wer-mean','mean'],['tog-wer-borda','borda'],['tog-wer-bt','bt']].forEach(([id, method]) => {
+      document.getElementById(id).addEventListener('click', () => {
+        WER_TOGS.forEach(t => document.getElementById(t).classList.toggle('active', t === id));
+        applyWer(method);
+      });
+    });
+    [['tog-cer-mean','mean'],['tog-cer-borda','borda'],['tog-cer-bt','bt']].forEach(([id, method]) => {
+      document.getElementById(id).addEventListener('click', () => {
+        CER_TOGS.forEach(t => document.getElementById(t).classList.toggle('active', t === id));
+        applyCer(method);
+      });
+    });
 
     /* Last updated */
     if (data.updated) {
