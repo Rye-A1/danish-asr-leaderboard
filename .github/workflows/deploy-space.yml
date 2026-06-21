@@ -28,4 +28,4 @@ jobs:
         uses: astral-sh/setup-uv@v4
 
       - name: Deploy Space
-        run: uv run --with pandas --with pyarrow --with requests --with huggingface_hub python scripts/update_space.py
+        run: uv run --isolated --with pandas --with pyarrow --with requests --with huggingface_hub python scripts/update_space.py
