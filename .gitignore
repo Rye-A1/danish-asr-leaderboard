@@ -36,3 +36,6 @@ appmap.yml
 uv.lock
 tmp/
 **/tmp/
+
+# Env
+*.env
