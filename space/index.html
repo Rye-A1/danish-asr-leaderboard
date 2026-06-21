@@ -411,13 +411,20 @@
       font-size: 14px; font-weight: 600; color: var(--text);
       margin-bottom: 10px;
     }
-    .chart-with-panel { display: flex; gap: 12px; align-items: flex-start; }
+    .chart-with-panel {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      min-height: 430px;
+    }
     .chart-plot-wrap {
       flex: 1; min-width: 0;
       background: var(--surf);
       border: 1px solid var(--border);
       border-radius: var(--r);
       padding: 6px 6px 4px;
+      display: flex;
+      min-height: 430px;
     }
     .pareto-panel {
       width: 220px; flex: 0 0 220px;
@@ -426,8 +433,7 @@
       border-radius: var(--r);
       padding: 10px 12px;
       font-size: 12px;
-      max-height: 316px;
-      overflow-y: auto;
+      min-height: 430px;
     }
     .pareto-panel-title {
       font-size: 10.5px; font-weight: 600; color: var(--muted);
@@ -732,6 +738,7 @@
 <script>
 const MEDALS = ['🥇','🥈','🥉'];
 let showCI = false;
+const ANALYSIS_PANEL_HEIGHT = 430;
 
 function appendCI(td, ci, fmt) {
   if (!showCI || !ci || ci.lo == null) return;
@@ -1232,12 +1239,15 @@ function updateParetoPanel(pareto, tab, yLbl, method) {
 function _drawChart(rows, method, tab) {
   const wrap  = document.getElementById(`size-chart-wrap-${tab}`);
   const svgEl = document.getElementById(`size-chart-${tab}`);
+  const panel = document.getElementById(`pareto-panel-${tab}`);
   if (!wrap || !svgEl) return;
+  wrap.style.minHeight = '';
   const W = wrap.clientWidth;
   if (W < 20) return;
-  const H = 300;
+  const H = tab === 'analysis' ? ANALYSIS_PANEL_HEIGHT - 12 : 300;
   svgEl.setAttribute('width',  W);
   svgEl.setAttribute('height', H);
+  svgEl.style.height = `${H}px`;
   svgEl.innerHTML = '';
 
   const ML = 58, MR = 28, MT = 22, MB = 50;
@@ -1389,7 +1399,6 @@ function _drawChart(rows, method, tab) {
     circ.addEventListener('mouseleave', () => CTIP.classList.remove('show'));
   }
 
-  const panel = document.getElementById(`pareto-panel-${tab}`);
   if (panel) {
     const positionTip = (x, y) => {
       const tw = CTIP.offsetWidth, th = CTIP.offsetHeight;
