@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Build and deploy the static HTML Space.
 
-Bakes leaderboard.json from the results parquet, resolving provider logos and
-formatting sizes server-side, then uploads static files and removes obsolete
-gradio files from the Space repo.
+Bakes leaderboard.json and models.py from the results parquet, resolving
+provider logos and formatting sizes server-side, then uploads static files and
+removes obsolete gradio files from the Space repo.
 
 Usage:
   python scripts/update_space.py
@@ -30,7 +30,7 @@ DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 DATASET_PARQUET = "hf://datasets/RyeAI/danish-asr-leaderboard/data/results.parquet"
 SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
 
-UPLOAD = ["index.html", "leaderboard.json", "README.md", "cover.jpeg"]
+UPLOAD = ["index.html", "leaderboard.json", "models.py", "README.md", "cover.jpeg"]
 OBSOLETE = ["app.py", "requirements.txt"]
 
 # Orgs to drop from the published board (case-insensitive match on the model's
@@ -172,7 +172,31 @@ def _parse_model(cell: str) -> tuple[str, str]:
     return cell, ""
 
 
-def build_leaderboard_json() -> dict:
+def _is_hf_model_repo(name: str, url: str) -> bool:
+    """Whether a leaderboard row points at a real HF model repository."""
+    return bool(name and "/" in name and url.startswith("https://huggingface.co/"))
+
+
+def build_models_py(data: dict) -> str:
+    """Return the models.py content used by HF to backlink model cards."""
+    model_names = sorted(
+        {
+            row["name"]
+            for row in data["wer"]
+            for url in [row.get("url", "")]
+            for name in [row.get("name", "")]
+            if _is_hf_model_repo(name, url)
+        },
+        key=str.casefold,
+    )
+    body = ",\n".join(f'    {name!r}' for name in model_names)
+    return (
+        '"""Auto-generated list of models registered in the Danish ASR leaderboard."""\n\n'
+        f"MODEL_NAMES = [\n{body}\n]\n"
+    )
+
+
+def load_leaderboard_df() -> pd.DataFrame:
     df = pd.read_parquet(DATASET_PARQUET)
 
     if "rtf" in df.columns and "speed_x" not in df.columns:
@@ -196,6 +220,11 @@ def build_leaderboard_json() -> dict:
         if dropped:
             print(f"  excluded {dropped} row(s) "
                   f"(orgs={sorted(EXCLUDE_ORGS)}, models={sorted(EXCLUDE_MODELS)})")
+
+    return df
+
+
+def build_leaderboard_json(df: pd.DataFrame) -> dict:
 
     def build_rows(df_sorted: pd.DataFrame, metric_cols: list[str]) -> list[dict]:
         rows = []
@@ -261,10 +290,15 @@ def main() -> None:
         sys.exit(1)
 
     print("Building leaderboard.json …")
-    data = build_leaderboard_json()
+    df = load_leaderboard_df()
+    data = build_leaderboard_json(df)
     out = SPACE_DIR / "leaderboard.json"
     out.write_text(json.dumps(data, ensure_ascii=False, indent=2))
     print(f"  {out}  ({len(data['wer'])} WER rows, {len(data['cer'])} CER rows)")
+
+    models_out = SPACE_DIR / "models.py"
+    models_out.write_text(build_models_py(data), encoding="utf-8")
+    print(f"  {models_out}")
 
     api = HfApi(token=token)
 
