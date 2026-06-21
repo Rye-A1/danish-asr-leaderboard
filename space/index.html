@@ -420,7 +420,7 @@
       padding: 6px 6px 4px;
     }
     .pareto-panel {
-      width: 195px; flex: 0 0 195px;
+      width: 220px; flex: 0 0 220px;
       background: var(--surf);
       border: 1px solid var(--border);
       border-radius: var(--r);
@@ -435,13 +435,47 @@
       margin-bottom: 8px;
     }
     .pareto-item {
-      display: flex; align-items: center; gap: 7px;
-      padding: 5px 0; border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 8px minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      column-gap: 8px;
+      row-gap: 2px;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background .12s;
     }
     .pareto-item:last-child { border-bottom: none; }
-    .pareto-dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 8px; }
-    .pareto-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text); font-weight: 500; }
-    .pareto-meta { color: var(--muted); white-space: nowrap; font-size: 11px; text-align: right; line-height: 1.4; }
+    .pareto-item:hover { background: color-mix(in srgb, var(--surf2) 72%, transparent); }
+    .pareto-item.active { background: color-mix(in srgb, var(--surf2) 92%, transparent); }
+    .pareto-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      grid-column: 1;
+      grid-row: 1 / span 2;
+      align-self: start;
+      margin-top: 4px;
+    }
+    .pareto-name {
+      grid-column: 2;
+      grid-row: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+      font-weight: 500;
+    }
+    .pareto-meta {
+      grid-column: 2;
+      grid-row: 1;
+      color: var(--muted);
+      white-space: nowrap;
+      font-size: 11px;
+      line-height: 1.3;
+    }
     #chart-tip {
       position: fixed;
       background: var(--surf2);
@@ -1150,6 +1184,7 @@ let _chartState = {
   cer: { rows: [], method: 'mean' },
   analysis: { rows: [], method: 'mean', sourceTab: 'wer' },
 };
+let _activeParetoCleanup = null;
 
 function niceTicks(lo, hi, n) {
   const rough = (hi - lo) / n;
@@ -1176,7 +1211,7 @@ function updateParetoPanel(pareto, tab, yLbl, method) {
   const panel = document.getElementById(`pareto-panel-${tab}`);
   if (!panel) return;
   const fmt = v => method === 'borda' ? v.toFixed(1) : method === 'bt' ? v.toFixed(1) + '%' : v.toFixed(2) + '%';
-  panel.innerHTML = `<div class="pareto-panel-title">Pareto Optimal</div>`;
+  panel.innerHTML = `<div class="pareto-panel-title" data-tip="Open models on the Pareto frontier: no other open model is both smaller and better on the selected metric. Sorted by model size from smallest to largest.">Pareto Optimal <span class="i-icon" aria-hidden="true">i</span></div>`;
   if (!pareto.length) {
     panel.innerHTML += `<p style="color:var(--muted);font-size:11px;margin-top:4px">No open models with size data.</p>`;
     return;
@@ -1184,11 +1219,12 @@ function updateParetoPanel(pareto, tab, yLbl, method) {
   for (const p of pareto) {
     const item = document.createElement('div');
     item.className = 'pareto-item';
+    item.dataset.modelName = p.r.name;
     const col = p.r.access === 'open' ? 'var(--accent)' : '#94a3b8';
     item.innerHTML =
       `<span class="pareto-dot" style="background:${col}"></span>` +
-      `<span class="pareto-name" title="${p.r.name}">${p.r.name}</span>` +
-      `<span class="pareto-meta">${p.r.size}B<br>${fmt(p.yv)}</span>`;
+      `<span class="pareto-meta">${p.r.size}B · ${fmt(p.yv)}</span>` +
+      `<span class="pareto-name" title="${p.r.name}">${p.r.name}</span>`;
     panel.appendChild(item);
   }
 }
@@ -1215,6 +1251,7 @@ function _drawChart(rows, method, tab) {
     return el;
   };
   const tx = (t, a, p) => { const el = mk('text', a, p); el.textContent = t; return el; };
+  const chartPointByName = new Map();
 
   const metricTab = tab === 'analysis' ? (_chartState.analysis.sourceTab || 'wer') : tab;
   const meanKey = metricTab === 'cer' ? 'mean_cer' : 'mean_wer';
@@ -1327,19 +1364,20 @@ function _drawChart(rows, method, tab) {
       }
     }
 
-    const circ = mk('circle', {
-      cx: xc, cy: yc, r: '6',
-      fill: r.access === 'open' ? 'var(--accent)' : '#94a3b8',
-      stroke: 'var(--bg)', 'stroke-width': '1.5',
-      style: 'cursor:pointer',
-    }, svgEl);
-
     let tipHTML = `<strong>${r.name}</strong>  ·  ${r.size}B  ·  ${yLbl}: <strong>${fmt(yv)}</strong>`;
     if (showCI) {
       const ci = r[yCIKey];
       if (ci && ci.lo != null)
         tipHTML += `<br><span style="color:var(--muted);font-size:11px">95% CI: [${fmt(ci.lo)}–${fmt(ci.hi)}]</span>`;
     }
+
+    const circ = mk('circle', {
+      cx: xc, cy: yc, r: '6',
+      fill: r.access === 'open' ? 'var(--accent)' : '#94a3b8',
+      stroke: 'var(--bg)', 'stroke-width': '1.5',
+      style: 'cursor:pointer',
+    }, svgEl);
+    chartPointByName.set(r.name, { circ, tipHTML });
     circ.addEventListener('mouseenter', () => { CTIP.innerHTML = tipHTML; CTIP.classList.add('show'); });
     circ.addEventListener('mousemove', e => {
       const tw = CTIP.offsetWidth, th = CTIP.offsetHeight;
@@ -1349,6 +1387,49 @@ function _drawChart(rows, method, tab) {
       CTIP.style.left = cx + 'px'; CTIP.style.top = cy + 'px';
     });
     circ.addEventListener('mouseleave', () => CTIP.classList.remove('show'));
+  }
+
+  const panel = document.getElementById(`pareto-panel-${tab}`);
+  if (panel) {
+    const positionTip = (x, y) => {
+      const tw = CTIP.offsetWidth, th = CTIP.offsetHeight;
+      let cx = x + 14, cy = y + 14;
+      if (cx + tw > window.innerWidth  - 8) cx = x - tw - 14;
+      if (cy + th > window.innerHeight - 8) cy = y - th - 14;
+      CTIP.style.left = cx + 'px';
+      CTIP.style.top = cy + 'px';
+    };
+
+    panel.querySelectorAll('.pareto-item').forEach(item => {
+      const point = chartPointByName.get(item.dataset.modelName || '');
+      if (!point) return;
+
+      const activate = () => {
+        item.classList.add('active');
+        point.circ.setAttribute('r', '8');
+        point.circ.setAttribute('stroke-width', '2.5');
+        point.circ.setAttribute('stroke', 'var(--text)');
+        CTIP.innerHTML = point.tipHTML;
+        CTIP.classList.add('show');
+        const rect = point.circ.getBoundingClientRect();
+        positionTip(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      };
+      const deactivate = () => {
+        item.classList.remove('active');
+        point.circ.setAttribute('r', '6');
+        point.circ.setAttribute('stroke-width', '1.5');
+        point.circ.setAttribute('stroke', 'var(--bg)');
+        CTIP.classList.remove('show');
+      };
+
+      item.addEventListener('mouseenter', activate);
+      item.addEventListener('mouseleave', deactivate);
+      item.addEventListener('click', () => {
+        if (_activeParetoCleanup) _activeParetoCleanup();
+        activate();
+        _activeParetoCleanup = deactivate;
+      });
+    });
   }
 
   /* ── axis labels ── */
