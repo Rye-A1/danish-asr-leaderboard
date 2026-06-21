@@ -342,19 +342,65 @@
 
     /* ── CI toggle button ──────────────────────────────────────────── */
     .ci-btn {
-      padding: 5px 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 10px 4px 6px;
       border: 1px solid var(--border);
-      background: none;
+      background: var(--surf);
       color: var(--muted);
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 999px;
       font-size: 12px;
-      font-weight: 500;
-      transition: background .12s, color .12s, border-color .12s;
+      font-weight: 600;
+      line-height: 1;
+      transition: background .12s, color .12s, border-color .12s, box-shadow .12s;
       white-space: nowrap;
     }
-    .ci-btn.active { background: var(--surf2); color: var(--text); border-color: var(--accent); }
-    .ci-btn:hover:not(.active) { color: var(--text); }
+    .ci-btn:hover { color: var(--text); border-color: var(--border); }
+    .ci-btn:focus-visible {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+    }
+    .ci-btn.active {
+      background: color-mix(in srgb, var(--link) 14%, var(--surf));
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--link) 55%, var(--border));
+    }
+    .ci-switch {
+      position: relative;
+      width: 34px;
+      height: 20px;
+      border-radius: 999px;
+      background: var(--border);
+      transition: background .12s;
+      flex: 0 0 34px;
+    }
+    .ci-switch::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 2px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 0 0 1px rgba(15,17,23,0.06), 0 0 6px rgba(15,17,23,0.16);
+      transform: translateY(-50%);
+      transition: transform .12s;
+    }
+    .ci-btn.active .ci-switch {
+      background: var(--link);
+    }
+    .ci-btn.active .ci-switch::after {
+      transform: translate(14px, -50%);
+    }
+    .ci-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
 
     /* ── CI inline text in cells ────────────────────────────────────── */
     .ci-val { font-size: 10.5px; color: var(--muted); font-weight: 400; display: block; line-height: 1.4; }
@@ -435,6 +481,7 @@
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="wer">🏆 Leaderboard</button>
     <button class="tab-btn" data-tab="cer">🔤 CER Breakdown</button>
+    <button class="tab-btn" data-tab="analysis">📊 Analysis</button>
     <button class="tab-btn" data-tab="about">ℹ️ About</button>
   </nav>
 
@@ -449,22 +496,12 @@
         <button class="tog-btn" id="tog-wer-borda">Avg. Rank</button>
         <button class="tog-btn" id="tog-wer-bt">Win Rate</button>
       </div>
-      <button class="ci-btn" id="tog-ci-wer" title="95% bootstrap CI: the 5 test datasets are resampled with replacement 1000 times. The interval shows where the metric would fall if a different random draw of datasets were used. Wide CIs mean the ranking is sensitive to which datasets are included — treat close rankings with caution.">95% CI <span class="i-icon" aria-hidden="true">i</span></button>
-      <span id="updated-ts" class="count" style="margin-left:auto"></span>
+      <button class="ci-btn" id="tog-ci-wer" type="button" aria-pressed="false" data-tip="95% bootstrap CI: the 5 test datasets are resampled with replacement 1000 times. The interval shows where the metric would fall if a different random draw of datasets were used. Wide CIs mean the ranking is sensitive to which datasets are included — treat close rankings with caution."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
     </p>
-    <div class="chart-section">
-      <h3>Performance vs. Model Size</h3>
-      <div class="chart-with-panel">
-        <div id="size-chart-wrap-wer" class="chart-plot-wrap">
-          <svg id="size-chart-wer" style="width:100%;display:block;overflow:visible"></svg>
-        </div>
-        <div id="pareto-panel-wer" class="pareto-panel"></div>
-      </div>
-    </div>
   </div>
 
   <!-- CER tab -->
@@ -478,16 +515,27 @@
         <button class="tog-btn" id="tog-cer-borda">Avg. Rank</button>
         <button class="tog-btn" id="tog-cer-bt">Win Rate</button>
       </div>
-      <button class="ci-btn" id="tog-ci-cer" title="95% bootstrap CI: the 5 test datasets are resampled with replacement 1000 times. The interval shows where the metric would fall if a different random draw of datasets were used. Wide CIs mean the ranking is sensitive to which datasets are included — treat close rankings with caution.">95% CI <span class="i-icon" aria-hidden="true">i</span></button>
+      <button class="ci-btn" id="tog-ci-cer" type="button" aria-pressed="false" data-tip="95% bootstrap CI: the 5 test datasets are resampled with replacement 1000 times. The interval shows where the metric would fall if a different random draw of datasets were used. Wide CIs mean the ranking is sensitive to which datasets are included — treat close rankings with caution."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
     </div>
     <div class="table-scroll"><table id="table-cer"></table></div>
-    <div class="chart-section">
-      <h3>Performance vs. Model Size</h3>
+  </div>
+
+  <!-- Analysis tab -->
+  <div id="tab-analysis" class="tab-pane">
+    <div class="toolbar">
+      <div class="tog-wrap">
+        <span class="tog-label">Metric</span>
+        <button class="tog-btn active" id="tog-analysis-wer">WER</button>
+        <button class="tog-btn" id="tog-analysis-cer">CER</button>
+      </div>
+    </div>
+    <div class="chart-section" style="margin-top:0">
+      <h3 id="analysis-chart-title">Performance vs. Model Size</h3>
       <div class="chart-with-panel">
-        <div id="size-chart-wrap-cer" class="chart-plot-wrap">
-          <svg id="size-chart-cer" style="width:100%;display:block;overflow:visible"></svg>
+        <div id="size-chart-wrap-analysis" class="chart-plot-wrap">
+          <svg id="size-chart-analysis" style="width:100%;display:block;overflow:visible"></svg>
         </div>
-        <div id="pareto-panel-cer" class="pareto-panel"></div>
+        <div id="pareto-panel-analysis" class="pareto-panel"></div>
       </div>
     </div>
   </div>
@@ -634,6 +682,8 @@
   <!-- Footer -->
   <footer>
     <span>Only open-source datasets used</span>
+    <span class="sep">·</span>
+    <span id="updated-ts">Updated</span>
     <span class="sep">·</span>
     <span>Powered by <a href="https://huggingface.co/RyeAI" target="_blank" rel="noopener">Rye AI</a></span>
     <span class="sep">·</span>
@@ -1095,7 +1145,11 @@ function getCerCols(method) {
 }
 
 /* ── Size vs. Performance chart ────────────────────────────────── */
-let _chartState = { wer: { rows: [], method: 'mean' }, cer: { rows: [], method: 'mean' } };
+let _chartState = {
+  wer: { rows: [], method: 'mean' },
+  cer: { rows: [], method: 'mean' },
+  analysis: { rows: [], method: 'mean', sourceTab: 'wer' },
+};
 
 function niceTicks(lo, hi, n) {
   const rough = (hi - lo) / n;
@@ -1162,10 +1216,11 @@ function _drawChart(rows, method, tab) {
   };
   const tx = (t, a, p) => { const el = mk('text', a, p); el.textContent = t; return el; };
 
-  const meanKey = tab === 'cer' ? 'mean_cer' : 'mean_wer';
+  const metricTab = tab === 'analysis' ? (_chartState.analysis.sourceTab || 'wer') : tab;
+  const meanKey = metricTab === 'cer' ? 'mean_cer' : 'mean_wer';
   const yKey   = method === 'mean' ? meanKey         : method === 'borda' ? 'borda_score'    : 'bt_score';
   const yCIKey = method === 'mean' ? meanKey + '_ci' : method === 'borda' ? 'borda_score_ci' : 'bt_score_ci';
-  const yLbl   = method === 'mean' ? (tab === 'cer' ? 'Mean CER (%)' : 'Mean WER (%)') : method === 'borda' ? 'Avg. Rank' : 'Win Rate (%)';
+  const yLbl   = method === 'mean' ? (metricTab === 'cer' ? 'Mean CER (%)' : 'Mean WER (%)') : method === 'borda' ? 'Avg. Rank' : 'Win Rate (%)';
   const yUp    = method === 'bt';
   const fmt    = v => method === 'borda' ? v.toFixed(1) : method === 'bt' ? v.toFixed(1) + '%' : v.toFixed(2) + '%';
 
@@ -1306,7 +1361,11 @@ function _drawChart(rows, method, tab) {
 }
 
 function renderSizeChart(rows, method, tab = 'wer') {
-  _chartState[tab] = { rows, method };
+  _chartState[tab] = {
+    ..._chartState[tab],
+    rows,
+    method,
+  };
   requestAnimationFrame(() => _drawChart(rows, method, tab));
 }
 
@@ -1316,6 +1375,7 @@ window.addEventListener('resize', () => {
   _chartResizeTimer = setTimeout(() => {
     _drawChart(_chartState.wer.rows, _chartState.wer.method, 'wer');
     _drawChart(_chartState.cer.rows, _chartState.cer.method, 'cer');
+    _drawChart(_chartState.analysis.rows, _chartState.analysis.method, 'analysis');
   }, 150);
 });
 
@@ -1341,7 +1401,25 @@ async function init() {
     const werEl = document.getElementById('table-wer');
     const cerEl = document.getElementById('table-cer');
 
-    let werMethod = 'mean', cerMethod = 'mean';
+    let werMethod = 'mean', cerMethod = 'mean', analysisMetric = 'wer';
+
+    function applyAnalysis(metric = analysisMetric) {
+      analysisMetric = metric;
+      const isWer = metric === 'wer';
+      const rows = isWer ? _chartState.wer.rows : _chartState.cer.rows;
+      const method = isWer ? werMethod : cerMethod;
+      _chartState.analysis = {
+        ..._chartState.analysis,
+        rows,
+        method,
+        sourceTab: metric,
+      };
+      document.getElementById('tog-analysis-wer').classList.toggle('active', isWer);
+      document.getElementById('tog-analysis-cer').classList.toggle('active', !isWer);
+      document.getElementById('analysis-chart-title').textContent =
+        `Performance vs. Model Size (${isWer ? 'WER' : 'CER'})`;
+      renderSizeChart(rows, method, 'analysis');
+    }
 
     function applyWer(method) {
       werMethod = method;
@@ -1352,6 +1430,7 @@ async function init() {
       renderTable(werEl, sorted, getWerCols(method), maxVals);
       wireSearch('search-wer', 'count-wer', 'table-wer');
       renderSizeChart(sorted, method, 'wer');
+      if (analysisMetric === 'wer') applyAnalysis('wer');
     }
 
     function applyCer(method) {
@@ -1363,10 +1442,12 @@ async function init() {
       renderTable(cerEl, sorted, getCerCols(method), maxVals);
       wireSearch('search-cer', 'count-cer', 'table-cer');
       renderSizeChart(sorted, method, 'cer');
+      if (analysisMetric === 'cer') applyAnalysis('cer');
     }
 
     applyWer('mean');
     applyCer('mean');
+    applyAnalysis('wer');
 
     /* Ranking toggles */
     const WER_TOGS = ['tog-wer-mean','tog-wer-borda','tog-wer-bt'];
@@ -1383,12 +1464,16 @@ async function init() {
         applyCer(method);
       });
     });
+    document.getElementById('tog-analysis-wer').addEventListener('click', () => applyAnalysis('wer'));
+    document.getElementById('tog-analysis-cer').addEventListener('click', () => applyAnalysis('cer'));
 
     /* CI toggle */
     function toggleCI() {
       showCI = !showCI;
       document.getElementById('tog-ci-wer').classList.toggle('active', showCI);
       document.getElementById('tog-ci-cer').classList.toggle('active', showCI);
+      document.getElementById('tog-ci-wer').setAttribute('aria-pressed', String(showCI));
+      document.getElementById('tog-ci-cer').setAttribute('aria-pressed', String(showCI));
       applyWer(werMethod);
       applyCer(cerMethod);
     }
@@ -1422,7 +1507,15 @@ document.querySelectorAll('.tab-btn').forEach(btn =>
     document.querySelectorAll('.tab-btn, .tab-pane')
             .forEach(el => el.classList.remove('active'));
     btn.classList.add('active');
-    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    const tab = btn.dataset.tab;
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (tab === 'analysis') {
+      document.getElementById('tog-analysis-wer').classList.toggle('active', _chartState.analysis.sourceTab === 'wer');
+      document.getElementById('tog-analysis-cer').classList.toggle('active', _chartState.analysis.sourceTab === 'cer');
+    }
+    if (tab === 'wer' || tab === 'cer' || tab === 'analysis') {
+      requestAnimationFrame(() => _drawChart(_chartState[tab].rows, _chartState[tab].method, tab));
+    }
   })
 );
 
@@ -1431,14 +1524,14 @@ const TIP = document.getElementById('col-tip');
 let tipActive = false;
 
 document.addEventListener('mouseover', e => {
-  const th = e.target.closest('th[data-tip]');
-  if (!th) return;
-  TIP.textContent = th.dataset.tip;
+  const el = e.target.closest('[data-tip]');
+  if (!el) return;
+  TIP.textContent = el.dataset.tip;
   TIP.classList.add('show');
   tipActive = true;
 });
 document.addEventListener('mouseout', e => {
-  if (!e.target.closest('th[data-tip]')) return;
+  if (!e.target.closest('[data-tip]')) return;
   TIP.classList.remove('show');
   tipActive = false;
 });
