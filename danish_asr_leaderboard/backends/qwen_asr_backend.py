@@ -25,6 +25,12 @@ class QwenAsrBackend(Backend):
         for i in range(0, len(audio_paths), batch_size):
             chunk = audio_paths[i : i + batch_size]
             results = self.model.transcribe(audio=chunk, language=_LANGUAGE)
+            if len(results) != len(chunk):
+                # Guard against silent hyp↔ref misalignment; raising lets
+                # Backend.transcribe fall back to the per-file path.
+                raise RuntimeError(
+                    f"qwen-asr returned {len(results)} results for {len(chunk)} inputs"
+                )
             out.extend(_text(r) for r in results)
         return out
 

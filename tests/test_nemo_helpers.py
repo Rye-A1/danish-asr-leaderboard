@@ -9,8 +9,10 @@ from danish_asr_leaderboard.backends.nemo_backend import _is_lm_nemo
     ("nemo_kenlm_6gram_light_100pct.nemo", True),
     ("RyeAI/krumme-v1/nemo_kenlm_6gram.nemo", True),
     ("ngram_lm.nemo", True),
-    ("model_lm.nemo", True),
-    # Actual acoustic models → kept.
+    # Actual acoustic models → kept. A bare "_lm" substring must NOT classify
+    # these as LMs (the false-positive the heuristic was tightened to avoid).
+    ("model_lm.nemo", False),
+    ("conformer_lm_ctc.nemo", False),
     ("canary-1b-v2-da-pnc-v2.nemo", False),
     ("parakeet-tdt-da-v3-1.nemo", False),
     ("parakeet-rnnt-110m-da-dk.nemo", False),

@@ -40,6 +40,12 @@ class VoxtralBackend(Backend):
             with torch.no_grad():
                 out_ids = self.model.generate(**inputs, max_new_tokens=440)
             texts = self.processor.batch_decode(out_ids[:, prompt_len:], skip_special_tokens=True)
+            if len(texts) != len(chunk):
+                # Guard against silent hyp↔ref misalignment; raising lets
+                # Backend.transcribe fall back to the per-file path.
+                raise RuntimeError(
+                    f"voxtral decoded {len(texts)} texts for {len(chunk)} inputs"
+                )
             out.extend(t.strip() for t in texts)
         return out
 

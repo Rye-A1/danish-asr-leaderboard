@@ -102,7 +102,9 @@ def _is_lm_nemo(filename: str) -> bool:
     so it must be excluded when picking the acoustic model to restore.
     """
     low = Path(filename).name.lower()
-    return "kenlm" in low or "ngram" in low or "n_gram" in low or "_lm" in low
+    # Only unambiguous LM tokens — a bare "_lm" substring would wrongly match
+    # acoustic models like "conformer_lm_ctc.nemo".
+    return "kenlm" in low or "ngram" in low or "n_gram" in low
 
 
 def _hf_nemo_file(model_ref: str) -> str | None:
