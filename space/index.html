@@ -116,9 +116,23 @@
       gap: 12px;
       margin-bottom: 10px;
     }
+    .search-wrap {
+      position: relative;
+      display: block;
+    }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      opacity: 0.5;
+      pointer-events: none;
+    }
     .search {
       width: 220px;
-      padding: 7px 12px;
+      padding: 7px 12px 7px 32px;
       background: var(--surf);
       border: 1px solid var(--border);
       color: var(--text);
@@ -127,6 +141,36 @@
       outline: none;
     }
     .search:focus { border-color: var(--accent); }
+    
+    @media (max-width: 900px) {
+      .search {
+        width: 100%;
+        max-width: 300px;
+        font-size: 13px;
+        padding: 6px 10px 6px 30px;
+      }
+      .search-icon {
+        width: 14px;
+        height: 14px;
+        left: 8px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .search {
+        width: 80%;
+        font-size: 16px;
+        padding: 12px 12px 12px 40px;
+        min-height: 44px;
+      }
+      .search-icon {
+        width: 0px;
+        height: 0px;
+        left: 12px;
+        right: auto;
+        opacity: 0;
+      }
+    }
     .count { color: var(--muted); font-size: 13px; }
 
     /* ── Table ─────────────────────────────────────────────────────── */
@@ -499,6 +543,91 @@
       transition: opacity 0.12s;
     }
     #chart-tip.show { opacity: 1; }
+
+    /* ── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      /* Reduce padding and font sizes on smaller screens */
+      body { font-size: 13px; }
+      .app { padding: 16px 10px 0; }
+      
+      /* Banner stacks vertically on mobile */
+      .banner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 20px 16px;
+        gap: 12px;
+      }
+      .banner h1 { font-size: 18px; }
+      .banner-sub { font-size: 12px; }
+      .banner-logo { margin-left: 0; height: 40px; }
+      
+      /* Tab nav wraps on narrow screens */
+      .tab-nav {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+      .tab-nav::-webkit-scrollbar { display: none; }
+      .tab-btn { flex: 0 0 auto; padding: 6px 14px; font-size: 13px; }
+      
+      /* Toolbar stacks and wraps */
+      .toolbar {
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .search-wrap {
+        flex: 0 0 100%;
+      }
+      .search { width: 100%; }
+      .toolbar > *:not(.search-wrap) {
+        flex: 0 0 auto;
+      }
+      .tog-wrap { flex-wrap: wrap; }
+      .ci-btn { white-space: normal; }
+      
+      /* Table scrolls horizontally */
+      .table-scroll { overflow-x: auto; }
+      table { min-width: 600px; }
+      
+      /* Chart + Pareto stack vertically */
+      .chart-with-panel {
+        flex-direction: column;
+        min-height: auto;
+      }
+      .chart-plot-wrap { min-height: 320px; }
+      .pareto-panel {
+        width: 100%;
+        flex: 0 0 auto;
+        min-height: auto;
+        max-height: 280px;
+        overflow-y: auto;
+      }
+      
+      /* About section less cramped */
+      .about { max-width: 100%; }
+      
+      /* Footer tighter spacing */
+      footer { flex-direction: column; gap: 4px; text-align: center; }
+    }
+    
+    @media (min-width: 901px) and (max-width: 1200px) {
+      /* Medium screens: tighten chart heights slightly */
+      .chart-plot-wrap { min-height: 380px; }
+      .pareto-panel { min-height: 380px; }
+    }
+    
+    @media (max-width: 480px) {
+      /* Small phones: more aggressive reductions */
+      .app { padding: 12px 8px 0; }
+      .banner { padding: 16px 12px; }
+      .banner h1 { font-size: 16px; }
+      .tab-btn { padding: 5px 10px; font-size: 12px; }
+      .search { font-size: 13px; padding: 6px 10px; }
+      .toolbar { gap: 6px; }
+      .chart-plot-wrap { min-height: 280px; }
+      .pareto-panel { max-height: 220px; }
+    }
   </style>
 </head>
 <body>
@@ -520,15 +649,18 @@
   <!-- Tabs -->
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="wer">🏆 Leaderboard</button>
-    <button class="tab-btn" data-tab="cer">🔤 CER Breakdown</button>
-    <button class="tab-btn" data-tab="analysis">📊 Analysis</button>
+    <button class="tab-btn" data-tab="cer">📊 CER Breakdown</button>
+    <button class="tab-btn" data-tab="analysis">⚡️ Performance</button>
     <button class="tab-btn" data-tab="about">ℹ️ About</button>
   </nav>
 
   <!-- WER tab -->
   <div id="tab-wer" class="tab-pane active">
     <div class="toolbar">
-      <input type="search" id="search-wer" class="search" placeholder="Filter models…">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="search-wer" class="search" placeholder="Filter models…">
+      </div>
       <span id="count-wer" class="count"></span>
       <div class="tog-wrap">
         <span class="tog-label">Rank by</span>
@@ -547,7 +679,10 @@
   <!-- CER tab -->
   <div id="tab-cer" class="tab-pane">
     <div class="toolbar">
-      <input type="search" id="search-cer" class="search" placeholder="Filter models…">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="search-cer" class="search" placeholder="Filter models…">
+      </div>
       <span id="count-cer" class="count"></span>
       <div class="tog-wrap">
         <span class="tog-label">Rank by</span>
