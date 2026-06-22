@@ -44,11 +44,17 @@ def mean(values: list[float | None]) -> float:
 
 
 def model_link(model_id: str) -> str:
-    """Wrap an HF model id in a markdown link; leave local paths untouched."""
+    """Wrap an HF model id in a markdown link; leave local paths untouched.
+
+    A decoding-variant suffix after ``+`` (e.g. ``RyeAI/krumme-v1+kenlm``) is kept
+    in the display name but stripped from the URL, since the variant shares the
+    base model's HF repo and ``+`` is not a legal character in a repo id.
+    """
     if model_id.startswith("/") or Path(model_id).exists():
         return model_id
     clean = model_id.rstrip("/")
-    return f"[{clean}](https://huggingface.co/{clean})"
+    repo = clean.split("+", 1)[0]  # URL points at the base repo
+    return f"[{clean}](https://huggingface.co/{repo})"
 
 
 def fetch_params_b(model_id: str, model: Any | None = None) -> float | None:
