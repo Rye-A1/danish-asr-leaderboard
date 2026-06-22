@@ -23,11 +23,11 @@ API_BACKENDS = {"elevenlabs", "azure-openai", "google-chirp", "soniox"}
 
 
 def _notify(msg: str) -> None:
-    """Best-effort Mattermost ping; silent no-op if the webhook/module is absent."""
+    """Best-effort webhook ping; silent no-op if no webhook is configured."""
     try:
-        from notify import get_webhook_url, send_mattermost
+        from danish_asr_leaderboard.notify import notify
 
-        send_mattermost(get_webhook_url(), msg)
+        notify(msg)
     except Exception:
         pass
 
@@ -89,30 +89,24 @@ def _options_from_args(args: argparse.Namespace) -> LoadOptions:
     return LoadOptions(
         device=args.device,
         compute_type=args.compute_type,
-        
         # NeMo
         nemo_model_type=args.nemo_model_type,
         nemo_beam_size=args.nemo_beam_size,
-        
         # KenLM
         kenlm_model=args.kenlm_model,
         kenlm_alpha=args.kenlm_alpha,
         kenlm_beam_size=args.kenlm_beam_size,
-        
         # ElevenLabs
         elevenlabs_api_key=args.elevenlabs_api_key,
         elevenlabs_model_id=args.elevenlabs_model_id,
-        
         # Azure OpenAI
         azure_openai_api_key=args.azure_openai_api_key,
         azure_openai_endpoint=args.azure_openai_endpoint,
         azure_openai_api_version=args.azure_openai_api_version,
-        
         # Google Chirp
         google_cloud_project=args.google_cloud_project,
         google_credentials_file=args.google_credentials_file,
         google_chirp_model_id=args.google_chirp_model_id,
-        
         # Soniox
         soniox_api_key=args.soniox_api_key,
         soniox_model=args.soniox_model,
