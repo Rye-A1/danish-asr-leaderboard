@@ -93,14 +93,27 @@ class NemoBackend(Backend):
         return _text_of(output[0]) if output else ""
 
 
+def _is_lm_nemo(filename: str) -> bool:
+    """Heuristic: a ``.nemo`` that is a KenLM/n-gram language model, not an ASR model.
+
+    Some repos ship the acoustic model *and* its KenLM beam-search LM as separate
+    ``.nemo`` archives (e.g. ``RyeAI/krumme-v1`` has ``canary-….nemo`` +
+    ``nemo_kenlm_6gram_….nemo``). The LM is passed separately via ``--kenlm-model``,
+    so it must be excluded when picking the acoustic model to restore.
+    """
+    low = Path(filename).name.lower()
+    return "kenlm" in low or "ngram" in low or "n_gram" in low or "_lm" in low
+
+
 def _hf_nemo_file(model_ref: str) -> str | None:
-    """If ``model_ref`` is an HF repo whose only payload is a ``.nemo`` file,
+    """If ``model_ref`` is an HF repo whose only ASR payload is a ``.nemo`` file,
     download it and return the local path; otherwise None.
 
     ``ASRModel.from_pretrained`` only handles repos NeMo publishes as unpacked
     model cards. Fine-tunes are commonly uploaded as a single raw ``.nemo``
     archive (no ``model_config.yaml``), which ``from_pretrained`` can't restore —
-    those need ``hf_hub_download`` + ``restore_from`` instead.
+    those need ``hf_hub_download`` + ``restore_from`` instead. KenLM ``.nemo``
+    files that ride along in the same repo are ignored (they go via --kenlm-model).
     """
     if "/" not in model_ref or Path(model_ref).expanduser().exists():
         return None
@@ -108,7 +121,7 @@ def _hf_nemo_file(model_ref: str) -> str | None:
         from huggingface_hub import HfApi, hf_hub_download
 
         files = HfApi().list_repo_files(model_ref)
-        nemo_files = [f for f in files if f.endswith(".nemo")]
+        nemo_files = [f for f in files if f.endswith(".nemo") and not _is_lm_nemo(f)]
         if len(nemo_files) != 1:
             return None  # native model card, or ambiguous — let from_pretrained try
         print(f"  HF repo ships a raw .nemo ({nemo_files[0]}); downloading…")
