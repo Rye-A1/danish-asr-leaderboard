@@ -1,0 +1,19 @@
+{
+  "model": "syv-transcribe",
+  "params_b": 2.06,
+  "coral_conversation_wer": 20.35,
+  "coral_read_aloud_wer": 10.39,
+  "cv17_da_wer": 8.09,
+  "fleurs_da_wer": 9.04,
+  "ftspeech_wer": 8.04,
+  "mean_wer": 11.18,
+  "coral_conversation_cer": 11.9,
+  "coral_read_aloud_cer": 4.05,
+  "cv17_da_cer": 2.66,
+  "fleurs_da_cer": 3.34,
+  "ftspeech_cer": 4.35,
+  "mean_cer": 5.26,
+  "speed_x": 49.2,
+  "submitted": "2026-06-23",
+  "access": "proprietary"
+}
