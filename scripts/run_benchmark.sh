@@ -73,9 +73,9 @@ COMMON=(--device cuda --unicode-form NFC --batch-size "$BATCH")
 
 # model | backend | extra args (space-separated, may be empty)
 LOCAL_MODELS=(
-  "syvai/hviske-v5|transformers|"
-  "syvai/hviske-v5.3|transformers|"
-  "syvai/hviske-v5.1|transformers|"
+  "syvai/hviske-v5|cohere-asr|"     # CohereASR architecture (not Whisper) — needs librosa
+  "syvai/hviske-v5.3|cohere-asr|"
+  "syvai/hviske-v5.1|cohere-asr|"
   "syvai/hviske-v3-conversation|transformers|"
   "CoRal-project/roest-v3-whisper-1.5b|transformers|"
   "openai/whisper-large-v3|transformers|"
