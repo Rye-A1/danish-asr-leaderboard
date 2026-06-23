@@ -30,6 +30,7 @@
 #   RUN_API=1 bash scripts/run_benchmark.sh       # also run hosted-API models
 #   MAX_SAMPLES=50 bash scripts/run_benchmark.sh  # quick smoke (cap per dataset)
 #   ONLY_BACKENDS=nemo bash scripts/run_benchmark.sh        # run only these backends
+#   FAILURES_FILE=api_failures.txt RUN_API=1 bash scripts/run_benchmark.sh  # separate failure log
 #
 # After the sweep:
 #   python scripts/push_results.py     # publish scores
@@ -50,8 +51,9 @@ QWEN_PY="${QWEN_PY:-$DEFAULT_PY}"
 # (the reference version) batches correctly. Same decoding algorithm either way,
 # so WER is unchanged — only throughput differs.
 TF_PY="${TF_PY:-$DEFAULT_PY}"
-ONLY_BACKENDS="${ONLY_BACKENDS:-}"   # comma-separated allow-list; empty = all
-SKIP_MODELS="${SKIP_MODELS:-}"       # comma-separated block-list; empty = none
+ONLY_BACKENDS="${ONLY_BACKENDS:-}"        # comma-separated allow-list; empty = all
+SKIP_MODELS="${SKIP_MODELS:-}"            # comma-separated block-list; empty = none
+FAILURES_FILE="${FAILURES_FILE:-"$FAILURES_FILE"}"
 
 py_for() {  # interpreter for a given backend
   case "$1" in
@@ -145,13 +147,13 @@ run_one() {
     notify "✅ \`$model\` done — mean_wer=**${wer:-?}**"
   else
     echo "!!! FAILED: $model (backend=$backend) — continuing" >&2
-    echo "$model" >> benchmark_failures.txt
+    echo "$model" >> "$FAILURES_FILE"
     notify "❌ \`$model\` ($backend) FAILED — continuing"
   fi
   rm -f "$log"
 }
 
-: > benchmark_failures.txt
+: > "$FAILURES_FILE"
 notify "🚀 **Danish ASR sweep** started — backends=${ONLY_BACKENDS:-all}, max_samples=${MAX_SAMPLES}, batch=${BATCH}"
 for entry in "${LOCAL_MODELS[@]}"; do
   IFS='|' read -r model backend extra <<< "$entry"
@@ -167,10 +169,10 @@ fi
 
 echo ""
 echo "Sweep complete. Results in results/, raw outputs in outputs/."
-if [ -s benchmark_failures.txt ]; then
-  echo "Failures:"; cat benchmark_failures.txt
+if [ -s "$FAILURES_FILE" ]; then
+  echo "Failures:"; cat "$FAILURES_FILE"
   notify "🏁 **Sweep complete** with failures:
-$(sed 's/^/• /' benchmark_failures.txt)"
+$(sed 's/^/• /' "$FAILURES_FILE")"
 else
   echo "No failures."
   notify "🏁 **Sweep complete** — all models OK (backends=${ONLY_BACKENDS:-all})"
