@@ -44,13 +44,20 @@ RUN_API="${RUN_API:-0}"
 DEFAULT_PY="${DEFAULT_PY:-python3}"
 NEMO_PY="${NEMO_PY:-$DEFAULT_PY}"
 QWEN_PY="${QWEN_PY:-$DEFAULT_PY}"
+# transformers backend: pin to a transformers version where batched Whisper
+# long-form (return_timestamps) still works. transformers 5.x regressed it
+# (mel-length mismatch on >30s clips → per-file fallback, ~10x slower); 4.57.6
+# (the reference version) batches correctly. Same decoding algorithm either way,
+# so WER is unchanged — only throughput differs.
+TF_PY="${TF_PY:-$DEFAULT_PY}"
 ONLY_BACKENDS="${ONLY_BACKENDS:-}"   # comma-separated allow-list; empty = all
 
 py_for() {  # interpreter for a given backend
   case "$1" in
-    nemo|nemo-salm) echo "$NEMO_PY" ;;
-    qwen-asr)       echo "$QWEN_PY" ;;
-    *)              echo "$DEFAULT_PY" ;;
+    nemo|nemo-salm)       echo "$NEMO_PY" ;;
+    qwen-asr)             echo "$QWEN_PY" ;;
+    transformers|cohere-asr) echo "$TF_PY" ;;  # both need transformers 4.57.x
+    *)                    echo "$DEFAULT_PY" ;;
   esac
 }
 
