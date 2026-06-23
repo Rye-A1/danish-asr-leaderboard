@@ -114,10 +114,10 @@ LOCAL_MODELS=(
   "RyeAI/krumme-v1|nemo|--nemo-model-type canary"   # NEW — canary-pnc-v2, greedy (no LM)
   "RyeAI/krumme-v1|nemo|--nemo-model-type canary --model-id RyeAI/krumme-v1+kenlm --kenlm-model RyeAI/krumme-v1:nemo_kenlm_6gram_light_100pct.nemo --kenlm-alpha 0.1 --kenlm-beam-size 5"  # NEW — canary-pnc-v2 + repo KenLM (separate row)
   "RyeAI/krumme-v1-turbo|nemo|--nemo-model-type parakeet"   # NEW — Parakeet fine-tune, raw .nemo, auto-restored
-  "mistralai/Voxtral-Small-24B-2507|voxtral|"
   "mistralai/Voxtral-Mini-3B-2507|voxtral|"
   "facebook/seamless-m4t-v2-large|seamless|"
   "microsoft/VibeVoice-ASR-HF|vibevoice|"
+  "mistralai/Voxtral-Small-24B-2507|voxtral|"  # 24B — run last, takes ~15-20h
 )
 
 # Hosted APIs (need credentials in env; only run when RUN_API=1).
