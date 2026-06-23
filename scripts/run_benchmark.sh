@@ -51,6 +51,7 @@ QWEN_PY="${QWEN_PY:-$DEFAULT_PY}"
 # so WER is unchanged — only throughput differs.
 TF_PY="${TF_PY:-$DEFAULT_PY}"
 ONLY_BACKENDS="${ONLY_BACKENDS:-}"   # comma-separated allow-list; empty = all
+SKIP_MODELS="${SKIP_MODELS:-}"       # comma-separated block-list; empty = none
 
 py_for() {  # interpreter for a given backend
   case "$1" in
@@ -68,6 +69,10 @@ notify() { "$DEFAULT_PY" notify.py "$1" >/dev/null 2>&1 || true; }
 want_backend() {  # honour ONLY_BACKENDS allow-list
   [ -z "$ONLY_BACKENDS" ] && return 0
   case ",$ONLY_BACKENDS," in *",$1,"*) return 0 ;; *) return 1 ;; esac
+}
+skip_model() {  # honour SKIP_MODELS block-list
+  [ -z "$SKIP_MODELS" ] && return 1
+  case ",$SKIP_MODELS," in *",$1,"*) return 0 ;; *) return 1 ;; esac
 }
 # Batch size: 16 matches the established leaderboard methodology (canary repo's
 # eval default), so scores stay comparable to existing entries. Properly-masked
@@ -123,6 +128,7 @@ API_MODELS=(
 run_one() {
   local model="$1" backend="$2" extra="$3"
   want_backend "$backend" || { echo "--- skip $model (backend=$backend not in ONLY_BACKENDS)"; return; }
+  skip_model "$model"    && { echo "--- skip $model (in SKIP_MODELS)"; return; }
   local py; py="$(py_for "$backend")"
   echo ""
   echo "=================================================================="
