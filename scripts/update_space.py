@@ -21,9 +21,11 @@ import sys
 from datetime import date
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 import requests
 from huggingface_hub import HfApi, get_token
+from PIL import Image, ImageColor, ImageDraw, ImageFont
 
 SPACE_REPO_ID   = "RyeAI/danish-asr-leaderboard"
 DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
@@ -78,6 +80,21 @@ OFFICIAL_SIZE: dict[str, float] = {
     "facebook/seamless-m4t-v2-large": 2.0,
     "openai/whisper-large-v3": 2.0,
 }
+
+# 1200x630 = the OG/social-card standard. Content is centred so the card still
+# reads when messengers (Slack/Mattermost/iMessage) crop it to a square thumbnail.
+THUMBNAIL_SIZE = (1200, 630)
+THUMBNAIL_BG = "#08060C"
+THUMBNAIL_TEXT = "#FFFFFF"
+THUMBNAIL_MUTED = "#C0A8B4"
+THUMBNAIL_EYEBROW = "#B0A090"
+THUMBNAIL_STAT = "#F5A0B0"
+THUMBNAIL_STAT_LABEL = "#A0808C"
+THUMBNAIL_DIVIDER = "#4A2030"
+THUMBNAIL_RED = "#C8102E"
+# Crimson radial glow, anchored lower-left, fading to near-black (offset → colour).
+THUMBNAIL_GRADIENT = [(0.0, "#6E1230"), (0.40, "#480C20"), (0.72, "#1C0810"), (1.0, "#08060C")]
+THUMBNAIL_OUT = SPACE_DIR / "cover.jpeg"
 
 
 @functools.lru_cache(maxsize=256)
@@ -279,6 +296,115 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
     }
 
 
+def _load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    """Load a reasonable sans font available on macOS/Linux runners."""
+    candidates = []
+    if bold:
+        candidates.extend([
+            "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+            "/System/Library/Fonts/Supplemental/Helvetica.ttc",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        ])
+    else:
+        candidates.extend([
+            "/System/Library/Fonts/Supplemental/Arial.ttf",
+            "/System/Library/Fonts/Supplemental/Helvetica.ttc",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+        ])
+    for path in candidates:
+        try:
+            return ImageFont.truetype(path, size=size)
+        except OSError:
+            continue
+    return ImageFont.load_default()
+
+
+def _text_width(draw: ImageDraw.ImageDraw, text: str, font) -> int:
+    left, _top, right, _bottom = draw.textbbox((0, 0), text, font=font)
+    return right - left
+
+
+def _fit_font(draw: ImageDraw.ImageDraw, text: str, max_width: int, start_size: int, bold: bool = False):
+    size = start_size
+    while size > 28:
+        font = _load_font(size, bold=bold)
+        if _text_width(draw, text, font) <= max_width:
+            return font
+        size -= 4
+    return _load_font(28, bold=bold)
+
+
+def _radial_gradient(size: tuple[int, int], center: tuple[float, float],
+                     radius_px: float, stops: list[tuple[float, str]]) -> Image.Image:
+    """A smooth multi-stop radial gradient (offset 0→1 mapped to distance/radius)."""
+    width, height = size
+    cx, cy = center
+    yy, xx = np.mgrid[0:height, 0:width]
+    dist = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2) / radius_px
+    dist = np.clip(dist, 0.0, 1.0)
+    offsets = [s[0] for s in stops]
+    colors = [ImageColor.getrgb(s[1]) for s in stops]
+    channels = [np.interp(dist, offsets, [c[i] for c in colors]) for i in range(3)]
+    arr = np.dstack(channels).astype(np.uint8)
+    return Image.fromarray(arr, "RGB").convert("RGBA")
+
+
+def _count_datasets(data: dict) -> int:
+    """Distinct test sets = per-dataset WER columns (excludes the macro mean)."""
+    rows = data.get("wer", [])
+    if not rows:
+        return 5
+    n = sum(1 for k in rows[0] if k.endswith("_wer") and k != "mean_wer")
+    return n or 5
+
+
+def generate_cover_image(data: dict, out_path: Path = THUMBNAIL_OUT) -> Path:
+    """Generate the social thumbnail. Model/dataset counts come from live data;
+    the layout is centred so it survives a square crop in messenger link cards."""
+    width, height = THUMBNAIL_SIZE
+    cx = width / 2
+
+    image = _radial_gradient(
+        THUMBNAIL_SIZE, (0.20 * width, 0.55 * height), 0.95 * width, THUMBNAIL_GRADIENT
+    )
+    draw = ImageDraw.Draw(image)
+
+    eyebrow_font = _load_font(22, bold=True)
+    title_font = _fit_font(draw, "Open Danish ASR", 1000, 92, bold=True)
+    subtitle_font = _load_font(25)
+    stat_value_font = _load_font(60, bold=True)
+    stat_label_font = _load_font(19, bold=True)
+
+    n_models = len(data.get("wer", []))
+    n_datasets = _count_datasets(data)
+
+    # Eyebrow + centred Danish flag.
+    draw.text((cx, 72), "RYE AI", font=eyebrow_font, fill=THUMBNAIL_EYEBROW, anchor="ms")
+    draw.rectangle((551, 102, 650, 176), fill=THUMBNAIL_RED)
+    draw.rectangle((582, 102, 596, 176), fill=THUMBNAIL_TEXT)
+    draw.rectangle((551, 132, 650, 146), fill=THUMBNAIL_TEXT)
+
+    # Two-line title + subtitle, all centred.
+    draw.text((cx, 282), "Open Danish ASR", font=title_font, fill=THUMBNAIL_TEXT, anchor="ms")
+    draw.text((cx, 381), "Leaderboard", font=title_font, fill=THUMBNAIL_TEXT, anchor="ms")
+    draw.text((cx, 438), "Consistent WER and CER evaluation across Danish test sets.",
+              font=subtitle_font, fill=THUMBNAIL_MUTED, anchor="ms")
+
+    divider = ImageColor.getrgb(THUMBNAIL_DIVIDER)
+    draw.line((409, 480, 791, 480), fill=divider, width=1)
+
+    # Stats: MODELS | DATASETS — both counts dynamic.
+    draw.text((503, 551), str(n_models), font=stat_value_font, fill=THUMBNAIL_STAT, anchor="ms")
+    draw.text((503, 586), "MODELS", font=stat_label_font, fill=THUMBNAIL_STAT_LABEL, anchor="ms")
+    draw.line((600, 508, 600, 593), fill=divider, width=1)
+    draw.text((697, 551), str(n_datasets), font=stat_value_font, fill=THUMBNAIL_STAT, anchor="ms")
+    draw.text((697, 586), "DATASETS", font=stat_label_font, fill=THUMBNAIL_STAT_LABEL, anchor="ms")
+
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    image.convert("RGB").save(out_path, format="JPEG", quality=92, subsampling=0)
+    return out_path
+
+
 def main() -> None:
     token = os.environ.get("HF_TOKEN") or get_token()
     if not token:
@@ -295,6 +421,9 @@ def main() -> None:
     out = SPACE_DIR / "leaderboard.json"
     out.write_text(json.dumps(data, ensure_ascii=False, indent=2))
     print(f"  {out}  ({len(data['wer'])} WER rows, {len(data['cer'])} CER rows)")
+
+    cover_out = generate_cover_image(data)
+    print(f"  {cover_out}")
 
     models_out = SPACE_DIR / "models.py"
     models_out.write_text(build_models_py(data), encoding="utf-8")
