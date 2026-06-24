@@ -7,6 +7,7 @@ on:
     paths:
       - 'space/**'
       - 'scripts/update_space.py'
+      - '.github/workflows/deploy-space.yml'
   workflow_dispatch:
 
 jobs:
