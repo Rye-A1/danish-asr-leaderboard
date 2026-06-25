@@ -18,21 +18,15 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
       - name: Set up Python
-        run: uv python install 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
       - name: Run tests
-        # `-e .` pulls the core deps (num2words, jiwer, pandas, ...); the extras are
-        # what the deploy-helper tests need (Pillow + numpy for the cover image,
-        # requests for update_space).
-        # --python 3.11 locks uv's resolver to a single Python version so it doesn't
-        # try a universal cross-version resolution that hits conflicts between the
-        # optional ML extras (nemo, vibevoice, cohere-asr) — those extras are never
-        # installed in CI, but uv validates all of them when resolving universally.
+        # Use plain pip (not uv pip) — uv pip does universal cross-version resolution
+        # which hits conflicts between the optional ML extras (nemo vs vibevoice) even
+        # though those extras are never installed in CI.
         run: |
-          uv venv --python 3.11
-          uv pip install --python 3.11 -e . pytest pillow numpy requests
-          uv run python -m pytest tests/ -q
+          pip install -e . pytest pillow numpy requests
+          pytest tests/ -q
