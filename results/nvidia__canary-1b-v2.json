@@ -1,0 +1,19 @@
+{
+  "model": "[nvidia/canary-1b-v2](https://huggingface.co/nvidia/canary-1b-v2)",
+  "params_b": 0.962,
+  "coral_conversation_wer": 59.96,
+  "coral_read_aloud_wer": 29.69,
+  "cv17_da_wer": 15.37,
+  "fleurs_da_wer": 11.62,
+  "ftspeech_wer": 21.55,
+  "mean_wer": 27.64,
+  "coral_conversation_cer": 76.29,
+  "coral_read_aloud_cer": 13.27,
+  "cv17_da_cer": 6.53,
+  "fleurs_da_cer": 4.56,
+  "ftspeech_cer": 13.63,
+  "mean_cer": 22.86,
+  "speed_x": 87.3,
+  "submitted": "2026-06-22",
+  "access": "open"
+}

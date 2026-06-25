@@ -1,0 +1,19 @@
+{
+  "model": "[openai/whisper-base](https://huggingface.co/openai/whisper-base)",
+  "params_b": 0.073,
+  "coral_conversation_wer": 276.28,
+  "coral_read_aloud_wer": 91.36,
+  "cv17_da_wer": 79.12,
+  "fleurs_da_wer": 64.11,
+  "ftspeech_wer": 99.83,
+  "mean_wer": 122.14,
+  "coral_conversation_cer": 230.76,
+  "coral_read_aloud_cer": 47.93,
+  "cv17_da_cer": 40.38,
+  "fleurs_da_cer": 31.63,
+  "ftspeech_cer": 61.84,
+  "mean_cer": 82.51,
+  "speed_x": 9.5,
+  "submitted": "2026-06-24",
+  "access": "open"
+}

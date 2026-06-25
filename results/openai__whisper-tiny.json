@@ -1,0 +1,19 @@
+{
+  "model": "[openai/whisper-tiny](https://huggingface.co/openai/whisper-tiny)",
+  "params_b": 0.038,
+  "coral_conversation_wer": 283.23,
+  "coral_read_aloud_wer": 111.23,
+  "cv17_da_wer": 99.75,
+  "fleurs_da_wer": 93.62,
+  "ftspeech_wer": 140.71,
+  "mean_wer": 145.71,
+  "coral_conversation_cer": 234.8,
+  "coral_read_aloud_cer": 62.43,
+  "cv17_da_cer": 55.18,
+  "fleurs_da_cer": 48.67,
+  "ftspeech_cer": 94.64,
+  "mean_cer": 99.14,
+  "speed_x": 9.4,
+  "submitted": "2026-06-24",
+  "access": "open"
+}

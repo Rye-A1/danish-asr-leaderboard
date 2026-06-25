@@ -325,6 +325,7 @@
     }
     .about h2:first-child { margin-top: 0; }
     .about h3 { font-size: 14px; font-weight: 600; margin: 18px 0 7px; }
+    .about h4 { font-size: 13px; font-weight: 600; color: var(--text); margin: 14px 0 5px; }
     .about p { color: var(--muted); margin-bottom: 10px; }
     .about ol, .about ul { padding-left: 20px; margin-bottom: 12px; color: var(--muted); }
     .about li { margin-bottom: 4px; }
@@ -875,27 +876,39 @@
       Eval code:
       <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">github.com/Rye-A1/danish-asr-leaderboard</a>
     </p>
-    <h3>Submitting a model</h3>
-    <p>Run the evaluation harness on all five test sets, then either:</p>
+    <h3>Adding a model</h3>
+    <p>There are two paths, depending on whether you've run the evaluation yourself:</p>
+
+    <h4>Request a model — we run it</h4>
+    <p>If you can't run the eval yourself, open a
+      <a href="https://github.com/Rye-A1/danish-asr-leaderboard/issues" target="_blank" rel="noopener">GitHub issue</a>
+      (or a <a href="https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/discussions" target="_blank" rel="noopener">Space discussion</a>)
+      with the model id, backend, and where to find it. We'll run it through the harness and add it.</p>
+
+    <h4>Submit a score — you ran it</h4>
+    <p>Run the harness on all five test sets, then open a pull request on the
+      <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">GitHub repo</a>
+      committing the two outputs the harness writes:</p>
     <ol>
-      <li><strong>PR (preferred):</strong> commit your <code>results/&lt;model-slug&gt;.json</code>
-        to the <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">GitHub repo</a>
-        and open a pull request. Include the exact command you ran, the hardware
-        (for <code>speed_x</code> context), and whether the model is
-        <code>open</code> or <code>proprietary</code>.</li>
-      <li><strong>Discussion:</strong> if you can't run the eval yourself, open a
-        <a href="https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/discussions" target="_blank" rel="noopener">Space discussion</a>
-        with the model id and backend.</li>
+      <li><code>results/&lt;model-slug&gt;.json</code> — scores and metadata.</li>
+      <li><code>outputs/&lt;model-slug&gt;/</code> — the raw per-dataset transcriptions
+        (<code>&lt;dataset&gt;.jsonl</code> + <code>meta.json</code>), one
+        <code>{"id", "reference", "hypothesis"}</code> per line. Lets reviewers inspect actual
+        transcriptions and enables re-scoring under future normalisers.</li>
     </ol>
+    <p>Include in the PR description: the exact command you ran, the hardware used (for
+      <code>speed_x</code> context), and whether the model is <code>open</code> or
+      <code>proprietary</code>. On merge, CI automatically publishes both to the
+      <a href="https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard" target="_blank" rel="noopener">HF dataset</a>
+      and updates the leaderboard.</p>
     <blockquote>
       Do <strong>not</strong> modify the normalisation or metrics — run the
       harness as-is so results stay comparable.
     </blockquote>
     <blockquote>
-      <strong>Verification:</strong> all submitted results are re-evaluated
-      independently before being added to the leaderboard. We run the harness
-      ourselves on our hardware to ensure consistency and catch any
-      configuration differences.
+      <strong>Verification:</strong> whichever path a model arrives by, we
+      re-evaluate it independently on our own hardware before publishing — to
+      confirm the scores reproduce and catch any configuration differences.
     </blockquote>
 
   </div><!-- /about -->

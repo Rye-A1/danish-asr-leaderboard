@@ -1,0 +1,19 @@
+{
+  "model": "[gpt-4o-transcribe-benchmark](https://huggingface.co/gpt-4o-transcribe-benchmark)",
+  "params_b": 0.0,
+  "coral_conversation_wer": 48.5,
+  "coral_read_aloud_wer": 18.74,
+  "cv17_da_wer": 12.12,
+  "fleurs_da_wer": 6.13,
+  "ftspeech_wer": 20.99,
+  "mean_wer": 21.3,
+  "coral_conversation_cer": 37.99,
+  "coral_read_aloud_cer": 8.25,
+  "cv17_da_cer": 4.87,
+  "fleurs_da_cer": 2.6,
+  "ftspeech_cer": 19.43,
+  "mean_cer": 14.63,
+  "speed_x": 8.6,
+  "submitted": "2026-06-24",
+  "access": "open"
+}

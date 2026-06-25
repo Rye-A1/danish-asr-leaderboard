@@ -1,0 +1,19 @@
+{
+  "model": "[facebook/mms-1b-all](https://huggingface.co/facebook/mms-1b-all)",
+  "params_b": 0.965,
+  "coral_conversation_wer": 61.89,
+  "coral_read_aloud_wer": 43.4,
+  "cv17_da_wer": 22.01,
+  "fleurs_da_wer": 23.89,
+  "ftspeech_wer": 44.84,
+  "mean_wer": 39.21,
+  "coral_conversation_cer": 33.32,
+  "coral_read_aloud_cer": 15.79,
+  "cv17_da_cer": 6.2,
+  "fleurs_da_cer": 7.75,
+  "ftspeech_cer": 22.21,
+  "mean_cer": 17.05,
+  "speed_x": 40.5,
+  "submitted": "2026-06-24",
+  "access": "open"
+}

@@ -6,15 +6,17 @@ on:
       - main
     paths:
       - 'space/**'
+      - 'results/**'
+      - 'outputs/**'
       - 'scripts/update_space.py'
+      - 'scripts/push_results.py'
+      - 'scripts/push_outputs.py'
       - '.github/workflows/deploy-space.yml'
   workflow_dispatch:
 
 jobs:
   deploy-space:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     env:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
 
@@ -30,15 +32,12 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
 
+      - name: Push outputs to HF dataset
+        run: uv run --no-project --with pandas --with pyarrow --with huggingface_hub python scripts/push_outputs.py
+        continue-on-error: true
+
+      - name: Push results to HF dataset
+        run: uv run --no-project --with pandas --with pyarrow --with huggingface_hub python scripts/push_results.py
+
       - name: Deploy Space
         run: uv run --no-project --with pandas --with pyarrow --with requests --with huggingface_hub --with pillow --with numpy python scripts/update_space.py
-
-      - name: Commit updated thumbnail
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git diff --quiet space/cover.jpeg || (
-            git add space/cover.jpeg &&
-            git commit -m "chore(space): update social thumbnail [skip ci]" &&
-            git push
-          )

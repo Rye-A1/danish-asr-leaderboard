@@ -1,0 +1,19 @@
+{
+  "model": "[mistralai/Voxtral-Mini-3B-2507](https://huggingface.co/mistralai/Voxtral-Mini-3B-2507)",
+  "params_b": 4.676,
+  "coral_conversation_wer": 46.71,
+  "coral_read_aloud_wer": 30.09,
+  "cv17_da_wer": 18.49,
+  "fleurs_da_wer": 12.91,
+  "ftspeech_wer": 20.7,
+  "mean_wer": 25.78,
+  "coral_conversation_cer": 31.53,
+  "coral_read_aloud_cer": 13.42,
+  "cv17_da_cer": 7.16,
+  "fleurs_da_cer": 5.15,
+  "ftspeech_cer": 11.88,
+  "mean_cer": 13.83,
+  "speed_x": 43.9,
+  "submitted": "2026-06-25",
+  "access": "open"
+}

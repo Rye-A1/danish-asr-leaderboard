@@ -51,11 +51,13 @@ PROVIDER_DOCS = {
     "chirp": "https://cloud.google.com/speech-to-text/v2/docs/chirp_3-model",
     "soniox": "https://soniox.com/docs/stt/get-started/transcribe-audio-file",
     "azure": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models",
+    "syv-transcribe": "https://syv.ai",
 }
 
 # Logos for hosted/API models (no HF avatar). Same substring keys as PROVIDER_DOCS.
 PROVIDER_LOGO = {
     "scribe_v": "https://elevenlabs.io/_next/image?url=https%3A%2F%2Feleven-public-cdn.elevenlabs.io%2Fpayloadcms%2Felevenlabs-official-logo-11-icon.webp&w=1920&q=95",
+    "syv-transcribe": "https://syv.ai/_next/image?url=%2F7.png&w=256&q=75",
 }
 
 # API models that have an HF org — fetch the avatar the same way as HF repos.

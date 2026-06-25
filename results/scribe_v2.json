@@ -1,0 +1,19 @@
+{
+  "model": "[scribe_v2](https://huggingface.co/scribe_v2)",
+  "params_b": 0.0,
+  "coral_conversation_wer": 29.22,
+  "coral_read_aloud_wer": 17.07,
+  "cv17_da_wer": 5.52,
+  "fleurs_da_wer": 5.24,
+  "ftspeech_wer": 10.89,
+  "mean_wer": 13.59,
+  "coral_conversation_cer": 18.26,
+  "coral_read_aloud_cer": 7.1,
+  "cv17_da_cer": 1.91,
+  "fleurs_da_cer": 2.22,
+  "ftspeech_cer": 6.06,
+  "mean_cer": 7.11,
+  "speed_x": 6.8,
+  "submitted": "2026-06-24",
+  "access": "open"
+}
