@@ -1,6 +1,6 @@
 # Danish ASR Leaderboard
 
-![Danish ASR Leaderboard cover](space/cover.jpeg)
+![Danish ASR Leaderboard cover](https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/resolve/main/cover.jpeg)
 
 Reproducible benchmark and open leaderboard for **Danish automatic speech
 recognition**, scored across five independent public test sets. Modelled on the
