@@ -1,0 +1,32 @@
+name: Tests
+
+# Runs the unit suite on every push and pull request. Deliberately a separate
+# workflow from deploy-space.yml: that one only triggers on space/** changes, so it
+# would never exercise a change to the scoring/normalizer code. This one covers the
+# whole repo so e.g. a regression in danish_asr_leaderboard/ is caught before merge.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run tests
+        # Use plain pip (not uv pip) — uv pip does universal cross-version resolution
+        # which hits conflicts between the optional ML extras (nemo vs vibevoice) even
+        # though those extras are never installed in CI.
+        run: |
+          pip install -e . pytest pillow numpy requests
+          pytest tests/ -q

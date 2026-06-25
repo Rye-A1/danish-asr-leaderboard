@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 from update_space import (
@@ -10,11 +11,13 @@ from update_space import (
     PROVIDER_DOCS,
     PROVIDER_HF_ORG,
     PROVIDER_LOGO,
+    THUMBNAIL_SIZE,
     _api_docs_url,
     _fmt_size,
     _official_size,
     _parse_model,
     _size_from_name,
+    generate_cover_image,
 )
 
 
@@ -115,3 +118,23 @@ def test_parse_model_plain():
 def test_parse_model_non_string():
     name, url = _parse_model(None)
     assert url == ""
+
+
+def test_generate_cover_image(tmp_path):
+    out = tmp_path / "cover.jpeg"
+    data = {
+        "updated": "2026-06-23",
+        "wer": [
+            {"name": "alpha/model-a", "mean_wer": 7.12, "mean_cer": 2.91, "speed_x": 18.4},
+            {"name": "beta/model-b", "mean_wer": 7.48, "mean_cer": 3.05, "speed_x": 12.1},
+            {"name": "gamma/model-c", "mean_wer": 8.04, "mean_cer": 3.44, "speed_x": 9.7},
+        ],
+        "cer": [],
+    }
+
+    result = generate_cover_image(data, out)
+
+    assert result == out
+    assert out.exists()
+    image = Image.open(out)
+    assert image.size == THUMBNAIL_SIZE

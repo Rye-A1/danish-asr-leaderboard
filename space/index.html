@@ -353,6 +353,31 @@
     .about thead th { cursor: default; text-transform: none; letter-spacing: 0; font-size: 13px; }
     .about tbody td { color: var(--muted); }
 
+    /* ── Changelog (expandable) ─────────────────────────────────────── */
+    .changelog {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--card, rgba(255,255,255,0.02));
+      margin: 8px 0 24px;
+    }
+    .changelog > summary {
+      cursor: pointer;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      list-style: none;
+      user-select: none;
+    }
+    .changelog > summary::-webkit-details-marker { display: none; }
+    .changelog > summary::before { content: "▸ "; color: var(--muted); }
+    .changelog[open] > summary::before { content: "▾ "; }
+    .changelog > summary:hover { color: var(--link); }
+    .changelog-body { padding: 0 16px 4px; border-top: 1px solid var(--border); }
+    .changelog-body h3 { margin: 14px 0 7px; }
+    .changelog-body ul { padding-left: 20px; margin-bottom: 12px; color: var(--muted); }
+    .changelog-body li { margin-bottom: 6px; }
+
     /* ── Ranking toggle ─────────────────────────────────────────────── */
     .tog-wrap {
       display: flex;
@@ -759,7 +784,8 @@
     <h3>Text normalisation</h3>
     <p>Applied identically to hypothesis and reference before scoring:</p>
     <ol>
-      <li>Unicode NFC</li>
+      <li>Unicode NFKC — folds compatibility characters (ligatures, full-width
+        digits, <code>²</code>→<code>2</code>) so visually equivalent forms match</li>
       <li>Danish number canonicalisation — separators inside a numeral are
         removed so formatting differences don't inflate WER. Thousands and
         decimals are both stripped: <code>1.234</code> → <code>1234</code>,
@@ -768,18 +794,32 @@
       <li>Strip punctuation — apostrophes <em>inside</em> a word
         (e.g. <code>det's</code>) are preserved; all other punctuation and
         symbols are removed</li>
+      <li><strong>Numerals → Danish words</strong> — standalone integers are
+        spelled out with <a href="https://github.com/savoirfairelinux/num2words" target="_blank" rel="noopener">num2words</a>
+        (<code>4</code>→<code>fire</code>, <code>24</code>→<code>fireogtyve</code>,
+        <code>100</code>→<code>ethundrede</code>), so a model that writes
+        <code>"4"</code> is not penalised against a reference that spells out
+        <code>"fire"</code>. Only clean standalone integers are converted; digits
+        embedded in larger tokens (decades like <code>1960'erne</code>, ranges) are
+        left untouched</li>
       <li>Collapse whitespace</li>
     </ol>
-    <p>This matches the normalization applied to training targets and is broadly
-    consistent with the
+    <p>This is broadly consistent with the
     <a href="https://github.com/huggingface/open_asr_leaderboard" target="_blank" rel="noopener">HF Open ASR Leaderboard</a>
-    (<code>BasicTextNormalizer</code>), with the addition of Danish digit formatting.</p>
+    (<code>BasicTextNormalizer</code>) and matches the de-facto Danish standard set
+    by
+    <a href="https://github.com/Dansk-Data-Science-Community/danish-speech-eval" target="_blank" rel="noopener">danish-speech-eval</a>,
+    whose "normalised WER" likewise spells numerals out as words.</p>
     <blockquote>
-      <strong>Note:</strong> digit–word equivalence (e.g. <code>"4"</code> vs
-      <code>"fire"</code>) is <strong>not</strong> normalised. Both forms are
-      accepted as correct by human transcribers, but a model that consistently
-      outputs one form when the reference uses the other will incur errors.
-      This is a known limitation shared by most public ASR leaderboards.
+      <strong>Note:</strong> folding digit↔word formatting (step 5) is a fairness
+      correction, not a leniency — it is applied symmetrically to reference and
+      hypothesis, so genuine number-recognition errors are still counted. It
+      lowers every model's WER by ~0.1–0.5&nbsp;pp and does not reorder the board.
+    </blockquote>
+    <blockquote>
+      <strong>Note:</strong> Danish hesitation fillers (<code>øh</code>,
+      <code>hmm</code>, …) are <strong>not</strong> removed in the published scores
+      (the eval harness supports it as an opt-in, but it is off by default).
     </blockquote>
     <blockquote>
       <strong>Note:</strong> Danish orthographic variants
@@ -810,7 +850,7 @@
     <p><strong>Speed (x)</strong> = total audio duration / total inference time.
     A value of 30x means 30 seconds of audio processed per wall-clock second.
     Only the transcription call is timed — model load time is excluded.
-    Measured on an NVIDIA RTX Pro 5000 Blackwell (48 GB).</p>
+    Measured on an NVIDIA A100 (80 GB).</p>
     <blockquote>
       <strong>Speed reflects the serving stack, not just the model.</strong>
       Some models are run through high-throughput engines such as
@@ -851,8 +891,50 @@
       Do <strong>not</strong> modify the normalisation or metrics — run the
       harness as-is so results stay comparable.
     </blockquote>
+    <blockquote>
+      <strong>Verification:</strong> all submitted results are re-evaluated
+      independently before being added to the leaderboard. We run the harness
+      ourselves on our hardware to ensure consistency and catch any
+      configuration differences.
+    </blockquote>
 
   </div><!-- /about -->
+
+  <!-- Changelog — shown on all pages -->
+  <div style="max-width:800px;margin:32px 0 0">
+    <details class="changelog">
+      <summary>Methodology &amp; data changes</summary>
+      <div class="changelog-body">
+        <h3>2026-06 — Full re-evaluation &amp; normalisation update</h3>
+        <ul>
+          <li><strong>Numerals → words.</strong> Standalone integers are now spelled
+            out (<code>num2words</code>, Danish) before scoring, so digit-vs-word
+            formatting (<code>"4"</code> vs <code>"fire"</code>) no longer counts as
+            an error. Lowers every model's WER by ~0.1–0.5&nbsp;pp; does not reorder
+            the board.</li>
+          <li><strong>Unicode NFKC.</strong> Switched from NFC to NFKC
+            (compatibility folding). A near-no-op on Danish speech text, adopted for
+            correctness and consistency with the Danish standard.</li>
+          <li><strong>Raw outputs published.</strong> Every model's un-normalised
+            per-sample transcriptions are now in the
+            <a href="https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/tree/main/outputs" target="_blank" rel="noopener">results dataset</a>
+            (<code>outputs/</code>), so anyone can re-score under a different
+            normaliser without re-running inference.</li>
+          <li><strong>Long-audio fix (wav2vec2 family).</strong> Upgrading to
+            <code>transformers</code> 5.x fixed a silent truncation bug: the
+            previous <code>transformers</code> 4.x processor had no automatic chunking
+            and silently dropped audio beyond ~30&nbsp;s, inflating WER on the longer
+            test sets. Affected models were re-measured.</li>
+          <li><strong>scribe_v2 (ElevenLabs).</strong> Improved markedly vs the prior
+            run — verified to be a genuine server-side model upgrade (the identical
+            audio re-transcribes ~16&nbsp;pp better on conversational speech), not a
+            scoring change.</li>
+          <li><strong>Speed re-measured</strong> on an NVIDIA A100 (80&nbsp;GB);
+            earlier figures were on an RTX&nbsp;Pro&nbsp;5000.</li>
+        </ul>
+      </div>
+    </details>
+  </div>
 
   <!-- Footer -->
   <footer>

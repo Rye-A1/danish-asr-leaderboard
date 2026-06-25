@@ -14,6 +14,9 @@ eval_audio_cache/
 *.manifest.jsonl
 results/*.json
 !results/.gitkeep
+# Raw per-sample model outputs + offline re-scoring artifacts
+outputs/
+results_rescored*/
 
 # Model / data blobs
 *.nemo
@@ -39,3 +42,6 @@ tmp/
 
 # Env
 *.env
+
+# Local secrets (Mattermost webhook, etc.)
+.env

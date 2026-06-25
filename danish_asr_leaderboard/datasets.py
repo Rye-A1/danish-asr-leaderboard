@@ -73,13 +73,20 @@ def _materialise(
     out_dir = audio_dir / slug
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    total = len(ds)
-    limit = min(max_samples, total) if max_samples > 0 else total
-    print(f"  {total} total, processing {limit}")
+    # Iterate (don't index): works for both map-style and *streaming* datasets.
+    # Streaming is essential for large corpora — the non-streaming path generates
+    # every split (train+val+test) on first download, so ``split="test"`` on a
+    # dataset with a huge train split (e.g. CoRal-v3's 147k train examples) would
+    # pull the entire corpus. Streaming reads only the requested split's shards.
+    cap = max_samples if max_samples > 0 else None
+    known = len(ds) if hasattr(ds, "__len__") else None
+    print(f"  processing {'all' if cap is None else cap} test sample(s)"
+          + (f" of {known}" if known is not None else " (streaming)"))
 
     rows: list[Row] = []
-    for i in range(limit):
-        row = ds[i]
+    for i, row in enumerate(ds):
+        if cap is not None and i >= cap:
+            break
         text = ""
         for key in text_keys:
             text = (row.get(key) or "").strip()
@@ -93,7 +100,7 @@ def _materialise(
         if wav_path.exists():
             rows.append({"audio_path": str(wav_path), "reference_text": text})
         if progress_every and (i + 1) % progress_every == 0:
-            print(f"  [{slug}] {i + 1}/{limit}...")
+            print(f"  [{slug}] {i + 1} processed...")
 
     print(f"  {label}: {len(rows)} usable samples")
     if max_samples == 0:
@@ -110,7 +117,9 @@ def _coral_loader(config: str, slug: str, label: str) -> Loader:
         from datasets import Audio, load_dataset
 
         def load_ds():
-            ds = load_dataset("CoRal-project/coral-v3", config, split="test", num_proc=8)
+            # Stream the test split: CoRal-v3 has a 147k-example train split, and
+            # the non-streaming path generates *all* splits on first download.
+            ds = load_dataset("CoRal-project/coral-v3", config, split="test", streaming=True)
             return ds.cast_column("audio", Audio(decode=False))
 
         return _materialise(
@@ -122,11 +131,13 @@ def _coral_loader(config: str, slug: str, label: str) -> Loader:
 
 
 def load_common_voice(audio_dir: Path, max_samples: int = 0) -> list[Row]:
-    """Common Voice 17 (da) test split.
+    """Common Voice (da) test split.
 
-    Prefers a locally-prepared manifest at ``$CV_DATA_DIR/test/test_manifest.jsonl``
-    (NeMo-style ``audio_filepath``/``text`` rows). Falls back to the gated HF
-    dataset, which requires accepted terms and a valid token.
+    Reads a locally-prepared manifest at ``$CV_DATA_DIR/test/test_manifest.jsonl``
+    (NeMo-style ``audio_filepath``/``text`` rows), produced by
+    ``scripts/fetch_common_voice_da.py``. This is the supported path: modern
+    ``datasets`` (>=4) no longer runs Mozilla's script-based loader and the repo
+    ships no parquet, so the HF fallback below typically fails — set ``CV_DATA_DIR``.
     """
     cv_data_dir = os.environ.get("CV_DATA_DIR", "")
     local_manifest = Path(cv_data_dir) / "test" / "test_manifest.jsonl" if cv_data_dir else None
@@ -148,11 +159,22 @@ def load_common_voice(audio_dir: Path, max_samples: int = 0) -> list[Row]:
         print(f"  Common Voice da: {len(rows)} usable samples (local)")
         return rows
 
+    print(
+        "  NOTE: CV_DATA_DIR not set (or manifest missing). The supported path is a "
+        "local manifest from scripts/fetch_common_voice_da.py:\n"
+        "        python scripts/fetch_common_voice_da.py --output-dir cv_da\n"
+        "        export CV_DATA_DIR=$PWD/cv_da\n"
+        "  Attempting the HF fallback (usually fails on datasets>=4)…",
+    )
+
     from datasets import Audio, load_dataset
 
     def load_ds():
+        # Stream the test split: the non-streaming path generates all splits
+        # (cv17 da train) and was failing with "doesn't contain any data files".
         ds = load_dataset(
-            "mozilla-foundation/common_voice_17_0", "da", split="test", num_proc=8, token=True
+            "mozilla-foundation/common_voice_17_0", "da", split="test",
+            streaming=True, token=True,
         )
         return ds.cast_column("audio", Audio(decode=False))
 
@@ -191,7 +213,9 @@ def load_ftspeech(audio_dir: Path, max_samples: int = 0) -> list[Row]:
     from datasets import Audio, load_dataset
 
     def load_ds():
-        ds = load_dataset("alexandrainst/ftspeech", split="test_balanced", num_proc=8)
+        # Stream test_balanced: the non-streaming path generates *all* splits,
+        # and FTSpeech's ~1800h train will fill the disk.
+        ds = load_dataset("alexandrainst/ftspeech", split="test_balanced", streaming=True)
         return ds.cast_column("audio", Audio(decode=False))
 
     return _materialise(

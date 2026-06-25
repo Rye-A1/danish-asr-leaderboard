@@ -8,6 +8,7 @@ from pathlib import Path
 from danish_asr_leaderboard.backends import LoadOptions, available_backends, load_backend
 from danish_asr_leaderboard.datasets import CORE_COLUMNS, DATASETS, DEFAULT_DATASETS
 from danish_asr_leaderboard.metrics import compute_cer, compute_wer
+from danish_asr_leaderboard.raw_outputs import write_dataset_outputs, write_meta
 from danish_asr_leaderboard.results import (
     EvalResult,
     fetch_params_b,
@@ -19,6 +20,16 @@ from danish_asr_leaderboard.results import (
 from danish_asr_leaderboard.scoring import transcribe_dataset
 
 API_BACKENDS = {"elevenlabs", "azure-openai", "google-chirp", "soniox"}
+
+
+def _notify(msg: str) -> None:
+    """Best-effort webhook ping; silent no-op if no webhook is configured."""
+    try:
+        from danish_asr_leaderboard.notify import notify
+
+        notify(msg)
+    except Exception:
+        pass
 
 
 def parse_args() -> argparse.Namespace:
@@ -41,6 +52,22 @@ def parse_args() -> argparse.Namespace:
                     help="Cap samples per dataset (0 = all). Use for smoke tests.")
     ap.add_argument("--audio-cache-dir", default="eval_audio_cache")
     ap.add_argument("--out-dir", default="results")
+    ap.add_argument("--outputs-dir", default="outputs",
+                    help="Where to persist raw per-sample model outputs (for offline "
+                         "re-scoring). Empty string disables saving.")
+    ap.add_argument("--unicode-form", default="NFC", choices=["NFC", "NFKC", "NFD", "NFKD"],
+                    help="Unicode normalisation form applied before scoring (published "
+                         "default: NFC). Raw outputs are saved regardless, so other forms "
+                         "can be compared later via scripts/rescore.py.")
+    ap.add_argument("--number-words", action=argparse.BooleanOptionalAction, default=True,
+                    help="Expand standalone integer tokens to Danish cardinal words "
+                         "(4 -> fire) before scoring, folding the digit<->word formatting "
+                         "difference. ON by default (the published methodology); pass "
+                         "--no-number-words to recover digit-preserving scoring.")
+    ap.add_argument("--filler-words", action="store_true",
+                    help="Remove Danish hesitation fillers (øh, hmm, ...) before scoring. "
+                         "OFF by default; raw outputs are saved regardless, so this can "
+                         "also be applied offline via scripts/rescore.py.")
     ap.add_argument("--batch-size", type=int, default=16)
     ap.add_argument("--access", default="open", choices=["open", "proprietary"],
                     help="Whether model weights are openly available")
@@ -71,19 +98,25 @@ def _options_from_args(args: argparse.Namespace) -> LoadOptions:
     return LoadOptions(
         device=args.device,
         compute_type=args.compute_type,
+        # NeMo
         nemo_model_type=args.nemo_model_type,
         nemo_beam_size=args.nemo_beam_size,
+        # KenLM
         kenlm_model=args.kenlm_model,
         kenlm_alpha=args.kenlm_alpha,
         kenlm_beam_size=args.kenlm_beam_size,
+        # ElevenLabs
         elevenlabs_api_key=args.elevenlabs_api_key,
         elevenlabs_model_id=args.elevenlabs_model_id,
+        # Azure OpenAI
         azure_openai_api_key=args.azure_openai_api_key,
         azure_openai_endpoint=args.azure_openai_endpoint,
         azure_openai_api_version=args.azure_openai_api_version,
+        # Google Chirp
         google_cloud_project=args.google_cloud_project,
         google_credentials_file=args.google_credentials_file,
         google_chirp_model_id=args.google_chirp_model_id,
+        # Soniox
         soniox_api_key=args.soniox_api_key,
         soniox_model=args.soniox_model,
     )
@@ -114,7 +147,11 @@ def main() -> None:
             print(f"WARNING: failed to load {spec.title}: {exc}", file=sys.stderr)
 
     # --- Load model ---
-    backend = load_backend(args.backend, args.model, _options_from_args(args))
+    backend = load_backend(
+        name=args.backend, 
+        model_ref=args.model, 
+        options=_options_from_args(args)
+    )
 
     # --- Resolve params_b ---
     params_b = args.params_b
@@ -135,9 +172,19 @@ def main() -> None:
     total_infer = 0.0
     total_audio = 0.0
 
+    n_samples = sum(len(rows) for rows in loaded.values())
+    _notify(
+        f"🎤 `{model_id}` transcription started — {n_samples} samples across "
+        f"{len(loaded)} dataset(s), batch {args.batch_size}, {args.unicode_form}"
+    )
+
     for column, rows in loaded.items():
         print(f"\n--- Transcribing {column} ({len(rows)} samples) ---")
-        refs, hyps, infer_s, audio_s = transcribe_dataset(backend, rows, batch_size=args.batch_size)
+        refs, hyps, infer_s, audio_s, raw = transcribe_dataset(
+            backend, rows, batch_size=args.batch_size,
+            unicode_form=args.unicode_form, number_words=args.number_words,
+            filler_words=args.filler_words,
+        )
         total_infer += infer_s
         total_audio += audio_s
         w = round(compute_wer(refs, hyps), 2)
@@ -145,6 +192,9 @@ def main() -> None:
         wer[f"{column}_wer"] = w
         cer[f"{column}_cer"] = c
         print(f"  {column} WER: {w:.2f}% | CER: {c:.2f}%")
+        if args.outputs_dir:
+            out = write_dataset_outputs(args.outputs_dir, model_id, column, raw)
+            print(f"  raw outputs → {out}")
 
     backend.release()
 
@@ -163,6 +213,20 @@ def main() -> None:
     )
 
     out_path = write_result_json(result, Path(args.out_dir), model_id)
+
+    if args.outputs_dir:
+        write_meta(args.outputs_dir, model_id, {
+            "model": model_id,
+            "model_link": model_link(model_id),
+            "params_b": params_b,
+            "access": args.access,
+            "submitted": result.submitted,
+            "unicode_form": args.unicode_form,
+            "number_words": args.number_words,
+            "filler_words": args.filler_words,
+            "speed_x": speed_x,
+            "datasets": list(loaded.keys()),
+        })
 
     print("\n=== Results ===")
     for spec in DATASETS.values():

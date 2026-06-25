@@ -20,24 +20,37 @@ class VoxtralBackend(Backend):
         self.processor = processor
         self.model_id = model_id
 
-    def transcribe_one(self, audio_path: str) -> str:
+    def transcribe_batch(self, audio_paths: list[str], *, batch_size: int) -> list[str]:
         import torch
 
         device = next(self.model.parameters()).device
         dtype = next(self.model.parameters()).dtype
-        inputs = self.processor.apply_transcription_request(
-            language="da", audio=audio_path, model_id=self.model_id
-        )
-        prompt_len = inputs.input_ids.shape[1]
-        inputs = {
-            k: (v.to(device=device, dtype=dtype) if v.is_floating_point() else v.to(device=device))
-            for k, v in inputs.items()
-        }
-        with torch.no_grad():
-            out_ids = self.model.generate(**inputs, max_new_tokens=440)
-        return self.processor.batch_decode(
-            out_ids[:, prompt_len:], skip_special_tokens=True
-        )[0].strip()
+        out: list[str] = []
+        for i in range(0, len(audio_paths), batch_size):
+            chunk = audio_paths[i : i + batch_size]
+            # apply_transcription_request accepts a list → padded batch.
+            inputs = self.processor.apply_transcription_request(
+                language="da", audio=chunk, model_id=self.model_id
+            )
+            prompt_len = inputs.input_ids.shape[1]
+            inputs = {
+                k: (v.to(device=device, dtype=dtype) if v.is_floating_point() else v.to(device=device))
+                for k, v in inputs.items()
+            }
+            with torch.no_grad():
+                out_ids = self.model.generate(**inputs, max_new_tokens=440)
+            texts = self.processor.batch_decode(out_ids[:, prompt_len:], skip_special_tokens=True)
+            if len(texts) != len(chunk):
+                # Guard against silent hyp↔ref misalignment; raising lets
+                # Backend.transcribe fall back to the per-file path.
+                raise RuntimeError(
+                    f"voxtral decoded {len(texts)} texts for {len(chunk)} inputs"
+                )
+            out.extend(t.strip() for t in texts)
+        return out
+
+    def transcribe_one(self, audio_path: str) -> str:
+        return self.transcribe_batch([audio_path], batch_size=1)[0]
 
 
 @register("voxtral")

@@ -1,4 +1,9 @@
-"""Cohere ASR backend (transformers >= 5.4.0, custom modelling code on the Hub)."""
+"""Cohere ASR backend (custom modelling code on the Hub, via trust_remote_code).
+
+Run on transformers 4.57.x: transformers 5.x regressed remote-model loading
+(``list | set`` in ``_adjust_missing_and_unexpected_keys``), so the CohereAsr
+remote code fails to load there. The eval sweep routes this backend accordingly.
+"""
 from __future__ import annotations
 
 import importlib
