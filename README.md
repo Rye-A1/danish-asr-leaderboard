@@ -56,6 +56,22 @@ Available extras match the `--backend` names: `transformers`, `wav2vec2`,
 > **NeMo note:** install `nemo_toolkit[asr]` *first* to avoid
 > dependency-resolver conflicts: `uv pip install "nemo_toolkit[asr]"` then
 > `uv pip install -e ".[nemo]"`.
+>
+> On Python ≥3.10 the resolver may backtrack to an ancient `numba` (0.53.1) whose
+> `llvmlite` (0.36) refuses to build ("only versions >=3.6,<3.10 are supported").
+> Pin modern versions explicitly:
+> `uv pip install -e ".[nemo]" "numba==0.64.0" "llvmlite==0.46.0"`.
+
+> **Common Voice note:** modern `datasets` (≥4) no longer runs Mozilla's
+> script-based `common_voice_17_0` loader and the repo ships no plain parquet, so
+> the test split can't be pulled from HF directly. Fetch it once from the Mozilla
+> Data Collective and point the harness at the local copy:
+> ```bash
+> export MOZILLA_API_KEY=...        # datacollective.mozillafoundation.org
+> python scripts/fetch_common_voice_da.py --output-dir cv_da
+> export CV_DATA_DIR=$PWD/cv_da     # load_common_voice reads cv_da/test/test_manifest.jsonl
+> ```
+> (Already have the tarball? Use `--tarball /path/to/danish.tar.gz` and skip the key.)
 
 Log in for pushing results (read access is anonymous):
 
@@ -102,6 +118,21 @@ danish-asr-eval --model openai/whisper-large-v3 --backend transformers \
   --datasets cv17,fleurs
 ```
 
+To run the whole board in one go (one process per model, GPU freed between each):
+
+```bash
+bash scripts/run_benchmark.sh                 # all open-weight models
+MAX_SAMPLES=50 bash scripts/run_benchmark.sh  # quick smoke
+RUN_API=1 bash scripts/run_benchmark.sh       # also hosted APIs (needs keys)
+```
+
+The sweep posts progress to a webhook if `MATTERMOST_WEBHOOK_URL` is set (in the
+environment or `.env`). Mattermost and Slack share the `{"text": …}` webhook
+payload, so either works out of the box; other services need a one-line tweak in
+`notify.py`. Copy [.env.example](.env.example) to `.env` to configure this and the
+other optional integrations (Mozilla CV key, HF token). Notifications are a silent
+no-op when unconfigured.
+
 Run `danish-asr-eval --help` for all options (device, batch size, beam/KenLM,
 per-API credentials, `--access open|proprietary`, …). Available backends:
 
@@ -110,7 +141,30 @@ per-API credentials, `--access open|proprietary`, …). Available backends:
 `google-chirp`, `soniox`.
 
 Each run writes `results/<model-slug>.json` with per-dataset WER/CER, the core
-means, speed, and metadata.
+means, speed, and metadata. It also persists the **raw, un-normalised** per-sample
+model output under `outputs/<model-slug>/<dataset>.jsonl` (one `{id, reference,
+hypothesis}` per line, plus a `meta.json`). Because the raw output is saved, any
+normalisation change can be evaluated **offline** — see *Re-scoring* below — without
+re-running the model. Disable with `--outputs-dir ""`.
+
+## Re-scoring (offline normalisation experiments)
+
+The normaliser is parameterised (Unicode form today; a word↔digit converter
+planned), and `scripts/rescore.py` recomputes WER/CER from the saved raw outputs
+under any configuration — no GPU, no re-inference:
+
+```bash
+# Re-score every model under NFKC and diff mean_wer against the published results
+python scripts/rescore.py --unicode-form NFKC --compare results
+
+# Re-score one model into a separate dir
+python scripts/rescore.py --model openai/whisper-large-v3 \
+  --unicode-form NFKC --out-dir results_nfkc
+```
+
+The published default is **NFC**. `NFKC` (compatibility folding — ligatures,
+full-width forms, superscripts) is offered as a selectable variant to validate
+offline before deciding whether to promote it.
 
 ## Publishing to the leaderboard
 
@@ -121,6 +175,19 @@ python scripts/push_results.py
 Pulls existing results from the HF dataset, merges your local JSONs (local wins
 on conflict), rebuilds `data/results.parquet`, and uploads everything. Safe on a
 fresh clone — nothing is lost.
+
+To also publish the **raw per-sample outputs** (so others can re-score under their
+own normalisation), roll them into one Parquet per model and push under the
+`outputs/` prefix of the same dataset repo:
+
+```bash
+python scripts/push_outputs.py                 # all models under outputs/
+python scripts/push_outputs.py --model openai/whisper-large-v3   # just one
+```
+
+Each file is `outputs/<model-slug>.parquet` with columns
+`dataset, id, reference, hypothesis` — incremental, so re-running one model only
+re-uploads that model. Use `--no-upload` to build the Parquet locally without pushing.
 
 To redeploy the static Space after editing `space/index.html`:
 
@@ -133,7 +200,7 @@ HF_TOKEN=hf_... python scripts/update_space.py
 ### Text normalisation
 Applied identically to hypothesis and reference before scoring:
 
-1. Unicode NFC
+1. Unicode NFC (default; selectable via `--unicode-form` / `rescore.py`)
 2. Danish number formatting — digit separators removed so that the same numeral
    scores identically regardless of formatting: thousand separators
    (`1.234` → `1234`) and decimal separators (`3,14` and `3.14` → `314`)
@@ -197,16 +264,18 @@ danish_asr_leaderboard/
   datasets.py       # test-set loaders + registry
   normalizer/       # Danish text normalisation
   metrics.py        # WER / CER
-  scoring.py        # transcribe + time a dataset
+  scoring.py        # transcribe + time a dataset (returns raw outputs too)
   results.py        # EvalResult, slug, params lookup, JSON writer
+  raw_outputs.py    # persist/load raw per-sample outputs for offline re-scoring
   audio.py          # ffmpeg transcode + duration helpers
   backends/         # one module per backend, self-registered via @register
     base.py         # Backend ABC + LoadOptions + registry
     api/            # hosted-API backends
 run_eval.py         # thin CLI entry point
-scripts/            # push_results.py, update_space.py
-space/              # Static HTML leaderboard (deployed to the HF Space)
+scripts/            # run_benchmark.sh, fetch_common_voice_da.py, push_results.py, push_outputs.py, update_space.py, rescore.py
+outputs/            # raw per-sample model outputs (git-ignored)
 results/            # generated result JSONs (git-ignored)
+space/              # Static HTML leaderboard (deployed to the HF Space)
 ```
 
 ## Adding a backend

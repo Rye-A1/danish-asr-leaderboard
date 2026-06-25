@@ -30,13 +30,26 @@ def transcribe_dataset(
     rows: list[dict],
     *,
     batch_size: int = 16,
-) -> tuple[list[str], list[str], float, float]:
-    """Transcribe ``rows`` and return ``(refs, hyps, inference_secs, audio_secs)``.
+    unicode_form: str = "NFC",
+    number_words: bool = True,
+    filler_words: bool = False,
+) -> tuple[list[str], list[str], float, float, list[dict]]:
+    """Transcribe ``rows`` and return ``(refs, hyps, inference_secs, audio_secs, raw)``.
 
-    ``refs`` and ``hyps`` are normalised and ready for ``compute_wer``/``compute_cer``.
+    ``refs`` and ``hyps`` are normalised (under ``unicode_form``, with
+    ``number_words`` digit-expansion and optional ``filler_words`` removal) and ready
+    for ``compute_wer``/``compute_cer``. ``raw`` is one record per row carrying the
+    *un-normalised* reference and hypothesis plus a stable sample id, so the exact
+    model output can be persisted and re-scored offline under any normaliser
+    configuration without re-running inference.
     """
     audio_paths = [row["audio_path"] for row in rows]
-    refs = [normalise(row["reference_text"]) for row in rows]
+    refs_raw = [row["reference_text"] for row in rows]
+    refs = [
+        normalise(r, unicode_form=unicode_form,
+                  number_words=number_words, filler_words=filler_words)
+        for r in refs_raw
+    ]
     total_audio_secs = sum(wav_duration(p) for p in audio_paths)
 
     t0 = time.perf_counter()
@@ -46,5 +59,13 @@ def transcribe_dataset(
     rtf = total_infer_secs / total_audio_secs if total_audio_secs > 0 else float("nan")
     print(f"  {len(rows)} files in {total_infer_secs:.1f}s  (RTF {rtf:.3f})")
 
-    hyps = [normalise(h) for h in hyps_raw]
-    return refs, hyps, total_infer_secs, total_audio_secs
+    hyps = [
+        normalise(h, unicode_form=unicode_form,
+                  number_words=number_words, filler_words=filler_words)
+        for h in hyps_raw
+    ]
+    raw = [
+        {"id": path, "reference": ref, "hypothesis": hyp}
+        for path, ref, hyp in zip(audio_paths, refs_raw, hyps_raw)
+    ]
+    return refs, hyps, total_infer_secs, total_audio_secs, raw
