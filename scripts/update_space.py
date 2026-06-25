@@ -51,6 +51,7 @@ PROVIDER_DOCS = {
     "chirp": "https://cloud.google.com/speech-to-text/v2/docs/chirp_3-model",
     "soniox": "https://soniox.com/docs/stt/get-started/transcribe-audio-file",
     "azure": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models",
+    "syv-transcribe": "https://syv.ai",
 }
 
 # Logos for hosted/API models (no HF avatar). Same substring keys as PROVIDER_DOCS.
@@ -61,6 +62,7 @@ PROVIDER_LOGO = {
 # API models that have an HF org — fetch the avatar the same way as HF repos.
 PROVIDER_HF_ORG = {
     "gpt-4o": "openai",
+    "syv-transcribe": "syvai",
 }
 
 _MD_LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
