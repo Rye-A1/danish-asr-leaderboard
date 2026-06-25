@@ -1,0 +1,19 @@
+{
+  "model": "[facebook/seamless-m4t-v2-large](https://huggingface.co/facebook/seamless-m4t-v2-large)",
+  "params_b": 2.309,
+  "coral_conversation_wer": 59.8,
+  "coral_read_aloud_wer": 29.13,
+  "cv17_da_wer": 15.51,
+  "fleurs_da_wer": 12.01,
+  "ftspeech_wer": 47.27,
+  "mean_wer": 32.74,
+  "coral_conversation_cer": 46.65,
+  "coral_read_aloud_cer": 14.08,
+  "cv17_da_cer": 6.65,
+  "fleurs_da_cer": 4.9,
+  "ftspeech_cer": 39.19,
+  "mean_cer": 22.29,
+  "speed_x": 65.5,
+  "submitted": "2026-06-24",
+  "access": "open"
+}

@@ -1,18 +1,23 @@
 #!/usr/bin/env python3
 """Convert saved raw model outputs to per-model Parquet and push to HuggingFace.
 
-The eval harness writes raw, un-normalised output to
-``outputs/<model-slug>/<dataset>.jsonl`` (one ``{id, reference, hypothesis}`` per
-line) plus a ``meta.json``. This script rolls each model's per-dataset JSONL files
-into a single Parquet — ``outputs/<model-slug>.parquet`` with columns
-``dataset, id, reference, hypothesis`` — and uploads it to the dataset repo under
-the ``outputs/`` prefix, mirroring how ``push_results.py`` publishes the scores.
+Supports two input layouts:
 
-One Parquet *per model* (rather than one combined file) keeps each push
-incremental: re-run one model, push only that model's outputs. The ``dataset``
-column makes each file self-describing, so the HF viewer can filter by test set.
+1. Eval-harness layout -- ``outputs/<model-slug>/`` directory with one JSONL per
+   dataset (``{id, reference, hypothesis}`` per line) plus an optional ``meta.json``.
 
-Run after one or more evals have produced ``outputs/<slug>/``:
+2. PR-submission layout -- ``outputs/<model-slug>.jsonl`` single combined file with
+   ``{dataset, id, reference, hypothesis}`` per line (submitted alongside the result
+   JSON when opening a pull request).
+
+Both are converted to a single Parquet -- ``outputs/<model-slug>.parquet`` with
+columns ``dataset, id, reference, hypothesis`` -- and uploaded to the HF dataset
+repo under the ``outputs/`` prefix.
+
+One Parquet per model keeps pushes incremental. The ``dataset`` column makes each
+file self-describing so the HF viewer can filter by test set.
+
+Run after one or more evals / PR merges:
   python scripts/push_outputs.py                 # all models under outputs/
   python scripts/push_outputs.py --model openai/whisper-large-v3
 
@@ -37,22 +42,23 @@ DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 COLUMNS = ["dataset", "id", "reference", "hypothesis"]
 
 
-def model_dirs(outputs_dir: Path, model: str) -> list[Path]:
-    if model:
-        d = outputs_dir / slugify(model)
-        if not d.is_dir():
-            print(f"ERROR: no raw outputs for {model!r} at {d}", file=sys.stderr)
-            sys.exit(1)
-        return [d]
-    dirs = sorted(d for d in outputs_dir.iterdir() if d.is_dir())
-    if not dirs:
-        print(f"ERROR: no model output dirs under {outputs_dir}", file=sys.stderr)
-        sys.exit(1)
-    return dirs
+def _iter_combined_jsonl(jsonl_path: Path):
+    """Yield rows from a combined submission JSONL (has 'dataset' field)."""
+    for line in jsonl_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        rec = json.loads(line)
+        yield {
+            "dataset": rec.get("dataset") or rec.get("set"),
+            "id": rec.get("id") or rec.get("audio"),
+            "reference": rec.get("reference"),
+            "hypothesis": rec.get("hypothesis"),
+        }
 
 
 def build_parquet(model_dir: Path) -> tuple[Path, int]:
-    """Roll one model's per-dataset JSONL files into a single Parquet."""
+    """Roll one model's per-dataset JSONL directory into a single Parquet."""
     import pandas as pd
 
     rows: list[dict] = []
@@ -72,11 +78,48 @@ def build_parquet(model_dir: Path) -> tuple[Path, int]:
     return parquet_path, len(rows)
 
 
+def build_parquet_from_combined(jsonl_path: Path) -> tuple[Path, int]:
+    """Build a Parquet from a single combined submission JSONL file."""
+    import pandas as pd
+
+    rows = list(_iter_combined_jsonl(jsonl_path))
+    if not rows:
+        return Path(), 0
+    parquet_path = jsonl_path.parent / f"{jsonl_path.stem}.parquet"
+    pd.DataFrame(rows, columns=COLUMNS).to_parquet(str(parquet_path), index=False)
+    return parquet_path, len(rows)
+
+
 def model_label(model_dir: Path) -> str:
     meta = model_dir / "meta.json"
     if meta.exists():
         return json.loads(meta.read_text(encoding="utf-8")).get("model", model_dir.name)
     return model_dir.name
+
+
+def collect_models(outputs_dir: Path, model: str) -> list[tuple[Path, str]]:
+    """Return (source_path, label) pairs -- source is either a dir or a .jsonl file."""
+    if model:
+        slug = slugify(model)
+        combined = outputs_dir / f"{slug}.jsonl"
+        d = outputs_dir / slug
+        if combined.is_file():
+            return [(combined, slug)]
+        if d.is_dir():
+            return [(d, model_label(d))]
+        print(f"ERROR: no raw outputs for {model!r} at {combined} or {d}", file=sys.stderr)
+        sys.exit(1)
+
+    sources: list[tuple[Path, str]] = []
+    for p in sorted(outputs_dir.glob("*.jsonl")):
+        sources.append((p, p.stem))
+    for d in sorted(outputs_dir.iterdir()):
+        if d.is_dir():
+            sources.append((d, model_label(d)))
+    if not sources:
+        print(f"ERROR: no model outputs under {outputs_dir}", file=sys.stderr)
+        sys.exit(1)
+    return sources
 
 
 def main() -> None:
@@ -92,15 +135,18 @@ def main() -> None:
         print(f"ERROR: outputs dir not found: {outputs_dir}", file=sys.stderr)
         sys.exit(1)
 
-    dirs = model_dirs(outputs_dir, args.model)
+    sources = collect_models(outputs_dir, args.model)
     built: list[tuple[Path, str, int]] = []
-    for d in dirs:
-        parquet_path, n = build_parquet(d)
+    for source, label in sources:
+        if source.is_file():
+            parquet_path, n = build_parquet_from_combined(source)
+        else:
+            parquet_path, n = build_parquet(source)
         if n == 0:
-            print(f"  SKIP (no samples): {d.name}", file=sys.stderr)
+            print(f"  SKIP (no samples): {label}", file=sys.stderr)
             continue
         print(f"  built {parquet_path}  ({n} rows)")
-        built.append((parquet_path, model_label(d), n))
+        built.append((parquet_path, label, n))
 
     if not built:
         print("Nothing to push.", file=sys.stderr)
@@ -113,7 +159,7 @@ def main() -> None:
     from huggingface_hub import HfApi
 
     api = HfApi()
-    print(f"\nPushing {len(built)} model output file(s) to {DATASET_REPO_ID} …")
+    print(f"\nPushing {len(built)} model output file(s) to {DATASET_REPO_ID} ...")
     for parquet_path, label, n in built:
         api.upload_file(
             path_or_fileobj=str(parquet_path),

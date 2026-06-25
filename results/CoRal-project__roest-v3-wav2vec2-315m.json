@@ -1,0 +1,19 @@
+{
+  "model": "[CoRal-project/roest-v3-wav2vec2-315m](https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m)",
+  "params_b": 0.315,
+  "coral_conversation_wer": 26.12,
+  "coral_read_aloud_wer": 16.53,
+  "cv17_da_wer": 13.7,
+  "fleurs_da_wer": 14.82,
+  "ftspeech_wer": 18.66,
+  "mean_wer": 17.97,
+  "coral_conversation_cer": 14.59,
+  "coral_read_aloud_cer": 6.43,
+  "cv17_da_cer": 4.67,
+  "fleurs_da_cer": 5.73,
+  "ftspeech_cer": 10.4,
+  "mean_cer": 8.36,
+  "speed_x": 37.2,
+  "submitted": "2026-06-24",
+  "access": "open"
+}

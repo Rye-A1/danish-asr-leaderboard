@@ -1,0 +1,19 @@
+{
+  "model": "[pluttodk/milo-asr](https://huggingface.co/pluttodk/milo-asr)",
+  "params_b": 2.038,
+  "coral_conversation_wer": 58.19,
+  "coral_read_aloud_wer": 27.72,
+  "cv17_da_wer": 20.37,
+  "fleurs_da_wer": 13.69,
+  "ftspeech_wer": 32.62,
+  "mean_wer": 30.52,
+  "coral_conversation_cer": 40.01,
+  "coral_read_aloud_cer": 13.54,
+  "cv17_da_cer": 9.02,
+  "fleurs_da_cer": 5.98,
+  "ftspeech_cer": 22.9,
+  "mean_cer": 18.29,
+  "speed_x": 26.7,
+  "submitted": "2026-06-24",
+  "access": "open"
+}

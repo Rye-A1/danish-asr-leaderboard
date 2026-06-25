@@ -1,0 +1,19 @@
+{
+  "model": "[Qwen/Qwen3-ASR-1.7B](https://huggingface.co/Qwen/Qwen3-ASR-1.7B)",
+  "params_b": 2.349,
+  "coral_conversation_wer": 42.91,
+  "coral_read_aloud_wer": 37.31,
+  "cv17_da_wer": 23.4,
+  "fleurs_da_wer": 20.72,
+  "ftspeech_wer": 24.63,
+  "mean_wer": 29.79,
+  "coral_conversation_cer": 26.29,
+  "coral_read_aloud_cer": 15.95,
+  "cv17_da_cer": 8.94,
+  "fleurs_da_cer": 8.34,
+  "ftspeech_cer": 12.16,
+  "mean_cer": 14.34,
+  "speed_x": 38.4,
+  "submitted": "2026-06-24",
+  "access": "open"
+}

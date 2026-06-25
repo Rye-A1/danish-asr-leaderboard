@@ -1,0 +1,19 @@
+{
+  "model": "[nvidia/parakeet-rnnt-110m-da-dk](https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk)",
+  "params_b": 0.113,
+  "coral_conversation_wer": 54.67,
+  "coral_read_aloud_wer": 11.37,
+  "cv17_da_wer": 10.04,
+  "fleurs_da_wer": 10.5,
+  "ftspeech_wer": 17.78,
+  "mean_wer": 20.87,
+  "coral_conversation_cer": 49.24,
+  "coral_read_aloud_cer": 4.35,
+  "cv17_da_cer": 3.64,
+  "fleurs_da_cer": 4.08,
+  "ftspeech_cer": 11.08,
+  "mean_cer": 14.48,
+  "speed_x": 703.5,
+  "submitted": "2026-06-22",
+  "access": "open"
+}

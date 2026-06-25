@@ -1,0 +1,19 @@
+{
+  "model": "[syvai/hviske-v3-conversation](https://huggingface.co/syvai/hviske-v3-conversation)",
+  "params_b": 1.543,
+  "coral_conversation_wer": 35.46,
+  "coral_read_aloud_wer": 24.31,
+  "cv17_da_wer": 21.75,
+  "fleurs_da_wer": 16.51,
+  "ftspeech_wer": 23.19,
+  "mean_wer": 24.24,
+  "coral_conversation_cer": 23.18,
+  "coral_read_aloud_cer": 11.28,
+  "cv17_da_cer": 10.98,
+  "fleurs_da_cer": 7.61,
+  "ftspeech_cer": 13.39,
+  "mean_cer": 13.29,
+  "speed_x": 8.1,
+  "submitted": "2026-06-23",
+  "access": "open"
+}

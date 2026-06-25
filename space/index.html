@@ -876,17 +876,25 @@
       <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">github.com/Rye-A1/danish-asr-leaderboard</a>
     </p>
     <h3>Submitting a model</h3>
-    <p>Run the evaluation harness on all five test sets, then either:</p>
+    <p>Run the evaluation harness on all five test sets, then open a pull request on the
+      <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">GitHub repo</a>
+      with two files:</p>
     <ol>
-      <li><strong>PR (preferred):</strong> commit your <code>results/&lt;model-slug&gt;.json</code>
-        to the <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">GitHub repo</a>
-        and open a pull request. Include the exact command you ran, the hardware
-        (for <code>speed_x</code> context), and whether the model is
-        <code>open</code> or <code>proprietary</code>.</li>
-      <li><strong>Discussion:</strong> if you can't run the eval yourself, open a
-        <a href="https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/discussions" target="_blank" rel="noopener">Space discussion</a>
-        with the model id and backend.</li>
+      <li><code>results/&lt;model-slug&gt;.json</code> — scores and metadata (see existing files for the format).</li>
+      <li><code>outputs/&lt;model-slug&gt;.jsonl</code> — one JSON object per line with the raw
+        un-normalised transcriptions:
+        <code>{"dataset": "coral_conversation", "id": "...", "reference": "...", "hypothesis": "..."}</code>.
+        Including this file lets reviewers inspect actual transcriptions and enables re-scoring
+        under future normalisers.</li>
     </ol>
+    <p>Include in the PR description: the exact command you ran, the hardware used (for
+      <code>speed_x</code> context), and whether the model is <code>open</code> or
+      <code>proprietary</code>. On merge, CI automatically pushes both files to the
+      <a href="https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard" target="_blank" rel="noopener">HF dataset</a>
+      and updates the leaderboard.</p>
+    <p>If you can't run the eval yourself, open a
+      <a href="https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/discussions" target="_blank" rel="noopener">Space discussion</a>
+      with the model id and backend instead.</p>
     <blockquote>
       Do <strong>not</strong> modify the normalisation or metrics — run the
       harness as-is so results stay comparable.
