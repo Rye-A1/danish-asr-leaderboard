@@ -28,7 +28,11 @@ jobs:
         # `-e .` pulls the core deps (num2words, jiwer, pandas, ...); the extras are
         # what the deploy-helper tests need (Pillow + numpy for the cover image,
         # requests for update_space).
+        # --python 3.11 locks uv's resolver to a single Python version so it doesn't
+        # try a universal cross-version resolution that hits conflicts between the
+        # optional ML extras (nemo, vibevoice, cohere-asr) — those extras are never
+        # installed in CI, but uv validates all of them when resolving universally.
         run: |
-          uv venv
-          uv pip install -e . pytest pillow numpy requests
+          uv venv --python 3.11
+          uv pip install --python 3.11 -e . pytest pillow numpy requests
           uv run python -m pytest tests/ -q
