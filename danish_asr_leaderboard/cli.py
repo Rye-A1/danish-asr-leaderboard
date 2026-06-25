@@ -59,6 +59,15 @@ def parse_args() -> argparse.Namespace:
                     help="Unicode normalisation form applied before scoring (published "
                          "default: NFC). Raw outputs are saved regardless, so other forms "
                          "can be compared later via scripts/rescore.py.")
+    ap.add_argument("--number-words", action=argparse.BooleanOptionalAction, default=True,
+                    help="Expand standalone integer tokens to Danish cardinal words "
+                         "(4 -> fire) before scoring, folding the digit<->word formatting "
+                         "difference. ON by default (the published methodology); pass "
+                         "--no-number-words to recover digit-preserving scoring.")
+    ap.add_argument("--filler-words", action="store_true",
+                    help="Remove Danish hesitation fillers (øh, hmm, ...) before scoring. "
+                         "OFF by default; raw outputs are saved regardless, so this can "
+                         "also be applied offline via scripts/rescore.py.")
     ap.add_argument("--batch-size", type=int, default=16)
     ap.add_argument("--access", default="open", choices=["open", "proprietary"],
                     help="Whether model weights are openly available")
@@ -172,7 +181,9 @@ def main() -> None:
     for column, rows in loaded.items():
         print(f"\n--- Transcribing {column} ({len(rows)} samples) ---")
         refs, hyps, infer_s, audio_s, raw = transcribe_dataset(
-            backend, rows, batch_size=args.batch_size, unicode_form=args.unicode_form
+            backend, rows, batch_size=args.batch_size,
+            unicode_form=args.unicode_form, number_words=args.number_words,
+            filler_words=args.filler_words,
         )
         total_infer += infer_s
         total_audio += audio_s
@@ -211,6 +222,8 @@ def main() -> None:
             "access": args.access,
             "submitted": result.submitted,
             "unicode_form": args.unicode_form,
+            "number_words": args.number_words,
+            "filler_words": args.filler_words,
             "speed_x": speed_x,
             "datasets": list(loaded.keys()),
         })

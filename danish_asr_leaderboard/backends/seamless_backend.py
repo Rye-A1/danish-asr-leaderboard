@@ -24,9 +24,16 @@ class SeamlessBackend(Backend):
         for i in range(0, len(audio_paths), batch_size):
             batch = audio_paths[i : i + batch_size]
             audios = [load_audio_array(p) for p in batch]
-            inputs = self.processor(
-                audios=audios, sampling_rate=16000, return_tensors="pt", padding=True
-            )
+            # transformers >= 5.0 renamed the processor's audio kwarg `audios` -> `audio`
+            # and made the old name a hard error; fall back to `audios` on < 5.0.
+            try:
+                inputs = self.processor(
+                    audio=audios, sampling_rate=16000, return_tensors="pt", padding=True
+                )
+            except (TypeError, ValueError):
+                inputs = self.processor(
+                    audios=audios, sampling_rate=16000, return_tensors="pt", padding=True
+                )
             inputs = {k: v.to(device) for k, v in inputs.items()}
             with torch.no_grad():
                 out = self.model.generate(**inputs, tgt_lang=self.tgt_lang, generate_speech=False)

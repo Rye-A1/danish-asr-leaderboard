@@ -12,6 +12,8 @@ on:
 jobs:
   deploy-space:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       HF_TOKEN: ${{ secrets.HF_TOKEN }}
 
@@ -28,4 +30,14 @@ jobs:
         uses: astral-sh/setup-uv@v4
 
       - name: Deploy Space
-        run: uv run --no-project --with pandas --with pyarrow --with requests --with huggingface_hub python scripts/update_space.py
+        run: uv run --no-project --with pandas --with pyarrow --with requests --with huggingface_hub --with pillow python scripts/update_space.py
+
+      - name: Commit updated thumbnail
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet space/cover.jpeg || (
+            git add space/cover.jpeg &&
+            git commit -m "chore(space): update social thumbnail [skip ci]" &&
+            git push
+          )

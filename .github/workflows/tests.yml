@@ -1,0 +1,34 @@
+name: Tests
+
+# Runs the unit suite on every push and pull request. Deliberately a separate
+# workflow from deploy-space.yml: that one only triggers on space/** changes, so it
+# would never exercise a change to the scoring/normalizer code. This one covers the
+# whole repo so e.g. a regression in danish_asr_leaderboard/ is caught before merge.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Run tests
+        # `-e .` pulls the core deps (num2words, jiwer, pandas, ...); the extras are
+        # what the deploy-helper tests need (Pillow + numpy for the cover image,
+        # requests for update_space).
+        run: |
+          uv venv
+          uv pip install -e . pytest pillow numpy requests
+          uv run python -m pytest tests/ -q

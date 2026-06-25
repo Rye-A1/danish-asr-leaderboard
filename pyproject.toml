@@ -19,6 +19,7 @@ dependencies = [
     "datasets>=2.19.0",
     "huggingface_hub>=0.23.0",
     "jiwer>=3.0.4",
+    "num2words>=0.5.14",
     "pandas>=2.0.0",
     "pyarrow>=14.0.0",
     "soundfile>=0.12.1",
@@ -47,6 +48,11 @@ azure-openai   = ["openai>=1.0.0"]
 google-chirp   = ["google-cloud-speech>=2.26.0"]
 soniox         = ["soniox>=0.1.0"]
 dev            = ["pytest>=8.0"]
+
+[dependency-groups]
+deploy = [
+    "pillow>=10.0.0",
+]
 
 [tool.setuptools.packages.find]
 include = ["danish_asr_leaderboard*"]

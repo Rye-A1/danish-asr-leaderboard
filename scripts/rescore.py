@@ -43,21 +43,28 @@ from danish_asr_leaderboard.results import (
 ALL_COLUMNS = [spec.column for spec in DATASETS.values()]
 
 
-def _score_column(jsonl_path: Path, unicode_form: str) -> tuple[float, float]:
+def _score_column(
+    jsonl_path: Path, unicode_form: str,
+    number_words: bool = True, filler_words: bool = False,
+) -> tuple[float, float]:
     records = read_dataset_outputs(jsonl_path)
-    refs = [normalise(r["reference"], unicode_form=unicode_form) for r in records]
-    hyps = [normalise(r["hypothesis"], unicode_form=unicode_form) for r in records]
+    kw = dict(unicode_form=unicode_form, number_words=number_words, filler_words=filler_words)
+    refs = [normalise(r["reference"], **kw) for r in records]
+    hyps = [normalise(r["hypothesis"], **kw) for r in records]
     return round(compute_wer(refs, hyps), 2), round(compute_cer(refs, hyps), 2)
 
 
-def rescore_model(model_dir: Path, unicode_form: str) -> tuple[dict, dict, dict]:
+def rescore_model(
+    model_dir: Path, unicode_form: str,
+    number_words: bool = True, filler_words: bool = False,
+) -> tuple[dict, dict, dict]:
     """Return (wer, cer, meta) for one model directory."""
     wer: dict[str, float | None] = {f"{c}_wer": None for c in ALL_COLUMNS}
     cer: dict[str, float | None] = {f"{c}_cer": None for c in ALL_COLUMNS}
     for column in ALL_COLUMNS:
         jsonl_path = model_dir / f"{column}.jsonl"
         if jsonl_path.exists():
-            w, c = _score_column(jsonl_path, unicode_form)
+            w, c = _score_column(jsonl_path, unicode_form, number_words, filler_words)
             wer[f"{column}_wer"] = w
             cer[f"{column}_cer"] = c
     meta = read_meta(model_dir.parent, model_dir.name)
@@ -93,6 +100,12 @@ def main() -> None:
                     help="Re-score only this model id (default: every model in outputs-dir)")
     ap.add_argument("--unicode-form", default="NFKC", choices=["NFC", "NFKC", "NFD", "NFKD"],
                     help="Unicode normalisation form to re-score under (default: NFKC)")
+    ap.add_argument("--number-words", action=argparse.BooleanOptionalAction, default=True,
+                    help="Expand standalone integer tokens to Danish cardinal words "
+                         "(4 -> fire) when re-scoring (ON by default; --no-number-words "
+                         "to disable).")
+    ap.add_argument("--filler-words", action="store_true",
+                    help="Remove Danish hesitation fillers (øh, hmm, ...) when re-scoring.")
     ap.add_argument("--out-dir", default="results_rescored",
                     help="Where to write the re-scored result JSONs")
     ap.add_argument("--compare", default="",
@@ -116,7 +129,9 @@ def main() -> None:
     compare_dir = Path(args.compare) if args.compare else None
     out_dir = Path(args.out_dir)
 
-    print(f"Re-scoring {len(model_dirs)} model(s) under unicode_form={args.unicode_form}\n")
+    cfg = (f"unicode_form={args.unicode_form}, number_words={args.number_words}, "
+           f"filler_words={args.filler_words}")
+    print(f"Re-scoring {len(model_dirs)} model(s) under {cfg}\n")
     header = f"{'model':<48} {'mean_wer':>10}"
     if compare_dir:
         header += f" {'published':>10} {'Δ':>8}"
@@ -124,7 +139,9 @@ def main() -> None:
     print("-" * len(header))
 
     for model_dir in model_dirs:
-        wer, cer, meta = rescore_model(model_dir, args.unicode_form)
+        wer, cer, meta = rescore_model(
+            model_dir, args.unicode_form, args.number_words, args.filler_words
+        )
         model_id = meta.get("model", model_dir.name)
         result = build_result(wer, cer, meta)
         write_result_json(result, out_dir, model_id)
