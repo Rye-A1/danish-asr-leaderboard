@@ -59,8 +59,13 @@ def _configure_beam(model, beam_size: int) -> None:
 def _text_of(out) -> str:
     if out is None:
         return ""
-    if getattr(out, "text", None):
-        return out.text.strip()
+    # A NeMo Hypothesis always carries a `.text` attribute — use it even when it's
+    # an empty string (silence / nothing decoded). The earlier truthiness check
+    # (`if getattr(out, "text", None)`) fell through to `str(out)` on empty text,
+    # serialising the whole Hypothesis(...) repr as the "transcription".
+    text = getattr(out, "text", None)
+    if text is not None:
+        return text.strip()
     return str(out).strip()
 
 
