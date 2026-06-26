@@ -8,11 +8,13 @@ The HF dataset viewer is driven by the `configs:` key in the dataset card
   - one config per model  -> outputs/<slug>.parquet — that model's raw
     transcriptions, browsable from the viewer's config dropdown
 
-Rather than hand-maintain ~30 config entries, this script enumerates the
-parquets that actually exist in the dataset repo and rebuilds the block, so a
-newly-submitted model self-registers in the viewer on the next deploy. Only the
-`configs` key is touched; the rest of the card (body + other frontmatter) is
-preserved verbatim.
+The card body + static frontmatter live in `dataset_card.md` at the repo root
+(version-controlled, human-editable). This script reads that file, enumerates the
+parquets that actually exist in the dataset repo, injects a freshly-built
+`configs:` block, and uploads the result as the dataset README — so a
+newly-submitted model self-registers in the viewer on the next deploy without
+anyone hand-maintaining ~30 config entries. Direct edits on the Hub are
+overwritten; edit dataset_card.md instead.
 
 Run after push_outputs.py / push_results.py have uploaded the parquets:
   uv run --no-project --with huggingface_hub --with pyyaml python scripts/update_dataset_card.py
@@ -22,12 +24,14 @@ Requires HF_TOKEN with write access to the RyeAI org.
 from __future__ import annotations
 
 import sys
+from pathlib import Path
 
 import yaml
 from huggingface_hub import HfApi, hf_hub_download
 
 DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 RESULTS_PARQUET = "data/results.parquet"
+CARD_SOURCE = Path(__file__).resolve().parent.parent / "dataset_card.md"
 
 
 def build_configs(api: HfApi) -> list[dict]:
@@ -66,11 +70,10 @@ def split_frontmatter(text: str) -> tuple[str, str]:
 def main() -> None:
     api = HfApi()
 
-    readme_path = hf_hub_download(
-        repo_id=DATASET_REPO_ID, filename="README.md", repo_type="dataset"
-    )
-    with open(readme_path, encoding="utf-8") as fh:
-        original = fh.read()
+    if not CARD_SOURCE.is_file():
+        print(f"ERROR: card source not found: {CARD_SOURCE}", file=sys.stderr)
+        sys.exit(1)
+    original = CARD_SOURCE.read_text(encoding="utf-8")
 
     fm_text, body = split_frontmatter(original)
     front = yaml.safe_load(fm_text) if fm_text.strip() else {}
@@ -87,9 +90,15 @@ def main() -> None:
     new_fm = yaml.dump(front, sort_keys=False, allow_unicode=True, default_flow_style=False)
     new_readme = f"---\n{new_fm}---\n{body}"
 
-    if new_readme == original:
-        print("Dataset card configs already up to date — no change.")
-        return
+    try:
+        remote_path = hf_hub_download(
+            repo_id=DATASET_REPO_ID, filename="README.md", repo_type="dataset"
+        )
+        if Path(remote_path).read_text(encoding="utf-8") == new_readme:
+            print("Dataset card already up to date — no change.")
+            return
+    except Exception:
+        pass  # no remote card yet, or fetch failed — just upload
 
     n_models = len(configs) - 1  # minus the `results` config
     api.upload_file(
