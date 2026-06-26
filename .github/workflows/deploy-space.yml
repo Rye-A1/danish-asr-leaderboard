@@ -39,5 +39,8 @@ jobs:
       - name: Push results to HF dataset
         run: uv run --no-project --with pandas --with pyarrow --with huggingface_hub python scripts/push_results.py
 
+      - name: Refresh dataset viewer configs
+        run: uv run --no-project --with huggingface_hub --with pyyaml python scripts/update_dataset_card.py
+
       - name: Deploy Space
         run: uv run --no-project --with pandas --with pyarrow --with requests --with huggingface_hub --with pillow --with numpy python scripts/update_space.py
