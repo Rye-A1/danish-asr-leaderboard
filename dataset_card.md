@@ -56,7 +56,7 @@ The `results` config (shown by default) has one row per evaluated model. Scores 
 | `ftspeech_cer` | float\|null | CER on FTSpeech |
 | `cv17_da_cer` | float\|null | CER on Common Voice 17 (Danish) |
 | `fleurs_da_cer` | float\|null | CER on FLEURS (Danish) |
-| `speed_x` | float\|null | Audio seconds / wall-clock second (higher = faster). Measured on one RTX Pro 5000 Blackwell; network-bound for API models. `NaN` if not measured. |
+| `speed_x` | float\|null | Audio seconds / wall-clock second (higher = faster). Measured on one NVIDIA A100 80&nbsp;GB at batch size 16; network-bound for API models. `NaN` if not measured. |
 | `submitted` | string | ISO 8601 date the result was submitted (`YYYY-MM-DD`) |
 
 Per-model configs (`outputs/<model-slug>`) — one row per utterance: `dataset`, `id`, `reference`, `hypothesis` (raw, un-normalised).

@@ -985,12 +985,15 @@ const WER_COLS = [
     tip:'Parameter count in billions, from safetensors metadata. — = hosted API model.' },
   { key:'access',                  label:'Access',
     tip:'open = open weights;  proprietary = hosted or closed model.' },
+  { key:'license',                 label:'License',
+    tip:'Licence declared on the model\u2019s Hugging Face repo. \u2014 = hosted API model (no public weights). '
+      + 'Note that some open-weight licences are non-commercial (cc-by-nc-4.0) or carry use restrictions (openrail).' },
   { key:'mean_wer',               label:'Mean WER ↓',
     tip:'Word Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_cer',               label:'Mean CER ↓',
     tip:'Character Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'speed_x',                label:'Speed (x) ↑',
-    tip:'Audio seconds processed per wall-clock second on one RTX Pro 5000 Blackwell. '
+    tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
       + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
@@ -1016,6 +1019,9 @@ const CER_COLS = [
     tip:'Parameter count in billions. — = hosted API model.' },
   { key:'access',                  label:'Access',
     tip:'open = open weights;  proprietary = hosted or closed model.' },
+  { key:'license',                 label:'License',
+    tip:'Licence declared on the model\u2019s Hugging Face repo. \u2014 = hosted API model (no public weights). '
+      + 'Note that some open-weight licences are non-commercial (cc-by-nc-4.0) or carry use restrictions (openrail).' },
   { key:'mean_cer',               label:'Mean CER ↓',
     tip:'Character Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv. CER',
@@ -1130,6 +1136,11 @@ function buildRow(row, cols, maxVals) {
       b.className = 'badge ' + (v === 'open' ? 'badge-open' : 'badge-prop');
       b.textContent = v || '—';
       td.appendChild(b);
+
+    } else if (c.key === 'license') {
+      td.textContent = v || '—';
+      td.style.fontSize = '12px';
+      td.style.color = 'var(--muted)';
 
     } else if (c.key === 'mean_wer' || c.key === 'mean_cer') {
       td.style.fontWeight = '700';
