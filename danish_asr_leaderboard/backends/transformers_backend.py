@@ -8,6 +8,23 @@ from danish_asr_leaderboard.backends.base import Backend, LoadOptions, register
 
 _GEN_KWARGS = {"task": "transcribe", "language": "da"}
 
+# Long audio is handled by chunking, NOT by `return_timestamps=True`.
+#
+# The pipeline previously ran with `return_timestamps=True, max_new_tokens=440`.
+# That handled >30 s clips, but on *short* clips it sent Whisper into repetition
+# loops: a one-word reference ("hvis") produced 100+ repeated tokens, sometimes
+# switching language ("and the best and the best ..."), and a single such
+# utterance contributes thousands of percent WER. It affected every
+# Whisper-family model on the board — 1.19% of FTSpeech utterances for
+# roest-v3-whisper-1.5b (21.06 -> 16.40 mean WER once excluded), and it is why
+# whisper-tiny/base scored above 100%.
+#
+# Dropping both args (as the CoRal eval script does) fixes the loops but errors
+# out on >30 s audio. `chunk_length_s=30` fixes both: measured 0/66 loops on the
+# previously-looping clips and a 1.00 hypothesis/reference length ratio on >30 s
+# clips. ~1.2% of FTSpeech and ~0.1% of FLEURS exceed 30 s; nothing else does.
+_CHUNK_LENGTH_S = 30
+
 
 def _extract(result: dict) -> str:
     if not result:
@@ -24,8 +41,7 @@ class TransformersBackend(Backend):
         raw = self.model(
             audio_paths,
             batch_size=batch_size,
-            return_timestamps=True,
-            max_new_tokens=440,
+            chunk_length_s=_CHUNK_LENGTH_S,
             generate_kwargs=_GEN_KWARGS,
         )
         return [_extract(r) for r in raw]
@@ -33,8 +49,7 @@ class TransformersBackend(Backend):
     def transcribe_one(self, audio_path: str) -> str:
         result = self.model(
             audio_path,
-            return_timestamps=True,
-            max_new_tokens=440,
+            chunk_length_s=_CHUNK_LENGTH_S,
             generate_kwargs=_GEN_KWARGS,
         )
         return _extract(result)
