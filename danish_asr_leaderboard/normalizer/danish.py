@@ -87,15 +87,27 @@ _cardinal_cache: dict[str, str] = {}
 def _cardinal_words_da(token: str) -> str:
     """Render a standalone integer ``token`` as Danish cardinal words.
 
-    On any failure (e.g. an out-of-range value num2words can't render) the original
-    token is returned unchanged, so the transform can never raise mid-scoring.
+    A *conversion* failure (e.g. an out-of-range value num2words can't render)
+    falls back to the original token, so the transform never raises mid-scoring.
+    A *missing* ``num2words``, by contrast, is raised: it is a declared core
+    dependency, and silently skipping the expansion would score the whole run
+    under the old digit-preserving methodology while still reporting
+    ``number_words=True`` — a difference of up to ~0.6pp WER that is invisible in
+    the output.
     """
     cached = _cardinal_cache.get(token)
     if cached is not None:
         return cached
     try:
         from num2words import num2words
-
+    except ImportError as exc:  # pragma: no cover - environment error
+        raise RuntimeError(
+            "num2words is required for number_words=True (the published "
+            "methodology) but is not installed. Install it (`pip install "
+            "num2words`) or pass number_words=False to score without "
+            "numeral expansion."
+        ) from exc
+    try:
         words = num2words(int(token), lang="da")
     except Exception:
         words = token
