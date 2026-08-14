@@ -29,6 +29,9 @@ from PIL import Image, ImageColor, ImageDraw, ImageFont
 
 SPACE_REPO_ID   = "RyeAI/danish-asr-leaderboard"
 DATASET_PARQUET = "hf://datasets/RyeAI/danish-asr-leaderboard/data/results.parquet"
+# Sample-level bootstrap CIs, precomputed from the raw outputs by
+# scripts/compute_ci.py (too expensive to recompute on every deploy).
+DATASET_CI_JSON = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/resolve/main/data/ci.json"
 SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
 
 UPLOAD = ["index.html", "leaderboard.json", "models.py", "README.md", "cover.jpeg"]
@@ -96,6 +99,28 @@ THUMBNAIL_RED = "#C8102E"
 # Crimson radial glow, anchored lower-left, fading to near-black (offset → colour).
 THUMBNAIL_GRADIENT = [(0.0, "#6E1230"), (0.40, "#480C20"), (0.72, "#1C0810"), (1.0, "#08060C")]
 THUMBNAIL_OUT = SPACE_DIR / "cover.jpeg"
+
+
+@functools.lru_cache(maxsize=1)
+def _bootstrap_cis() -> dict:
+    """Precomputed sample-level bootstrap CIs, keyed by output slug.
+
+    Empty dict if the file isn't published yet — the page falls back to showing
+    no interval rather than a coarse dataset-level one.
+    """
+    try:
+        r = requests.get(DATASET_CI_JSON, timeout=10)
+        if r.ok:
+            return r.json()
+        print(f"  WARNING: no ci.json (HTTP {r.status_code}) — CIs omitted", file=sys.stderr)
+    except Exception as exc:
+        print(f"  WARNING: could not fetch ci.json ({exc}) — CIs omitted", file=sys.stderr)
+    return {}
+
+
+def _slugify(model_id: str) -> str:
+    """Match danish_asr_leaderboard.results.slugify (outputs/ file naming)."""
+    return re.sub(r"[^a-zA-Z0-9_-]", "__", model_id.strip("/"))
 
 
 @functools.lru_cache(maxsize=256)
@@ -268,6 +293,13 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
             }
             for col in metric_cols:
                 entry[col] = _num(row.get(col))
+            # Sample-level bootstrap CIs (see scripts/compute_ci.py). Only the
+            # keys relevant to this table's metrics are attached.
+            ci = _bootstrap_cis().get(_slugify(name), {})
+            for col in metric_cols:
+                bounds = ci.get(f"{col}_ci")
+                if bounds:
+                    entry[f"{col}_ci"] = bounds
             rows.append(entry)
         return rows
 
