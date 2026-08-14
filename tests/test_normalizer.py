@@ -142,3 +142,34 @@ def test_filler_words_off_by_default():
 def test_filler_words_leaves_real_words_alone():
     # Word-boundaried: the "hm" in "ohm" must not be stripped.
     assert normalise("modstanden er en ohm", filler_words=True) == "modstanden er en ohm"
+
+
+def test_missing_num2words_raises_not_silently_skipped(monkeypatch):
+    """A missing num2words must fail loudly, never silently skip expansion.
+
+    Regression test: the import error used to be swallowed by a bare
+    ``except Exception``, so a venv without num2words scored the whole run under
+    the old digit-preserving methodology while still reporting
+    ``number_words=True`` — a silent ~0.2-0.6pp WER difference.
+    """
+    import builtins
+
+    from danish_asr_leaderboard.normalizer import danish
+
+    monkeypatch.setattr(danish, "_cardinal_cache", {})
+    real_import = builtins.__import__
+
+    def _no_num2words(name, *args, **kwargs):
+        if name == "num2words":
+            raise ImportError("No module named 'num2words'")
+        return real_import(name, *args, **kwargs)
+
+    monkeypatch.setattr(builtins, "__import__", _no_num2words)
+    with pytest.raises(RuntimeError, match="num2words is required"):
+        normalise("4 biler")
+
+
+def test_number_words_actually_expands():
+    """Guards the happy path: num2words present and wired up."""
+    assert normalise("4 biler") == "fire biler"
+    assert normalise("24 timer") == "fireogtyve timer"
