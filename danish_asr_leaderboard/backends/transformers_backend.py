@@ -3,27 +3,35 @@ from __future__ import annotations
 
 import importlib
 
+from danish_asr_leaderboard.audio import wav_duration
 from danish_asr_leaderboard.backends._torch_util import half_dtype, pipeline_device
 from danish_asr_leaderboard.backends.base import Backend, LoadOptions, register
 
 _GEN_KWARGS = {"task": "transcribe", "language": "da"}
 
-# Long audio is handled by chunking, NOT by `return_timestamps=True`.
+# Whisper's encoder window. Clips at or under this are short-form; longer ones
+# need the sequential long-form path.
+_SHORT_FORM_MAX_S = 30.0
+
+# Short-form and long-form are decoded differently, matching the two reference
+# implementations:
 #
-# The pipeline previously ran with `return_timestamps=True, max_new_tokens=440`.
-# That handled >30 s clips, but on *short* clips it sent Whisper into repetition
-# loops: a one-word reference ("hvis") produced 100+ repeated tokens, sometimes
-# switching language ("and the best and the best ..."), and a single such
-# utterance contributes thousands of percent WER. It affected every
-# Whisper-family model on the board — 1.19% of FTSpeech utterances for
-# roest-v3-whisper-1.5b (21.06 -> 16.40 mean WER once excluded), and it is why
-# whisper-tiny/base scored above 100%.
+#   * HF Open ASR Leaderboard (transformers/run_eval.py) branches on --longform:
+#       longform -> model.generate(..., return_timestamps=True)
+#       else     -> model.generate(...)                      # no timestamps
+#   * CoRal's evaluate_model.py uses the plain short-form call.
 #
-# Dropping both args (as the CoRal eval script does) fixes the loops but errors
-# out on >30 s audio. `chunk_length_s=30` fixes both: measured 0/66 loops on the
-# previously-looping clips and a 1.00 hypothesis/reference length ratio on >30 s
-# clips. ~1.2% of FTSpeech and ~0.1% of FLEURS exceed 30 s; nothing else does.
-_CHUNK_LENGTH_S = 30
+# We previously passed return_timestamps=True (plus max_new_tokens=440) for
+# *every* clip. On short audio that sends Whisper into repetition loops — a
+# one-word reference ("hvis") producing 100+ repeated tokens, sometimes switching
+# language ("and the best and the best ...") — and one such utterance contributes
+# thousands of percent WER. Applying the long-form tool to short-form audio was
+# the bug; our corpus is ~99% short-form (>30 s: FTSpeech 1.2%, FLEURS 0.1%,
+# nothing elsewhere).
+#
+# Routing by duration keeps each regime on its reference decoding path, and is
+# strictly better than either reference alone: HF simply truncates long clips in
+# short-form mode, whereas we still transcribe them in full.
 
 
 def _extract(result: dict) -> str:
@@ -37,22 +45,41 @@ def _extract(result: dict) -> str:
 class TransformersBackend(Backend):
     name = "transformers"
 
-    def transcribe_batch(self, audio_paths: list[str], *, batch_size: int) -> list[str]:
-        raw = self.model(
-            audio_paths,
-            batch_size=batch_size,
-            chunk_length_s=_CHUNK_LENGTH_S,
-            generate_kwargs=_GEN_KWARGS,
-        )
+    def _short_form(self, audio_paths: list[str], *, batch_size: int) -> list[str]:
+        raw = self.model(audio_paths, batch_size=batch_size, generate_kwargs=_GEN_KWARGS)
         return [_extract(r) for r in raw]
 
+    def _long_form(self, audio_paths: list[str]) -> list[str]:
+        # One at a time: batching variable-length >30 s clips trips the pipeline's
+        # feature padding. They are a fraction of a percent, so the cost is noise.
+        return [
+            _extract(self.model(p, return_timestamps=True, generate_kwargs=_GEN_KWARGS))
+            for p in audio_paths
+        ]
+
+    def transcribe_batch(self, audio_paths: list[str], *, batch_size: int) -> list[str]:
+        # An unreadable duration reads as 0.0 and routes to short-form, which is
+        # the overwhelmingly common case and the one without the loop pathology.
+        long_idx = [i for i, p in enumerate(audio_paths)
+                    if wav_duration(p) > _SHORT_FORM_MAX_S]
+        if not long_idx:
+            return self._short_form(audio_paths, batch_size=batch_size)
+
+        long_set = set(long_idx)
+        short_idx = [i for i in range(len(audio_paths)) if i not in long_set]
+        out: list[str] = [""] * len(audio_paths)
+        if short_idx:
+            for i, text in zip(
+                short_idx, self._short_form([audio_paths[i] for i in short_idx],
+                                            batch_size=batch_size)
+            ):
+                out[i] = text
+        for i, text in zip(long_idx, self._long_form([audio_paths[i] for i in long_idx])):
+            out[i] = text
+        return out
+
     def transcribe_one(self, audio_path: str) -> str:
-        result = self.model(
-            audio_path,
-            chunk_length_s=_CHUNK_LENGTH_S,
-            generate_kwargs=_GEN_KWARGS,
-        )
-        return _extract(result)
+        return self.transcribe_batch([audio_path], batch_size=1)[0]
 
 
 @register("transformers")

@@ -918,6 +918,30 @@
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
       <div class="changelog-body">
+        <h3>2026-08 — Whisper decoding fix &amp; re-run</h3>
+        <ul>
+          <li><strong>Short-form vs long-form decoding.</strong> The harness passed
+            <code>return_timestamps=True</code> — a long-form setting — to every clip,
+            on a corpus that is ~99&nbsp;% short-form. On short audio that sends the
+            Danish Whisper fine-tunes into repetition loops (a one-word reference
+            producing 100+ repeated words), badly inflating their WER. Decoding now
+            follows the reference implementations
+            (<a href="https://github.com/huggingface/open_asr_leaderboard" target="_blank" rel="noopener">HF Open ASR Leaderboard</a>,
+            <a href="https://github.com/alexandrainst/coral" target="_blank" rel="noopener">CoRal</a>):
+            plain short-form under 30&nbsp;s, timestamped long-form above it. Every
+            <code>transformers</code>-backend model was re-run —
+            <code>roest-v3-whisper-1.5b</code> improves from 31.82 to 21.08&nbsp;WER on
+            CoRal conversation. The wav2vec2 Røst models are unaffected: they use a
+            CTC path that cannot loop.</li>
+          <li><strong>Whisper hallucination on very short clips.</strong> Under standard
+            decoding, <code>whisper-large-v3</code> hallucinates on ~0.6&nbsp;% of CoRal
+            conversation utterances — a 5-word reference typically yielding ~220 words —
+            emitting memorised training text such as Danish subtitle credits. This seems to be genuine
+            model behaviour rather than a scoring artifact, and is visible in the
+            published raw outputs. Its earlier score was flattered by the non-standard
+            setting above, which happened to suppress the effect for vanilla Whisper
+            while causing the opposite failure in the fine-tunes.</li>
+        </ul>
         <h3>2026-06 — Full re-evaluation &amp; normalisation update</h3>
         <ul>
           <li><strong>Numerals → words.</strong> Standalone integers are now spelled
