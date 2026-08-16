@@ -9,6 +9,14 @@ from danish_asr_leaderboard.backends.base import Backend, LoadOptions, register
 _LANGUAGE = "Danish"
 _MAX_INFERENCE_BATCH = 32  # upper bound the qwen_asr lib batches to internally
 
+# Generation cap. 256 tokens truncated the longest references: measured on the
+# saved outputs, refs >=150 words came back at ~0.85 of their length against
+# ~0.99 for an uncapped backend. The effect is small on the current corpus
+# (32 utterances >=100 words, <=0.06pp WER) but it is a silent ceiling that
+# would bite on a corpus with longer utterances, so it is raised to match the
+# voxtral backend, which shows no truncation.
+_MAX_NEW_TOKENS = 440
+
 
 def _text(result) -> str:
     return (getattr(result, "text", "") or "").strip() if result is not None else ""
@@ -49,6 +57,6 @@ def load(model_ref: str, options: LoadOptions) -> Backend:
         dtype=torch.bfloat16,
         device_map=device_map(options.device),
         max_inference_batch_size=_MAX_INFERENCE_BATCH,
-        max_new_tokens=256,
+        max_new_tokens=_MAX_NEW_TOKENS,
     )
     return QwenAsrBackend(model, options=options)
