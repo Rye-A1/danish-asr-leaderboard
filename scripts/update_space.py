@@ -321,7 +321,10 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
             for col in metric_cols:
                 bounds = ci.get(f"{col}_ci")
                 if bounds:
-                    entry[f"{col}_ci"] = bounds
+                    # ci.json stores [lo, hi]; the page's appendCI() reads .lo/.hi,
+                    # the same shape its own bootstrap produces. Emit that shape —
+                    # an array silently renders no interval at all.
+                    entry[f"{col}_ci"] = {"lo": bounds[0], "hi": bounds[1]}
             rows.append(entry)
         return rows
 
