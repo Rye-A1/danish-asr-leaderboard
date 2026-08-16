@@ -18,8 +18,10 @@ keywords = ["asr", "speech-recognition", "danish", "benchmark", "leaderboard", "
 dependencies = [
     "datasets>=2.19.0",
     "huggingface_hub>=0.23.0",
-    "jiwer>=3.0.4",
     "num2words>=0.5.14",
+    # Edit distance behind WER/CER. Was pulled in transitively via jiwer, which
+    # metrics.py no longer uses now that the corpus rate is computed directly.
+    "rapidfuzz>=3.0",
     "pandas>=2.0.0",
     "pyarrow>=14.0.0",
     "soundfile>=0.12.1",
