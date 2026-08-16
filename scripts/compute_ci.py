@@ -39,27 +39,37 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from danish_asr_leaderboard.datasets import CORE_COLUMNS
+from danish_asr_leaderboard.metrics import corpus_rate, per_utterance_counts
 from danish_asr_leaderboard.normalizer import normalise
 
 DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 OUT_PATH = Path("data/ci.json")
 # Resample in blocks so the index matrix stays small for a 27k-utterance dataset.
 BLOCK = 100
+# The published methodology, stated explicitly rather than inherited from a
+# default (scoring.py and normalise disagree on unicode_form).
+UNICODE_FORM = "NFKC"
+NUMBER_WORDS = True
+FILLER_WORDS = False
 
 
 def per_utterance_stats(refs: list[str], hyps: list[str]):
-    """Return (word_edits, ref_words, char_edits, ref_chars) as float arrays."""
-    import numpy as np
-    from rapidfuzz.distance import Levenshtein
+    """Return (word_edits, ref_words, char_edits, ref_chars) as float arrays.
 
-    we, rw, ce, rc = [], [], [], []
-    for r, h in zip(refs, hyps):
-        rn, hn = normalise(r), normalise(h)
-        rws, hws = rn.split(), hn.split()
-        we.append(Levenshtein.distance(rws, hws))
-        rw.append(max(len(rws), 1))
-        ce.append(Levenshtein.distance(rn, hn))
-        rc.append(max(len(rn), 1))
+    Delegates to ``metrics.per_utterance_counts`` — the same primitive the
+    published corpus score is built from — so the interval and the point estimate
+    cannot diverge in normalisation, in which pairs are dropped, or in how edits
+    are measured. Normalisation options are passed explicitly rather than left to
+    defaults, which differ between modules.
+    """
+    import numpy as np
+
+    kw = dict(unicode_form=UNICODE_FORM, number_words=NUMBER_WORDS,
+              filler_words=FILLER_WORDS)
+    rn = [normalise(r, **kw) for r in refs]
+    hn = [normalise(h, **kw) for h in hyps]
+    we, rw = per_utterance_counts(rn, hn, unit="word")
+    ce, rc = per_utterance_counts(rn, hn, unit="char")
     return (np.asarray(we, float), np.asarray(rw, float),
             np.asarray(ce, float), np.asarray(rc, float))
 
@@ -90,6 +100,17 @@ def bootstrap_means(stats: dict[str, tuple], columns: list[str], B: int, seed: i
         per[col] = draws
         mean += draws / len(used)
     return per, mean
+
+
+def _published_mean(slug: str) -> float | None:
+    """Published mean_wer for this model, if the result JSON is present."""
+    path = Path("results") / f"{slug}.json"
+    if not path.exists():
+        return None
+    try:
+        return json.loads(path.read_text(encoding="utf-8")).get("mean_wer")
+    except Exception:
+        return None
 
 
 def pct(arr) -> list[float] | None:
@@ -159,9 +180,33 @@ def main() -> None:
             entry[f"{col}_wer_ci"] = pct(draws)
         for col, draws in cper.items():
             entry[f"{col}_cer_ci"] = pct(draws)
-        out[slug] = entry
+
+        # Point estimate from the *same* counts that produced the interval. It is
+        # recorded so the pair is self-consistent by construction, and checked
+        # against the published score so a divergence surfaces here rather than
+        # as a score sitting outside its own interval on the board.
+        # Per-dataset rates are rounded to 2dp before averaging, matching how
+        # rescore.py builds the published mean. The bootstrap replicates are
+        # deliberately left unrounded — quantising each replicate would distort
+        # the distribution the interval is read off.
+        used = [c for c in CORE_COLUMNS if c in wer_stats]
+        point_wer = round(
+            sum(round(corpus_rate(*wer_stats[c]), 2) for c in used) / len(used), 2)
+        point_cer = round(
+            sum(round(corpus_rate(*cer_stats[c]), 2) for c in used) / len(used), 2)
+        entry["mean_wer_point"] = point_wer
+        entry["mean_cer_point"] = point_cer
+
         lo, hi = entry["mean_wer_ci"]
-        print(f"  {slug:42} mean_wer 95% CI [{lo:.2f}, {hi:.2f}]  (width {hi - lo:.2f})")
+        if not (lo <= point_wer <= hi):
+            print(f"  WARNING: {slug} point estimate {point_wer} outside CI "
+                  f"[{lo}, {hi}]", file=sys.stderr)
+        published = _published_mean(slug)
+        drift = "" if published is None or round(abs(published - point_wer), 2) <= 0.01 \
+            else f"  ** differs from published {published} **"
+        out[slug] = entry
+        print(f"  {slug:42} mean_wer {point_wer:6.2f}  95% CI [{lo:.2f}, {hi:.2f}]"
+              f"  (width {hi - lo:.2f}){drift}")
 
     if not out:
         print("Nothing computed.", file=sys.stderr)
