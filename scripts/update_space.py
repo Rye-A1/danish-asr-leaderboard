@@ -140,6 +140,27 @@ def _provider_logo(org: str) -> str:
     return ""
 
 
+@functools.lru_cache(maxsize=256)
+def _model_license(model_id: str) -> str:
+    """Licence tag from the model's HF repo, or '' if none/unavailable.
+
+    Read live from the Hub (same approach as the org avatars) rather than stored
+    in the result JSONs, so a re-licensed model corrects itself on the next
+    deploy instead of going stale. Hosted API models have no repo — they get ''
+    and render as an em dash.
+    """
+    try:
+        r = requests.get(f"https://huggingface.co/api/models/{model_id}", timeout=4)
+        if not r.ok:
+            return ""
+        for tag in r.json().get("tags", []):
+            if tag.startswith("license:"):
+                return tag.split(":", 1)[1]
+    except Exception:
+        pass
+    return ""
+
+
 def _fmt_size(x) -> str:
     """1 decimal (2 for sub-0.1B), em dash for 0 / NaN (API models)."""
     try:
@@ -288,6 +309,7 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "url": url,
                 "logo": logo,
                 "access": str(row.get("access", "open")),
+                "license": _model_license(name) if is_repo else "",
                 "size": _official_size(name, row.get("params_b")),
                 "submitted": str(submitted)[:10] if pd.notna(submitted) else "",
             }
