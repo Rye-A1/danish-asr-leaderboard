@@ -695,6 +695,7 @@
         <button class="tog-btn" id="tog-wer-bt">Win Rate</button>
       </div>
       <button class="ci-btn" id="tog-ci-wer" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <button class="ci-btn" id="tog-open-wer" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. Ranks renumber within the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
@@ -717,6 +718,7 @@
         <button class="tog-btn" id="tog-cer-bt">Win Rate</button>
       </div>
       <button class="ci-btn" id="tog-ci-cer" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <button class="ci-btn" id="tog-open-cer" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. Ranks renumber within the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
     </div>
     <div class="table-scroll"><table id="table-cer"></table></div>
   </div>
@@ -990,6 +992,15 @@
 <script>
 const MEDALS = ['🥇','🥈','🥉'];
 let showCI = false;
+let openOnly = false;   // hide hosted/API (proprietary) models — opt-in
+
+// Rows for a tab, honouring the open-weights filter. Filtering happens before
+// ranks are assigned in applyWer/applyCer, so ranks renumber 1..N within the
+// visible set rather than leaving gaps.
+function visible(rows) {
+  return openOnly ? rows.filter(r => r.access !== 'proprietary') : [...rows];
+}
+
 const ANALYSIS_PANEL_HEIGHT = 430;
 
 function appendCI(td, ci, fmt) {
@@ -1780,9 +1791,9 @@ async function init() {
 
     function applyWer(method) {
       werMethod = method;
-      const sorted = method === 'borda' ? [...data.wer].sort((a, b) => a.borda_score - b.borda_score)
-                   : method === 'bt'    ? [...data.wer].sort((a, b) => b.bt_score - a.bt_score)
-                   :                     [...data.wer].sort((a, b) => (a.mean_wer ?? Infinity) - (b.mean_wer ?? Infinity));
+      const sorted = method === 'borda' ? visible(data.wer).sort((a, b) => a.borda_score - b.borda_score)
+                   : method === 'bt'    ? visible(data.wer).sort((a, b) => b.bt_score - a.bt_score)
+                   :                     visible(data.wer).sort((a, b) => (a.mean_wer ?? Infinity) - (b.mean_wer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
       renderTable(werEl, sorted, getWerCols(method), maxVals);
       wireSearch('search-wer', 'count-wer', 'table-wer');
@@ -1792,9 +1803,9 @@ async function init() {
 
     function applyCer(method) {
       cerMethod = method;
-      const sorted = method === 'borda' ? [...data.cer].sort((a, b) => a.borda_score - b.borda_score)
-                   : method === 'bt'    ? [...data.cer].sort((a, b) => b.bt_score - a.bt_score)
-                   :                     [...data.cer].sort((a, b) => (a.mean_cer ?? Infinity) - (b.mean_cer ?? Infinity));
+      const sorted = method === 'borda' ? visible(data.cer).sort((a, b) => a.borda_score - b.borda_score)
+                   : method === 'bt'    ? visible(data.cer).sort((a, b) => b.bt_score - a.bt_score)
+                   :                     visible(data.cer).sort((a, b) => (a.mean_cer ?? Infinity) - (b.mean_cer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
       renderTable(cerEl, sorted, getCerCols(method), maxVals);
       wireSearch('search-cer', 'count-cer', 'table-cer');
@@ -1836,6 +1847,24 @@ async function init() {
     }
     document.getElementById('tog-ci-wer').addEventListener('click', toggleCI);
     document.getElementById('tog-ci-cer').addEventListener('click', toggleCI);
+
+    /* Open-weights filter */
+    function syncOpenBtns() {
+      for (const id of ['tog-open-wer', 'tog-open-cer']) {
+        const b = document.getElementById(id);
+        b.classList.toggle('active', openOnly);
+        b.setAttribute('aria-pressed', String(openOnly));
+      }
+    }
+    function toggleOpen() {
+      openOnly = !openOnly;
+      syncOpenBtns();
+      applyWer(werMethod);
+      applyCer(cerMethod);
+    }
+    document.getElementById('tog-open-wer').addEventListener('click', toggleOpen);
+    document.getElementById('tog-open-cer').addEventListener('click', toggleOpen);
+    syncOpenBtns();
 
     /* Last updated */
     if (data.updated) {
