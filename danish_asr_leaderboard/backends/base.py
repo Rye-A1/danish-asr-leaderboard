@@ -78,14 +78,27 @@ class Backend(ABC):
 
     def _sequential(self, audio_paths: list[str]) -> list[str]:
         hyps: list[str] = []
+        failures = 0
+        first_error: Exception | None = None
         for i, audio_path in enumerate(audio_paths):
             try:
                 hyps.append(self.transcribe_one(audio_path))
             except Exception as exc:  # noqa: BLE001
+                failures += 1
+                if first_error is None:
+                    first_error = exc
                 print(f"  WARNING: transcription failed for {audio_path}: {exc}", file=sys.stderr)
                 hyps.append("")
             if (i + 1) % 100 == 0:
                 print(f"  {i + 1}/{len(audio_paths)} done...")
+        # Per-file tolerance exists for the odd unreadable clip. A backend that
+        # fails on *everything* is broken, and returning empty strings would
+        # score it as a plausible-looking 100% WER instead of stopping the run.
+        if audio_paths and failures == len(audio_paths):
+            raise RuntimeError(
+                f"transcription failed for all {failures} files; "
+                f"first error: {first_error}"
+            ) from first_error
         return hyps
 
     def release(self) -> None:

@@ -86,7 +86,10 @@ class Wav2Vec2LMBackend(Backend):
                     padding="longest",
                     return_attention_mask=True,
                 )
-                input_values = inputs.input_values.to(self.device)
+                # Match the checkpoint's dtype — Røst ships bf16 weights while
+                # MediaCatch ships fp32, and a mismatch raises in the conv stack.
+                dtype = next(self.model.parameters()).dtype
+                input_values = inputs.input_values.to(self.device, dtype=dtype)
                 mask = inputs.attention_mask.to(self.device)
                 with torch.no_grad():
                     logits = self.model(input_values, attention_mask=mask).logits
@@ -95,7 +98,7 @@ class Wav2Vec2LMBackend(Backend):
                 frames = self.model._get_feat_extract_output_lengths(
                     mask.sum(-1)
                 ).cpu().numpy()
-                lg = logits.cpu().numpy()
+                lg = logits.float().cpu().numpy()
                 trimmed = [lg[j, : int(frames[j]), :] for j in range(len(chunk))]
                 # alpha/beta come from the repo's language_model/attrs.json — the
                 # values the model author tuned, not ours.
