@@ -103,6 +103,7 @@ LOCAL_MODELS=(
   "CoRal-project/roest-v2-wav2vec2-2B|wav2vec2|"
   "CoRal-project/roest-v2-wav2vec2-1B|wav2vec2|"
   "CoRal-project/roest-v3-wav2vec2-315m|wav2vec2|"
+  "MediaCatch/xls-r-300m-danish-mc-v2|wav2vec2|"   # XLS-R 300m + 5-gram LM
   "facebook/mms-1b-all|wav2vec2|"
   "nvidia/canary-1b-v2|nemo|--nemo-model-type canary"
   "nvidia/parakeet-tdt-0.6b-v3|nemo|--nemo-model-type parakeet"

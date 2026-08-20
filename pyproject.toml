@@ -37,7 +37,11 @@ danish-asr-eval = "danish_asr_leaderboard.cli:main"
 
 [project.optional-dependencies]
 transformers   = ["torch>=2.0.0", "transformers>=4.54.0"]
-wav2vec2       = ["torch>=2.0.0", "transformers>=4.54.0"]
+wav2vec2       = ["torch>=2.0.0", "transformers>=4.54.0",
+                  # CTC repos that ship an n-gram LM (CoRal Røst, MediaCatch) are
+                  # decoded with it; without these transformers silently falls back
+                  # to greedy CTC and under-reports the model.
+                  "pyctcdecode>=0.5.0", "kenlm>=0.2.0"]
 faster-whisper = ["faster-whisper>=1.0.3"]
 qwen-asr       = ["torch>=2.0.0", "transformers>=4.54.0", "qwen-asr>=0.0.6"]
 nemo           = ["torch>=2.0.0", "nemo_toolkit[asr]>=2.4.0"]
