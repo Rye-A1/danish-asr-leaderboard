@@ -37,7 +37,10 @@ danish-asr-eval = "danish_asr_leaderboard.cli:main"
 
 [project.optional-dependencies]
 transformers   = ["torch>=2.0.0", "transformers>=4.54.0"]
-wav2vec2       = ["torch>=2.0.0", "transformers>=4.54.0"]
+wav2vec2       = ["torch>=2.0.0", "transformers>=4.54.0",
+                  # n-gram LM decoding for repos shipping language_model/
+                  # (CoRal Røst, MediaCatch) — worth ~6pp WER on those models.
+                  "pyctcdecode>=0.5.0", "kenlm>=0.2.0", "soundfile>=0.12.1"]
 faster-whisper = ["faster-whisper>=1.0.3"]
 qwen-asr       = ["torch>=2.0.0", "transformers>=4.54.0", "qwen-asr>=0.0.6"]
 nemo           = ["torch>=2.0.0", "nemo_toolkit[asr]>=2.4.0"]
