@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 import requests
 from huggingface_hub import HfApi, get_token
-from PIL import Image, ImageColor, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 SPACE_REPO_ID   = "RyeAI/danish-asr-leaderboard"
 DATASET_PARQUET = "hf://datasets/RyeAI/danish-asr-leaderboard/data/results.parquet"
@@ -86,18 +86,35 @@ OFFICIAL_SIZE: dict[str, float] = {
 }
 
 # 1200x630 = the OG/social-card standard. Content is centred so the card still
-# reads when messengers (Slack/Mattermost/iMessage) crop it to a square thumbnail.
+# reads when messengers (Slack/Mattermost/iMessage) crop it to a square thumbnail
+# — the centred 630px zone is the safe area, and the stat row is sized to fit it.
 THUMBNAIL_SIZE = (1200, 630)
-THUMBNAIL_BG = "#08060C"
-THUMBNAIL_TEXT = "#FFFFFF"
-THUMBNAIL_MUTED = "#C0A8B4"
-THUMBNAIL_EYEBROW = "#B0A090"
-THUMBNAIL_STAT = "#F5A0B0"
-THUMBNAIL_STAT_LABEL = "#A0808C"
-THUMBNAIL_DIVIDER = "#4A2030"
-THUMBNAIL_RED = "#C8102E"
-# Crimson radial glow, anchored lower-left, fading to near-black (offset → colour).
-THUMBNAIL_GRADIENT = [(0.0, "#6E1230"), (0.40, "#480C20"), (0.72, "#1C0810"), (1.0, "#08060C")]
+# Everything is drawn at SS times final size and LANCZOS-downsampled, which is
+# what makes the rounded corners and tight type read as crisp rather than jagged.
+THUMBNAIL_SS = 3
+THUMBNAIL_BG = (8, 7, 11)
+THUMBNAIL_TEXT = (255, 255, 255)
+THUMBNAIL_MUTED = (198, 176, 187)
+THUMBNAIL_STAT = (255, 176, 191)
+THUMBNAIL_STAT_LABEL = (152, 126, 140)
+THUMBNAIL_RED = (198, 12, 46)
+# Mesh gradient: additive radial sources over a near-black base, as
+# (cx_frac, cy_frac, radius_frac_of_width, rgb, strength, falloff). A crimson
+# bloom low-left, a violet counter-tone top-right, and a soft rose behind the
+# title — enough variation that the field never reads as a flat wash.
+THUMBNAIL_GLOWS = [
+    (0.12, 0.86, 0.86, (212, 18, 52), 0.50, 2.3),
+    (0.46, 0.52, 0.60, (136, 18, 64), 0.28, 2.2),
+    (0.94, 0.08, 0.60, (66, 24, 100), 0.30, 2.7),
+    (0.86, 0.90, 0.50, (160, 30, 76), 0.22, 2.4),
+    (0.50, -0.16, 0.52, (255, 194, 208), 0.06, 2.0),
+]
+THUMBNAIL_GRAIN = 7.0
+THUMBNAIL_VIGNETTE = 0.40
+# Vendored so the card renders identically here and on the deploy runner; see
+# assets/fonts/NOTICE. Falls back to system fonts if the directory is missing.
+FONT_DIR = Path(__file__).resolve().parent.parent / "assets" / "fonts"
+FONT_BOLD, FONT_MEDIUM, FONT_REGULAR = "Roboto-Bold.ttf", "Roboto-Medium.ttf", "Roboto-Regular.ttf"
 THUMBNAIL_OUT = SPACE_DIR / "cover.jpeg"
 
 
@@ -348,63 +365,105 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
 
     return {
         "updated": date.today().isoformat(),
-        "org_logo": _provider_logo("RyeAI"),
         "wer": build_rows(wer_df, wer_metrics),
         "cer": build_rows(cer_df, cer_metrics),
     }
 
 
-def _load_font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    """Load a reasonable sans font available on macOS/Linux runners."""
-    candidates = []
-    if bold:
-        candidates.extend([
-            "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
-            "/System/Library/Fonts/Supplemental/Helvetica.ttc",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
-        ])
-    else:
-        candidates.extend([
-            "/System/Library/Fonts/Supplemental/Arial.ttf",
-            "/System/Library/Fonts/Supplemental/Helvetica.ttc",
-            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
-        ])
+def _load_font(name: str, size: int) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    """Vendored Roboto first; system sans only if the repo copy is unavailable."""
+    candidates = [FONT_DIR / name]
+    stem = {FONT_BOLD: "Bold", FONT_MEDIUM: "Bold", FONT_REGULAR: ""}[name]
+    candidates += [
+        Path(f"/System/Library/Fonts/Supplemental/Arial{' ' + stem if stem else ''}.ttf"),
+        Path(f"/usr/share/fonts/truetype/dejavu/DejaVuSans{'-' + stem if stem else ''}.ttf"),
+    ]
     for path in candidates:
         try:
-            return ImageFont.truetype(path, size=size)
+            return ImageFont.truetype(str(path), size=size)
         except OSError:
             continue
     return ImageFont.load_default()
 
 
-def _text_width(draw: ImageDraw.ImageDraw, text: str, font) -> int:
-    left, _top, right, _bottom = draw.textbbox((0, 0), text, font=font)
-    return right - left
+def _tracked_width(draw: ImageDraw.ImageDraw, text: str, font, tracking: float) -> float:
+    return sum(draw.textlength(c, font=font) for c in text) + tracking * (len(text) - 1)
 
 
-def _fit_font(draw: ImageDraw.ImageDraw, text: str, max_width: int, start_size: int, bold: bool = False):
-    size = start_size
-    while size > 28:
-        font = _load_font(size, bold=bold)
-        if _text_width(draw, text, font) <= max_width:
-            return font
-        size -= 4
-    return _load_font(28, bold=bold)
+def _tracked(draw: ImageDraw.ImageDraw, xy, text: str, font, fill, tracking: float = 0.0):
+    """Draw centred text with letter-spacing (Pillow has no tracking of its own)."""
+    x = xy[0] - _tracked_width(draw, text, font, tracking) / 2
+    for c in text:
+        draw.text((x, xy[1]), c, font=font, fill=fill, anchor="ls")
+        x += draw.textlength(c, font=font) + tracking
 
 
-def _radial_gradient(size: tuple[int, int], center: tuple[float, float],
-                     radius_px: float, stops: list[tuple[float, str]]) -> Image.Image:
-    """A smooth multi-stop radial gradient (offset 0→1 mapped to distance/radius)."""
+def _mesh_gradient(size: tuple[int, int]) -> Image.Image:
+    """Additive multi-source radial mesh over a near-black base."""
     width, height = size
-    cx, cy = center
-    yy, xx = np.mgrid[0:height, 0:width]
-    dist = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2) / radius_px
-    dist = np.clip(dist, 0.0, 1.0)
-    offsets = [s[0] for s in stops]
-    colors = [ImageColor.getrgb(s[1]) for s in stops]
-    channels = [np.interp(dist, offsets, [c[i] for c in colors]) for i in range(3)]
-    arr = np.dstack(channels).astype(np.uint8)
-    return Image.fromarray(arr, "RGB").convert("RGBA")
+    yy, xx = np.mgrid[0:height, 0:width].astype(np.float32)
+    out = np.empty((height, width, 3), np.float32)
+    out[:] = THUMBNAIL_BG
+    for fx, fy, fr, rgb, strength, falloff in THUMBNAIL_GLOWS:
+        cx, cy, radius = fx * width, fy * height, fr * width
+        dist = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2) / radius
+        out += (np.clip(1.0 - dist, 0.0, 1.0) ** falloff * strength)[..., None] * np.asarray(rgb, np.float32)
+    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8), "RGB")
+
+
+def _apply_vignette(image: Image.Image) -> Image.Image:
+    width, height = image.size
+    yy, xx = np.mgrid[0:height, 0:width].astype(np.float32)
+    d = np.sqrt(((xx - width / 2) / (width / 2)) ** 2
+                + ((yy - height / 2) / (height / 2)) ** 2) / np.sqrt(2)
+    falloff = np.clip(1.0 - THUMBNAIL_VIGNETTE * d ** 2, 0.0, 1.0)[..., None]
+    return Image.fromarray((np.asarray(image, np.float32) * falloff).astype(np.uint8), "RGB")
+
+
+def _apply_grain(image: Image.Image, seed: int = 7) -> Image.Image:
+    """Monochrome film grain, strongest in midtones.
+
+    Applied at final resolution so it survives as 1px texture rather than being
+    averaged away by the downsample. It doubles as a dither: a smooth gradient
+    this dark bands visibly in 8-bit JPEG, and the noise breaks the contours up.
+    """
+    arr = np.asarray(image, np.float32)
+    luma = (arr @ np.array([0.2126, 0.7152, 0.0722], np.float32)) / 255.0
+    weight = 0.35 + 0.65 * (4.0 * luma * (1.0 - luma))
+    noise = np.random.default_rng(seed).normal(0.0, THUMBNAIL_GRAIN, luma.shape).astype(np.float32)
+    return Image.fromarray(np.clip(arr + (noise * weight)[..., None], 0, 255).astype(np.uint8), "RGB")
+
+
+def _dannebrog(height: int, radius: int) -> Image.Image:
+    """Danish flag at official 37:28 proportions, rounded with a hairline edge.
+
+    Splits are 12:4:21 horizontally and 12:4:12 vertically, in units of 1/28 of
+    the height. The cross bars are drawn full-bleed and then clipped by the
+    rounded mask, so the corners stay clean at any radius.
+    """
+    u = height / 28.0
+    width = int(round(37 * u))
+    flag = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(flag)
+    draw.rectangle((0, 0, width, height), fill=THUMBNAIL_RED)
+    draw.rectangle((int(12 * u), 0, int(16 * u), height), fill=THUMBNAIL_TEXT)
+    draw.rectangle((0, int(12 * u), width, int(16 * u)), fill=THUMBNAIL_TEXT)
+    mask = Image.new("L", (width, height), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, width - 1, height - 1), radius=radius, fill=255)
+    flag.putalpha(mask)
+    ImageDraw.Draw(flag).rounded_rectangle(
+        (0, 0, width - 1, height - 1), radius=radius,
+        outline=(255, 255, 255, 60), width=max(1, height // 40))
+    return flag
+
+
+def _metric_card(width: int, height: int, radius: int) -> Image.Image:
+    card = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    ImageDraw.Draw(card).rounded_rectangle(
+        (0, 0, width - 1, height - 1), radius=radius,
+        fill=(255, 255, 255, 16), outline=(255, 255, 255, 46),
+        width=max(1, round(height / 90)))
+    return card
 
 
 def _count_datasets(data: dict) -> int:
@@ -417,49 +476,62 @@ def _count_datasets(data: dict) -> int:
 
 
 def generate_cover_image(data: dict, out_path: Path = THUMBNAIL_OUT) -> Path:
-    """Generate the social thumbnail. Model/dataset counts come from live data;
-    the layout is centred so it survives a square crop in messenger link cards."""
-    width, height = THUMBNAIL_SIZE
+    """Generate the social thumbnail. Model count, dataset count and the leading
+    score come from live data; the layout is centred so it survives a square crop
+    in messenger link cards."""
+    ss = THUMBNAIL_SS
+    width, height = THUMBNAIL_SIZE[0] * ss, THUMBNAIL_SIZE[1] * ss
+
+    # Background is finished first, at final size: the grain has to land as 1px
+    # texture, and it must not settle on the type. Artwork goes on a separate
+    # transparent layer that is composited over it afterwards, so the lettering
+    # stays clean while the field behind it stays gritty.
+    background = _apply_grain(_apply_vignette(_mesh_gradient(THUMBNAIL_SIZE))).convert("RGBA")
+    image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(image)
     cx = width / 2
 
-    image = _radial_gradient(
-        THUMBNAIL_SIZE, (0.20 * width, 0.55 * height), 0.95 * width, THUMBNAIL_GRADIENT
-    )
-    draw = ImageDraw.Draw(image)
+    f_title = _load_font(FONT_BOLD, 82 * ss)
+    f_sub = _load_font(FONT_REGULAR, 25 * ss)
+    f_label = _load_font(FONT_MEDIUM, 16 * ss)
 
-    eyebrow_font = _load_font(22, bold=True)
-    title_font = _fit_font(draw, "Open Danish ASR", 1000, 92, bold=True)
-    subtitle_font = _load_font(25)
-    stat_value_font = _load_font(60, bold=True)
-    stat_label_font = _load_font(19, bold=True)
+    flag = _dannebrog(78 * ss, radius=9 * ss)
+    image.alpha_composite(flag, (int(cx - flag.width / 2), 88 * ss))
 
-    n_models = len(data.get("wer", []))
-    n_datasets = _count_datasets(data)
+    # Tight tracking and tight leading are what make the title read as display
+    # type rather than as a heading scaled up.
+    for i, line in enumerate(("Open Danish ASR", "Leaderboard")):
+        _tracked(draw, (cx, (268 + i * 84) * ss), line, f_title, THUMBNAIL_TEXT, tracking=-1.6 * ss)
+    _tracked(draw, (cx, 400 * ss), "Consistent WER and CER evaluation across Danish test sets.",
+             f_sub, THUMBNAIL_MUTED, tracking=0.2 * ss)
 
-    # Eyebrow + centred Danish flag.
-    draw.text((cx, 72), "RYE AI", font=eyebrow_font, fill=THUMBNAIL_EYEBROW, anchor="ms")
-    draw.rectangle((551, 102, 650, 176), fill=THUMBNAIL_RED)
-    draw.rectangle((582, 102, 596, 176), fill=THUMBNAIL_TEXT)
-    draw.rectangle((551, 132, 650, 146), fill=THUMBNAIL_TEXT)
+    cards = [(str(len(data.get("wer", []))), "MODELS"),
+             (str(_count_datasets(data)), "DATASETS")]
 
-    # Two-line title + subtitle, all centred.
-    draw.text((cx, 282), "Open Danish ASR", font=title_font, fill=THUMBNAIL_TEXT, anchor="ms")
-    draw.text((cx, 381), "Leaderboard", font=title_font, fill=THUMBNAIL_TEXT, anchor="ms")
-    draw.text((cx, 438), "Consistent WER and CER evaluation across Danish test sets.",
-              font=subtitle_font, fill=THUMBNAIL_MUTED, anchor="ms")
+    # Sized to sit inside the centred square-crop safe zone, so no card is cut
+    # off when a messenger renders the link as a square thumbnail.
+    cw, ch, gap = 200 * ss, 120 * ss, 20 * ss
+    total = len(cards) * cw + (len(cards) - 1) * gap
+    x0, y0 = int(cx - total / 2), 450 * ss
+    for i, (value, label) in enumerate(cards):
+        x = x0 + i * (cw + gap)
+        image.alpha_composite(_metric_card(cw, ch, radius=18 * ss), (x, y0))
+        mid = x + cw / 2
+        size = 54
+        f_value = _load_font(FONT_BOLD, size * ss)
+        while size > 30 and _tracked_width(draw, value, f_value, -0.5 * ss) > cw - 34 * ss:
+            size -= 2
+            f_value = _load_font(FONT_BOLD, size * ss)
+        _tracked(draw, (mid, y0 + 70 * ss), value, f_value, THUMBNAIL_STAT, tracking=-0.5 * ss)
+        _tracked(draw, (mid, y0 + 100 * ss), label, f_label, THUMBNAIL_STAT_LABEL, tracking=2.2 * ss)
 
-    divider = ImageColor.getrgb(THUMBNAIL_DIVIDER)
-    draw.line((409, 480, 791, 480), fill=divider, width=1)
-
-    # Stats: MODELS | DATASETS — both counts dynamic.
-    draw.text((503, 551), str(n_models), font=stat_value_font, fill=THUMBNAIL_STAT, anchor="ms")
-    draw.text((503, 586), "MODELS", font=stat_label_font, fill=THUMBNAIL_STAT_LABEL, anchor="ms")
-    draw.line((600, 508, 600, 593), fill=divider, width=1)
-    draw.text((697, 551), str(n_datasets), font=stat_value_font, fill=THUMBNAIL_STAT, anchor="ms")
-    draw.text((697, 586), "DATASETS", font=stat_label_font, fill=THUMBNAIL_STAT_LABEL, anchor="ms")
-
+    # Downsample through premultiplied alpha ("RGBa"), or LANCZOS averages the
+    # black of the transparent pixels into every glyph edge and haloes the type.
+    background.alpha_composite(
+        image.convert("RGBa").resize(THUMBNAIL_SIZE, Image.LANCZOS).convert("RGBA"))
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    image.convert("RGB").save(out_path, format="JPEG", quality=92, subsampling=0)
+    background.convert("RGB").save(
+        out_path, format="JPEG", quality=94, subsampling=0, optimize=True)
     return out_path
 
 

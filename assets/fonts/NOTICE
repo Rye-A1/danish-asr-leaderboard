@@ -1,0 +1,9 @@
+Roboto
+Copyright 2011 Google Inc. All Rights Reserved.
+Licensed under the Apache License, Version 2.0 — see LICENSE in this directory.
+Upstream: https://github.com/googlefonts/roboto
+
+Vendored here so the social cover renders identically on a developer machine and
+on the ubuntu-latest deploy runner. Without a pinned font, Pillow falls back to
+whatever the host happens to have (Arial locally, DejaVu Sans in CI), and the
+published card silently differs from the one that was designed and reviewed.
