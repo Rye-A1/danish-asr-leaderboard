@@ -27,6 +27,7 @@ from danish_asr_leaderboard.backends.api import (  # noqa: F401,E402
     azure_openai,
     elevenlabs,
     google_chirp,
+    ordbogen,
     soniox,
 )
 

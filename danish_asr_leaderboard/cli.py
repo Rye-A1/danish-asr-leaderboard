@@ -19,7 +19,7 @@ from danish_asr_leaderboard.results import (
 )
 from danish_asr_leaderboard.scoring import transcribe_dataset
 
-API_BACKENDS = {"elevenlabs", "azure-openai", "google-chirp", "soniox"}
+API_BACKENDS = {"elevenlabs", "azure-openai", "google-chirp", "soniox", "ordbogen"}
 
 
 def _notify(msg: str) -> None:
@@ -91,6 +91,12 @@ def parse_args() -> argparse.Namespace:
     # Soniox
     ap.add_argument("--soniox-api-key", default=None)
     ap.add_argument("--soniox-model", default="soniox-v1")
+    # Ordbogen.ai / OdinCore
+    ap.add_argument("--ordbogen-api-key", default=None)
+    ap.add_argument("--ordbogen-base-url", default=None)
+    ap.add_argument("--ordbogen-rpm", type=int, default=110,
+                    help="Client-side request pacing (Tier 0 allows 120/min, Tier 1 240/min)")
+    ap.add_argument("--ordbogen-concurrency", type=int, default=8)
     return ap.parse_args()
 
 
@@ -119,6 +125,11 @@ def _options_from_args(args: argparse.Namespace) -> LoadOptions:
         # Soniox
         soniox_api_key=args.soniox_api_key,
         soniox_model=args.soniox_model,
+        # Ordbogen.ai / OdinCore
+        ordbogen_api_key=args.ordbogen_api_key,
+        ordbogen_base_url=args.ordbogen_base_url,
+        ordbogen_rpm=args.ordbogen_rpm,
+        ordbogen_concurrency=args.ordbogen_concurrency,
     )
 
 

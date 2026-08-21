@@ -53,7 +53,7 @@ QWEN_PY="${QWEN_PY:-$DEFAULT_PY}"
 TF_PY="${TF_PY:-$DEFAULT_PY}"
 ONLY_BACKENDS="${ONLY_BACKENDS:-}"        # comma-separated allow-list; empty = all
 SKIP_MODELS="${SKIP_MODELS:-}"            # comma-separated block-list; empty = none
-FAILURES_FILE="${FAILURES_FILE:-"$FAILURES_FILE"}"
+FAILURES_FILE="${FAILURES_FILE:-failures.txt}"
 
 py_for() {  # interpreter for a given backend
   case "$1" in
@@ -126,6 +126,7 @@ API_MODELS=(
   "scribe_v2|elevenlabs|--access proprietary --elevenlabs-api-key ${ELEVENLABS_API_KEY:-}"
   "gpt-4o-transcribe-benchmark|azure-openai|--access proprietary --azure-openai-api-key ${AZURE_OPENAI_API_KEY:-} --azure-openai-endpoint ${AZURE_OPENAI_ENDPOINT:-}"
   "gpt-4o-mini-transcribe-benchmark|azure-openai|--access proprietary --azure-openai-api-key ${AZURE_OPENAI_API_KEY:-} --azure-openai-endpoint ${AZURE_OPENAI_ENDPOINT:-}"
+  "ordbogen/whisper|ordbogen|--access proprietary --ordbogen-api-key ${ORDBOGEN_API_KEY:-}"
 )
 
 run_one() {
@@ -140,7 +141,7 @@ run_one() {
   notify "▶️ \`$model\` ($backend) starting…"
   local log; log="$(mktemp)"
   # shellcheck disable=SC2086
-  "$py" run_eval.py --model "$model" --backend "$backend" "${COMMON[@]}" $extra 2>&1 | tee "$log"
+  PYTHONUNBUFFERED=1 "$py" run_eval.py --model "$model" --backend "$backend" "${COMMON[@]}" $extra 2>&1 | tee "$log"
   local rc=${PIPESTATUS[0]}
   if [ "$rc" -eq 0 ]; then
     local wer; wer="$(grep -oE 'mean_wer \(core 5\)[^0-9]*[0-9.]+' "$log" | grep -oE '[0-9.]+$' | tail -1)"
