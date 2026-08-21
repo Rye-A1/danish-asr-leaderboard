@@ -4,10 +4,11 @@ from __future__ import annotations
 import importlib
 import os
 
-from danish_asr_leaderboard.backends.base import Backend, LoadOptions, register
+from danish_asr_leaderboard.backends.base import LoadOptions, register
+from danish_asr_leaderboard.backends.api._base import ApiBackend
 
 
-class GoogleChirpBackend(Backend):
+class GoogleChirpBackend(ApiBackend):
     name = "google-chirp"
 
     def __init__(self, client, project_id, model_id, *, options=None):
@@ -15,7 +16,7 @@ class GoogleChirpBackend(Backend):
         self.project_id = project_id
         self.model_id = model_id
 
-    def transcribe_one(self, audio_path: str) -> str:
+    def _call(self, audio_path: str) -> str:
         cloud_speech = importlib.import_module("google.cloud.speech_v2.types.cloud_speech")
         with open(audio_path, "rb") as f:
             audio_content = f.read()

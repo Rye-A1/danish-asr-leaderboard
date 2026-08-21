@@ -4,17 +4,18 @@ from __future__ import annotations
 import importlib
 import os
 
-from danish_asr_leaderboard.backends.base import Backend, LoadOptions, register
+from danish_asr_leaderboard.backends.base import LoadOptions, register
+from danish_asr_leaderboard.backends.api._base import ApiBackend
 
 
-class ElevenLabsBackend(Backend):
+class ElevenLabsBackend(ApiBackend):
     name = "elevenlabs"
 
     def __init__(self, client, model_id, *, options=None):
         super().__init__(client, options=options)
         self.model_id = model_id
 
-    def transcribe_one(self, audio_path: str) -> str:
+    def _call(self, audio_path: str) -> str:
         with open(audio_path, "rb") as f:
             resp = self.model.speech_to_text.convert(
                 file=f, model_id=self.model_id, language_code="da"

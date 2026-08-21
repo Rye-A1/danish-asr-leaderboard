@@ -4,17 +4,18 @@ from __future__ import annotations
 import importlib
 import os
 
-from danish_asr_leaderboard.backends.base import Backend, LoadOptions, register
+from danish_asr_leaderboard.backends.base import LoadOptions, register
+from danish_asr_leaderboard.backends.api._base import ApiBackend
 
 
-class AzureOpenAIBackend(Backend):
+class AzureOpenAIBackend(ApiBackend):
     name = "azure-openai"
 
     def __init__(self, client, deployment, *, options=None):
         super().__init__(client, options=options)
         self.deployment = deployment
 
-    def transcribe_one(self, audio_path: str) -> str:
+    def _call(self, audio_path: str) -> str:
         with open(audio_path, "rb") as f:
             resp = self.model.audio.transcriptions.create(
                 model=self.deployment, file=f, language="da"
