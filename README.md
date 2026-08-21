@@ -3,8 +3,7 @@
 ![Danish ASR Leaderboard cover](https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/resolve/main/cover.jpeg)
 
 Reproducible benchmark and open leaderboard for **Danish automatic speech
-recognition**, scored across five independent public test sets. Modelled on the
-[HF Open ASR Leaderboard](https://github.com/huggingface/open_asr_leaderboard).
+recognition**, scored across five independent public test sets.
 
 - **Leaderboard (Space):** https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard
 - **Results (dataset):** https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard
