@@ -1,0 +1,19 @@
+{
+  "model": "[MediaCatch/xls-r-300m-danish-mc-v2](https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2)",
+  "params_b": 0.315,
+  "coral_conversation_wer": 32.74,
+  "coral_read_aloud_wer": 26.2,
+  "cv17_da_wer": 8.77,
+  "fleurs_da_wer": 14.05,
+  "ftspeech_wer": 12.77,
+  "mean_wer": 18.91,
+  "coral_conversation_cer": 19.78,
+  "coral_read_aloud_cer": 10.78,
+  "cv17_da_cer": 2.96,
+  "fleurs_da_cer": 5.42,
+  "ftspeech_cer": 6.86,
+  "mean_cer": 9.16,
+  "speed_x": 164.2,
+  "submitted": "2026-08-20",
+  "access": "open"
+}

@@ -920,8 +920,19 @@
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
       <div class="changelog-body">
-        <h3>2026-08 — Whisper decoding fix &amp; re-run</h3>
+        <h3>2026-08 — Decoding fixes &amp; re-runs</h3>
         <ul>
+          <li><strong>CTC models decoded with their n-gram LM.</strong> Four entries
+            ship a language model in their own repo (the three CoRal Røst wav2vec2
+            models and MediaCatch). Beam search was being run over the batch padding
+            as well as the speech, so it invented trailing words — badly on
+            MediaCatch, mildly on Røst. Decoding now trims each clip to its true
+            length first. Røst improves by 0.2–1.0&nbsp;WER, and
+            <code>MediaCatch/xls-r-300m-danish-mc-v2</code> joins the board.</li>
+          <li><strong>Speed figures corrected, not improved.</strong> Those four models
+            now report 3–9× higher <code>speed (x)</code>. The models did not change:
+            beam search previously ran single-threaded and now runs in parallel, so the
+            old figures understated them.</li>
           <li><strong>Short-form vs long-form decoding.</strong> The harness passed
             <code>return_timestamps=True</code> — a long-form setting — to every clip,
             on a corpus that is ~99&nbsp;% short-form. On short audio that sends the
