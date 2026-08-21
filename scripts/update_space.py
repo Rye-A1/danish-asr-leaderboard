@@ -95,7 +95,6 @@ THUMBNAIL_SS = 3
 THUMBNAIL_BG = (8, 7, 11)
 THUMBNAIL_TEXT = (255, 255, 255)
 THUMBNAIL_MUTED = (198, 176, 187)
-THUMBNAIL_EYEBROW = (192, 164, 176)
 THUMBNAIL_STAT = (255, 176, 191)
 THUMBNAIL_STAT_LABEL = (152, 126, 140)
 THUMBNAIL_RED = (198, 12, 46)
@@ -366,7 +365,6 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
 
     return {
         "updated": date.today().isoformat(),
-        "org_logo": _provider_logo("RyeAI"),
         "wer": build_rows(wer_df, wer_metrics),
         "cer": build_rows(cer_df, cer_metrics),
     }
@@ -468,11 +466,6 @@ def _metric_card(width: int, height: int, radius: int) -> Image.Image:
     return card
 
 
-def _best_wer(data: dict) -> float | None:
-    scores = [r.get("mean_wer") for r in data.get("wer", []) if r.get("mean_wer") is not None]
-    return min(scores) if scores else None
-
-
 def _count_datasets(data: dict) -> int:
     """Distinct test sets = per-dataset WER columns (excludes the macro mean)."""
     rows = data.get("wer", [])
@@ -488,16 +481,19 @@ def generate_cover_image(data: dict, out_path: Path = THUMBNAIL_OUT) -> Path:
     in messenger link cards."""
     ss = THUMBNAIL_SS
     width, height = THUMBNAIL_SIZE[0] * ss, THUMBNAIL_SIZE[1] * ss
-    image = _mesh_gradient((width, height)).convert("RGBA")
+
+    # Background is finished first, at final size: the grain has to land as 1px
+    # texture, and it must not settle on the type. Artwork goes on a separate
+    # transparent layer that is composited over it afterwards, so the lettering
+    # stays clean while the field behind it stays gritty.
+    background = _apply_grain(_apply_vignette(_mesh_gradient(THUMBNAIL_SIZE))).convert("RGBA")
+    image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(image)
     cx = width / 2
 
-    f_eyebrow = _load_font(FONT_MEDIUM, 21 * ss)
     f_title = _load_font(FONT_BOLD, 82 * ss)
     f_sub = _load_font(FONT_REGULAR, 25 * ss)
     f_label = _load_font(FONT_MEDIUM, 16 * ss)
-
-    _tracked(draw, (cx, 62 * ss), "RYE AI", f_eyebrow, THUMBNAIL_EYEBROW, tracking=5.0 * ss)
 
     flag = _dannebrog(78 * ss, radius=9 * ss)
     image.alpha_composite(flag, (int(cx - flag.width / 2), 88 * ss))
@@ -511,13 +507,10 @@ def generate_cover_image(data: dict, out_path: Path = THUMBNAIL_OUT) -> Path:
 
     cards = [(str(len(data.get("wer", []))), "MODELS"),
              (str(_count_datasets(data)), "DATASETS")]
-    best = _best_wer(data)
-    if best is not None:
-        cards.append((f"{best:.2f}", "BEST WER"))
 
     # Sized to sit inside the centred square-crop safe zone, so no card is cut
     # off when a messenger renders the link as a square thumbnail.
-    cw, ch, gap = 180 * ss, 120 * ss, 18 * ss
+    cw, ch, gap = 200 * ss, 120 * ss, 20 * ss
     total = len(cards) * cw + (len(cards) - 1) * gap
     x0, y0 = int(cx - total / 2), 450 * ss
     for i, (value, label) in enumerate(cards):
@@ -532,9 +525,12 @@ def generate_cover_image(data: dict, out_path: Path = THUMBNAIL_OUT) -> Path:
         _tracked(draw, (mid, y0 + 70 * ss), value, f_value, THUMBNAIL_STAT, tracking=-0.5 * ss)
         _tracked(draw, (mid, y0 + 100 * ss), label, f_label, THUMBNAIL_STAT_LABEL, tracking=2.2 * ss)
 
-    flat = image.convert("RGB").resize(THUMBNAIL_SIZE, Image.LANCZOS)
+    # Downsample through premultiplied alpha ("RGBa"), or LANCZOS averages the
+    # black of the transparent pixels into every glyph edge and haloes the type.
+    background.alpha_composite(
+        image.convert("RGBa").resize(THUMBNAIL_SIZE, Image.LANCZOS).convert("RGBA"))
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    _apply_grain(_apply_vignette(flat)).save(
+    background.convert("RGB").save(
         out_path, format="JPEG", quality=94, subsampling=0, optimize=True)
     return out_path
 
