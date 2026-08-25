@@ -19,6 +19,9 @@ dependencies = [
     "datasets>=2.19.0",
     "huggingface_hub>=0.23.0",
     "num2words>=0.5.14",
+    # Folds spelled-out numerals to digits ahead of num2words; part of the
+    # published normalisation (see normalizer/danish.py).
+    "text2num>=3.1.0",
     # Edit distance behind WER/CER. Was pulled in transitively via jiwer, which
     # metrics.py no longer uses now that the corpus rate is computed directly.
     "rapidfuzz>=3.0",
@@ -50,6 +53,7 @@ cohere-asr     = ["torch>=2.0.0", "transformers>=4.54", "librosa>=0.10", "senten
 vibevoice      = ["torch>=2.0.0", "transformers>=5.3.0"]
 elevenlabs     = ["elevenlabs>=1.0.0"]
 azure-openai   = ["openai>=1.0.0"]
+ordbogen       = ["openai>=1.0.0"]
 google-chirp   = ["google-cloud-speech>=2.26.0"]
 soniox         = ["soniox>=0.1.0"]
 dev            = ["pytest>=8.0"]

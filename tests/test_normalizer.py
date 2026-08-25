@@ -173,3 +173,47 @@ def test_number_words_actually_expands():
     """Guards the happy path: num2words present and wired up."""
     assert normalise("4 biler") == "fire biler"
     assert normalise("24 timer") == "fireogtyve timer"
+
+
+# ── spoken_numbers: fold spelled-out numerals before num2words expands them ──
+
+@pytest.mark.parametrize("digits, spoken", [
+    ("38", "otte og tredive"),          # spaced compound — 3 tokens vs 1 without the fold
+    ("38", "otteogtredive"),            # closed compound
+    ("100", "hundrede"),                # num2words renders 100 as "ethundrede"
+    ("24", "fireogtyve"),
+    ("25", "fem og tyve"),
+])
+def test_spoken_numbers_folds_variants_onto_digits(digits, spoken):
+    assert normalise(digits) == normalise(spoken)
+
+
+def test_spoken_numbers_off_recovers_num2words_only():
+    """Without the pre-pass a spaced compound no longer matches its digit form."""
+    assert normalise("38", spoken_numbers=False) != normalise("otte og tredive", spoken_numbers=False)
+
+
+@pytest.mark.parametrize("text", [
+    "der var en mand",        # 'en' is the indefinite article, not the numeral
+    "et hus i byen",
+    "hun købte en kop kaffe",
+])
+def test_spoken_numbers_leaves_articles_alone(text):
+    """Danish en/et are homographs of 'one'; folding them would rewrite articles."""
+    assert normalise(text) == text
+
+
+def test_spoken_numbers_leaves_ordinary_text_untouched():
+    s = "det er en helt almindelig sætning uden tal"
+    assert normalise(s) == s
+
+
+def test_output_form_is_still_words_not_digits():
+    """The pre-pass feeds num2words; the scored text stays in word form."""
+    assert normalise("38") == "otteogtredive"
+    assert "38" not in normalise("38")
+
+
+def test_spoken_decimal_folds_onto_written_decimal():
+    """alpha2digit emits its own separator after step 2 has run; it must be re-stripped."""
+    assert normalise("tre komma fjorten") == normalise("3,14") == normalise("3.14")

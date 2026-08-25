@@ -4,17 +4,18 @@ from __future__ import annotations
 import importlib
 import os
 
-from danish_asr_leaderboard.backends.base import Backend, LoadOptions, register
+from danish_asr_leaderboard.backends.base import LoadOptions, register
+from danish_asr_leaderboard.backends.api._base import ApiBackend
 
 
-class SonioxBackend(Backend):
+class SonioxBackend(ApiBackend):
     name = "soniox"
 
     def __init__(self, client, model, *, options=None):
         super().__init__(client, options=options)
         self.model_name = model
 
-    def transcribe_one(self, audio_path: str) -> str:
+    def _call(self, audio_path: str) -> str:
         with open(audio_path, "rb") as f:
             response = self.model.transcribe(
                 file=f, model=self.model_name, language_hints=["da"]

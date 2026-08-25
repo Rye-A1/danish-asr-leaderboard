@@ -43,6 +43,11 @@ class LoadOptions:
     # Soniox
     soniox_api_key: str | None = None
     soniox_model: str = "soniox-v1"
+    # Ordbogen.ai / OdinCore (OpenAI-compatible)
+    ordbogen_api_key: str | None = None
+    ordbogen_base_url: str | None = None
+    ordbogen_rpm: int = 110
+    ordbogen_concurrency: int = 8
 
 
 class Backend(ABC):
