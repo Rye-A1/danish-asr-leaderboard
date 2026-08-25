@@ -930,6 +930,35 @@
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
       <div class="changelog-body">
+        <h3>2026-08 — Numeral normalisation</h3>
+        <ul>
+          <li><strong>Spelled-out numerals now fold onto their digit form.</strong>
+            Scoring already expanded digits to Danish words so that
+            <code>38</code> and <code>otteogtredive</code> count as the same token.
+            That only worked when the model happened to spell a number the way
+            <code>num2words</code> does: a model writing <code>otte og tredive</code>
+            still mismatched, and because Danish compounds are written closed, three
+            tokens against one cost roughly three word errors rather than one.
+            <code>100</code> was expanded to <code>ethundrede</code>, which never
+            matched the spoken <code>hundrede</code>. Numerals are now folded to
+            digits first and expanded once, so spelling and spacing variants land on
+            the same form. The scored text is unchanged in kind — still Danish
+            words — only the set of inputs reaching each form is wider.</li>
+          <li><strong>Effect.</strong> Near-uniform: most models improve by
+            0.10–0.14&nbsp;WER, which shifts every score together and changes no
+            ranking. The exception is
+            <code>MediaCatch/xls-r-300m-danish-mc-v2</code>, which spells numerals
+            out with spaces throughout and improves by 1.06, moving up two places.
+            Measured across all 29 published models before adoption: 28 improve or
+            hold, and the one regression is <code>whisper-tiny</code> at
+            +0.04&nbsp;WER, already above 130&nbsp;%.</li>
+          <li><strong>Not adopted: filler-word stripping.</strong> Removing Danish
+            hesitation markers (<code>øh</code>, <code>hmm</code>) was measured at the
+            same time and rejected. It changed no ranking across the 29 models, and it
+            is not monotone — <code>whisper-tiny</code> and <code>whisper-base</code>
+            get worse, because at their error rates removing reference tokens raises
+            the rate. It remains available as an opt-in for offline re-scoring.</li>
+        </ul>
         <h3>2026-08 — Decoding fixes &amp; re-runs</h3>
         <ul>
           <li><strong>CTC models decoded with their n-gram LM.</strong> Four entries

@@ -110,9 +110,14 @@ def _spoken_to_digits_da(text: str) -> str:
             "spelled-out-numeral fold."
         ) from exc
     try:
-        return alpha2digit(text, "da")
+        folded = alpha2digit(text, "da")
     except Exception:
         return text  # never let a conversion failure abort scoring
+    # Re-apply the numeral canonicalisation from step 2: alpha2digit can emit a
+    # separator of its own ("tre komma fjorten" -> "3,14"), and that arrives after
+    # step 2 has already run, so without this a *spoken* decimal would no longer
+    # fold onto the *written* one it is supposed to match.
+    return normalize_numbers_da(folded)
 
 
 # Bounded cache so repeated numerals (years, counts) don't re-invoke num2words.

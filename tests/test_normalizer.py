@@ -212,3 +212,8 @@ def test_output_form_is_still_words_not_digits():
     """The pre-pass feeds num2words; the scored text stays in word form."""
     assert normalise("38") == "otteogtredive"
     assert "38" not in normalise("38")
+
+
+def test_spoken_decimal_folds_onto_written_decimal():
+    """alpha2digit emits its own separator after step 2 has run; it must be re-stripped."""
+    assert normalise("tre komma fjorten") == normalise("3,14") == normalise("3.14")
