@@ -46,9 +46,11 @@ ALL_COLUMNS = [spec.column for spec in DATASETS.values()]
 def _score_column(
     jsonl_path: Path, unicode_form: str,
     number_words: bool = True, filler_words: bool = False,
+    spoken_numbers: bool = True,
 ) -> tuple[float, float]:
     records = read_dataset_outputs(jsonl_path)
-    kw = dict(unicode_form=unicode_form, number_words=number_words, filler_words=filler_words)
+    kw = dict(unicode_form=unicode_form, number_words=number_words,
+              spoken_numbers=spoken_numbers, filler_words=filler_words)
     refs = [normalise(r["reference"], **kw) for r in records]
     hyps = [normalise(r["hypothesis"], **kw) for r in records]
     return round(compute_wer(refs, hyps), 2), round(compute_cer(refs, hyps), 2)
@@ -57,6 +59,7 @@ def _score_column(
 def rescore_model(
     model_dir: Path, unicode_form: str,
     number_words: bool = True, filler_words: bool = False,
+    spoken_numbers: bool = True,
 ) -> tuple[dict, dict, dict]:
     """Return (wer, cer, meta) for one model directory."""
     wer: dict[str, float | None] = {f"{c}_wer": None for c in ALL_COLUMNS}
@@ -64,7 +67,8 @@ def rescore_model(
     for column in ALL_COLUMNS:
         jsonl_path = model_dir / f"{column}.jsonl"
         if jsonl_path.exists():
-            w, c = _score_column(jsonl_path, unicode_form, number_words, filler_words)
+            w, c = _score_column(jsonl_path, unicode_form, number_words,
+                                 filler_words, spoken_numbers)
             wer[f"{column}_wer"] = w
             cer[f"{column}_cer"] = c
     meta = read_meta(model_dir.parent, model_dir.name)
@@ -104,6 +108,12 @@ def main() -> None:
                     help="Expand standalone integer tokens to Danish cardinal words "
                          "(4 -> fire) when re-scoring (ON by default; --no-number-words "
                          "to disable).")
+    ap.add_argument("--spoken-numbers", action=argparse.BooleanOptionalAction, default=True,
+                    help="Fold spelled-out numerals to digits before --number-words "
+                         "expands them back, so spelling/spacing variants collapse "
+                         "(otte og tredive == 38). ON by default (the published "
+                         "methodology); --no-spoken-numbers recovers num2words-only "
+                         "scoring.")
     ap.add_argument("--filler-words", action="store_true",
                     help="Remove Danish hesitation fillers (øh, hmm, ...) when re-scoring.")
     ap.add_argument("--out-dir", default="results_rescored",
@@ -130,7 +140,7 @@ def main() -> None:
     out_dir = Path(args.out_dir)
 
     cfg = (f"unicode_form={args.unicode_form}, number_words={args.number_words}, "
-           f"filler_words={args.filler_words}")
+           f"spoken_numbers={args.spoken_numbers}, filler_words={args.filler_words}")
     print(f"Re-scoring {len(model_dirs)} model(s) under {cfg}\n")
     header = f"{'model':<48} {'mean_wer':>10}"
     if compare_dir:
@@ -140,7 +150,8 @@ def main() -> None:
 
     for model_dir in model_dirs:
         wer, cer, meta = rescore_model(
-            model_dir, args.unicode_form, args.number_words, args.filler_words
+            model_dir, args.unicode_form, args.number_words, args.filler_words,
+            args.spoken_numbers
         )
         model_id = meta.get("model", model_dir.name)
         result = build_result(wer, cer, meta)

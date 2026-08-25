@@ -30,6 +30,7 @@
 #   RUN_API=1 bash scripts/run_benchmark.sh       # also run hosted-API models
 #   MAX_SAMPLES=50 bash scripts/run_benchmark.sh  # quick smoke (cap per dataset)
 #   ONLY_BACKENDS=nemo bash scripts/run_benchmark.sh        # run only these backends
+#   ORDBOGEN_RPM=230 RUN_API=1 bash scripts/run_benchmark.sh  # Tier 1 pacing (Tier 0 = 120/min)
 #   FAILURES_FILE=api_failures.txt RUN_API=1 bash scripts/run_benchmark.sh  # separate failure log
 #
 # After the sweep:
@@ -126,7 +127,7 @@ API_MODELS=(
   "scribe_v2|elevenlabs|--access proprietary --elevenlabs-api-key ${ELEVENLABS_API_KEY:-}"
   "gpt-4o-transcribe-benchmark|azure-openai|--access proprietary --azure-openai-api-key ${AZURE_OPENAI_API_KEY:-} --azure-openai-endpoint ${AZURE_OPENAI_ENDPOINT:-}"
   "gpt-4o-mini-transcribe-benchmark|azure-openai|--access proprietary --azure-openai-api-key ${AZURE_OPENAI_API_KEY:-} --azure-openai-endpoint ${AZURE_OPENAI_ENDPOINT:-}"
-  "ordbogen/whisper|ordbogen|--access proprietary --ordbogen-api-key ${ORDBOGEN_API_KEY:-}"
+  "ordbogen/whisper|ordbogen|--access proprietary --ordbogen-api-key ${ORDBOGEN_API_KEY:-} --ordbogen-rpm ${ORDBOGEN_RPM:-110}"
 )
 
 run_one() {

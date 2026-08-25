@@ -50,6 +50,7 @@ BLOCK = 100
 # default (scoring.py and normalise disagree on unicode_form).
 UNICODE_FORM = "NFKC"
 NUMBER_WORDS = True
+SPOKEN_NUMBERS = True
 FILLER_WORDS = False
 
 
@@ -65,7 +66,7 @@ def per_utterance_stats(refs: list[str], hyps: list[str]):
     import numpy as np
 
     kw = dict(unicode_form=UNICODE_FORM, number_words=NUMBER_WORDS,
-              filler_words=FILLER_WORDS)
+              spoken_numbers=SPOKEN_NUMBERS, filler_words=FILLER_WORDS)
     rn = [normalise(r, **kw) for r in refs]
     hn = [normalise(h, **kw) for h in hyps]
     we, rw = per_utterance_counts(rn, hn, unit="word")
