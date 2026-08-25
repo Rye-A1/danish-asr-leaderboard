@@ -807,6 +807,13 @@
       <li>Strip punctuation — apostrophes <em>inside</em> a word
         (e.g. <code>det's</code>) are preserved; all other punctuation and
         symbols are removed</li>
+      <li><strong>Spelled-out numerals → digits</strong> — numbers written as
+        words are folded to their digit form with
+        <a href="https://github.com/allo-media/text2num" target="_blank" rel="noopener">text2num</a>
+        (<code>otte og tredive</code> and <code>otteogtredive</code> →
+        <code>38</code>; <code>hundrede</code> → <code>100</code>), so spelling and
+        spacing variants collapse onto one value before the expansion below. Bare
+        <code>en</code>/<code>et</code> are left as indefinite articles</li>
       <li><strong>Numerals → Danish words</strong> — standalone integers are
         spelled out with <a href="https://github.com/savoirfairelinux/num2words" target="_blank" rel="noopener">num2words</a>
         (<code>4</code>→<code>fire</code>, <code>24</code>→<code>fireogtyve</code>,
@@ -824,10 +831,9 @@
     <a href="https://github.com/Dansk-Data-Science-Community/danish-speech-eval" target="_blank" rel="noopener">danish-speech-eval</a>,
     whose "normalised WER" likewise spells numerals out as words.</p>
     <blockquote>
-      <strong>Note:</strong> folding digit↔word formatting (step 5) is a fairness
+      <strong>Note:</strong> folding digit↔word formatting is a fairness
       correction, not a leniency — it is applied symmetrically to reference and
-      hypothesis, so genuine number-recognition errors are still counted. It
-      lowers every model's WER by ~0.1–0.5&nbsp;pp and does not reorder the board.
+      hypothesis, so genuine number-recognition errors are still counted.
     </blockquote>
     <blockquote>
       <strong>Note:</strong> Danish hesitation fillers (<code>øh</code>,
