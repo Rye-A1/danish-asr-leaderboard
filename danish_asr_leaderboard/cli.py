@@ -77,6 +77,9 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--kenlm-alpha", type=float, default=0.075)
     ap.add_argument("--kenlm-beam-size", type=int, default=5)
     ap.add_argument("--nemo-beam-size", type=int, default=1)
+    ap.add_argument("--nemo-model-file", default=None,
+                    help="Filename of the .nemo to use when an HF repo ships several "
+                         "(e.g. a plain and a timestamp-capable export of one model)")
     # ElevenLabs
     ap.add_argument("--elevenlabs-api-key", default=None)
     ap.add_argument("--elevenlabs-model-id", default="scribe_v2")
@@ -107,6 +110,7 @@ def _options_from_args(args: argparse.Namespace) -> LoadOptions:
         # NeMo
         nemo_model_type=args.nemo_model_type,
         nemo_beam_size=args.nemo_beam_size,
+        nemo_model_file=args.nemo_model_file,
         # KenLM
         kenlm_model=args.kenlm_model,
         kenlm_alpha=args.kenlm_alpha,
