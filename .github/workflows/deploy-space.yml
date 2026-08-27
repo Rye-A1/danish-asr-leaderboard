@@ -40,6 +40,17 @@ jobs:
       - name: Push results to HF dataset
         run: uv run --no-project --with pandas --with pyarrow --with huggingface_hub python scripts/push_results.py
 
+      - name: Check every result has raw outputs
+        # Models reach the board by two paths: contributor PRs carrying
+        # results/ + outputs/, and our own eval runs pushing outputs straight to
+        # the dataset. Nothing compared the two, so a model could publish a score
+        # with no raw outputs and therefore no confidence interval — which is
+        # exactly what ordbogen/whisper did, unnoticed, from August 2026.
+        # Runs before the interval step because those parquets are its input.
+        run: |
+          pip install -e . huggingface_hub
+          python scripts/check_dataset_consistency.py
+
       - name: Recompute confidence intervals
         # Must run after the outputs push (it reads outputs/*.parquet back from the
         # dataset) and before the Space deploy, so published scores can never sit
