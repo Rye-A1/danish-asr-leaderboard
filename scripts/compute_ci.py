@@ -123,12 +123,34 @@ def pct(arr) -> list[float] | None:
     return [round(float(lo), 2), round(float(hi), 2)]
 
 
+def _fetch_published_ci() -> dict:
+    """The ci.json currently on the dataset — the base a partial run merges into.
+
+    A missing or unreadable file is not fatal: it just means there is nothing to
+    preserve, and the run writes only what it computed.
+    """
+    import urllib.request
+
+    url = (f"https://huggingface.co/datasets/{DATASET_REPO_ID}"
+           "/resolve/main/data/ci.json")
+    try:
+        with urllib.request.urlopen(url, timeout=30) as resp:
+            data = json.loads(resp.read())
+        return data if isinstance(data, dict) else {}
+    except Exception as exc:  # noqa: BLE001 - absence is a normal first run
+        print(f"  note: no published ci.json to merge into ({exc})", file=sys.stderr)
+        return {}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Sample-level bootstrap CIs from raw outputs")
     ap.add_argument("-B", "--replicates", type=int, default=1000)
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--model", default="", help="Only this output slug (default: all)")
     ap.add_argument("--no-upload", action="store_true", help="Write locally, skip HF upload")
+    ap.add_argument("--prune", action="store_true",
+                    help="Write ONLY the computed models, dropping any others "
+                         "already published (default: merge)")
     args = ap.parse_args()
 
     import pandas as pd
@@ -213,9 +235,24 @@ def main() -> None:
         print("Nothing computed.", file=sys.stderr)
         sys.exit(1)
 
+    # Merge into whatever is already published rather than replacing it.
+    # `--model` exists precisely so one re-run model can be recomputed cheaply,
+    # and writing only that model would delete every other model's interval on
+    # upload — a silent data loss from an operation that looks routine.
+    # data/ci.json is not tracked in git, so the dataset copy is the base.
+    merged: dict[str, dict] = {}
+    if not args.prune:
+        merged = _fetch_published_ci()
+        kept = [s for s in merged if s not in out]
+        if kept:
+            print(f"\nMerging into {len(merged)} published entr(ies); "
+                  f"keeping {len(kept)} untouched")
+    merged.update(out)
+
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
-    OUT_PATH.write_text(json.dumps(out, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    print(f"\nWrote {OUT_PATH} ({len(out)} model(s), B={args.replicates})")
+    OUT_PATH.write_text(json.dumps(merged, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"\nWrote {OUT_PATH} ({len(out)} recomputed, {len(merged)} total, "
+          f"B={args.replicates})")
 
     if args.no_upload:
         return
@@ -224,7 +261,8 @@ def main() -> None:
         path_in_repo="data/ci.json",
         repo_id=DATASET_REPO_ID,
         repo_type="dataset",
-        commit_message=f"Update sample-level bootstrap CIs ({len(out)} models)",
+        commit_message=f"Update sample-level bootstrap CIs ({len(out)} recomputed, "
+                       f"{len(merged)} total)",
     )
     print("Uploaded data/ci.json")
 

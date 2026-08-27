@@ -25,6 +25,7 @@ class LoadOptions:
     compute_type: str = "float16"
     # NeMo
     nemo_model_type: str = "canary"   # "canary" | "parakeet"
+    nemo_model_file: str | None = None  # pick one .nemo when a repo ships several
     nemo_beam_size: int = 1
     kenlm_model: str | None = None
     kenlm_alpha: float = 0.075

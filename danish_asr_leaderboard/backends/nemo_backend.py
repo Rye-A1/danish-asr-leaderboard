@@ -112,7 +112,7 @@ def _is_lm_nemo(filename: str) -> bool:
     return "kenlm" in low or "ngram" in low or "n_gram" in low
 
 
-def _hf_nemo_file(model_ref: str) -> str | None:
+def _hf_nemo_file(model_ref: str, prefer: str | None = None) -> str | None:
     """If ``model_ref`` is an HF repo whose only ASR payload is a ``.nemo`` file,
     download it and return the local path; otherwise None.
 
@@ -121,6 +121,12 @@ def _hf_nemo_file(model_ref: str) -> str | None:
     archive (no ``model_config.yaml``), which ``from_pretrained`` can't restore —
     those need ``hf_hub_download`` + ``restore_from`` instead. KenLM ``.nemo``
     files that ride along in the same repo are ignored (they go via --kenlm-model).
+
+    ``prefer`` names one file explicitly, for repos shipping several ASR
+    checkpoints — e.g. ``RyeAI/krumme-v1`` carries both a plain export and a
+    larger timestamp-capable ``-ts`` variant of the same model. Guessing between
+    them would silently score whichever the heuristic happened to pick, so an
+    ambiguous repo raises and asks for ``--nemo-model-file`` instead.
     """
     if "/" not in model_ref or Path(model_ref).expanduser().exists():
         return None
@@ -129,12 +135,30 @@ def _hf_nemo_file(model_ref: str) -> str | None:
 
         files = HfApi().list_repo_files(model_ref)
         nemo_files = [f for f in files if f.endswith(".nemo") and not _is_lm_nemo(f)]
-        if len(nemo_files) != 1:
-            return None  # native model card, or ambiguous — let from_pretrained try
-        print(f"  HF repo ships a raw .nemo ({nemo_files[0]}); downloading…")
-        return hf_hub_download(repo_id=model_ref, filename=nemo_files[0])
     except Exception:
         return None  # not resolvable as an HF repo — fall back to from_pretrained
+
+    if prefer:
+        if prefer not in nemo_files:
+            raise ValueError(
+                f"--nemo-model-file {prefer!r} is not an ASR .nemo in {model_ref}. "
+                f"Available: {', '.join(nemo_files) or '(none)'}"
+            )
+        chosen = prefer
+    elif len(nemo_files) == 1:
+        chosen = nemo_files[0]
+    elif len(nemo_files) > 1:
+        # Falling through to from_pretrained here fails with a confusing missing
+        # model_config.yaml; say what is actually wrong instead.
+        raise ValueError(
+            f"{model_ref} ships {len(nemo_files)} ASR .nemo files "
+            f"({', '.join(nemo_files)}). Pass --nemo-model-file to choose one."
+        )
+    else:
+        return None  # native model card — let from_pretrained handle it
+
+    print(f"  HF repo ships a raw .nemo ({chosen}); downloading…")
+    return hf_hub_download(repo_id=model_ref, filename=chosen)
 
 
 @register("nemo")
@@ -146,7 +170,7 @@ def load(model_ref: str, options: LoadOptions) -> Backend:
     ref_path = Path(model_ref).expanduser()
     if ref_path.exists() and ref_path.suffix == ".nemo":
         model = ASRModel.restore_from(restore_path=str(ref_path))
-    elif (hf_nemo := _hf_nemo_file(model_ref)) is not None:
+    elif (hf_nemo := _hf_nemo_file(model_ref, options.nemo_model_file)) is not None:
         model = ASRModel.restore_from(restore_path=hf_nemo)
     else:
         model = ASRModel.from_pretrained(model_name=model_ref)
