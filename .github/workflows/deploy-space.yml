@@ -40,6 +40,19 @@ jobs:
       - name: Push results to HF dataset
         run: uv run --no-project --with pandas --with pyarrow --with huggingface_hub python scripts/push_results.py
 
+      - name: Recompute confidence intervals
+        # Must run after the outputs push (it reads outputs/*.parquet back from the
+        # dataset) and before the Space deploy, so published scores can never sit
+        # outside their published intervals — which is what happened when this was
+        # a manual step that could be forgotten.
+        #
+        # Unlike the steps around it, compute_ci.py imports danish_asr_leaderboard
+        # (metrics + normalizer), so the package has to be installed rather than run
+        # with --no-project. Plain pip for the reason documented in tests.yml.
+        run: |
+          pip install -e . pandas pyarrow huggingface_hub
+          python scripts/compute_ci.py
+
       - name: Refresh dataset viewer configs
         run: uv run --no-project --with huggingface_hub --with pyyaml python scripts/update_dataset_card.py
 

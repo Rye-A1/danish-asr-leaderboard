@@ -1,0 +1,19 @@
+{
+  "model": "[ordbogen/whisper](https://huggingface.co/ordbogen/whisper)",
+  "params_b": 0.0,
+  "coral_conversation_wer": 45.2,
+  "coral_read_aloud_wer": 28.87,
+  "cv17_da_wer": 14.86,
+  "fleurs_da_wer": 12.32,
+  "ftspeech_wer": 18.46,
+  "mean_wer": 23.94,
+  "coral_conversation_cer": 31.54,
+  "coral_read_aloud_cer": 11.46,
+  "cv17_da_cer": 5.34,
+  "fleurs_da_cer": 4.46,
+  "ftspeech_cer": 11.24,
+  "mean_cer": 12.81,
+  "speed_x": 21.1,
+  "submitted": "2026-08-27",
+  "access": "proprietary"
+}
