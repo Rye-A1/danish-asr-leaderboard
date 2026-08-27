@@ -1,5 +1,5 @@
 {
-  "model": "[gpt-4o-mini-transcribe-benchmark](https://huggingface.co/gpt-4o-mini-transcribe-benchmark)",
+  "model": "[gpt-4o-mini-transcribe](https://huggingface.co/gpt-4o-mini-transcribe)",
   "params_b": 0.0,
   "coral_conversation_wer": 48.58,
   "coral_read_aloud_wer": 18.69,

@@ -125,8 +125,8 @@ LOCAL_MODELS=(
 # Hosted APIs (need credentials in env; only run when RUN_API=1).
 API_MODELS=(
   "scribe_v2|elevenlabs|--access proprietary --elevenlabs-api-key ${ELEVENLABS_API_KEY:-}"
-  "gpt-4o-transcribe-benchmark|azure-openai|--access proprietary --azure-openai-api-key ${AZURE_OPENAI_API_KEY:-} --azure-openai-endpoint ${AZURE_OPENAI_ENDPOINT:-}"
-  "gpt-4o-mini-transcribe-benchmark|azure-openai|--access proprietary --azure-openai-api-key ${AZURE_OPENAI_API_KEY:-} --azure-openai-endpoint ${AZURE_OPENAI_ENDPOINT:-}"
+  "gpt-4o-transcribe-benchmark|azure-openai|--model-id gpt-4o-transcribe --access proprietary --azure-openai-api-key ${AZURE_OPENAI_API_KEY:-} --azure-openai-endpoint ${AZURE_OPENAI_ENDPOINT:-}"
+  "gpt-4o-mini-transcribe-benchmark|azure-openai|--model-id gpt-4o-mini-transcribe --access proprietary --azure-openai-api-key ${AZURE_OPENAI_API_KEY:-} --azure-openai-endpoint ${AZURE_OPENAI_ENDPOINT:-}"
   "ordbogen/whisper|ordbogen|--access proprietary --ordbogen-api-key ${ORDBOGEN_API_KEY:-} --ordbogen-rpm ${ORDBOGEN_RPM:-110}"
 )
 
