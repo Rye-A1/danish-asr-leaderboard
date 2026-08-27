@@ -54,14 +54,14 @@ PROVIDER_DOCS = {
     "soniox": "https://soniox.com/docs/stt/get-started/transcribe-audio-file",
     "azure": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models",
     "syv-transcribe": "https://syv.ai",
-    "ordbogen": "https://www.odincore.ai/docs/models/ordbogen-whisper",
+    "ordbogen": "https://odincore.ai/docs/models/ordbogen-whisper",
 }
 
 # Logos for hosted/API models (no HF avatar). Same substring keys as PROVIDER_DOCS.
 PROVIDER_LOGO = {
     "scribe_v": "https://elevenlabs.io/_next/image?url=https%3A%2F%2Feleven-public-cdn.elevenlabs.io%2Fpayloadcms%2Felevenlabs-official-logo-11-icon.webp&w=1920&q=95",
     "syv-transcribe": "https://syv.ai/_next/image?url=%2F7.png&w=256&q=75",
-    "ordbogen": "https://www.odincore.ai/apple-touch-icon.png",
+    "ordbogen": "https://odincore.ai/apple-touch-icon.png",
 }
 
 # API models that have an HF org — fetch the avatar the same way as HF repos.
@@ -313,13 +313,20 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
         rows = []
         for rank, (_, row) in enumerate(df_sorted.iterrows(), 1):
             name, url = _parse_model(row.get("model", ""))
-            is_repo = "/" in name
+            access = str(row.get("access", "open"))
+            # "Has a slash" is not enough to mean "is an HF repo": ordbogen/whisper
+            # is a hosted API whose name is org-shaped, and the slash heuristic sent
+            # it to a huggingface.co URL that 404s. An explicit provider mapping
+            # wins instead — but only for proprietary rows, so an open HF model
+            # whose name happens to contain e.g. "azure" keeps its real repo link.
+            docs = _api_docs_url(name) if access == "proprietary" else ""
+            is_repo = "/" in name and not docs
             org = name.split("/", 1)[0] if is_repo else ""
             # Hosted/API models aren't HF repos → provider docs + logo, not a 404.
             if is_repo:
                 logo = _provider_logo(org)
             else:
-                url = _api_docs_url(name)
+                url = docs
                 logo = _api_logo(name)
             submitted = row.get("submitted")
             entry: dict = {
