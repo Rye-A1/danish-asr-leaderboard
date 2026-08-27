@@ -62,12 +62,15 @@ PROVIDER_LOGO = {
     "scribe_v": "https://elevenlabs.io/_next/image?url=https%3A%2F%2Feleven-public-cdn.elevenlabs.io%2Fpayloadcms%2Felevenlabs-official-logo-11-icon.webp&w=1920&q=95",
     "syv-transcribe": "https://syv.ai/_next/image?url=%2F7.png&w=256&q=75",
     "ordbogen": "https://odincore.ai/apple-touch-icon.png",
+    # The API docs' own favicon (48x48, blue ground, transparent corners) rather
+    # than the HF "openai" org avatar — these rows are the hosted API, not the
+    # open-weights repos, and the blue mark is how the product presents itself.
+    "gpt-4o": "https://developers.openai.com/favicon.png",
 }
 
-# API models that have an HF org — fetch the avatar the same way as HF repos.
-PROVIDER_HF_ORG = {
-    "gpt-4o": "openai",
-}
+# API models that have an HF org — fall back to that org's avatar when there is
+# no explicit PROVIDER_LOGO entry (which takes precedence).
+PROVIDER_HF_ORG: dict[str, str] = {}
 
 _MD_LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
 # A size the model advertises in its own name: 24B, 1.7B, 0.6b, 315m, …
