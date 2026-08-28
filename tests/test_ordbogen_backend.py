@@ -5,10 +5,10 @@ import time
 import pytest
 
 from danish_asr_leaderboard.backends.base import LoadOptions
+from danish_asr_leaderboard.backends.api._base import _Pacer
 from danish_asr_leaderboard.backends.api.ordbogen import (
     DEFAULT_RPM,
     OrdbogenBackend,
-    _Pacer,
     load,
 )
 

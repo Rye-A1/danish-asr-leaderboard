@@ -26,9 +26,6 @@ from __future__ import annotations
 import importlib
 import os
 import sys
-import threading
-import time
-from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from danish_asr_leaderboard.backends.base import LoadOptions, register
 from danish_asr_leaderboard.backends.api._base import ApiBackend
@@ -40,25 +37,6 @@ DEFAULT_RPM = 110
 DEFAULT_CONCURRENCY = 8
 
 
-class _Pacer:
-    """Evenly space request starts so they never exceed ``rpm`` per minute."""
-
-    def __init__(self, rpm: int) -> None:
-        self.min_gap = 60.0 / rpm if rpm > 0 else 0.0
-        self._next = 0.0
-        self._lock = threading.Lock()
-
-    def wait(self) -> None:
-        if self.min_gap <= 0:
-            return
-        with self._lock:
-            now = time.monotonic()
-            start = max(now, self._next)
-            self._next = start + self.min_gap
-        delay = start - now
-        if delay > 0:
-            time.sleep(delay)
-
 
 class OrdbogenBackend(ApiBackend):
     name = "ordbogen"
@@ -66,60 +44,18 @@ class OrdbogenBackend(ApiBackend):
     def __init__(self, client, model_ref, *, rpm, concurrency, options=None):
         super().__init__(client, options=options)
         self.model_ref = model_ref
+        # Pooling, pacing and retry all live in ApiBackend; this backend only
+        # supplies the vendor call and its tier-specific limits.
         self.concurrency = max(1, concurrency)
-        self._pacer = _Pacer(rpm)
+        self.rpm = rpm
 
     def _call(self, audio_path: str) -> str:
-        # Pace inside the retried call so a retry is paced too.
-        self._pacer.wait()
         with open(audio_path, "rb") as f:
             resp = self.model.audio.transcriptions.create(
                 model=self.model_ref, file=f, language="da"
             )
         return (getattr(resp, "text", "") or "").strip()
 
-    def transcribe_batch(self, audio_paths: list[str], *, batch_size: int) -> list[str]:
-        """Overlap paced requests across a thread pool, preserving input order.
-
-        Errors are tolerated per file, matching the sequential path. If *every*
-        file fails the run is stopped rather than scored as a plausible-looking
-        100% WER — note that the base class will retry sequentially once before
-        the error surfaces, which is cheap because a total failure here is
-        almost always an immediate auth or configuration error.
-        """
-        if not audio_paths:
-            return []
-        results = [""] * len(audio_paths)
-        failures = 0
-        first_error: Exception | None = None
-        workers = min(self.concurrency, len(audio_paths))
-
-        with ThreadPoolExecutor(max_workers=workers) as pool:
-            futures = {
-                pool.submit(self.transcribe_one, path): i
-                for i, path in enumerate(audio_paths)
-            }
-            for done, future in enumerate(as_completed(futures), 1):
-                i = futures[future]
-                try:
-                    results[i] = future.result()
-                except Exception as exc:  # noqa: BLE001 - per-file tolerance
-                    failures += 1
-                    if first_error is None:
-                        first_error = exc
-                    print(
-                        f"  WARNING: transcription failed for {audio_paths[i]}: {exc}",
-                        file=sys.stderr,
-                    )
-                if done % 500 == 0:
-                    print(f"  {done}/{len(audio_paths)} done...")
-
-        if failures == len(audio_paths):
-            raise RuntimeError(
-                f"transcription failed for all {failures} files; "
-                f"first error: {first_error}"
-            ) from first_error
-        return results
 
 
 @register("ordbogen")
