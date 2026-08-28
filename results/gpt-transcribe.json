@@ -1,0 +1,19 @@
+{
+  "model": "[gpt-transcribe](https://huggingface.co/gpt-transcribe)",
+  "params_b": 0.0,
+  "coral_conversation_wer": 58.75,
+  "coral_read_aloud_wer": 25.45,
+  "cv17_da_wer": 15.55,
+  "fleurs_da_wer": 6.3,
+  "ftspeech_wer": 25.85,
+  "mean_wer": 26.38,
+  "coral_conversation_cer": 48.45,
+  "coral_read_aloud_cer": 11.24,
+  "cv17_da_cer": 6.64,
+  "fleurs_da_cer": 2.78,
+  "ftspeech_cer": 19.93,
+  "mean_cer": 17.81,
+  "speed_x": 68.1,
+  "submitted": "2026-08-27",
+  "access": "proprietary"
+}
