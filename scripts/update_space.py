@@ -55,6 +55,10 @@ PROVIDER_DOCS = {
     "azure": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models",
     "syv-transcribe": "https://syv.ai",
     "ordbogen": "https://odincore.ai/docs/models/ordbogen-whisper",
+    # Distinct from the "gpt-4o" key above: gpt-transcribe is a separate model
+    # with its own docs page, and its name contains no "gpt-4o" substring, so
+    # without this entry it would render with no link and no logo at all.
+    "gpt-transcribe": "https://developers.openai.com/api/docs/models/gpt-transcribe",
 }
 
 # Logos for hosted/API models (no HF avatar). Same substring keys as PROVIDER_DOCS.
@@ -66,6 +70,7 @@ PROVIDER_LOGO = {
     # than the HF "openai" org avatar — these rows are the hosted API, not the
     # open-weights repos, and the blue mark is how the product presents itself.
     "gpt-4o": "https://developers.openai.com/favicon.png",
+    "gpt-transcribe": "https://developers.openai.com/favicon.png",
 }
 
 # API models that have an HF org — fall back to that org's avatar when there is
