@@ -349,6 +349,15 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
             }
             for col in metric_cols:
                 entry[col] = _num(row.get(col))
+            # speed_x is a throughput measurement of *our* run. For a local model
+            # that is a real property (inference on one A100). For a hosted API it
+            # is network latency plus whatever concurrency our client happened to
+            # use, so it says nothing about the vendor: ordbogen once published
+            # 21.1x against gpt-4o's 8.6x purely because its backend had a thread
+            # pool and the other did not. Rather than publish a number that invites
+            # a comparison it cannot support, API rows render an em dash.
+            if entry["access"] == "proprietary":
+                entry["speed_x"] = None
             # Sample-level bootstrap CIs (see scripts/compute_ci.py). Only the
             # keys relevant to this table's metrics are attached.
             ci = _bootstrap_cis().get(_slugify(name), {})

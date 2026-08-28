@@ -870,6 +870,10 @@
     A value of 30x means 30 seconds of audio processed per wall-clock second.
     Only the transcription call is timed — model load time is excluded.
     Measured on an NVIDIA A100 (80 GB).</p>
+    <p>Hosted API models show <strong>—</strong> instead. For those, the figure
+    would measure network latency and our own request concurrency rather than
+    anything about the provider, so it is not comparable with the locally-run
+    models or between providers.</p>
     <blockquote>
       <strong>Speed reflects the serving stack, not just the model.</strong>
       Some models are run through high-throughput engines such as
