@@ -15,6 +15,12 @@
   <meta name="twitter:description" content="Benchmarking Danish ASR models across five independent public test sets.">
   <meta name="twitter:image" content="https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/resolve/main/cover.jpeg">
   <style>
+    /* Custom properties only animate once registered with a type; without this
+       the tab-strip fade transition below is silently ignored and the edges
+       snap instead. Unsupported browsers just get the snap. */
+    @property --fade-l { syntax: '<length>'; inherits: false; initial-value: 0px; }
+    @property --fade-r { syntax: '<length>'; inherits: false; initial-value: 0px; }
+
     :root {
       --bg:      #0f1117;
       --surf:    #1a1d27;
@@ -95,6 +101,54 @@
     }
     /* Facts the subtitle used to carry, as scannable chips. Wraps on narrow
        viewports rather than overflowing the banner. */
+    /* The chips normally wrap onto as many lines as they need. On a phone that
+       costs two lines, so the strip clips and the track slides instead -- the
+       same idea as an overflowing model name. */
+    .sticky-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      height: 46px;
+      padding: 0 16px;
+      /* The banner's own mesh, not an approximation of it -- an earlier
+         two-gradient stand-in over a translucent base read noticeably darker.
+         background-size paints it at the banner's height and anchors to the
+         bottom, so this is literally the lower slice of the same artwork
+         rather than the mesh squashed into 46px. */
+      background:
+        radial-gradient(115% 520% at  0% 125%, rgba(216, 20,  58, .56) 0%, rgba(216, 20,  58, 0) 52%),
+        radial-gradient( 95% 460% at 34% 150%, rgba(152, 20,  74, .32) 0%, rgba(152, 20,  74, 0) 58%),
+        radial-gradient( 80% 480% at 74% -55%, rgba( 92, 26, 104, .34) 0%, rgba( 92, 26, 104, 0) 60%),
+        radial-gradient( 85% 520% at 100% -30%, rgba( 58, 24, 106, .48) 0%, rgba( 58, 24, 106, 0) 58%),
+        #09080d;
+      background-size: 100% 160px, 100% 160px, 100% 160px, 100% 160px, auto;
+      background-position: 0 100%;
+      background-repeat: no-repeat;
+      border-bottom: 1px solid rgba(198, 12, 48, 0.22);
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+    /* pointer-events returns with visibility: while hidden the bar must not
+       intercept taps, but once shown it has to stop them reaching the row
+       underneath, which the reader cannot see. */
+    .sticky-header.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .sticky-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sticky-header { transition: none; }
+    }
+
+    .banner-chips-track { display: contents; }
     .banner-chips {
       display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px;
     }
@@ -124,10 +178,11 @@
       border: 1px solid var(--border);
       border-radius: var(--r);
       width: fit-content;
-      margin-bottom: 22px;
+      max-width: 100%;
+      margin-bottom: 18px;
     }
     .tab-btn {
-      padding: 7px 20px;
+      padding: 6px 16px;
       border: none;
       background: none;
       color: var(--muted);
@@ -143,15 +198,23 @@
     .tab-pane.active { display: block; }
 
     /* ── Toolbar ───────────────────────────────────────────────────── */
+    /* One control height (34px) and one radius (8px) across the whole toolbar:
+       search, segmented control and toggles previously rendered at 32/34/30px
+       with 8px/8px/999px radii, which is what made the row look assembled from
+       spare parts. */
+    .filters-toggle { display: none; }
     .toolbar {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      margin-bottom: 12px;
     }
     .search-wrap {
       position: relative;
       display: block;
+      flex: 1 1 200px;
+      max-width: 300px;
     }
     .search-icon {
       position: absolute;
@@ -164,8 +227,9 @@
       pointer-events: none;
     }
     .search {
-      width: 220px;
-      padding: 7px 12px 7px 32px;
+      width: 100%;
+      height: 34px;
+      padding: 0 12px 0 32px;
       background: var(--surf);
       border: 1px solid var(--border);
       color: var(--text);
@@ -215,7 +279,7 @@
     }
     table { width: 100%; border-collapse: collapse; white-space: nowrap; }
     thead th {
-      padding: 10px 12px;
+      padding: 10px 10px;
       background: var(--surf2);
       color: var(--muted);
       font-size: 11.5px;
@@ -253,7 +317,7 @@
       );
     }
     tbody tr.hidden { display: none; }
-    tbody td { padding: 9px 12px; vertical-align: middle; }
+    tbody td { padding: 9px 10px; vertical-align: middle; }
 
     /* Alternating rows */
     tbody tr:nth-child(even) td { background-color: rgba(255,255,255,0.025); }
@@ -281,7 +345,31 @@
       object-fit: cover;
       flex: 0 0 auto;
     }
-    .c-model span { overflow: hidden; text-overflow: ellipsis; }
+    .c-model .m-name { overflow: hidden; text-overflow: ellipsis; }
+
+    /* Model identity is a two-line block: name, then size / access / licence.
+       Folding those three out of their own columns buys the measurement columns
+       room, and matches how the mobile cards read. */
+    .model-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 3px;
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .model-meta .m-size { font-variant-numeric: tabular-nums; }
+    .model-meta .badge { font-size: 10px; padding: 0 6px; }
+    .model-meta .m-license {
+      padding: 0 6px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 108px;
+    }
+
 
     /* Mean WER/CER score cell with inline bar */
     .score-wrap {
@@ -417,7 +505,8 @@
       display: flex;
       align-items: center;
       gap: 3px;
-      padding: 3px;
+      height: 34px;
+      padding: 0 3px;
       background: var(--surf);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -448,12 +537,13 @@
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 4px 10px 4px 6px;
+      height: 34px;
+      padding: 0 11px 0 6px;
       border: 1px solid var(--border);
       background: var(--surf);
       color: var(--muted);
       cursor: pointer;
-      border-radius: 999px;
+      border-radius: 8px;
       font-size: 12px;
       font-weight: 600;
       line-height: 1;
@@ -612,21 +702,36 @@
       /* Banner stacks vertically on mobile */
       .banner {
         flex-direction: column;
-        align-items: flex-start;
+        /* `flex-start` sized the inner block to its widest child, which let the
+           chip strip grow past the viewport instead of clipping at it. */
+        align-items: stretch;
         padding: 20px 16px;
         gap: 12px;
       }
+      .banner > div { min-width: 0; }
       .banner h1 { font-size: 18px; }
       .banner-sub { font-size: 12px; }
       .banner-chip { font-size: 11px; padding: 4px 10px; gap: 6px; }
       .banner-chip svg { width: 12px; height: 12px; }
       
-      /* Tab nav wraps on narrow screens */
+      /* Tab nav scrolls on narrow screens. The fades are the only cue that
+         there is more than fits -- without them the last tab is simply
+         invisible and unguessable. JS sets the two widths from scroll
+         position, so an edge only fades when something is actually past it. */
       .tab-nav {
         width: 100%;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
+        --fade-l: 0px;
+        --fade-r: 0px;
+        -webkit-mask-image: linear-gradient(to right,
+          transparent 0, #000 var(--fade-l),
+          #000 calc(100% - var(--fade-r)), transparent 100%);
+        mask-image: linear-gradient(to right,
+          transparent 0, #000 var(--fade-l),
+          #000 calc(100% - var(--fade-r)), transparent 100%);
+        transition: --fade-l .15s linear, --fade-r .15s linear;
       }
       .tab-nav::-webkit-scrollbar { display: none; }
       .tab-btn { flex: 0 0 auto; padding: 6px 14px; font-size: 13px; }
@@ -688,9 +793,320 @@
       .chart-plot-wrap { min-height: 280px; }
       .pareto-panel { max-height: 220px; }
     }
+
+    /* ---- Mobile card layout -------------------------------------------------
+       Deliberately last in the stylesheet: the responsive rules above appear
+       twice in this file (two near-identical sections), and the later copy of
+       `@media (max-width: 900px) { table { min-width: 600px } }` would
+       otherwise override the block below. ----------------------------------- */
+    @media (max-width: 700px) {
+      /* Cards instead of a horizontally scrolling table. The three headline
+         numbers become tiles so a card reads at a glance while scrolling; the
+         per-dataset breakdown is one tap away. The row is a flex container
+         purely so `order` can regroup cells that sit far apart in DOM order. */
+      .table-scroll { overflow-x: visible; }
+      /* `display: table` sizes to content, which keeps the table ~600px wide
+         and pushes right-aligned values off a 375px screen even with min-width
+         cleared -- so the table stops being a table here. */
+      table { display: block; width: 100%; min-width: 0; white-space: normal; }
+      thead { display: none; }
+      tbody, tbody td { display: block; }
+
+      tbody tr {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: stretch;
+        gap: 6px;
+        position: relative;
+        /* A rule between rows rather than a box around each: the card chrome
+           (border + radius + fill + 9px gap) cost ~13px per row and boxed the
+           tiles inside a second frame. */
+        border: none;
+        border-bottom: 1px solid var(--border);
+        border-radius: 0;
+        background: transparent;
+        padding: 14px 12px;
+        margin-bottom: 0;
+      }
+      tbody tr:last-child { border-bottom: none; }
+      tbody tr:nth-child(even) td { background-color: transparent; }
+      tbody tr:hover td { background-image: none; }
+      tbody td { padding: 0; }
+
+      /* 1 -- rank leads the title line, then the icon and name. The rank is a
+         fixed 24px and the name takes `100% - (24px + the 6px row gap)`, so the
+         two fill the line exactly and the meta line below always wraps onto its
+         own row -- it cannot ride up beside a short model name. */
+      tbody tr td[data-key="#"] {
+        order: 1;
+        flex: 0 0 24px;
+        /* .c-rank centres and widens the cell for the desktop table; neither
+           applies once the cell is a flex item in a card. */
+        width: auto;
+        text-align: left;
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--text);
+        font-variant-numeric: tabular-nums;
+      }
+      /* .c-model's min-width would force the card wider than the viewport. */
+      tbody tr td[data-key="model"].c-model { min-width: 0; max-width: none; }
+
+      tbody td[data-key="model"] {
+        order: 1;
+        flex: 1 1 calc(100% - 30px);
+        min-width: 0;
+      }
+      /* size / access / licence now live inside the model cell, so the card's
+         second line comes for free -- no separate cells to re-order. */
+      tbody td[data-key="model"] .model-meta {
+        margin-top: 4px;
+        font-size: 12px;
+        flex-wrap: wrap;
+      }
+      tbody td[data-key="model"] .model-meta .m-license { max-width: 140px; }
+      tbody td[data-key="model"] a {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 15px;
+        font-weight: 600;
+        overflow: hidden;          /* the window the name slides behind */
+      }
+      tbody td[data-key="model"] a img { flex: 0 0 auto; }
+      tbody td[data-key="model"] a .m-name {
+        min-width: 0;
+        white-space: nowrap;
+        overflow: hidden;          /* the window the name slides behind */
+        text-overflow: ellipsis;   /* fallback before JS measures, and when
+                                      reduced motion is preferred */
+      }
+      /* Overflowing: slide the full id instead of clipping it, pausing at each
+         end. `alternate` returns it rather than looping, which is calmer.
+         The inner element moves while .m-name stays put, so the logo beside it
+         is never covered -- and a transform stays on the compositor, where
+         text-indent would relayout on every frame. */
+      tbody td[data-key="model"] a.scrolls .m-name { text-overflow: clip; }
+      tbody td[data-key="model"] a.scrolls .m-name-inner {
+        display: inline-block;
+        will-change: transform;
+        backface-visibility: hidden;
+        animation: krumme-name-slide var(--dur, 8s) ease-in-out infinite alternate;
+      }
+      @keyframes krumme-name-slide {
+        0%, 15%   { transform: translate3d(0, 0, 0); }
+        85%, 100% { transform: translate3d(var(--shift, 0), 0, 0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        tbody td[data-key="model"] a.scrolls .m-name {
+          text-overflow: ellipsis;
+        }
+        tbody td[data-key="model"] a.scrolls .m-name-inner { animation: none; }
+      }
+
+      /* 3 -- zero-height full-width item, so the tiles always start a new line
+         regardless of how wide the meta line happens to be. */
+      tbody tr::before { content: ""; order: 3; flex: 0 0 100%; height: 0; }
+
+      /* 4 -- the three headline numbers as equal tiles. `tr` is in the selector
+         to outrank `tbody tr:nth-child(even) td`, which would otherwise strip
+         the tile background from every second card. */
+      tbody tr td[data-key="mean_wer"],
+      tbody tr td[data-key="mean_cer"],
+      tbody tr td[data-key="speed_x"],
+      tbody tr td[data-key="borda_score"],
+      tbody tr td[data-key="bt_score"] {
+        order: 4;
+        /* Equal share of one line whatever the count: three tiles in Mean mode,
+           four when a ranking column (Avg. Rank / Win Rate) is showing. A fixed
+           30% basis stranded that fourth tile on a row of its own.
+           `min-width` is what keeps an expanded per-dataset cell (basis ~50%)
+           from squeezing onto the tile line -- a bare `flex: 1 1 0` let it. */
+        flex: 1 1 0;
+        min-width: 68px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        padding: 9px 6px;
+        background: var(--surf2);
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+      }
+      tbody tr td[data-key="borda_score"]::before,
+      tbody tr td[data-key="bt_score"]::before {
+        content: attr(data-label);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      /* The arrows in "Mean WER down" are noise at tile size. */
+      tbody tr td[data-key="mean_wer"]::before,
+      tbody tr td[data-key="mean_cer"]::before,
+      tbody tr td[data-key="speed_x"]::before {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        color: var(--muted);
+      }
+      tbody tr td[data-key="mean_wer"]::before { content: "WER"; }
+      tbody tr td[data-key="mean_cer"]::before { content: "CER"; }
+      tbody tr td[data-key="speed_x"]::before  { content: "SPEED"; }
+
+      /* 5 -- per-dataset scores, two per line, hidden until expanded. */
+      tbody td[data-key$="_wer"]:not([data-key^="mean"]),
+      tbody td[data-key$="_cer"]:not([data-key^="mean"]),
+      tbody td[data-key="borda_delta"],
+      tbody td[data-key="bt_delta"] {
+        order: 5;
+        flex: 1 1 calc(50% - 3px);
+        display: none;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 8px;
+        /* Same fill and radius as the headline tiles, so the breakdown reads as
+           more of the same rather than a loose list ruled off underneath. */
+        padding: 7px 9px;
+        background: var(--surf2);
+        border-radius: 8px;
+        font-variant-numeric: tabular-nums;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      tbody tr.expanded td[data-key$="_wer"]:not([data-key^="mean"]),
+      tbody tr.expanded td[data-key$="_cer"]:not([data-key^="mean"]),
+      tbody tr.expanded td[data-key="borda_delta"],
+      tbody tr.expanded td[data-key="bt_delta"] { display: flex; }
+
+      tbody td[data-key$="_wer"]:not([data-key^="mean"])::before,
+      tbody td[data-key$="_cer"]:not([data-key^="mean"])::before,
+      tbody td[data-key="borda_delta"]::before,
+      tbody td[data-key="bt_delta"]::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 400;
+        white-space: nowrap;
+      }
+
+      /* 6 -- submission date, hidden until expanded. */
+      tbody td[data-key="submitted"] {
+        order: 6;
+        flex: 1 1 100%;
+        display: none;
+        font-size: 11px;
+        color: var(--muted);
+      }
+      tbody tr.expanded td[data-key="submitted"] { display: block; }
+      tbody td[data-key="submitted"]::before {
+        content: attr(data-label) ": ";
+        opacity: 0.7;
+      }
+
+      /* 7 -- expand affordance. A pseudo-element rather than an extra cell,
+         which would desync the body column count from thead. */
+      tbody tr::after {
+        content: "Per-dataset scores \25BE";
+        order: 7;
+        flex: 0 0 100%;
+        padding-top: 2px;
+        font-size: 11px;
+        color: var(--link);
+      }
+      tbody tr.expanded::after { content: "Hide per-dataset scores \25B4"; }
+
+      /* Chips on one clipped line; the track slides if they do not all fit. */
+      .banner-chips {
+        flex-wrap: nowrap;
+        overflow: hidden;
+        display: block;
+      }
+      .banner-chips-track {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 8px;
+        width: max-content;
+      }
+      .banner-chips-track.scrolls {
+        /* will-change + a 3d transform keep this on the compositor, where
+           sub-pixel offsets are preserved. Without it the browser rounds to
+           whole pixels and a 10px/s slide visibly steps. */
+        will-change: transform;
+        transform: translate3d(0, 0, 0);
+        backface-visibility: hidden;
+        animation: krumme-chips-slide var(--dur, 12s) ease-in-out infinite alternate;
+      }
+      @keyframes krumme-chips-slide {
+        0%, 12%   { transform: translate3d(0, 0, 0); }
+        88%, 100% { transform: translate3d(var(--shift, 0), 0, 0); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .banner-chips { overflow-x: auto; scrollbar-width: none; }
+        .banner-chips::-webkit-scrollbar { display: none; }
+        .banner-chips-track.scrolls { animation: none; }
+      }
+
+      /* Filters collapse behind a toggle; the table gets the screen. */
+      .filters-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        height: 32px;
+        padding: 0 12px;
+        margin-bottom: 10px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surf);
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .toolbar { display: none; }
+      .toolbar.open { display: flex; }
+
+      /* Collapsing the filters hides whether any are set, so the button carries
+         a count of the non-default controls. */
+      .filters-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 17px;
+        height: 17px;
+        padding: 0 5px;
+        border-radius: 999px;
+        background: var(--link);
+        color: #0f1117;
+        font-size: 11px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .filters-count:empty { display: none; }
+      .filters-toggle.has-filters { color: var(--text); border-color: color-mix(in srgb, var(--link) 55%, var(--border)); }
+
+      /* Confidence intervals go under the value, not beside it. */
+      tbody td .ci-val { display: block; font-size: 10px; font-weight: 400; }
+
+      /* No hover tooltips on touch -- labels are on-screen now. */
+      tbody td[data-tip]::after { display: none; }
+    }
+
   </style>
 </head>
 <body>
+
+<!-- Slim restatement of the banner, revealed once the real one scrolls away.
+     aria-hidden: it duplicates the h1, so screen readers should not hear it twice. -->
+<div class="sticky-header" id="sticky-header" aria-hidden="true">
+  <span class="sticky-title">Open Danish ASR Leaderboard 🇩🇰</span>
+</div>
+
 <div class="app">
 
   <!-- Banner -->
@@ -701,18 +1117,20 @@
         Consistent WER and CER evaluation across independent Danish test sets
       </p>
       <div class="banner-chips">
+       <div class="banner-chips-track">
         <span class="banner-chip is-key" id="chip-models">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
           <span><span data-count="models">&mdash;</span> models</span></span>
-        <span class="banner-chip">
+        <span class="banner-chip" id="chip-sets">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg>
           <span><span data-count="datasets">&mdash;</span> test sets</span></span>
         <span class="banner-chip">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16"/><path d="M8 15l4-5 3 3 4-6"/></svg>
           WER &amp; CER · lower is better</span>
-        <span class="banner-chip">
+        <span class="banner-chip" id="chip-harness">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3M3 8V5a2 2 0 0 1 2-2h3"/></svg>
           Open harness</span>
+       </div>
       </div>
     </div>
   </header>
@@ -854,11 +1272,19 @@
         (<code>4</code>→<code>fire</code>, <code>24</code>→<code>fireogtyve</code>,
         <code>100</code>→<code>ethundrede</code>), so a model that writes
         <code>"4"</code> is not penalised against a reference that spells out
-        <code>"fire"</code>. Only clean standalone integers are converted; digits
-        embedded in larger tokens (decades like <code>1960'erne</code>, ranges) are
-        left untouched</li>
+        <code>"fire"</code>. Only clean standalone integers are converted, so
+        decades such as <code>1960'erne</code> keep their digits</li>
       <li>Collapse whitespace</li>
     </ol>
+    <p><strong>Known limitation:</strong> because punctuation is stripped before
+    numerals are expanded, two patterns become standalone integers and are then
+    spelled out: hyphenated ranges (<code>1-3</code> &rarr; <code>13</code>
+    &rarr; <code>tretten</code>) and ordinals written with a full stop
+    (<code>3. plads</code> &rarr; <code>tre plads</code>). Both are applied
+    identically to reference and hypothesis, so neither favours a model, but a
+    reference containing a range is scored against a word that does not
+    correspond to it. Ranges are rare in these test sets; the effect on published
+    scores is negligible.</p>
     <p>This is broadly consistent with the
     <a href="https://github.com/huggingface/open_asr_leaderboard" target="_blank" rel="noopener">HF Open ASR Leaderboard</a>
     (<code>BasicTextNormalizer</code>) and matches the de-facto Danish standard set
@@ -1111,13 +1537,6 @@ const WER_COLS = [
     tip:'Rank by the selected method (Mean WER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',         cls:'c-model',
     tip:'Click to open the model on Hugging Face (opens in new tab).' },
-  { key:'size',                    label:'Size (B)',
-    tip:'Parameter count in billions, from safetensors metadata. — = hosted API model.' },
-  { key:'access',                  label:'Access',
-    tip:'open = open weights;  proprietary = hosted or closed model.' },
-  { key:'license',                 label:'License',
-    tip:'Licence declared on the model\u2019s Hugging Face repo. \u2014 = hosted API model (no public weights). '
-      + 'Note that some open-weight licences are non-commercial (cc-by-nc-4.0) or carry use restrictions (openrail).' },
   { key:'mean_wer',               label:'Mean WER ↓',
     tip:'Word Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_cer',               label:'Mean CER ↓',
@@ -1145,24 +1564,23 @@ const CER_COLS = [
     tip:'Rank by the selected method (Mean CER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',          cls:'c-model',
     tip:'Click to open the model on Hugging Face (opens in new tab).' },
-  { key:'size',                    label:'Size (B)',
-    tip:'Parameter count in billions. — = hosted API model.' },
-  { key:'access',                  label:'Access',
-    tip:'open = open weights;  proprietary = hosted or closed model.' },
-  { key:'license',                 label:'License',
-    tip:'Licence declared on the model\u2019s Hugging Face repo. \u2014 = hosted API model (no public weights). '
-      + 'Note that some open-weight licences are non-commercial (cc-by-nc-4.0) or carry use restrictions (openrail).' },
   { key:'mean_cer',               label:'Mean CER ↓',
     tip:'Character Error Rate, macro-averaged over the five test sets. Lower is better.' },
-  { key:'coral_conversation_cer',  label:'CoRal Conv. CER',
+  { key:'mean_wer',               label:'Mean WER ↓',
+    tip:'Word Error Rate, macro-averaged over the five test sets. Shown here for context alongside CER.' },
+  { key:'speed_x',                label:'Speed (x) ↑',
+    tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
+      + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
+      + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
+  { key:'coral_conversation_cer',  label:'CoRal Conv.',
     tip:'CER on CoRal v3 conversation subset (spontaneous speech).' },
-  { key:'coral_read_aloud_cer',    label:'CoRal Read CER',
+  { key:'coral_read_aloud_cer',    label:'CoRal Read',
     tip:'CER on CoRal v3 read-aloud subset.' },
-  { key:'ftspeech_cer',            label:'FTSpeech CER',
+  { key:'ftspeech_cer',            label:'FTSpeech',
     tip:'CER on FTSpeech (parliamentary / broadcast speech).' },
-  { key:'cv17_da_cer',             label:'CV17 (da) CER',
+  { key:'cv17_da_cer',             label:'CV17 (da)',
     tip:'CER on Common Voice 17 (Danish).' },
-  { key:'fleurs_da_cer',           label:'FLEURS (da) CER',
+  { key:'fleurs_da_cer',           label:'FLEURS (da)',
     tip:'CER on FLEURS (Danish).' },
   { key:'submitted',               label:'Submitted',      cls:'c-submitted',
     tip:'Date the evaluation results were submitted to the leaderboard.' },
@@ -1193,6 +1611,8 @@ function buildHead(cols) {
   const tr = document.createElement('tr');
   for (const c of cols) {
     const th = document.createElement('th');
+    if (c.cls) th.className = c.cls;
+    th.dataset.key = c.key;
     th.textContent = c.label;
     if (c.tip) {
       th.dataset.tip = c.tip;
@@ -1216,6 +1636,10 @@ function buildRow(row, cols, maxVals) {
   for (const c of cols) {
     const td = document.createElement('td');
     if (c.cls) td.className = c.cls;
+    // Narrow screens hide the header row and restack each row as a card. Cells
+    // carry their column key (for layout) and label (rendered via ::before).
+    td.dataset.key = c.key;
+    td.dataset.label = c.label;
     const v = row[c.key];
 
     if (c.key === '#') {
@@ -1257,20 +1681,41 @@ function buildRow(row, cols, maxVals) {
         a.appendChild(img);
       }
       const nm = document.createElement('span');
-      nm.textContent = row.name;
+      nm.className = 'm-name';
+      // Inner element so the marquee can translate the text while .m-name
+      // stays put and does the clipping -- see the mobile CSS.
+      const nmInner = document.createElement('span');
+      nmInner.className = 'm-name-inner';
+      nmInner.textContent = row.name;
+      nm.appendChild(nmInner);
       a.appendChild(nm);
       td.appendChild(a);
 
-    } else if (c.key === 'access') {
-      const b = document.createElement('span');
-      b.className = 'badge ' + (v === 'open' ? 'badge-open' : 'badge-prop');
-      b.textContent = v || '—';
-      td.appendChild(b);
+      // Second line: size, access and licence travel with the model identity
+      // instead of taking three columns of their own. The wide table and the
+      // mobile cards now render from this one structure.
+      const meta = document.createElement('div');
+      meta.className = 'model-meta';
 
-    } else if (c.key === 'license') {
-      td.textContent = v || '—';
-      td.style.fontSize = '12px';
-      td.style.color = 'var(--muted)';
+      const sz = document.createElement('span');
+      sz.className = 'm-size';
+      // Missing sizes arrive as the em-dash string, not null, so a null check
+      // alone would render "—B" for hosted API models.
+      sz.textContent = isFinite(parseFloat(row.size)) ? row.size + 'B' : '—';
+      meta.appendChild(sz);
+
+      const badge = document.createElement('span');
+      badge.className = 'badge ' + (row.access === 'open' ? 'badge-open' : 'badge-prop');
+      badge.textContent = row.access || '—';
+      meta.appendChild(badge);
+
+      const lic = document.createElement('span');
+      lic.className = 'm-license';
+      lic.textContent = row.license || '—';
+      lic.title = 'Licence: ' + (row.license || 'not declared');
+      meta.appendChild(lic);
+
+      td.appendChild(meta);
 
     } else if (c.key === 'mean_wer' || c.key === 'mean_cer') {
       td.style.fontWeight = '700';
@@ -1294,6 +1739,183 @@ function buildRow(row, cols, maxVals) {
   return tr;
 }
 
+/* Mobile cards collapse their per-dataset scores; tapping a card toggles them.
+   Delegated so it survives re-renders, and it ignores clicks on the model link
+   so that still navigates. Desktop is untouched -- the media query owns the
+   collapsed state, this only flips a class. */
+const NARROW = window.matchMedia('(max-width: 700px)');
+
+/* Long model ids (CoRal-project/roest-v3-wav2vec2-315m) can exceed a phone's
+   card width. Rather than truncating them, slide the name back and forth so the
+   whole id is legible at full size. CSS cannot detect overflow, so measure here
+   and hand the distance to the animation; names that fit are left alone. */
+function fitModelNames(root) {
+  const scope = root || document;
+  for (const a of scope.querySelectorAll('td[data-key="model"] a')) {
+    const span = a.querySelector('.m-name');
+    const inner = a.querySelector('.m-name-inner');
+    if (!span || !inner) continue;
+    a.classList.remove('scrolls');
+    inner.style.removeProperty('--shift');
+    inner.style.removeProperty('--dur');
+    if (!NARROW.matches) continue;
+    const over = span.scrollWidth - span.clientWidth;
+    if (over > 1) {
+      inner.style.setProperty('--shift', '-' + over + 'px');
+      // ~26px/s: fast enough that each frame moves ~0.4px, which reads as
+      // continuous motion rather than stepping.
+      inner.style.setProperty('--dur', Math.max(4, over / 26).toFixed(1) + 's');
+      a.classList.add('scrolls');
+    }
+  }
+}
+/* Same treatment for the banner chips: slide only when they actually overflow,
+   at a pace matched to the distance. */
+function fitChipStrip() {
+  const strip = document.querySelector('.banner-chips');
+  const track = document.querySelector('.banner-chips-track');
+  if (!strip || !track) return;
+  track.classList.remove('scrolls');
+  track.style.removeProperty('--shift');
+  track.style.removeProperty('--dur');
+  if (!NARROW.matches) return;
+  const over = track.scrollWidth - strip.clientWidth;
+  if (over > 1) {
+    track.style.setProperty('--shift', '-' + over + 'px');
+    // Ambient, so slower than the names -- but not so slow that each frame
+    // moves a fraction of a pixel, which is what makes a slide look steppy.
+    track.style.setProperty('--dur', Math.max(7, over / 20).toFixed(1) + 's');
+    track.classList.add('scrolls');
+  }
+}
+
+let fitTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(fitTimer);
+  fitTimer = setTimeout(() => { fitModelNames(); fitChipStrip(); }, 150);
+});
+
+/* The filter block costs ~124px on a phone -- most of a card. Collapse it
+   behind a toggle there, leaving the numbers the screen. Desktop keeps it
+   open and hides the button entirely (CSS), so nothing changes on a laptop. */
+function initFilterToggles() {
+  for (const bar of document.querySelectorAll('.toolbar')) {
+    if (bar.previousElementSibling &&
+        bar.previousElementSibling.classList.contains('filters-toggle')) continue;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'filters-toggle';
+    const caret = document.createElement('span');
+    const count = document.createElement('span');
+    count.className = 'filters-count';
+    btn.append('Filters ', caret, count);
+
+    /* Counts the controls that are not at their default, so a collapsed
+       toolbar still says whether anything is filtering the table. The first
+       .tog-btn is the default ranking (Mean), so only a later one counts. */
+    const activeCount = () => {
+      let n = 0;
+      const search = bar.querySelector('.search');
+      if (search && search.value.trim()) n++;
+      bar.querySelectorAll('.ci-btn').forEach(b => {
+        if (b.getAttribute('aria-pressed') === 'true' || b.classList.contains('active')) n++;
+      });
+      const togs = [...bar.querySelectorAll('.tog-btn')];
+      const active = togs.find(b => b.classList.contains('active'));
+      if (active && togs.indexOf(active) > 0) n++;
+      return n;
+    };
+
+    const label = () => {
+      const open = bar.classList.contains('open') || !NARROW.matches;
+      caret.textContent = open ? '▴' : '▾';
+      btn.setAttribute('aria-expanded', String(open));
+      const n = activeCount();
+      count.textContent = n ? String(n) : '';
+      btn.classList.toggle('has-filters', n > 0);
+      btn.setAttribute('aria-label',
+        n ? 'Filters, ' + n + ' active' : 'Filters');
+    };
+
+    btn.addEventListener('click', () => {
+      bar.classList.toggle('open');
+      label();
+      // A newly revealed toolbar may change the name column's width.
+      fitModelNames();
+    });
+    // Keep the count live as the controls inside the toolbar are used.
+    bar.addEventListener('input', label);
+    bar.addEventListener('click', () => setTimeout(label, 0));
+
+    bar.parentNode.insertBefore(btn, bar);
+    label();
+  }
+}
+/* Crossing the breakpoint resets to the default for that width: collapsed on
+   narrow, always-open on desktop (where the button is hidden anyway). */
+NARROW.addEventListener('change', () => {
+  document.querySelectorAll('.toolbar').forEach(bar => bar.classList.remove('open'));
+  document.querySelectorAll('.filters-toggle').forEach(b => {
+    const open = !NARROW.matches;
+    const caret = b.querySelector('span');
+    if (caret) caret.textContent = open ? '▴' : '▾';
+    b.setAttribute('aria-expanded', String(open));
+  });
+  fitModelNames();
+  fitChipStrip();
+});
+/* This script runs at the end of the body, so DOMContentLoaded may already
+   have fired -- run now in that case rather than waiting for an event that
+   will never arrive. */
+/* Reveal the slim header once the banner has scrolled past. An observer
+   rather than a scroll listener: no work on frames where nothing crossed. */
+function initStickyHeader() {
+  const banner = document.querySelector('.banner');
+  const bar = document.getElementById('sticky-header');
+  if (!banner || !bar || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(
+    ([e]) => bar.classList.toggle('show', !e.isIntersecting),
+    { rootMargin: '-46px 0px 0px 0px', threshold: 0 }
+  ).observe(banner);
+}
+
+/* Fade an edge of the tab strip only when there is content beyond it. */
+function updateTabFades() {
+  const nav = document.querySelector('.tab-nav');
+  if (!nav) return;
+  const max = nav.scrollWidth - nav.clientWidth;
+  const left = nav.scrollLeft;
+  nav.style.setProperty('--fade-l', left > 2 ? '22px' : '0px');
+  nav.style.setProperty('--fade-r', left < max - 2 ? '22px' : '0px');
+}
+function initTabFades() {
+  const nav = document.querySelector('.tab-nav');
+  if (!nav) return;
+  nav.addEventListener('scroll', updateTabFades, { passive: true });
+  nav.addEventListener('click', () => setTimeout(updateTabFades, 250));
+  window.addEventListener('resize', () => setTimeout(updateTabFades, 160));
+  updateTabFades();
+}
+
+function initChrome() {
+  initFilterToggles();
+  fitChipStrip();
+  initStickyHeader();
+  initTabFades();
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initChrome);
+} else {
+  initChrome();
+}
+document.addEventListener('click', ev => {
+  if (!NARROW.matches) return;
+  if (ev.target.closest('a')) return;
+  const tr = ev.target.closest('tbody tr');
+  if (!tr || !tr.closest('.table-scroll')) return;
+  tr.classList.toggle('expanded');
+});
+
 function renderTable(el, rows, cols, maxVals) {
   el.innerHTML = '';
   const thead = el.createTHead();
@@ -1302,6 +1924,7 @@ function renderTable(el, rows, cols, maxVals) {
   const paint = (sorted) => {
     tbody.innerHTML = '';
     sorted.forEach(r => tbody.appendChild(buildRow(r, cols, maxVals)));
+    fitModelNames(el);
   };
   paint(rows);
 
@@ -1861,8 +2484,8 @@ async function init() {
     /* Banner chips read from the same payload as the table, so the counts
        cannot drift from what is actually shown. */
     const setChip = (key, value) => {
-      const el = document.querySelector(`[data-count="${key}"]`);
-      if (el) el.textContent = value;
+      document.querySelectorAll(`[data-count="${key}"]`)
+        .forEach(el => { el.textContent = value; });
     };
     setChip('models', data.wer.length);
     setChip('datasets', WER_DS_COLS.length);
