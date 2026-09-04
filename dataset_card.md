@@ -69,8 +69,11 @@ Applied identically to hypothesis and reference before scoring, so WER/CER refle
 2. **Danish number canonicalisation** — separators within a numeral are stripped (`1.234` → `1234`, `3,14` → `314`).
 3. **Lowercase.**
 4. **Punctuation / symbol removal** — apostrophes inside a word (`det's`) are preserved; all other punctuation and symbols are removed.
-5. **Whitespace collapse.**
-6. **Numerals → words** — every standalone integer token is expanded to its Danish cardinal words via `num2words` (`4` → `fire`, `24` → `fireogtyve`), so digit-vs-word formatting (`"4"` vs `"fire"`) is not counted as an error. Only standalone integers are converted; digits embedded in larger tokens (decades like `1960'erne`, ranges like `1-3`) are left untouched. Ordinals (`3.` → `tredje`) and symbol/unit expansion (`%` → `procent`) were tested and rejected as net-neutral-to-harmful.
+5. **Spelled-out numerals → digits** — words are folded to their digit form with `text2num`, so spelling and spacing variants collapse onto one value before step 6 expands them back (`otte og tredive` and `otteogtredive` → `38`; `hundrede` → `100`). Bare `en` / `et` are left as indefinite articles.
+6. **Numerals → words** — every standalone integer token is expanded to its Danish cardinal words via `num2words` (`4` → `fire`, `24` → `fireogtyve`), so digit-vs-word formatting (`"4"` vs `"fire"`) is not counted as an error. Only standalone integers are converted, so decades such as `1960'erne` keep their digits. Standalone symbol/unit expansion (`%` → `procent`) was tested and rejected as net-neutral-to-harmful.
+7. **Whitespace collapse.**
+
+**Known limitation.** Because punctuation is stripped (step 4) *before* numerals are expanded (step 6), two patterns become standalone integers and are then spelled out: hyphenated ranges (`1-3` → `13` → `tretten`) and ordinals written with a full stop (`3. plads` → `tre plads`). Both are applied identically to reference and hypothesis, so neither favours a model, but a reference containing a range is scored against a word that does not correspond to it. Ranges are rare in these test sets and the effect on published scores is negligible.
 
 An optional filler-word strip (`øh`, `hmm`, …) is available in the harness but **off** by default, since its effect concentrates on spontaneous-speech sets and can shift that column's relative order.
 
