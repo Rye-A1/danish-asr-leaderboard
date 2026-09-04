@@ -202,7 +202,7 @@
        search, segmented control and toggles previously rendered at 32/34/30px
        with 8px/8px/999px radii, which is what made the row look assembled from
        spare parts. */
-    .filters-toggle { display: none; }
+    .filters-toggle, .sort-wrap { display: none; }
     .toolbar {
       display: flex;
       align-items: center;
@@ -1060,6 +1060,7 @@
         height: 32px;
         padding: 0 12px;
         margin-bottom: 10px;
+        vertical-align: top;
         border: 1px solid var(--border);
         border-radius: 8px;
         background: var(--surf);
@@ -1070,6 +1071,43 @@
       }
       .toolbar { display: none; }
       .toolbar.open { display: flex; }
+
+      /* Sort control, beside Filters. Sorting otherwise lives on the table
+         header, which the card layout hides. */
+      .sort-wrap {
+        display: inline-flex;
+        align-items: stretch;
+        margin: 0 0 10px 8px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--surf);
+        overflow: hidden;
+        vertical-align: top;
+      }
+      .sort-field {
+        height: 32px;
+        padding: 0 8px;
+        border: none;
+        background: none;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 500;
+        font-family: inherit;
+        cursor: pointer;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      .sort-field:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+      .sort-dir {
+        width: 30px;
+        border: none;
+        border-left: 1px solid var(--border);
+        background: none;
+        color: var(--text);
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+      }
 
       /* Collapsing the filters hides whether any are set, so the button carries
          a count of the non-default controls. */
@@ -1800,8 +1838,11 @@ window.addEventListener('resize', () => {
    open and hides the button entirely (CSS), so nothing changes on a laptop. */
 function initFilterToggles() {
   for (const bar of document.querySelectorAll('.toolbar')) {
-    if (bar.previousElementSibling &&
-        bar.previousElementSibling.classList.contains('filters-toggle')) continue;
+    // Scoped to the pane rather than previousElementSibling: the sort control
+    // sits between the button and the toolbar, so a sibling check misses the
+    // button and would insert a second one.
+    const paneFor = bar.closest('.tab-pane');
+    if (paneFor && paneFor.querySelector('.filters-toggle')) continue;
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'filters-toggle';
@@ -1897,6 +1938,74 @@ function initTabFades() {
   updateTabFades();
 }
 
+/* Sorting lives on the table header, which the card layout hides -- so on a
+   phone there was no way to sort at all. This drives the *same* header handler
+   rather than reimplementing the comparator, so the two can never disagree. */
+const SORT_FIELDS = [
+  { key: 'mean_wer', label: 'Mean WER' },
+  { key: 'mean_cer', label: 'Mean CER' },
+  { key: 'speed_x',  label: 'Speed' },
+  { key: '#',        label: 'Rank' },
+];
+
+function initSortControls() {
+  for (const bar of document.querySelectorAll('.toolbar')) {
+    const pane = bar.closest('.tab-pane');
+    const table = pane && pane.querySelector('table');
+    // Same reason as above -- find both by pane, not by sibling position.
+    const btn = pane && pane.querySelector('.filters-toggle');
+    if (!table || !btn) continue;
+    const existing = pane.querySelector('.sort-wrap');
+
+    const wrap = existing || document.createElement('div');
+    wrap.className = 'sort-wrap';
+    wrap.textContent = '';
+
+    const sel = document.createElement('select');
+    sel.className = 'sort-field';
+    sel.setAttribute('aria-label', 'Sort by');
+    for (const f of SORT_FIELDS) {
+      if (!table.querySelector(`thead th[data-key="${f.key}"]`)) continue;
+      const o = document.createElement('option');
+      o.value = f.key; o.textContent = f.label;
+      sel.appendChild(o);
+    }
+
+    const dir = document.createElement('button');
+    dir.type = 'button';
+    dir.className = 'sort-dir';
+
+    const header = k => table.querySelector(`thead th[data-key="${k}"]`);
+    const state = k => {
+      const h = header(k);
+      return h && h.classList.contains('sort-desc') ? -1
+           : h && h.classList.contains('sort-asc') ? 1 : 0;
+    };
+    const sync = () => {
+      const cur = state(sel.value);
+      dir.textContent = cur === -1 ? '↓' : '↑';
+      dir.setAttribute('aria-label',
+        cur === -1 ? 'Sort descending, switch to ascending' : 'Sort ascending, switch to descending');
+    };
+    /* Click the header until it reaches the wanted direction: the first click
+       selects the column (ascending), a second flips it. */
+    const applySort = (key, want) => {
+      const h = header(key);
+      if (!h) return;
+      if (state(key) === 0) h.click();
+      if (state(key) !== want) h.click();
+      sync();
+    };
+
+    sel.addEventListener('change', () => applySort(sel.value, 1));
+    dir.addEventListener('click', () => applySort(sel.value, state(sel.value) === 1 ? -1 : 1));
+
+    wrap.append(sel, dir);
+    if (!existing) btn.parentNode.insertBefore(wrap, btn.nextSibling);
+    sync();
+  }
+}
+
 function initChrome() {
   initFilterToggles();
   fitChipStrip();
@@ -1944,9 +2053,12 @@ function renderTable(el, rows, cols, maxVals) {
       const sorted = [...rows].sort((a, b) => {
         let av = col.key === '#' ? a.rank : a[col.key];
         let bv = col.key === '#' ? b.rank : b[col.key];
+        // Missing values sort last in BOTH directions. Tying them to sortDir
+        // floated every "—" row (hosted APIs have no speed) to the top of a
+        // descending sort, burying the models the reader is looking for.
         if (av == null && bv == null) return 0;
-        if (av == null) return sortDir;
-        if (bv == null) return -sortDir;
+        if (av == null) return 1;
+        if (bv == null) return -1;
         if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * sortDir;
         return String(av).localeCompare(String(bv)) * sortDir;
       });
@@ -2526,6 +2638,7 @@ async function init() {
       sorted.forEach((r, i) => { r.rank = i + 1; });
       renderTable(werEl, sorted, getWerCols(method), maxVals);
       wireSearch('search-wer', 'count-wer', 'table-wer');
+      initSortControls();
       renderSizeChart(sorted, method, 'wer');
       if (analysisMetric === 'wer') applyAnalysis('wer');
     }
@@ -2537,6 +2650,7 @@ async function init() {
                    :                     visible(data.cer).sort((a, b) => (a.mean_cer ?? Infinity) - (b.mean_cer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
       renderTable(cerEl, sorted, getCerCols(method), maxVals);
+      initSortControls();
       wireSearch('search-cer', 'count-cer', 'table-cer');
       renderSizeChart(sorted, method, 'cer');
       if (analysisMetric === 'cer') applyAnalysis('cer');
