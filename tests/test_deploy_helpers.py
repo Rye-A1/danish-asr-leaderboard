@@ -8,7 +8,6 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 from update_space import (
-    OFFICIAL_SIZE,
     SEO_MARKER,
     THUMBNAIL_SIZE,
     _api_docs_url,

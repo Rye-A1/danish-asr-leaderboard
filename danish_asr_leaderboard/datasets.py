@@ -142,7 +142,7 @@ def load_common_voice(audio_dir: Path, max_samples: int = 0) -> list[Row]:
     cv_data_dir = os.environ.get("CV_DATA_DIR", "")
     local_manifest = Path(cv_data_dir) / "test" / "test_manifest.jsonl" if cv_data_dir else None
     if local_manifest and local_manifest.exists():
-        print(f"\n--- Loading Common Voice da test split (local manifest) ---")
+        print("\n--- Loading Common Voice da test split (local manifest) ---")
         rows: list[Row] = []
         with open(local_manifest, encoding="utf-8") as f:
             for line in f:

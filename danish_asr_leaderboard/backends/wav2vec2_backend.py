@@ -124,8 +124,6 @@ def ships_lm(model_ref: str) -> bool:
 
 @register("wav2vec2")
 def load(model_ref: str, options: LoadOptions) -> Backend:
-    import torch
-
     transformers = importlib.import_module("transformers")
     device = "cuda" if cuda_ok(options.device) else "cpu"
 

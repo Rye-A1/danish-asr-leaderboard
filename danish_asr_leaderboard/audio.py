@@ -60,8 +60,6 @@ def load_audio_array(audio_path: str, target_sr: int = 16000) -> "np.ndarray":
     Used by backends (e.g. Seamless, Cohere ASR) that consume raw arrays rather
     than file paths.
     """
-    import numpy as np
-
     try:
         import soundfile as sf
 

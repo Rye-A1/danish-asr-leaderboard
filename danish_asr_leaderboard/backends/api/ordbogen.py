@@ -25,7 +25,6 @@ from __future__ import annotations
 
 import importlib
 import os
-import sys
 
 from danish_asr_leaderboard.backends.base import LoadOptions, register
 from danish_asr_leaderboard.backends.api._base import ApiBackend
