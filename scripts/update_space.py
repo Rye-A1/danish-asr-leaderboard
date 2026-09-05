@@ -16,8 +16,10 @@ from __future__ import annotations
 import functools
 import json
 import os
+from html import escape as html_escape
 import re
 import sys
+import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -492,6 +494,70 @@ def _metric_card(width: int, height: int, radius: int) -> Image.Image:
     return card
 
 
+TABLE_WER_EMPTY = '<table id="table-wer"></table>'
+
+
+def bake_static_table(html: str, data: dict) -> str:
+    """Write the current rankings into the HTML that gets served.
+
+    The page fetches leaderboard.json and builds its table in JavaScript, so the
+    served document contains no model names and no scores -- a crawler, or anyone
+    whose JS has not run yet, sees an empty table. That is most of the page's
+    substance missing from every index of it.
+
+    renderTable() clears the element before rendering, so this copy costs nothing
+    at runtime: it is what the page shows until the fetch resolves, and what
+    search engines get. Deliberately narrower than the live table (rank, model,
+    the two error rates, speed) -- enough to carry the rankings without
+    reimplementing buildRow() in Python and having two renderers drift apart.
+    """
+    rows = data.get("wer", [])
+    if not rows:
+        return html
+
+    def cell(value: object, places: int = 2) -> str:
+        """Match the JS formatting: error rates to 2 places, speed to 1."""
+        if value is None:
+            return "&mdash;"
+        if isinstance(value, float):
+            return html_escape(f"{value:.{places}f}")
+        return html_escape(str(value))
+
+    out = [
+        "<thead><tr>",
+        '<th data-key="#">#</th>',
+        '<th data-key="model">Model</th>',
+        '<th data-key="mean_wer">Mean WER &darr;</th>',
+        '<th data-key="mean_cer">Mean CER &darr;</th>',
+        '<th data-key="speed_x">Speed (x) &uarr;</th>',
+        "</tr></thead><tbody>",
+    ]
+    for r in rows:
+        name = html_escape(str(r.get("name", "")))
+        url = html_escape(str(r.get("url") or ""))
+        label = (f'<a href="{url}" target="_blank" rel="noopener">{name}</a>'
+                 if url else name)
+        speed = r.get("speed_x")
+        out.append(
+            f'<tr data-n="{name.lower()}">'
+            f'<td data-key="#">{cell(r.get("rank"))}</td>'
+            f'<td data-key="model" class="c-model">{label}</td>'
+            f'<td data-key="mean_wer">{cell(r.get("mean_wer"))}</td>'
+            f'<td data-key="mean_cer">{cell(r.get("mean_cer"))}</td>'
+            f'<td data-key="speed_x">{cell(speed, 1)}{"x" if speed is not None else ""}</td>'
+            "</tr>"
+        )
+    out.append("</tbody>")
+
+    baked = TABLE_WER_EMPTY.replace("></table>", ">" + "".join(out) + "</table>")
+    if TABLE_WER_EMPTY not in html:
+        raise ValueError(
+            "index.html no longer contains the empty WER table this injects into; "
+            f"expected {TABLE_WER_EMPTY!r}"
+        )
+    return html.replace(TABLE_WER_EMPTY, baked)
+
+
 def _count_datasets(data: dict) -> int:
     """Distinct test sets = per-dataset WER columns (excludes the macro mean)."""
     rows = data.get("wer", [])
@@ -587,9 +653,18 @@ def main() -> None:
 
     api = HfApi(token=token)
 
+    # index.html is uploaded with the rankings baked in; the repo copy stays the
+    # JS-only source so there is one renderer to maintain, not two.
+    tmp = tempfile.TemporaryDirectory()
+    baked_index = Path(tmp.name) / "index.html"
+    source_html = (SPACE_DIR / "index.html").read_text(encoding="utf-8")
+    baked_index.write_text(bake_static_table(source_html, data), encoding="utf-8")
+    print(f"  baked {len(data['wer'])} rows into index.html "
+          f"(+{len(baked_index.read_text(encoding='utf-8')) - len(source_html)} bytes)")
+
     print("\nUploading static files …")
     for name in UPLOAD:
-        path = SPACE_DIR / name
+        path = baked_index if name == "index.html" else SPACE_DIR / name
         if not path.exists():
             print(f"  skip (missing): {name}")
             continue

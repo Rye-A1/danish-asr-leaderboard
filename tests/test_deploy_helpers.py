@@ -8,6 +8,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 from update_space import (
     OFFICIAL_SIZE,
+    TABLE_WER_EMPTY,
     PROVIDER_DOCS,
     PROVIDER_HF_ORG,
     PROVIDER_LOGO,
@@ -17,6 +18,7 @@ from update_space import (
     _official_size,
     _parse_model,
     _size_from_name,
+    bake_static_table,
     generate_cover_image,
 )
 
@@ -138,3 +140,58 @@ def test_generate_cover_image(tmp_path):
     assert out.exists()
     image = Image.open(out)
     assert image.size == THUMBNAIL_SIZE
+
+
+# ── Static table baking ─────────────────────────────────────────────────────
+# The page builds its table in JavaScript, so without this step the served HTML
+# contains no model names or scores at all -- invisible to any crawler.
+
+SPACE_INDEX = Path(__file__).resolve().parent.parent / "space" / "index.html"
+
+_ROWS = {
+    "wer": [
+        {"rank": 1, "name": "syvai/hviske-v5",
+         "url": "https://huggingface.co/syvai/hviske-v5",
+         "mean_wer": 13.74, "mean_cer": 6.26, "speed_x": 236.4},
+        {"rank": 2, "name": "scribe_v2", "url": "",
+         "mean_wer": 13.40, "mean_cer": 7.07, "speed_x": None},
+    ]
+}
+
+
+def test_bake_injects_rows_and_scores():
+    out = bake_static_table(TABLE_WER_EMPTY, _ROWS)
+    assert "syvai/hviske-v5" in out
+    assert "13.74" in out
+    assert out.count("<tr data-n=") == 2
+
+
+def test_bake_links_hf_models_and_leaves_bare_names_unlinked():
+    out = bake_static_table(TABLE_WER_EMPTY, _ROWS)
+    assert '<a href="https://huggingface.co/syvai/hviske-v5"' in out
+    # scribe_v2 is a hosted API with no URL -- a bare name, not an empty anchor
+    assert '<a href=""' not in out
+    assert "scribe_v2" in out
+
+
+def test_bake_formats_speed_to_one_place_and_dashes_missing():
+    out = bake_static_table(TABLE_WER_EMPTY, _ROWS)
+    assert "236.4x" in out          # not 236.40x, which is what a 2-place default gives
+    assert "&mdash;" in out         # proprietary rows publish no speed
+
+
+def test_bake_is_a_noop_without_data():
+    assert bake_static_table(TABLE_WER_EMPTY, {"wer": []}) == TABLE_WER_EMPTY
+
+
+def test_bake_raises_when_the_target_table_is_gone():
+    """Fail loudly rather than silently shipping an empty table again."""
+    with pytest.raises(ValueError, match="no longer contains"):
+        bake_static_table("<table id=\"something-else\"></table>", _ROWS)
+
+
+def test_index_html_still_contains_the_injection_target():
+    """Guards the real file: renaming or pre-filling the table would make the
+    bake step a silent no-op, and the regression would only show up in search
+    rankings weeks later."""
+    assert TABLE_WER_EMPTY in SPACE_INDEX.read_text(encoding="utf-8")
