@@ -1314,15 +1314,21 @@
         decades such as <code>1960'erne</code> keep their digits</li>
       <li>Collapse whitespace</li>
     </ol>
-    <p><strong>Known limitation:</strong> because punctuation is stripped before
-    numerals are expanded, two patterns become standalone integers and are then
-    spelled out: hyphenated ranges (<code>1-3</code> &rarr; <code>13</code>
-    &rarr; <code>tretten</code>) and ordinals written with a full stop
-    (<code>3. plads</code> &rarr; <code>tre plads</code>). Both are applied
-    identically to reference and hypothesis, so neither favours a model, but a
-    reference containing a range is scored against a word that does not
-    correspond to it. Ranges are rare in these test sets; the effect on published
-    scores is negligible.</p>
+    <p>A dash between two digits becomes a space during the punctuation strip
+    rather than being deleted, so <code>1-3</code> scores as two numbers.
+    Deleting it glued the range into <code>13</code> &rarr; <code>tretten</code>,
+    and the time range <code>10 00-11 00</code> into <code>ti elleve nul</code>
+    &mdash; references no correct transcription could match, which also handed
+    free matches to models that emit digits.</p>
+    <p><strong>Known limitation:</strong> colons and slashes are not yet handled
+    the same way &mdash; <code>10:00</code> still collapses to
+    <code>ettusind</code> and <code>4/5</code> to <code>femogfyrre</code>. Each
+    needs its own reading rule (a slash may be a fraction; a date is spoken
+    differently again), so they are tracked separately. Ordinals written with a
+    full stop are likewise left alone (<code>3. plads</code> &rarr;
+    <code>tre plads</code>): converting them to <code>tredje</code> was measured
+    and rejected, since most <code>N.</code> here are sentence-final cardinals
+    rather than true ordinals.</p>
     <p>This is broadly consistent with the
     <a href="https://github.com/huggingface/open_asr_leaderboard" target="_blank" rel="noopener">HF Open ASR Leaderboard</a>
     (<code>BasicTextNormalizer</code>) and matches the de-facto Danish standard set

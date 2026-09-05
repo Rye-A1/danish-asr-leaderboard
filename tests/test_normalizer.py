@@ -217,3 +217,43 @@ def test_output_form_is_still_words_not_digits():
 def test_spoken_decimal_folds_onto_written_decimal():
     """alpha2digit emits its own separator after step 2 has run; it must be re-stripped."""
     assert normalise("tre komma fjorten") == normalise("3,14") == normalise("3.14")
+
+
+@pytest.mark.parametrize("text,expected", [
+    ("1-3", "et tre"),
+    ("side 4-5", "side fire fem"),
+    ("2020–2021", "totusinde og tyve totusinde og enogtyve"),  # en-dash
+])
+def test_digit_range_is_split_not_glued(text, expected):
+    """A dash between digits becomes a space.
+
+    Deleting it glued the numbers together, so "1-3" scored as "tretten" and the
+    time range "10 00-11 00" as "ti elleve nul" -- references no correct
+    transcription could match, which also handed free matches to digit-emitting
+    models while penalising ones that spelled the range out.
+    """
+    assert normalise(text) == expected
+
+
+def test_dash_between_letters_still_dropped():
+    """Only digit-digit dashes are protected; hyphenated words keep old behaviour."""
+    assert normalise("fire-fem") == "firefem"
+    assert normalise("e-mail") == "email"
+
+
+def test_dash_not_between_digits_is_dropped():
+    assert normalise("minus -5") == "minus fem"
+
+
+def test_time_range_keeps_both_times_separate():
+    """The case that motivated the fix: "10 00-11 00" is a spoken time range.
+
+    Deleting the dash produced "ti elleve nul", which no correct transcription
+    could match, so a model that said "ti til elleve" was scored wrong.
+    """
+    assert normalise("mellem 10 00-11 00") == "mellem ti nul elleve nul"
+
+
+@pytest.mark.parametrize("dash", ["-", "‐", "‑", "‒", "–", "—", "−"])
+def test_all_dash_variants_split_digits(dash):
+    assert normalise(f"1{dash}3") == "et tre"

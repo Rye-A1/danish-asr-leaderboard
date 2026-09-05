@@ -39,10 +39,19 @@ recognition. This matches the de-facto Danish standard (Dansk-Data-Science-Commu
 back-comparison.
 
 Only *standalone* integer tokens (``^\d+$`` after the punctuation strip) are
-converted — digits embedded in larger tokens (decades ``1960'erne``, ranges
-``1-3``, mixed alphanumerics) are deliberately left untouched, because expanding
-them produces num2words' canonical multi-word form which rarely matches how such
-spans were actually spoken, and was measured to *hurt* WER. Ordinals (``3.`` ->
+converted — digits embedded in larger tokens (decades ``1960'erne``, mixed
+alphanumerics) are deliberately left untouched, because expanding them produces
+num2words' canonical multi-word form which rarely matches how such spans were
+actually spoken, and was measured to *hurt* WER.
+
+Dash-separated ranges are the exception: a dash between two digits becomes a
+space in the punctuation strip, so ``1-3`` scores as two numbers rather than
+being glued into ``13`` -> ``tretten``. Deleting the dash produced references no
+correct transcription could match (the time range ``10 00-11 00`` became ``ti
+elleve nul``) and handed free matches to digit-emitting models. Colons and
+slashes are *not* yet handled the same way — ``10:00`` still glues to
+``ettusind`` and ``4/5`` to ``femogfyrre``; those need their own semantics
+(a slash may be a fraction, a date reads differently) and are tracked separately. Ordinals (``3.`` ->
 ``tredje``) and symbol/unit expansion (``%`` -> ``procent``) were likewise tested
 and rejected: ordinals net-hurt (most ``N.`` are sentence-final cardinals, not true
 ordinals) and symbols are too rare (~0.3%) to matter.
@@ -169,6 +178,9 @@ def normalize_numbers_da(text: str) -> str:
     )
 
 
+_DASHES = ("-", "\u2010", "\u2011", "\u2012", "\u2013", "\u2014", "\u2212")
+
+
 def normalise(
     text: str,
     *,
@@ -205,6 +217,11 @@ def normalise(
     text = normalize_numbers_da(text)
     text = text.lower()
     # Remove punctuation/symbols, keeping apostrophes between two word characters.
+    # A dash between two digits becomes a space rather than vanishing: deleting
+    # it glued ranges into a single number, so "1-3" scored as "tretten" and the
+    # time range "10 00-11 00" as "ti elleve nul" -- references no correct
+    # transcription could match, which also handed free matches to models that
+    # emit digits. A space keeps the two numbers separate through the expansion.
     result: list[str] = []
     for i, ch in enumerate(text):
         cat = unicodedata.category(ch)
@@ -212,6 +229,9 @@ def normalise(
             if ch in ("'", "’") and 0 < i < len(text) - 1:
                 if text[i - 1].isalpha() and text[i + 1].isalpha():
                     result.append("'")
+            elif ch in _DASHES and 0 < i < len(text) - 1:
+                if text[i - 1].isdigit() and text[i + 1].isdigit():
+                    result.append(" ")
             # otherwise: drop the punctuation/symbol
         else:
             result.append(ch)
