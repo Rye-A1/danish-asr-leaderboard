@@ -1,5 +1,4 @@
 """Unit tests for the Danish text normaliser."""
-import unicodedata
 
 import pytest
 from danish_asr_leaderboard.normalizer.danish import normalise

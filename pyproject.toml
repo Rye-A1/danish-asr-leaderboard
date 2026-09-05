@@ -68,3 +68,15 @@ include = ["danish_asr_leaderboard*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+extend-exclude = ["node_modules", ".venv"]
+
+[tool.ruff.lint]
+# Deliberately narrow. The F (pyflakes) rules catch the class of bug that
+# actually reached production here: an undefined name in scripts/update_space.py,
+# which only runs at deploy time, so the unit suite could not see it and it took
+# the deploy down instead. Style rules stay off, so a lint failure always means
+# something is broken rather than merely untidy.
+select = ["F"]

@@ -30,3 +30,13 @@ jobs:
         run: |
           pip install -e . pytest pillow numpy requests
           pytest tests/ -q
+
+      # After the tests, so their result is always visible even when this fails.
+      # Pyflakes rules only (see [tool.ruff.lint] in pyproject.toml): scripts like
+      # update_space.py run only at deploy, so an undefined name there is invisible
+      # to the unit suite until it takes the deploy down -- which is exactly what
+      # happened. Pinned so a new ruff release cannot fail an unrelated PR.
+      - name: Lint
+        run: |
+          pip install ruff==0.14.0
+          ruff check .
