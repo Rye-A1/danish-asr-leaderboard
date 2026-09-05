@@ -111,7 +111,7 @@
       display: flex;
       align-items: center;
       height: 46px;
-      padding: 0 16px;
+      padding: 0 10px 0 16px;
       /* The banner's own mesh, not an approximation of it -- an earlier
          two-gradient stand-in over a translucent base read noticeably darker.
          background-size paints it at the banner's height and anchors to the
@@ -130,12 +130,22 @@
       transform: translateY(-100%);
       opacity: 0;
       pointer-events: none;
-      transition: transform .2s ease, opacity .2s ease;
+      /* visibility, not opacity alone: the bar now holds real buttons, and an
+         invisible control that is still tabbable traps keyboard users before
+         they ever reach the page. Delayed 0s step so the fade still plays. */
+      visibility: hidden;
+      transition: transform .2s ease, opacity .2s ease, visibility 0s linear .2s;
     }
     /* pointer-events returns with visibility: while hidden the bar must not
        intercept taps, but once shown it has to stop them reaching the row
        underneath, which the reader cannot see. */
-    .sticky-header.show { transform: translateY(0); opacity: 1; pointer-events: auto; }
+    .sticky-header.show {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+      visibility: visible;
+      transition: transform .2s ease, opacity .2s ease, visibility 0s;
+    }
     .sticky-title {
       font-size: 14px;
       font-weight: 700;
@@ -143,7 +153,43 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      /* Flex sibling of the actions. min-width:0 is the part that matters:
+         without it a nowrap item refuses to shrink and the ellipsis never
+         appears -- the title just pushes the icons off the right edge. */
+      flex: 1 1 auto;
+      min-width: 0;
     }
+    /* Repo + About shortcuts. Muted by default so they sit behind the title
+       rather than competing with it, full white on hover/focus. */
+    .sticky-actions {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex: 0 0 auto;
+      margin-left: 10px;
+    }
+    .sticky-act {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: rgba(255, 255, 255, .62);
+      cursor: pointer;
+      transition: color .15s ease, background .15s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .sticky-act:hover { color: #fff; background: rgba(255, 255, 255, .10); }
+    .sticky-act:focus-visible {
+      outline: 2px solid rgba(255, 255, 255, .8);
+      outline-offset: 1px;
+      color: #fff;
+    }
+    .sticky-act svg { width: 16px; height: 16px; display: block; }
     @media (prefers-reduced-motion: reduce) {
       .sticky-header { transition: none; }
     }
@@ -359,15 +405,32 @@
       color: var(--muted);
       white-space: nowrap;
     }
-    .model-meta .m-size { font-variant-numeric: tabular-nums; }
-    .model-meta .badge { font-size: 10px; padding: 0 6px; }
-    .model-meta .m-license {
-      padding: 0 6px;
-      border: 1px solid var(--border);
+    /* Size, access and licence render as one set of chips. */
+    .model-meta .m-size,
+    .model-meta .m-license,
+    .model-meta .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      height: 19px;
+      padding: 0 7px;
       border-radius: 999px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 108px;
+      font-size: 10px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .model-meta .m-size,
+    .model-meta .m-license {
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .model-meta .m-size { font-variant-numeric: tabular-nums; }
+    .model-meta .m-license { max-width: 112px; overflow: hidden; }
+    .meta-icon {
+      width: 10px;
+      height: 10px;
+      flex: 0 0 auto;
+      opacity: 0.8;
     }
 
 
@@ -1155,8 +1218,24 @@
 
 <!-- Slim restatement of the banner, revealed once the real one scrolls away.
      aria-hidden: it duplicates the h1, so screen readers should not hear it twice. -->
-<div class="sticky-header" id="sticky-header" aria-hidden="true">
-  <span class="sticky-title">Open Danish ASR Leaderboard 🇩🇰</span>
+<div class="sticky-header" id="sticky-header">
+  <!-- aria-hidden sits on the title alone, not the bar: the text duplicates
+       the h1 and should not be read twice, but the buttons beside it are real
+       controls and have to stay reachable. -->
+  <span class="sticky-title" aria-hidden="true">Open Danish ASR Leaderboard 🇩🇰</span>
+  <div class="sticky-actions">
+    <a class="sticky-act" href="https://github.com/Rye-A1/danish-asr-leaderboard"
+       target="_blank" rel="noopener" aria-label="Source code on GitHub" title="Source on GitHub">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.4-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C18.6 4 19.6 4.3 19.6 4.3c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
+    </a>
+    <button type="button" class="sticky-act" id="sticky-about"
+            aria-label="About this leaderboard" title="About">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+      </svg>
+    </button>
+  </div>
 </div>
 
 <div class="app">
@@ -1759,17 +1838,20 @@ function buildRow(row, cols, maxVals) {
       sz.className = 'm-size';
       // Missing sizes arrive as the em-dash string, not null, so a null check
       // alone would render "—B" for hosted API models.
-      sz.textContent = isFinite(parseFloat(row.size)) ? row.size + 'B' : '—';
+      const hasSize = isFinite(parseFloat(row.size));
+      sz.append(ICON_SIZE(), hasSize ? row.size + 'B' : '—');
+      sz.title = hasSize ? row.size + ' billion parameters' : 'Parameter count not published';
       meta.appendChild(sz);
 
+      const isOpen = row.access === 'open';
       const badge = document.createElement('span');
-      badge.className = 'badge ' + (row.access === 'open' ? 'badge-open' : 'badge-prop');
-      badge.textContent = row.access || '—';
+      badge.className = 'badge ' + (isOpen ? 'badge-open' : 'badge-prop');
+      badge.append(isOpen ? ICON_OPEN() : ICON_CLOSED(), row.access || '—');
       meta.appendChild(badge);
 
       const lic = document.createElement('span');
       lic.className = 'm-license';
-      lic.textContent = row.license || '—';
+      lic.append(ICON_LICENSE(), row.license || '—');
       lic.title = 'Licence: ' + (row.license || 'not declared');
       meta.appendChild(lic);
 
@@ -1940,6 +2022,19 @@ function initStickyHeader() {
   ).observe(banner);
 }
 
+/* The About shortcut clicks the real tab button rather than reimplementing
+   tab activation, so chart redraws and toggle state keep working for free. */
+function initStickyActions() {
+  const btn = document.getElementById('sticky-about');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const tab = document.querySelector('.tab-btn[data-tab="about"]');
+    if (tab) tab.click();
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+  });
+}
+
 /* Fade an edge of the tab strip only when there is content beyond it. */
 function updateTabFades() {
   const nav = document.querySelector('.tab-nav');
@@ -1981,6 +2076,16 @@ function _icon(paths, cls) {
   return svg;
 }
 const ICON_FILTER = () => _icon(['M22 3H2l8 9.46V19l4 2v-8.54L22 3z'], 'ctl-icon');
+const ICON_SIZE = () => _icon(
+  ['M12 3 3 7.5 12 12l9-4.5L12 3z', 'M3 12l9 4.5 9-4.5', 'M3 16.5 12 21l9-4.5'], 'meta-icon');
+const ICON_OPEN = () => _icon(
+  ['M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z',
+   'M8 11V7a4 4 0 0 1 8 0'], 'meta-icon');
+const ICON_CLOSED = () => _icon(
+  ['M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z',
+   'M8 11V7a4 4 0 0 1 8 0v4'], 'meta-icon');
+const ICON_LICENSE = () => _icon(
+  ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', 'M14 2v6h6'], 'meta-icon');
 const ICON_SORT   = () => _icon(['M3 6h13', 'M3 12h9', 'M3 18h5'], 'ctl-icon');
 
 const SORT_FIELDS = [
@@ -2052,6 +2157,7 @@ function initChrome() {
   initFilterToggles();
   fitChipStrip();
   initStickyHeader();
+  initStickyActions();
   initTabFades();
 }
 if (document.readyState === 'loading') {
