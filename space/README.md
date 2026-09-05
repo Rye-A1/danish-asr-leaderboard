@@ -1,5 +1,5 @@
 ---
-title: Danish ASR Leaderboard
+title: Danish Speech-to-Text Leaderboard
 emoji: 🏆
 colorFrom: red
 colorTo: gray
@@ -8,8 +8,9 @@ app_file: index.html
 thumbnail: https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/resolve/main/cover.jpeg
 pinned: true
 license: mit
-short_description: Open leaderboard for Danish ASR models.
+short_description: Open benchmark comparing Danish speech-to-text (ASR) models on WER, CER and speed.
 tags:
+  - speech-to-text
   - leaderboard
   - automatic-speech-recognition
   - speech-recognition

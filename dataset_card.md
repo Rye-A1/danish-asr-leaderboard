@@ -21,7 +21,19 @@ size_categories:
 
 # Open Danish ASR Leaderboard — Results
 
-Benchmark results backing the **[Open Danish ASR Leaderboard](https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard)** — a reproducible, open evaluation of Danish automatic speech recognition models across five independent public test sets.
+Benchmark results backing the **[Open Danish ASR Leaderboard](https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard)** — an open, reproducible comparison of **Danish speech-to-text** models.
+
+Every model is transcribed and scored identically on the same five independent public Danish test sets, so the numbers compare directly: Word Error Rate (WER) and Character Error Rate (CER) — lower is better — plus speed. Open-weight Danish speech recognition models you can run yourself and hosted transcription APIs are both included.
+
+## Dansk tale-til-tekst benchmark
+
+**Åben benchmark for dansk tale til tekst.** Sammenlign hvor præcist forskellige modeller til dansk talegenkendelse omsætter tale til tekst.
+
+Alle modeller måles ens på de samme fem offentlige danske testsæt, så tallene kan sammenlignes direkte: ordfejlrate (WER) og tegnfejlrate (CER) — lavere er bedre — samt hastighed. Både åbne modeller, du selv kan køre lokalt, og kommercielle tale-til-tekst-API'er indgår.
+
+Den aktuelle rangliste findes på [leaderboardet](https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard).
+
+## Using this dataset
 
 The `results` config (shown by default) has one row per evaluated model. Scores are WER / CER (%) — lower is better. Each model also has its own config exposing the raw, un-normalised transcriptions (`reference` vs `hypothesis` per utterance) for GPU-free re-scoring and error analysis.
 

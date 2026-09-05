@@ -1,4 +1,12 @@
-# Danish ASR Leaderboard
+# Danish Speech-to-Text Leaderboard
+
+An open, reproducible benchmark for **Danish speech-to-text**: every model is
+transcribed and scored the same way on the same five public Danish test sets, so
+WER, CER and speed compare directly. Open-weight Danish speech recognition models
+and hosted transcription APIs are both included.
+
+*Åben benchmark for dansk tale til tekst — sammenlign hvor præcist danske
+talegenkendelsesmodeller omsætter tale til tekst.*
 
 ![Danish ASR Leaderboard cover](https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/resolve/main/cover.jpeg)
 
