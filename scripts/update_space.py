@@ -20,7 +20,7 @@ from html import escape as html_escape
 import re
 import sys
 import tempfile
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import numpy as np
@@ -501,7 +501,7 @@ def _fmt_pct(v: object) -> str:
     return "—" if v is None else f"{v:.2f}%"
 
 
-def build_seo_payload(data: dict, updated: str) -> tuple[str, str]:
+def build_seo_payload(data: dict) -> tuple[str, str]:
     """Return (json_ld, summary_html) describing the current rankings.
 
     An earlier version of this baked the rankings into the visible table. It was
@@ -520,6 +520,15 @@ def build_seo_payload(data: dict, updated: str) -> tuple[str, str]:
     rows = data.get("wer", [])
     if not rows:
         return "", ""
+
+    # Same date the footer renders, read from the payload rather than taken
+    # again from the clock: computing it twice (local date there, UTC here)
+    # lets the prose and the footer disagree either side of midnight.
+    iso = data.get("updated") or date.today().isoformat()
+    try:
+        updated = datetime.strptime(iso, "%Y-%m-%d").strftime("%-d %B %Y")
+    except ValueError:
+        updated = iso
 
     items = []
     for r in rows:
@@ -545,7 +554,7 @@ def build_seo_payload(data: dict, updated: str) -> tuple[str, str]:
         "inLanguage": ["en", "da"],
         "license": "https://opensource.org/licenses/MIT",
         "creator": {"@type": "Organization", "name": "Rye AI"},
-        "dateModified": updated,
+        "dateModified": iso,
         "variableMeasured": ["Word Error Rate", "Character Error Rate", "Speed"],
         "mainEntity": {"@type": "ItemList", "numberOfItems": len(items),
                        "itemListElement": items},
@@ -576,9 +585,9 @@ def build_seo_payload(data: dict, updated: str) -> tuple[str, str]:
     return json_ld, summary
 
 
-def bake_seo(html: str, data: dict, updated: str) -> str:
+def bake_seo(html: str, data: dict) -> str:
     """Put the structured data in <head> and the summary at the SEO marker."""
-    json_ld, summary = build_seo_payload(data, updated)
+    json_ld, summary = build_seo_payload(data)
     if not json_ld:
         return html
     if SEO_MARKER not in html:
@@ -688,8 +697,7 @@ def main() -> None:
     tmp = tempfile.TemporaryDirectory()
     baked_index = Path(tmp.name) / "index.html"
     source_html = (SPACE_DIR / "index.html").read_text(encoding="utf-8")
-    updated = datetime.now(timezone.utc).strftime("%d %B %Y")
-    baked_index.write_text(bake_seo(source_html, data, updated), encoding="utf-8")
+    baked_index.write_text(bake_seo(source_html, data), encoding="utf-8")
     print(f"  baked structured data for {len(data['wer'])} models into index.html "
           f"(+{len(baked_index.read_text(encoding='utf-8')) - len(source_html)} bytes)")
 

@@ -152,6 +152,7 @@ def test_generate_cover_image(tmp_path):
 SPACE_INDEX = Path(__file__).resolve().parent.parent / "space" / "index.html"
 
 _ROWS = {
+    "updated": "2026-09-05",
     "wer": [
         {"rank": 1, "name": "syv-transcribe", "url": "", "access": "proprietary",
          "mean_wer": 11.05, "mean_cer": 5.22, "speed_x": None,
@@ -164,7 +165,7 @@ _ROWS = {
 
 
 def test_json_ld_lists_every_model_with_scores():
-    ld, _ = build_seo_payload(_ROWS, "5 September 2026")
+    ld, _ = build_seo_payload(_ROWS)
     payload = json.loads(ld.removeprefix('<script type="application/ld+json">').removesuffix("</script>"))
     items = payload["mainEntity"]["itemListElement"]
     assert payload["mainEntity"]["numberOfItems"] == 2
@@ -176,7 +177,7 @@ def test_json_ld_lists_every_model_with_scores():
 
 
 def test_summary_names_the_leader_and_the_best_open_model():
-    _, summary = build_seo_payload(_ROWS, "5 September 2026")
+    _, summary = build_seo_payload(_ROWS)
     assert "syv-transcribe" in summary and "11.05%" in summary
     # the leader is proprietary, so the open-weights leader is called out too
     assert "open-weight" in summary and "syvai/hviske-v5" in summary
@@ -184,18 +185,18 @@ def test_summary_names_the_leader_and_the_best_open_model():
 
 def test_summary_skips_the_open_line_when_the_leader_is_already_open():
     rows = {"wer": [dict(_ROWS["wer"][1], rank=1)]}
-    _, summary = build_seo_payload(rows, "5 September 2026")
+    _, summary = build_seo_payload(rows)
     assert "open-weight" not in summary
 
 
 def test_bake_is_a_noop_without_data():
-    assert bake_seo("<html></html>", {"wer": []}, "5 September 2026") == "<html></html>"
+    assert bake_seo("<html></html>", {"wer": []}) == "<html></html>"
 
 
 def test_bake_raises_when_the_marker_is_gone():
     """Fail loudly rather than silently shipping a page with no rankings in it."""
     with pytest.raises(ValueError, match="SEO"):
-        bake_seo("<html><head></head><body></body></html>", _ROWS, "5 September 2026")
+        bake_seo("<html><head></head><body></body></html>", _ROWS)
 
 
 def test_index_html_still_has_the_marker_and_head():
@@ -208,7 +209,17 @@ def test_index_html_still_has_the_marker_and_head():
 
 def test_bake_injects_into_head_and_marker():
     src = SPACE_INDEX.read_text(encoding="utf-8")
-    out = bake_seo(src, _ROWS, "5 September 2026")
+    out = bake_seo(src, _ROWS)
     assert 'application/ld+json' in out.split("</head>")[0]
     assert SEO_MARKER not in out
     assert "syv-transcribe" in out
+
+
+def test_summary_date_comes_from_the_payload_not_the_clock():
+    """The footer renders data.updated; taking the date from the clock here
+    would let the two disagree either side of midnight."""
+    _, summary = build_seo_payload(_ROWS)
+    assert "5 September 2026" in summary
+    ld, _ = build_seo_payload(_ROWS)
+    payload = json.loads(ld.removeprefix('<script type="application/ld+json">').removesuffix("</script>"))
+    assert payload["dateModified"] == "2026-09-05"
