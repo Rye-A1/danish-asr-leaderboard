@@ -2088,11 +2088,19 @@ const ICON_LICENSE = () => _icon(
   ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', 'M14 2v6h6'], 'meta-icon');
 const ICON_SORT   = () => _icon(['M3 6h13', 'M3 12h9', 'M3 18h5'], 'ctl-icon');
 
+/* `dir` is the direction that puts the best model first, applied when the
+   field is picked; the arrow button flips it. `always` marks a field that is
+   sortable without being a visible column -- size never is, and win rate and
+   avg. rank only appear under their own ranking methods. Rank itself is gone:
+   under the default method it is just Mean WER order under another name. */
 const SORT_FIELDS = [
-  { key: 'mean_wer', label: 'Mean WER' },
-  { key: 'mean_cer', label: 'Mean CER' },
-  { key: 'speed_x',  label: 'Speed' },
-  { key: '#',        label: 'Rank' },
+  { key: 'mean_wer',    label: 'Mean WER',  dir:  1 },
+  { key: 'mean_cer',    label: 'Mean CER',  dir:  1 },
+  { key: 'speed_x',     label: 'Speed',     dir: -1 },
+  { key: 'size',        label: 'Size',      dir: -1, always: true,
+    read: r => parseFloat(r.size) },
+  { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt'    },
+  { key: 'borda_score', label: 'Avg. Rank', dir:  1, always: true, method: 'borda' },
 ];
 
 function initSortControls() {
@@ -2101,7 +2109,7 @@ function initSortControls() {
     const table = pane && pane.querySelector('table');
     // Same reason as above -- find both by pane, not by sibling position.
     const btn = pane && pane.querySelector('.filters-toggle');
-    if (!table || !btn) continue;
+    if (!table || !btn || !table.sortBy) continue;
     const existing = pane.querySelector('.sort-wrap');
 
     const wrap = existing || document.createElement('div');
@@ -2112,7 +2120,7 @@ function initSortControls() {
     sel.className = 'sort-field';
     sel.setAttribute('aria-label', 'Sort by');
     for (const f of SORT_FIELDS) {
-      if (!table.querySelector(`thead th[data-key="${f.key}"]`)) continue;
+      if (!f.always && !table.querySelector(`thead th[data-key="${f.key}"]`)) continue;
       const o = document.createElement('option');
       o.value = f.key; o.textContent = f.label;
       sel.appendChild(o);
@@ -2122,29 +2130,55 @@ function initSortControls() {
     dir.type = 'button';
     dir.className = 'sort-dir';
 
-    const header = k => table.querySelector(`thead th[data-key="${k}"]`);
+    const paneKey = pane.id.replace(/^tab-/, '');
+    const field = k => SORT_FIELDS.find(f => f.key === k);
+    /* Switching ranking method re-renders the table, which rebuilds this very
+       control, so these are queried fresh rather than captured. The <table>
+       node itself survives -- renderTable only replaces its contents -- so
+       `table.sortBy` is always the current closure. */
+    const curSel = () => pane.querySelector('.sort-field');
+    const curDir = () => pane.querySelector('.sort-dir');
+    /* Read the direction off the table rather than off header classes: the
+       sorted field may have no header to read. Falls back to the field's own
+       preferred direction while some other field is the active sort. */
     const state = k => {
-      const h = header(k);
-      return h && h.classList.contains('sort-desc') ? -1
-           : h && h.classList.contains('sort-asc') ? 1 : 0;
+      const st = table.sortState();
+      return st.key === k ? st.dir : (field(k)?.dir ?? 1);
     };
     const sync = () => {
-      const cur = state(sel.value);
-      dir.textContent = cur === -1 ? '↓' : '↑';
-      dir.setAttribute('aria-label',
+      const s = curSel(), d = curDir();
+      if (!s || !d) return;
+      const cur = state(s.value);
+      d.textContent = cur === -1 ? '↓' : '↑';
+      d.setAttribute('aria-label',
         cur === -1 ? 'Sort descending, switch to ascending' : 'Sort ascending, switch to descending');
     };
-    /* Click the header until it reaches the wanted direction: the first click
-       selects the column (ascending), a second flips it. */
     const applySort = (key, want) => {
-      const h = header(key);
-      if (!h) return;
-      if (state(key) === 0) h.click();
-      if (state(key) !== want) h.click();
+      const f = field(key);
+      if (!f) return;
+      /* Avg. Rank and Win Rate are ranking methods as well as sort keys, so
+         selecting one switches the table to that method. Two reasons: the
+         column becomes visible, instead of sorting by a number the reader
+         cannot see -- and this control can no longer disagree with the
+         "Rank by" toggle about which method is active. */
+      /* Switching method re-renders the table, which replaces this select --
+         taking the keyboard user's focus with it. Put it back. */
+      const hadFocus = document.activeElement === curSel();
+      if (f.method) {
+        const tog = document.getElementById(`tog-${paneKey}-${f.method}`);
+        if (tog && !tog.classList.contains('active')) tog.click();
+      }
+      const s = curSel();
+      if (s) {
+        s.value = key;
+        if (hadFocus && document.activeElement !== s) s.focus();
+      }
+      table.sortBy(key, want, f.read);
       sync();
     };
 
-    sel.addEventListener('change', () => applySort(sel.value, 1));
+    /* Picking a field sorts best-first; the arrow flips whatever is current. */
+    sel.addEventListener('change', () => applySort(sel.value, field(sel.value)?.dir ?? 1));
     dir.addEventListener('click', () => applySort(sel.value, state(sel.value) === 1 ? -1 : 1));
 
     wrap.append(ICON_SORT(), sel, dir);
@@ -2186,32 +2220,58 @@ function renderTable(el, rows, cols, maxVals) {
   paint(rows);
 
   let sortKey = null, sortDir = 1;
+
+  /* Both entry points -- header clicks and the toolbar sort control -- go
+     through this, so the two can never disagree about ordering or about where
+     missing values land. `readFn` covers fields that are not plain numbers on
+     the row: size arrives as a string, with an em-dash for the hosted APIs
+     that publish no parameter count. */
+  const sortRows = (key, dir, readFn) => {
+    /* Deliberately not named `valueOf`: that is inherited from
+       Object.prototype, so `field.valueOf` is truthy on every field object and
+       silently hijacks the comparator into stringifying rows. */
+    const read = readFn || (r => (key === '#' ? r.rank : r[key]));
+    return [...rows].sort((a, b) => {
+      let av = read(a), bv = read(b);
+      /* Non-finite counts as missing: borda_score is Infinity for a model
+         scored on no dataset, and parseFloat('—') is NaN. */
+      if (typeof av === 'number' && !isFinite(av)) av = null;
+      if (typeof bv === 'number' && !isFinite(bv)) bv = null;
+      // Missing values sort last in BOTH directions. Tying them to dir
+      // floated every "—" row (hosted APIs have no speed) to the top of a
+      // descending sort, burying the models the reader is looking for.
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
+      return String(av).localeCompare(String(bv)) * dir;
+    });
+  };
+
+  /* Only marks a header when the sorted field is actually on screen -- sorting
+     by size or win rate leaves every header unmarked, which is honest. */
+  const markHead = (key, dir) => {
+    const ths = thead.querySelectorAll('th');
+    ths.forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
+    const i = cols.findIndex(c => c.key === key);
+    if (i >= 0 && ths[i]) ths[i].classList.add(dir === 1 ? 'sort-asc' : 'sort-desc');
+  };
+
+  /* Exposed so the sort control can drive the table directly instead of
+     synthesising header clicks: it has to reach fields that are not columns
+     at all (size) or only become columns under another ranking method
+     (win rate, avg. rank). */
+  el.sortBy = (key, dir, readFn) => {
+    sortKey = key; sortDir = dir;
+    markHead(key, dir);
+    paint(sortRows(key, dir, readFn));
+  };
+  el.sortState = () => ({ key: sortKey, dir: sortDir });
+
   thead.querySelectorAll('th').forEach((th, i) => {
     const col = cols[i];
-    th.addEventListener('click', () => {
-      if (sortKey === col.key) {
-        sortDir *= -1;
-      } else {
-        sortKey = col.key;
-        sortDir = col.key === '#' ? 1 : 1;
-      }
-      thead.querySelectorAll('th').forEach(h => h.classList.remove('sort-asc', 'sort-desc'));
-      th.classList.add(sortDir === 1 ? 'sort-asc' : 'sort-desc');
-
-      const sorted = [...rows].sort((a, b) => {
-        let av = col.key === '#' ? a.rank : a[col.key];
-        let bv = col.key === '#' ? b.rank : b[col.key];
-        // Missing values sort last in BOTH directions. Tying them to sortDir
-        // floated every "—" row (hosted APIs have no speed) to the top of a
-        // descending sort, burying the models the reader is looking for.
-        if (av == null && bv == null) return 0;
-        if (av == null) return 1;
-        if (bv == null) return -1;
-        if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * sortDir;
-        return String(av).localeCompare(String(bv)) * sortDir;
-      });
-      paint(sorted);
-    });
+    th.addEventListener('click', () =>
+      el.sortBy(col.key, sortKey === col.key ? sortDir * -1 : 1));
   });
 }
 
