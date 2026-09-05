@@ -1057,7 +1057,9 @@
         display: inline-flex;
         align-items: center;
         gap: 7px;
-        height: 32px;
+        /* 34px matches the sort control (32px select + its 1px borders) and the
+           toolbar's own controls, so the row reads as one set. */
+        height: 34px;
         padding: 0 12px;
         margin-bottom: 10px;
         vertical-align: top;
@@ -1083,6 +1085,18 @@
         background: var(--surf);
         overflow: hidden;
         vertical-align: top;
+      }
+      .ctl-icon {
+        width: 14px;
+        height: 14px;
+        flex: 0 0 auto;
+        opacity: 0.75;
+      }
+      .sort-wrap .ctl-icon {
+        align-self: center;
+        margin-left: 9px;
+        margin-right: -2px;
+        color: var(--muted);
       }
       .sort-field {
         height: 32px;
@@ -1855,7 +1869,7 @@ function initFilterToggles() {
     const caret = document.createElement('span');
     const count = document.createElement('span');
     count.className = 'filters-count';
-    btn.append('Filters ', caret, count);
+    btn.append(ICON_FILTER(), 'Filters ', caret, count);
 
     /* Counts the controls that are not at their default, so a collapsed
        toolbar still says whether anything is filtering the table. The first
@@ -1947,6 +1961,28 @@ function initTabFades() {
 /* Sorting lives on the table header, which the card layout hides -- so on a
    phone there was no way to sort at all. This drives the *same* header handler
    rather than reimplementing the comparator, so the two can never disagree. */
+/* Small inline icons, matching the search field's outline style. */
+function _icon(paths, cls) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('class', cls);
+  for (const d of paths) {
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', d);
+    svg.appendChild(path);
+  }
+  return svg;
+}
+const ICON_FILTER = () => _icon(['M22 3H2l8 9.46V19l4 2v-8.54L22 3z'], 'ctl-icon');
+const ICON_SORT   = () => _icon(['M3 6h13', 'M3 12h9', 'M3 18h5'], 'ctl-icon');
+
 const SORT_FIELDS = [
   { key: 'mean_wer', label: 'Mean WER' },
   { key: 'mean_cer', label: 'Mean CER' },
@@ -2006,7 +2042,7 @@ function initSortControls() {
     sel.addEventListener('change', () => applySort(sel.value, 1));
     dir.addEventListener('click', () => applySort(sel.value, state(sel.value) === 1 ? -1 : 1));
 
-    wrap.append(sel, dir);
+    wrap.append(ICON_SORT(), sel, dir);
     if (!existing) btn.parentNode.insertBefore(wrap, btn.nextSibling);
     sync();
   }
