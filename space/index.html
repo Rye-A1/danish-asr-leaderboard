@@ -1355,6 +1355,7 @@
       (CER) — lavere er bedre — samt hastighed. Både åbne modeller, du selv kan
       køre lokalt, og kommercielle tale-til-tekst-API'er indgår.
     </p>
+    <!--SEO-->
 
     <h2>Test sets</h2>
     <div class="table-scroll">
@@ -2805,7 +2806,7 @@ window.addEventListener('resize', () => {
 
 async function init() {
   try {
-    const data = await fetch('leaderboard.json', {cache: 'reload'}).then(r => r.json());
+    const data = await fetch('leaderboard.json', {cache: 'no-cache'}).then(r => r.json());
 
     addBordaRanks(data.wer, WER_DS_COLS);
     addBordaRanks(data.cer, CER_DS_COLS);

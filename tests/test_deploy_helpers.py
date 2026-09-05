@@ -1,4 +1,5 @@
 """Unit tests for update_space.py helper functions (no network required)."""
+import json
 import sys
 from pathlib import Path
 
@@ -8,7 +9,7 @@ from PIL import Image
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 from update_space import (
     OFFICIAL_SIZE,
-    TABLE_WER_EMPTY,
+    SEO_MARKER,
     PROVIDER_DOCS,
     PROVIDER_HF_ORG,
     PROVIDER_LOGO,
@@ -18,7 +19,8 @@ from update_space import (
     _official_size,
     _parse_model,
     _size_from_name,
-    bake_static_table,
+    bake_seo,
+    build_seo_payload,
     generate_cover_image,
 )
 
@@ -142,56 +144,71 @@ def test_generate_cover_image(tmp_path):
     assert image.size == THUMBNAIL_SIZE
 
 
-# ── Static table baking ─────────────────────────────────────────────────────
-# The page builds its table in JavaScript, so without this step the served HTML
-# contains no model names or scores at all -- invisible to any crawler.
+# ── SEO payload ────────────────────────────────────────────────────────────
+# The page builds its table in JavaScript, so the served HTML carries no model
+# names. Structured data + a prose summary supply them without a second
+# renderer, and without the visible table-swap that baking the rows caused.
 
 SPACE_INDEX = Path(__file__).resolve().parent.parent / "space" / "index.html"
 
 _ROWS = {
     "wer": [
-        {"rank": 1, "name": "syvai/hviske-v5",
-         "url": "https://huggingface.co/syvai/hviske-v5",
-         "mean_wer": 13.74, "mean_cer": 6.26, "speed_x": 236.4},
-        {"rank": 2, "name": "scribe_v2", "url": "",
-         "mean_wer": 13.40, "mean_cer": 7.07, "speed_x": None},
+        {"rank": 1, "name": "syv-transcribe", "url": "", "access": "proprietary",
+         "mean_wer": 11.05, "mean_cer": 5.22, "speed_x": None,
+         "coral_conversation_wer": 1.0, "fleurs_da_wer": 1.0},
+        {"rank": 2, "name": "syvai/hviske-v5", "url": "https://huggingface.co/syvai/hviske-v5",
+         "access": "open", "mean_wer": 13.60, "mean_cer": 6.23, "speed_x": 155.8,
+         "coral_conversation_wer": 1.0, "fleurs_da_wer": 1.0},
     ]
 }
 
 
-def test_bake_injects_rows_and_scores():
-    out = bake_static_table(TABLE_WER_EMPTY, _ROWS)
-    assert "syvai/hviske-v5" in out
-    assert "13.74" in out
-    assert out.count("<tr data-n=") == 2
+def test_json_ld_lists_every_model_with_scores():
+    ld, _ = build_seo_payload(_ROWS, "5 September 2026")
+    payload = json.loads(ld.removeprefix('<script type="application/ld+json">').removesuffix("</script>"))
+    items = payload["mainEntity"]["itemListElement"]
+    assert payload["mainEntity"]["numberOfItems"] == 2
+    assert [i["name"] for i in items] == ["syv-transcribe", "syvai/hviske-v5"]
+    assert "11.05%" in items[0]["description"]
+    # a hosted API has no repo URL; emit no url rather than an empty one
+    assert "url" not in items[0]
+    assert items[1]["url"] == "https://huggingface.co/syvai/hviske-v5"
 
 
-def test_bake_links_hf_models_and_leaves_bare_names_unlinked():
-    out = bake_static_table(TABLE_WER_EMPTY, _ROWS)
-    assert '<a href="https://huggingface.co/syvai/hviske-v5"' in out
-    # scribe_v2 is a hosted API with no URL -- a bare name, not an empty anchor
-    assert '<a href=""' not in out
-    assert "scribe_v2" in out
+def test_summary_names_the_leader_and_the_best_open_model():
+    _, summary = build_seo_payload(_ROWS, "5 September 2026")
+    assert "syv-transcribe" in summary and "11.05%" in summary
+    # the leader is proprietary, so the open-weights leader is called out too
+    assert "open-weight" in summary and "syvai/hviske-v5" in summary
 
 
-def test_bake_formats_speed_to_one_place_and_dashes_missing():
-    out = bake_static_table(TABLE_WER_EMPTY, _ROWS)
-    assert "236.4x" in out          # not 236.40x, which is what a 2-place default gives
-    assert "&mdash;" in out         # proprietary rows publish no speed
+def test_summary_skips_the_open_line_when_the_leader_is_already_open():
+    rows = {"wer": [dict(_ROWS["wer"][1], rank=1)]}
+    _, summary = build_seo_payload(rows, "5 September 2026")
+    assert "open-weight" not in summary
 
 
 def test_bake_is_a_noop_without_data():
-    assert bake_static_table(TABLE_WER_EMPTY, {"wer": []}) == TABLE_WER_EMPTY
+    assert bake_seo("<html></html>", {"wer": []}, "5 September 2026") == "<html></html>"
 
 
-def test_bake_raises_when_the_target_table_is_gone():
-    """Fail loudly rather than silently shipping an empty table again."""
-    with pytest.raises(ValueError, match="no longer contains"):
-        bake_static_table("<table id=\"something-else\"></table>", _ROWS)
+def test_bake_raises_when_the_marker_is_gone():
+    """Fail loudly rather than silently shipping a page with no rankings in it."""
+    with pytest.raises(ValueError, match="SEO"):
+        bake_seo("<html><head></head><body></body></html>", _ROWS, "5 September 2026")
 
 
-def test_index_html_still_contains_the_injection_target():
-    """Guards the real file: renaming or pre-filling the table would make the
-    bake step a silent no-op, and the regression would only show up in search
-    rankings weeks later."""
-    assert TABLE_WER_EMPTY in SPACE_INDEX.read_text(encoding="utf-8")
+def test_index_html_still_has_the_marker_and_head():
+    """Guards the real file: losing the marker would make the deploy step a
+    silent no-op, and the regression would only surface in rankings later."""
+    src = SPACE_INDEX.read_text(encoding="utf-8")
+    assert SEO_MARKER in src
+    assert "</head>" in src
+
+
+def test_bake_injects_into_head_and_marker():
+    src = SPACE_INDEX.read_text(encoding="utf-8")
+    out = bake_seo(src, _ROWS, "5 September 2026")
+    assert 'application/ld+json' in out.split("</head>")[0]
+    assert SEO_MARKER not in out
+    assert "syv-transcribe" in out

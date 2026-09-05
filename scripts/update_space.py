@@ -494,68 +494,98 @@ def _metric_card(width: int, height: int, radius: int) -> Image.Image:
     return card
 
 
-TABLE_WER_EMPTY = '<table id="table-wer"></table>'
+SEO_MARKER = "<!--SEO-->"
 
 
-def bake_static_table(html: str, data: dict) -> str:
-    """Write the current rankings into the HTML that gets served.
+def _fmt_pct(v: object) -> str:
+    return "—" if v is None else f"{v:.2f}%"
 
-    The page fetches leaderboard.json and builds its table in JavaScript, so the
-    served document contains no model names and no scores -- a crawler, or anyone
-    whose JS has not run yet, sees an empty table. That is most of the page's
-    substance missing from every index of it.
 
-    renderTable() clears the element before rendering, so this copy costs nothing
-    at runtime: it is what the page shows until the fetch resolves, and what
-    search engines get. Deliberately narrower than the live table (rank, model,
-    the two error rates, speed) -- enough to carry the rankings without
-    reimplementing buildRow() in Python and having two renderers drift apart.
+def build_seo_payload(data: dict, updated: str) -> tuple[str, str]:
+    """Return (json_ld, summary_html) describing the current rankings.
+
+    An earlier version of this baked the rankings into the visible table. It was
+    crawlable, but the injected table is necessarily simpler than the one
+    renderTable() builds, so readers saw a plain five-column table swap for the
+    real one — brief locally, but seconds through the Space's iframe, and it
+    read as a bug rather than as progressive enhancement.
+
+    Structured data has none of that cost: JSON-LD is invisible by design and is
+    the format crawlers actually parse for rankings, so there is no flash and no
+    second renderer to keep in sync. The prose summary alongside it carries the
+    model names and scores as real body text — which is what matches a query
+    like "most accurate Danish speech-to-text model" — and, being permanent
+    rather than replaced on load, never flashes either.
     """
     rows = data.get("wer", [])
     if not rows:
-        return html
+        return "", ""
 
-    def cell(value: object, places: int = 2) -> str:
-        """Match the JS formatting: error rates to 2 places, speed to 1."""
-        if value is None:
-            return "&mdash;"
-        if isinstance(value, float):
-            return html_escape(f"{value:.{places}f}")
-        return html_escape(str(value))
-
-    out = [
-        "<thead><tr>",
-        '<th data-key="#">#</th>',
-        '<th data-key="model">Model</th>',
-        '<th data-key="mean_wer">Mean WER &darr;</th>',
-        '<th data-key="mean_cer">Mean CER &darr;</th>',
-        '<th data-key="speed_x">Speed (x) &uarr;</th>',
-        "</tr></thead><tbody>",
-    ]
+    items = []
     for r in rows:
-        name = html_escape(str(r.get("name", "")))
-        url = html_escape(str(r.get("url") or ""))
-        label = (f'<a href="{url}" target="_blank" rel="noopener">{name}</a>'
-                 if url else name)
-        speed = r.get("speed_x")
-        out.append(
-            f'<tr data-n="{name.lower()}">'
-            f'<td data-key="#">{cell(r.get("rank"))}</td>'
-            f'<td data-key="model" class="c-model">{label}</td>'
-            f'<td data-key="mean_wer">{cell(r.get("mean_wer"))}</td>'
-            f'<td data-key="mean_cer">{cell(r.get("mean_cer"))}</td>'
-            f'<td data-key="speed_x">{cell(speed, 1)}{"x" if speed is not None else ""}</td>'
-            "</tr>"
-        )
-    out.append("</tbody>")
+        entry = {
+            "@type": "ListItem",
+            "position": r.get("rank"),
+            "name": r.get("name"),
+            "description": (f"Mean WER {_fmt_pct(r.get('mean_wer'))}, "
+                            f"Mean CER {_fmt_pct(r.get('mean_cer'))}"),
+        }
+        if r.get("url"):
+            entry["url"] = r["url"]
+        items.append(entry)
 
-    baked = TABLE_WER_EMPTY.replace("></table>", ">" + "".join(out) + "</table>")
-    if TABLE_WER_EMPTY not in html:
-        raise ValueError(
-            "index.html no longer contains the empty WER table this injects into; "
-            f"expected {TABLE_WER_EMPTY!r}"
-        )
-    return html.replace(TABLE_WER_EMPTY, baked)
+    ld = {
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        "name": "Open Danish Speech-to-Text Leaderboard",
+        "description": ("Benchmark comparing Danish speech-to-text (ASR) models on five "
+                        "public Danish test sets, scored identically for Word Error Rate, "
+                        "Character Error Rate and speed."),
+        "url": f"https://huggingface.co/spaces/{SPACE_REPO_ID}",
+        "inLanguage": ["en", "da"],
+        "license": "https://opensource.org/licenses/MIT",
+        "creator": {"@type": "Organization", "name": "Rye AI"},
+        "dateModified": updated,
+        "variableMeasured": ["Word Error Rate", "Character Error Rate", "Speed"],
+        "mainEntity": {"@type": "ItemList", "numberOfItems": len(items),
+                       "itemListElement": items},
+    }
+    json_ld = ('<script type="application/ld+json">'
+               + json.dumps(ld, ensure_ascii=False) + "</script>")
+
+    def name_of(r):
+        return html_escape(str(r.get("name", "")))
+
+    top = rows[0]
+    best_open = next((r for r in rows if r.get("access") == "open"), None)
+    parts = [
+        f"As of {html_escape(updated)}, the most accurate Danish speech-to-text model "
+        f"measured here is <strong>{name_of(top)}</strong> at "
+        f"{_fmt_pct(top.get('mean_wer'))} WER"
+    ]
+    runners = [f"{name_of(r)} ({_fmt_pct(r.get('mean_wer'))})" for r in rows[1:3]]
+    if runners:
+        parts.append(", ahead of " + " and ".join(runners))
+    parts.append(". ")
+    if best_open is not None and best_open is not top:
+        parts.append(f"The most accurate open-weight model is <strong>{name_of(best_open)}</strong> "
+                     f"at {_fmt_pct(best_open.get('mean_wer'))} WER. ")
+    parts.append(f"{len(rows)} models are compared across "
+                 f"{_count_datasets(data)} public Danish test sets.")
+    summary = '<p class="seo-summary">' + "".join(parts) + "</p>"
+    return json_ld, summary
+
+
+def bake_seo(html: str, data: dict, updated: str) -> str:
+    """Put the structured data in <head> and the summary at the SEO marker."""
+    json_ld, summary = build_seo_payload(data, updated)
+    if not json_ld:
+        return html
+    if SEO_MARKER not in html:
+        raise ValueError(f"index.html no longer contains {SEO_MARKER!r} to inject the summary into")
+    if "</head>" not in html:
+        raise ValueError("index.html has no </head> to inject structured data into")
+    return html.replace("</head>", json_ld + "</head>", 1).replace(SEO_MARKER, summary, 1)
 
 
 def _count_datasets(data: dict) -> int:
@@ -658,8 +688,9 @@ def main() -> None:
     tmp = tempfile.TemporaryDirectory()
     baked_index = Path(tmp.name) / "index.html"
     source_html = (SPACE_DIR / "index.html").read_text(encoding="utf-8")
-    baked_index.write_text(bake_static_table(source_html, data), encoding="utf-8")
-    print(f"  baked {len(data['wer'])} rows into index.html "
+    updated = datetime.now(timezone.utc).strftime("%d %B %Y")
+    baked_index.write_text(bake_seo(source_html, data, updated), encoding="utf-8")
+    print(f"  baked structured data for {len(data['wer'])} models into index.html "
           f"(+{len(baked_index.read_text(encoding='utf-8')) - len(source_html)} bytes)")
 
     print("\nUploading static files …")
