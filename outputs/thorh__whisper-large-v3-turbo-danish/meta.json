@@ -1,0 +1,18 @@
+{
+  "model": "thorh/whisper-large-v3-turbo-danish",
+  "model_link": "[thorh/whisper-large-v3-turbo-danish](https://huggingface.co/thorh/whisper-large-v3-turbo-danish)",
+  "params_b": 0.809,
+  "access": "open",
+  "submitted": "2026-09-06",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": false,
+  "speed_x": 48.9,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}

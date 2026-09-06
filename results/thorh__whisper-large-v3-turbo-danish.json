@@ -1,0 +1,19 @@
+{
+  "model": "[thorh/whisper-large-v3-turbo-danish](https://huggingface.co/thorh/whisper-large-v3-turbo-danish)",
+  "params_b": 0.809,
+  "coral_conversation_wer": 20.05,
+  "coral_read_aloud_wer": 12.93,
+  "cv17_da_wer": 8.24,
+  "fleurs_da_wer": 8.96,
+  "ftspeech_wer": 7.39,
+  "mean_wer": 11.51,
+  "coral_conversation_cer": 11.92,
+  "coral_read_aloud_cer": 4.8,
+  "cv17_da_cer": 2.65,
+  "fleurs_da_cer": 3.65,
+  "ftspeech_cer": 4.19,
+  "mean_cer": 5.44,
+  "speed_x": 48.9,
+  "submitted": "2026-09-06",
+  "access": "open"
+}
