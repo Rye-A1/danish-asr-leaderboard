@@ -1,0 +1,19 @@
+{
+  "model": "[3dio-ai/svale-110M](https://huggingface.co/3dio-ai/svale-110M)",
+  "params_b": 0.113,
+  "coral_conversation_wer": 26.69,
+  "coral_read_aloud_wer": 11.5,
+  "cv17_da_wer": 9.52,
+  "fleurs_da_wer": 9.53,
+  "ftspeech_wer": 7.33,
+  "mean_wer": 12.91,
+  "coral_conversation_cer": 16.61,
+  "coral_read_aloud_cer": 4.39,
+  "cv17_da_cer": 3.27,
+  "fleurs_da_cer": 3.54,
+  "ftspeech_cer": 4.06,
+  "mean_cer": 6.37,
+  "speed_x": 480.7,
+  "submitted": "2026-09-09",
+  "access": "open"
+}
