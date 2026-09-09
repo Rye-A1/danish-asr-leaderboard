@@ -1,0 +1,18 @@
+{
+  "model": "3dio-ai/svale-600M",
+  "model_link": "[3dio-ai/svale-600M](https://huggingface.co/3dio-ai/svale-600M)",
+  "params_b": 0.6,
+  "access": "open",
+  "submitted": "2026-09-09",
+  "unicode_form": "NFC",
+  "number_words": true,
+  "filler_words": false,
+  "speed_x": 183.4,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}
