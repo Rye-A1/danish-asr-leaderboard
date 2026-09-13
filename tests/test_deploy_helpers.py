@@ -1,5 +1,6 @@
 """Unit tests for update_space.py helper functions (no network required)."""
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -201,6 +202,22 @@ def test_index_html_still_has_the_marker_and_head():
     src = SPACE_INDEX.read_text(encoding="utf-8")
     assert SEO_MARKER in src
     assert "</head>" in src
+
+def test_leaderboard_json_carries_a_release_date_field_on_every_row():
+    """The Over Time chart plots `released`, so the key has to be on every row.
+
+    The value may legitimately be "" — a hosted API with no published release
+    date and no HF repo to read one from. Those rows are left off the chart and
+    counted in the panel rather than given a guessed date, so an empty string is
+    a real state and not a failure; a *missing key* is the regression.
+    """
+    data = json.loads((SPACE_INDEX.parent / "leaderboard.json").read_text(encoding="utf-8"))
+    for table in ("wer", "cer"):
+        assert data[table], table
+        for row in data[table]:
+            assert "released" in row, f"{table}: {row['name']}"
+            assert row["released"] == "" or re.fullmatch(r"\d{4}-\d{2}-\d{2}", row["released"]), (
+                f"{table}: {row['name']} -> {row['released']!r}")
 
 
 def test_bake_injects_into_head_and_marker():

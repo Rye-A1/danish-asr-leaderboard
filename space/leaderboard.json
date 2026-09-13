@@ -1,176 +1,475 @@
 {
-  "updated": "2026-06-21",
-  "org_logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/651e9c3d8645f13f18eb3af4/a3ql0LOFwgl3l89Y17NGO.png",
+  "updated": "2026-09-10",
   "wer": [
     {
       "rank": 1,
-      "name": "syvai/hviske-v5",
-      "url": "https://huggingface.co/syvai/hviske-v5",
-      "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
-      "access": "open",
-      "size": "2.0",
-      "submitted": "2026-05-07",
-      "mean_wer": 13.74,
-      "mean_cer": 6.26,
-      "speed_x": 236.4,
-      "coral_conversation_wer": 25.43,
-      "coral_read_aloud_wer": 15.57,
-      "ftspeech_wer": 7.45,
-      "cv17_da_wer": 10.18,
-      "fleurs_da_wer": 10.09
+      "name": "syv-transcribe",
+      "url": "https://syv.ai",
+      "logo": "https://syv.ai/_next/image?url=%2F7.png&w=256&q=75",
+      "access": "proprietary",
+      "license": "",
+      "size": "2.1",
+      "submitted": "2026-06-23",
+      "released": "2026-04-28",
+      "mean_wer": 11.05,
+      "mean_cer": 5.22,
+      "speed_x": null,
+      "coral_conversation_wer": 20.25,
+      "coral_read_aloud_wer": 9.97,
+      "ftspeech_wer": 7.99,
+      "cv17_da_wer": 7.95,
+      "fleurs_da_wer": 9.07,
+      "mean_wer_ci": {
+        "lo": 10.84,
+        "hi": 11.25
+      },
+      "mean_cer_ci": {
+        "lo": 5.09,
+        "hi": 5.34
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 19.81,
+        "hi": 20.72
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 9.71,
+        "hi": 10.24
+      },
+      "ftspeech_wer_ci": {
+        "lo": 7.72,
+        "hi": 8.28
+      },
+      "cv17_da_wer_ci": {
+        "lo": 7.45,
+        "hi": 8.49
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 8.32,
+        "hi": 9.68
+      }
     },
     {
       "rank": 2,
-      "name": "syvai/hviske-v5.3",
-      "url": "https://huggingface.co/syvai/hviske-v5.3",
-      "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
+      "name": "thorh/whisper-large-v3-turbo-danish",
+      "url": "https://huggingface.co/thorh/whisper-large-v3-turbo-danish",
+      "logo": "",
       "access": "open",
-      "size": "2.0",
-      "submitted": "2026-05-07",
-      "mean_wer": 14.75,
-      "mean_cer": 8.17,
-      "speed_x": 219.5,
-      "coral_conversation_wer": 19.73,
-      "coral_read_aloud_wer": 9.76,
-      "ftspeech_wer": 23.58,
-      "cv17_da_wer": 10.54,
-      "fleurs_da_wer": 10.13
+      "license": "mit",
+      "size": "0.8",
+      "submitted": "2026-09-06",
+      "released": "2026-09-06",
+      "mean_wer": 11.51,
+      "mean_cer": 5.44,
+      "speed_x": 33.0,
+      "coral_conversation_wer": 20.05,
+      "coral_read_aloud_wer": 12.93,
+      "ftspeech_wer": 7.39,
+      "cv17_da_wer": 8.24,
+      "fleurs_da_wer": 8.96,
+      "mean_wer_ci": {
+        "lo": 11.26,
+        "hi": 11.82
+      },
+      "mean_cer_ci": {
+        "lo": 5.23,
+        "hi": 5.69
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 19.54,
+        "hi": 20.62
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 12.65,
+        "hi": 13.23
+      },
+      "ftspeech_wer_ci": {
+        "lo": 7.02,
+        "hi": 7.79
+      },
+      "cv17_da_wer_ci": {
+        "lo": 7.73,
+        "hi": 8.75
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 8.0,
+        "hi": 10.21
+      }
     },
     {
       "rank": 3,
-      "name": "capacit-ai/saga",
-      "url": "https://huggingface.co/capacit-ai/saga",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/69b7cdab8f61eb5ff23c91db/Rr6Mwd7dYmooItMGUE6mH.png",
+      "name": "3dio-ai/svale-600M",
+      "url": "https://huggingface.co/3dio-ai/svale-600M",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/688a8f052b96413f38782e72/jLECs-GZtkY_ldt68Hkwr.png",
       "access": "open",
-      "size": "1.7",
-      "submitted": "2026-04-23",
-      "mean_wer": 19.59,
-      "mean_cer": 9.83,
-      "speed_x": 15.2,
-      "coral_conversation_wer": 27.97,
-      "coral_read_aloud_wer": 17.93,
-      "ftspeech_wer": 22.63,
-      "cv17_da_wer": 16.05,
-      "fleurs_da_wer": 13.35
+      "license": "other",
+      "size": "0.6",
+      "submitted": "2026-09-10",
+      "released": "2026-09-09",
+      "mean_wer": 12.68,
+      "mean_cer": 5.75,
+      "speed_x": 258.5,
+      "coral_conversation_wer": 21.52,
+      "coral_read_aloud_wer": 15.51,
+      "ftspeech_wer": 7.33,
+      "cv17_da_wer": 8.79,
+      "fleurs_da_wer": 10.25,
+      "mean_wer_ci": {
+        "lo": 12.49,
+        "hi": 12.9
+      },
+      "mean_cer_ci": {
+        "lo": 5.64,
+        "hi": 5.86
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 21.05,
+        "hi": 22.01
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 15.2,
+        "hi": 15.83
+      },
+      "ftspeech_wer_ci": {
+        "lo": 7.09,
+        "hi": 7.57
+      },
+      "cv17_da_wer_ci": {
+        "lo": 8.3,
+        "hi": 9.3
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 9.58,
+        "hi": 10.91
+      }
     },
     {
       "rank": 4,
+      "name": "3dio-ai/svale-110M",
+      "url": "https://huggingface.co/3dio-ai/svale-110M",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/688a8f052b96413f38782e72/jLECs-GZtkY_ldt68Hkwr.png",
+      "access": "open",
+      "license": "other",
+      "size": "0.1",
+      "submitted": "2026-09-10",
+      "released": "2026-09-09",
+      "mean_wer": 12.93,
+      "mean_cer": 6.38,
+      "speed_x": 400.9,
+      "coral_conversation_wer": 26.69,
+      "coral_read_aloud_wer": 11.49,
+      "ftspeech_wer": 7.33,
+      "cv17_da_wer": 9.52,
+      "fleurs_da_wer": 9.6,
+      "mean_wer_ci": {
+        "lo": 12.72,
+        "hi": 13.15
+      },
+      "mean_cer_ci": {
+        "lo": 6.26,
+        "hi": 6.51
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 26.19,
+        "hi": 27.27
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 11.21,
+        "hi": 11.81
+      },
+      "ftspeech_wer_ci": {
+        "lo": 7.09,
+        "hi": 7.59
+      },
+      "cv17_da_wer_ci": {
+        "lo": 8.91,
+        "hi": 10.09
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 8.95,
+        "hi": 10.25
+      }
+    },
+    {
+      "rank": 5,
       "name": "scribe_v2",
       "url": "https://elevenlabs.io/docs/capabilities/speech-to-text",
       "logo": "https://elevenlabs.io/_next/image?url=https%3A%2F%2Feleven-public-cdn.elevenlabs.io%2Fpayloadcms%2Felevenlabs-official-logo-11-icon.webp&w=1920&q=95",
       "access": "proprietary",
+      "license": "",
       "size": "—",
-      "submitted": "2026-05-25",
-      "mean_wer": 20.38,
-      "mean_cer": 11.33,
-      "speed_x": 9.0,
-      "coral_conversation_wer": 44.16,
-      "coral_read_aloud_wer": 22.96,
-      "ftspeech_wer": 14.9,
-      "cv17_da_wer": 13.3,
-      "fleurs_da_wer": 6.56
+      "submitted": "2026-06-24",
+      "released": "2026-01-09",
+      "mean_wer": 13.4,
+      "mean_cer": 7.07,
+      "speed_x": null,
+      "coral_conversation_wer": 29.22,
+      "coral_read_aloud_wer": 16.99,
+      "ftspeech_wer": 10.24,
+      "cv17_da_wer": 5.49,
+      "fleurs_da_wer": 5.04,
+      "mean_wer_ci": {
+        "lo": 13.19,
+        "hi": 13.59
+      },
+      "mean_cer_ci": {
+        "lo": 6.94,
+        "hi": 7.19
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 28.64,
+        "hi": 29.84
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 16.59,
+        "hi": 17.41
+      },
+      "ftspeech_wer_ci": {
+        "lo": 9.94,
+        "hi": 10.53
+      },
+      "cv17_da_wer_ci": {
+        "lo": 5.02,
+        "hi": 5.96
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 4.57,
+        "hi": 5.47
+      }
     },
     {
-      "rank": 5,
+      "rank": 6,
+      "name": "syvai/hviske-v5",
+      "url": "https://huggingface.co/syvai/hviske-v5",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
+      "access": "open",
+      "license": "cc-by-nc-4.0",
+      "size": "2.0",
+      "submitted": "2026-06-23",
+      "released": "2026-04-11",
+      "mean_wer": 13.6,
+      "mean_cer": 6.23,
+      "speed_x": 155.8,
+      "coral_conversation_wer": 25.43,
+      "coral_read_aloud_wer": 14.94,
+      "ftspeech_wer": 7.44,
+      "cv17_da_wer": 10.18,
+      "fleurs_da_wer": 10.0,
+      "mean_wer_ci": {
+        "lo": 13.35,
+        "hi": 13.84
+      },
+      "mean_cer_ci": {
+        "lo": 6.08,
+        "hi": 6.36
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 24.7,
+        "hi": 26.32
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 14.61,
+        "hi": 15.26
+      },
+      "ftspeech_wer_ci": {
+        "lo": 7.2,
+        "hi": 7.69
+      },
+      "cv17_da_wer_ci": {
+        "lo": 9.59,
+        "hi": 10.78
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 9.27,
+        "hi": 10.55
+      }
+    },
+    {
+      "rank": 7,
       "name": "CoRal-project/roest-v3-whisper-1.5b",
       "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
       "access": "open",
+      "license": "openrail",
       "size": "1.5",
-      "submitted": "2026-04-23",
-      "mean_wer": 21.33,
-      "mean_cer": 12.85,
-      "speed_x": 11.5,
-      "coral_conversation_wer": 31.55,
-      "coral_read_aloud_wer": 16.4,
-      "ftspeech_wer": 30.18,
-      "cv17_da_wer": 18.21,
-      "fleurs_da_wer": 10.29
-    },
-    {
-      "rank": 6,
-      "name": "mistralai/Voxtral-Small-24B-2507",
-      "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
-      "access": "open",
-      "size": "24.0",
-      "submitted": "2026-05-08",
-      "mean_wer": 21.4,
-      "mean_cer": 11.59,
-      "speed_x": 4.8,
-      "coral_conversation_wer": 40.86,
-      "coral_read_aloud_wer": 25.29,
-      "ftspeech_wer": 17.52,
-      "cv17_da_wer": 14.65,
-      "fleurs_da_wer": 8.67
-    },
-    {
-      "rank": 7,
-      "name": "gpt-4o-mini-transcribe-benchmark",
-      "url": "https://platform.openai.com/docs/guides/speech-to-text",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
-      "access": "proprietary",
-      "size": "—",
-      "submitted": "2026-05-26",
-      "mean_wer": 21.56,
-      "mean_cer": 13.96,
-      "speed_x": 8.1,
-      "coral_conversation_wer": 49.02,
-      "coral_read_aloud_wer": 19.41,
-      "ftspeech_wer": 20.92,
-      "cv17_da_wer": 12.25,
-      "fleurs_da_wer": 6.22
+      "submitted": "2026-06-23",
+      "released": "2026-01-11",
+      "mean_wer": 13.92,
+      "mean_cer": 6.74,
+      "speed_x": 13.5,
+      "coral_conversation_wer": 21.08,
+      "coral_read_aloud_wer": 12.36,
+      "ftspeech_wer": 15.68,
+      "cv17_da_wer": 10.57,
+      "fleurs_da_wer": 9.89,
+      "mean_wer_ci": {
+        "lo": 13.65,
+        "hi": 14.16
+      },
+      "mean_cer_ci": {
+        "lo": 6.55,
+        "hi": 6.92
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 20.59,
+        "hi": 21.62
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 12.07,
+        "hi": 12.66
+      },
+      "ftspeech_wer_ci": {
+        "lo": 15.04,
+        "hi": 16.52
+      },
+      "cv17_da_wer_ci": {
+        "lo": 9.98,
+        "hi": 11.1
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 9.13,
+        "hi": 10.47
+      }
     },
     {
       "rank": 8,
-      "name": "gpt-4o-transcribe-benchmark",
-      "url": "https://platform.openai.com/docs/guides/speech-to-text",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
-      "access": "proprietary",
-      "size": "—",
-      "submitted": "2026-05-25",
-      "mean_wer": 21.59,
-      "mean_cer": 13.98,
-      "speed_x": 8.2,
-      "coral_conversation_wer": 48.64,
-      "coral_read_aloud_wer": 19.4,
-      "ftspeech_wer": 21.39,
-      "cv17_da_wer": 12.2,
-      "fleurs_da_wer": 6.32
+      "name": "syvai/hviske-v5-tiny",
+      "url": "https://huggingface.co/syvai/hviske-v5-tiny",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
+      "access": "open",
+      "license": "cc-by-nc-4.0",
+      "size": "0.3",
+      "submitted": "2026-08-14",
+      "released": "2026-08-11",
+      "mean_wer": 14.12,
+      "mean_cer": 6.92,
+      "speed_x": 200.3,
+      "coral_conversation_wer": 26.12,
+      "coral_read_aloud_wer": 14.77,
+      "ftspeech_wer": 7.15,
+      "cv17_da_wer": 11.26,
+      "fleurs_da_wer": 11.31,
+      "mean_wer_ci": {
+        "lo": 13.87,
+        "hi": 14.39
+      },
+      "mean_cer_ci": {
+        "lo": 6.76,
+        "hi": 7.06
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 25.49,
+        "hi": 26.9
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 14.3,
+        "hi": 15.39
+      },
+      "ftspeech_wer_ci": {
+        "lo": 6.92,
+        "hi": 7.41
+      },
+      "cv17_da_wer_ci": {
+        "lo": 10.61,
+        "hi": 11.92
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 10.57,
+        "hi": 12.0
+      }
     },
     {
       "rank": 9,
-      "name": "openai/whisper-large-v3",
-      "url": "https://huggingface.co/openai/whisper-large-v3",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
+      "name": "syvai/hviske-v5.3",
+      "url": "https://huggingface.co/syvai/hviske-v5.3",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
       "access": "open",
+      "license": "cc-by-nc-4.0",
       "size": "2.0",
-      "submitted": "2026-04-22",
-      "mean_wer": 22.35,
-      "mean_cer": 11.66,
-      "speed_x": 11.9,
-      "coral_conversation_wer": 40.15,
-      "coral_read_aloud_wer": 27.6,
-      "ftspeech_wer": 17.92,
-      "cv17_da_wer": 13.96,
-      "fleurs_da_wer": 12.13
+      "submitted": "2026-06-23",
+      "released": "2026-04-28",
+      "mean_wer": 14.42,
+      "mean_cer": 7.99,
+      "speed_x": 153.1,
+      "coral_conversation_wer": 19.68,
+      "coral_read_aloud_wer": 9.35,
+      "ftspeech_wer": 22.66,
+      "cv17_da_wer": 10.32,
+      "fleurs_da_wer": 10.1,
+      "mean_wer_ci": {
+        "lo": 14.1,
+        "hi": 14.77
+      },
+      "mean_cer_ci": {
+        "lo": 7.75,
+        "hi": 8.24
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 19.24,
+        "hi": 20.15
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 9.08,
+        "hi": 9.61
+      },
+      "ftspeech_wer_ci": {
+        "lo": 21.57,
+        "hi": 23.93
+      },
+      "cv17_da_wer_ci": {
+        "lo": 9.8,
+        "hi": 10.91
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 9.27,
+        "hi": 10.97
+      }
     },
     {
       "rank": 10,
-      "name": "CoRal-project/roest-v2-wav2vec2-2B",
-      "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
+      "name": "syvai/hviske-v5.1",
+      "url": "https://huggingface.co/syvai/hviske-v5.1",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
       "access": "open",
-      "size": "2.0",
-      "submitted": "2026-04-26",
-      "mean_wer": 23.83,
-      "mean_cer": 9.19,
-      "speed_x": 39.4,
-      "coral_conversation_wer": 35.5,
-      "coral_read_aloud_wer": 25.05,
-      "ftspeech_wer": 24.09,
-      "cv17_da_wer": 17.13,
-      "fleurs_da_wer": 17.36
+      "license": "cc-by-nc-4.0",
+      "size": "2.1",
+      "submitted": "2026-06-23",
+      "released": "2026-04-23",
+      "mean_wer": 16.38,
+      "mean_cer": 7.75,
+      "speed_x": 144.9,
+      "coral_conversation_wer": 33.54,
+      "coral_read_aloud_wer": 17.91,
+      "ftspeech_wer": 8.05,
+      "cv17_da_wer": 11.25,
+      "fleurs_da_wer": 11.17,
+      "mean_wer_ci": {
+        "lo": 15.84,
+        "hi": 17.01
+      },
+      "mean_cer_ci": {
+        "lo": 7.39,
+        "hi": 8.11
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 31.37,
+        "hi": 36.09
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 17.57,
+        "hi": 18.25
+      },
+      "ftspeech_wer_ci": {
+        "lo": 7.8,
+        "hi": 8.34
+      },
+      "cv17_da_wer_ci": {
+        "lo": 10.67,
+        "hi": 11.86
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 10.0,
+        "hi": 12.74
+      }
     },
     {
       "rank": 11,
@@ -178,631 +477,2529 @@
       "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
       "access": "open",
+      "license": "openrail",
       "size": "0.3",
-      "submitted": "2026-04-23",
-      "mean_wer": 24.14,
-      "mean_cer": 9.0,
-      "speed_x": 113.8,
-      "coral_conversation_wer": 30.68,
-      "coral_read_aloud_wer": 26.14,
-      "ftspeech_wer": 23.42,
-      "cv17_da_wer": 18.88,
-      "fleurs_da_wer": 21.59
+      "submitted": "2026-06-24",
+      "released": "2025-12-22",
+      "mean_wer": 17.61,
+      "mean_cer": 7.77,
+      "speed_x": 355.1,
+      "coral_conversation_wer": 25.92,
+      "coral_read_aloud_wer": 16.26,
+      "ftspeech_wer": 17.54,
+      "cv17_da_wer": 13.69,
+      "fleurs_da_wer": 14.63,
+      "mean_wer_ci": {
+        "lo": 17.35,
+        "hi": 17.86
+      },
+      "mean_cer_ci": {
+        "lo": 7.65,
+        "hi": 7.9
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 25.5,
+        "hi": 26.39
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 15.94,
+        "hi": 16.63
+      },
+      "ftspeech_wer_ci": {
+        "lo": 17.19,
+        "hi": 17.91
+      },
+      "cv17_da_wer_ci": {
+        "lo": 13.03,
+        "hi": 14.39
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 13.8,
+        "hi": 15.38
+      }
     },
     {
       "rank": 12,
-      "name": "syvai/hviske-v3-conversation",
-      "url": "https://huggingface.co/syvai/hviske-v3-conversation",
-      "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
+      "name": "CoRal-project/roest-v2-wav2vec2-2B",
+      "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
       "access": "open",
+      "license": "openrail",
       "size": "2.0",
-      "submitted": "2026-04-23",
-      "mean_wer": 24.65,
-      "mean_cer": 13.53,
-      "speed_x": 12.7,
-      "coral_conversation_wer": 35.41,
-      "coral_read_aloud_wer": 25.33,
-      "ftspeech_wer": 23.62,
-      "cv17_da_wer": 22.02,
-      "fleurs_da_wer": 16.87
+      "submitted": "2026-06-24",
+      "released": "2025-06-23",
+      "mean_wer": 17.65,
+      "mean_cer": 8.01,
+      "speed_x": 32.9,
+      "coral_conversation_wer": 29.92,
+      "coral_read_aloud_wer": 16.19,
+      "ftspeech_wer": 17.5,
+      "cv17_da_wer": 12.21,
+      "fleurs_da_wer": 12.41,
+      "mean_wer_ci": {
+        "lo": 17.4,
+        "hi": 17.88
+      },
+      "mean_cer_ci": {
+        "lo": 7.87,
+        "hi": 8.13
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 29.42,
+        "hi": 30.48
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 15.85,
+        "hi": 16.57
+      },
+      "ftspeech_wer_ci": {
+        "lo": 17.12,
+        "hi": 17.89
+      },
+      "cv17_da_wer_ci": {
+        "lo": 11.59,
+        "hi": 12.83
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 11.66,
+        "hi": 13.13
+      }
     },
     {
       "rank": 13,
+      "name": "MediaCatch/xls-r-300m-danish-mc-v2",
+      "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/63358001686c20e55973298d/9Rf_R1sNBFnVlHc5n5x2M.jpeg",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "0.3",
+      "submitted": "2026-08-20",
+      "released": "2025-09-29",
+      "mean_wer": 17.85,
+      "mean_cer": 8.87,
+      "speed_x": 164.2,
+      "coral_conversation_wer": 32.42,
+      "coral_read_aloud_wer": 23.2,
+      "ftspeech_wer": 12.62,
+      "cv17_da_wer": 8.71,
+      "fleurs_da_wer": 12.31,
+      "mean_wer_ci": {
+        "lo": 17.6,
+        "hi": 18.09
+      },
+      "mean_cer_ci": {
+        "lo": 8.71,
+        "hi": 9.0
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 31.89,
+        "hi": 32.98
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 22.75,
+        "hi": 23.65
+      },
+      "ftspeech_wer_ci": {
+        "lo": 12.31,
+        "hi": 12.93
+      },
+      "cv17_da_wer_ci": {
+        "lo": 8.15,
+        "hi": 9.31
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 11.47,
+        "hi": 13.04
+      }
+    },
+    {
+      "rank": 14,
       "name": "CoRal-project/roest-v2-wav2vec2-1B",
       "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
       "access": "open",
+      "license": "openrail",
       "size": "1.0",
-      "submitted": "2026-04-26",
-      "mean_wer": 25.04,
-      "mean_cer": 9.7,
-      "speed_x": 60.6,
-      "coral_conversation_wer": 37.24,
-      "coral_read_aloud_wer": 25.93,
-      "ftspeech_wer": 24.96,
-      "cv17_da_wer": 17.94,
-      "fleurs_da_wer": 19.15
-    },
-    {
-      "rank": 14,
-      "name": "mistralai/Voxtral-Mini-3B-2507",
-      "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
-      "access": "open",
-      "size": "3.0",
-      "submitted": "2026-05-07",
-      "mean_wer": 26.06,
-      "mean_cer": 14.07,
-      "speed_x": 16.3,
-      "coral_conversation_wer": 46.81,
-      "coral_read_aloud_wer": 31.03,
-      "ftspeech_wer": 20.85,
-      "cv17_da_wer": 18.65,
-      "fleurs_da_wer": 12.96
+      "submitted": "2026-06-24",
+      "released": "2025-04-25",
+      "mean_wer": 18.45,
+      "mean_cer": 8.57,
+      "speed_x": 62.4,
+      "coral_conversation_wer": 31.49,
+      "coral_read_aloud_wer": 16.64,
+      "ftspeech_wer": 17.99,
+      "cv17_da_wer": 12.66,
+      "fleurs_da_wer": 13.47,
+      "mean_wer_ci": {
+        "lo": 18.2,
+        "hi": 18.7
+      },
+      "mean_cer_ci": {
+        "lo": 8.43,
+        "hi": 8.7
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 30.98,
+        "hi": 32.03
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 16.29,
+        "hi": 17.0
+      },
+      "ftspeech_wer_ci": {
+        "lo": 17.62,
+        "hi": 18.38
+      },
+      "cv17_da_wer_ci": {
+        "lo": 12.01,
+        "hi": 13.31
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 12.66,
+        "hi": 14.25
+      }
     },
     {
       "rank": 15,
-      "name": "openai/whisper-large-v3-turbo",
-      "url": "https://huggingface.co/openai/whisper-large-v3-turbo",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
+      "name": "syvai/hviske-v3-conversation",
+      "url": "https://huggingface.co/syvai/hviske-v3-conversation",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
       "access": "open",
-      "size": "0.8",
-      "submitted": "2026-04-22",
-      "mean_wer": 27.13,
-      "mean_cer": 14.72,
-      "speed_x": 28.8,
-      "coral_conversation_wer": 54.56,
-      "coral_read_aloud_wer": 32.38,
-      "ftspeech_wer": 19.07,
-      "cv17_da_wer": 16.43,
-      "fleurs_da_wer": 13.19
+      "license": "",
+      "size": "2.0",
+      "submitted": "2026-06-23",
+      "released": "2025-07-01",
+      "mean_wer": 18.77,
+      "mean_cer": 8.87,
+      "speed_x": 13.6,
+      "coral_conversation_wer": 25.09,
+      "coral_read_aloud_wer": 20.6,
+      "ftspeech_wer": 18.99,
+      "cv17_da_wer": 14.96,
+      "fleurs_da_wer": 14.19,
+      "mean_wer_ci": {
+        "lo": 18.46,
+        "hi": 19.05
+      },
+      "mean_cer_ci": {
+        "lo": 8.67,
+        "hi": 9.04
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 24.57,
+        "hi": 25.64
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 20.19,
+        "hi": 21.02
+      },
+      "ftspeech_wer_ci": {
+        "lo": 18.51,
+        "hi": 19.47
+      },
+      "cv17_da_wer_ci": {
+        "lo": 14.26,
+        "hi": 15.63
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 13.23,
+        "hi": 15.17
+      }
     },
     {
       "rank": 16,
+      "name": "capacit-ai/saga",
+      "url": "https://huggingface.co/capacit-ai/saga",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/69b7cdab8f61eb5ff23c91db/Rr6Mwd7dYmooItMGUE6mH.png",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "1.7",
+      "submitted": "2026-06-24",
+      "released": "2026-03-30",
+      "mean_wer": 19.18,
+      "mean_cer": 9.62,
+      "speed_x": 38.1,
+      "coral_conversation_wer": 27.98,
+      "coral_read_aloud_wer": 17.26,
+      "ftspeech_wer": 21.67,
+      "cv17_da_wer": 15.79,
+      "fleurs_da_wer": 13.21,
+      "mean_wer_ci": {
+        "lo": 18.93,
+        "hi": 19.44
+      },
+      "mean_cer_ci": {
+        "lo": 9.45,
+        "hi": 9.77
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 27.46,
+        "hi": 28.59
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 16.91,
+        "hi": 17.61
+      },
+      "ftspeech_wer_ci": {
+        "lo": 21.12,
+        "hi": 22.26
+      },
+      "cv17_da_wer_ci": {
+        "lo": 15.11,
+        "hi": 16.47
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 12.47,
+        "hi": 13.92
+      }
+    },
+    {
+      "rank": 17,
+      "name": "nvidia/parakeet-rnnt-110m-da-dk",
+      "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
+      "access": "open",
+      "license": "other",
+      "size": "0.1",
+      "submitted": "2026-06-22",
+      "released": "2025-05-28",
+      "mean_wer": 19.92,
+      "mean_cer": 11.49,
+      "speed_x": 703.5,
+      "coral_conversation_wer": 50.87,
+      "coral_read_aloud_wer": 11.37,
+      "ftspeech_wer": 17.04,
+      "cv17_da_wer": 9.93,
+      "fleurs_da_wer": 10.39,
+      "mean_wer_ci": {
+        "lo": 19.67,
+        "hi": 20.17
+      },
+      "mean_cer_ci": {
+        "lo": 11.33,
+        "hi": 11.64
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 50.18,
+        "hi": 51.61
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 11.08,
+        "hi": 11.68
+      },
+      "ftspeech_wer_ci": {
+        "lo": 16.57,
+        "hi": 17.55
+      },
+      "cv17_da_wer_ci": {
+        "lo": 9.35,
+        "hi": 10.52
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 9.72,
+        "hi": 11.01
+      }
+    },
+    {
+      "rank": 18,
+      "name": "mistralai/Voxtral-Small-24B-2507",
+      "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "24.0",
+      "submitted": "2026-06-25",
+      "released": "2025-07-01",
+      "mean_wer": 20.99,
+      "mean_cer": 11.28,
+      "speed_x": 21.9,
+      "coral_conversation_wer": 40.56,
+      "coral_read_aloud_wer": 24.85,
+      "ftspeech_wer": 16.49,
+      "cv17_da_wer": 14.5,
+      "fleurs_da_wer": 8.54,
+      "mean_wer_ci": {
+        "lo": 20.64,
+        "hi": 21.34
+      },
+      "mean_cer_ci": {
+        "lo": 11.05,
+        "hi": 11.5
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 39.8,
+        "hi": 41.39
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 24.12,
+        "hi": 25.61
+      },
+      "ftspeech_wer_ci": {
+        "lo": 16.07,
+        "hi": 16.87
+      },
+      "cv17_da_wer_ci": {
+        "lo": 13.54,
+        "hi": 15.6
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 7.91,
+        "hi": 9.17
+      }
+    },
+    {
+      "rank": 19,
+      "name": "gpt-4o-mini-transcribe",
+      "url": "https://platform.openai.com/docs/guides/speech-to-text",
+      "logo": "https://developers.openai.com/favicon.png",
+      "access": "proprietary",
+      "license": "",
+      "size": "—",
+      "submitted": "2026-06-24",
+      "released": "2025-03-20",
+      "mean_wer": 21.15,
+      "mean_cer": 13.66,
+      "speed_x": null,
+      "coral_conversation_wer": 48.58,
+      "coral_read_aloud_wer": 18.69,
+      "ftspeech_wer": 20.25,
+      "cv17_da_wer": 12.14,
+      "fleurs_da_wer": 6.09,
+      "mean_wer_ci": {
+        "lo": 20.88,
+        "hi": 21.41
+      },
+      "mean_cer_ci": {
+        "lo": 13.44,
+        "hi": 13.83
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 47.89,
+        "hi": 49.3
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 18.26,
+        "hi": 19.09
+      },
+      "ftspeech_wer_ci": {
+        "lo": 19.66,
+        "hi": 20.88
+      },
+      "cv17_da_wer_ci": {
+        "lo": 11.47,
+        "hi": 12.78
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 5.57,
+        "hi": 6.58
+      }
+    },
+    {
+      "rank": 20,
+      "name": "gpt-4o-transcribe",
+      "url": "https://platform.openai.com/docs/guides/speech-to-text",
+      "logo": "https://developers.openai.com/favicon.png",
+      "access": "proprietary",
+      "license": "",
+      "size": "—",
+      "submitted": "2026-06-24",
+      "released": "2025-03-20",
+      "mean_wer": 21.17,
+      "mean_cer": 14.61,
+      "speed_x": null,
+      "coral_conversation_wer": 48.52,
+      "coral_read_aloud_wer": 18.73,
+      "ftspeech_wer": 20.42,
+      "cv17_da_wer": 12.1,
+      "fleurs_da_wer": 6.1,
+      "mean_wer_ci": {
+        "lo": 20.9,
+        "hi": 21.44
+      },
+      "mean_cer_ci": {
+        "lo": 13.49,
+        "hi": 16.63
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 47.8,
+        "hi": 49.28
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 18.32,
+        "hi": 19.14
+      },
+      "ftspeech_wer_ci": {
+        "lo": 19.8,
+        "hi": 21.08
+      },
+      "cv17_da_wer_ci": {
+        "lo": 11.44,
+        "hi": 12.72
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 5.59,
+        "hi": 6.62
+      }
+    },
+    {
+      "rank": 21,
+      "name": "ordbogen/whisper",
+      "url": "https://odincore.ai/docs/models/ordbogen-whisper",
+      "logo": "https://odincore.ai/apple-touch-icon.png",
+      "access": "proprietary",
+      "license": "",
+      "size": "—",
+      "submitted": "2026-08-27",
+      "released": "2026-04-28",
+      "mean_wer": 23.94,
+      "mean_cer": 12.81,
+      "speed_x": null,
+      "coral_conversation_wer": 45.2,
+      "coral_read_aloud_wer": 28.87,
+      "ftspeech_wer": 18.46,
+      "cv17_da_wer": 14.86,
+      "fleurs_da_wer": 12.32,
+      "mean_wer_ci": {
+        "lo": 23.56,
+        "hi": 24.38
+      },
+      "mean_cer_ci": {
+        "lo": 12.46,
+        "hi": 13.16
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 43.84,
+        "hi": 46.79
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 28.27,
+        "hi": 29.5
+      },
+      "ftspeech_wer_ci": {
+        "lo": 17.61,
+        "hi": 19.5
+      },
+      "cv17_da_wer_ci": {
+        "lo": 14.15,
+        "hi": 15.56
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 11.61,
+        "hi": 13.07
+      }
+    },
+    {
+      "rank": 22,
+      "name": "openai/whisper-large-v3",
+      "url": "https://huggingface.co/openai/whisper-large-v3",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "2.0",
+      "submitted": "2026-06-23",
+      "released": "2023-11-07",
+      "mean_wer": 24.05,
+      "mean_cer": 13.62,
+      "speed_x": 11.2,
+      "coral_conversation_wer": 49.51,
+      "coral_read_aloud_wer": 26.88,
+      "ftspeech_wer": 16.49,
+      "cv17_da_wer": 14.52,
+      "fleurs_da_wer": 12.83,
+      "mean_wer_ci": {
+        "lo": 23.17,
+        "hi": 25.05
+      },
+      "mean_cer_ci": {
+        "lo": 12.8,
+        "hi": 14.57
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 46.54,
+        "hi": 52.9
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 26.19,
+        "hi": 27.57
+      },
+      "ftspeech_wer_ci": {
+        "lo": 15.69,
+        "hi": 17.57
+      },
+      "cv17_da_wer_ci": {
+        "lo": 13.2,
+        "hi": 16.59
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 10.95,
+        "hi": 15.91
+      }
+    },
+    {
+      "rank": 23,
       "name": "nvidia/canary-1b-v2",
       "url": "https://huggingface.co/nvidia/canary-1b-v2",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
       "access": "open",
+      "license": "cc-by-4.0",
       "size": "1.0",
-      "submitted": "2026-04-23",
-      "mean_wer": 27.95,
-      "mean_cer": 23.13,
-      "speed_x": 138.2,
-      "coral_conversation_wer": 60.01,
-      "coral_read_aloud_wer": 30.62,
-      "ftspeech_wer": 21.95,
-      "cv17_da_wer": 15.4,
-      "fleurs_da_wer": 11.78
+      "submitted": "2026-06-22",
+      "released": "2025-08-04",
+      "mean_wer": 24.83,
+      "mean_cer": 13.99,
+      "speed_x": 87.3,
+      "coral_conversation_wer": 47.12,
+      "coral_read_aloud_wer": 29.46,
+      "ftspeech_wer": 20.99,
+      "cv17_da_wer": 15.05,
+      "fleurs_da_wer": 11.52,
+      "mean_wer_ci": {
+        "lo": 24.47,
+        "hi": 25.18
+      },
+      "mean_cer_ci": {
+        "lo": 13.7,
+        "hi": 14.21
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 46.18,
+        "hi": 47.93
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 28.76,
+        "hi": 30.27
+      },
+      "ftspeech_wer_ci": {
+        "lo": 20.09,
+        "hi": 21.94
+      },
+      "cv17_da_wer_ci": {
+        "lo": 14.35,
+        "hi": 15.75
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 10.84,
+        "hi": 12.24
+      }
     },
     {
-      "rank": 17,
+      "rank": 24,
+      "name": "mistralai/Voxtral-Mini-3B-2507",
+      "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "3.0",
+      "submitted": "2026-06-25",
+      "released": "2025-07-01",
+      "mean_wer": 25.65,
+      "mean_cer": 13.8,
+      "speed_x": 43.9,
+      "coral_conversation_wer": 46.73,
+      "coral_read_aloud_wer": 30.07,
+      "ftspeech_wer": 20.15,
+      "cv17_da_wer": 18.45,
+      "fleurs_da_wer": 12.86,
+      "mean_wer_ci": {
+        "lo": 25.18,
+        "hi": 26.12
+      },
+      "mean_cer_ci": {
+        "lo": 13.46,
+        "hi": 14.13
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 45.17,
+        "hi": 48.5
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 29.54,
+        "hi": 30.57
+      },
+      "ftspeech_wer_ci": {
+        "lo": 19.06,
+        "hi": 21.51
+      },
+      "cv17_da_wer_ci": {
+        "lo": 17.59,
+        "hi": 19.22
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 12.13,
+        "hi": 13.51
+      }
+    },
+    {
+      "rank": 25,
+      "name": "gpt-transcribe",
+      "url": "https://developers.openai.com/api/docs/models/gpt-transcribe",
+      "logo": "https://developers.openai.com/favicon.png",
+      "access": "proprietary",
+      "license": "",
+      "size": "—",
+      "submitted": "2026-08-27",
+      "released": "2026-07-29",
+      "mean_wer": 26.38,
+      "mean_cer": 17.81,
+      "speed_x": null,
+      "coral_conversation_wer": 58.75,
+      "coral_read_aloud_wer": 25.45,
+      "ftspeech_wer": 25.85,
+      "cv17_da_wer": 15.55,
+      "fleurs_da_wer": 6.3,
+      "mean_wer_ci": {
+        "lo": 26.08,
+        "hi": 26.69
+      },
+      "mean_cer_ci": {
+        "lo": 17.58,
+        "hi": 18.03
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 58.07,
+        "hi": 59.45
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 24.87,
+        "hi": 26.05
+      },
+      "ftspeech_wer_ci": {
+        "lo": 25.09,
+        "hi": 26.61
+      },
+      "cv17_da_wer_ci": {
+        "lo": 14.72,
+        "hi": 16.42
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 5.79,
+        "hi": 6.88
+      }
+    },
+    {
+      "rank": 26,
+      "name": "openai/whisper-large-v3-turbo",
+      "url": "https://huggingface.co/openai/whisper-large-v3-turbo",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
+      "access": "open",
+      "license": "mit",
+      "size": "0.8",
+      "submitted": "2026-06-23",
+      "released": "2024-10-01",
+      "mean_wer": 28.59,
+      "mean_cer": 16.64,
+      "speed_x": 30.0,
+      "coral_conversation_wer": 63.83,
+      "coral_read_aloud_wer": 31.41,
+      "ftspeech_wer": 18.49,
+      "cv17_da_wer": 16.25,
+      "fleurs_da_wer": 12.96,
+      "mean_wer_ci": {
+        "lo": 27.61,
+        "hi": 29.54
+      },
+      "mean_cer_ci": {
+        "lo": 15.65,
+        "hi": 17.31
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 59.3,
+        "hi": 68.85
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 30.64,
+        "hi": 32.1
+      },
+      "ftspeech_wer_ci": {
+        "lo": 17.29,
+        "hi": 19.79
+      },
+      "cv17_da_wer_ci": {
+        "lo": 15.48,
+        "hi": 16.94
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 12.16,
+        "hi": 13.73
+      }
+    },
+    {
+      "rank": 27,
       "name": "Qwen/Qwen3-ASR-1.7B",
       "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/620760a26e3b7210c2ff1943/-s1gyJfvbE1RgO5iBeNOi.png",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6215ca5692c0ecfba9186921/hrRM50-6XcdWgg2AKpENG.jpeg",
       "access": "open",
+      "license": "apache-2.0",
       "size": "1.7",
-      "submitted": "2026-04-23",
-      "mean_wer": 30.13,
-      "mean_cer": 14.61,
-      "speed_x": 14.7,
-      "coral_conversation_wer": 43.12,
-      "coral_read_aloud_wer": 38.3,
-      "ftspeech_wer": 24.9,
-      "cv17_da_wer": 23.27,
-      "fleurs_da_wer": 21.07
+      "submitted": "2026-06-24",
+      "released": "2026-01-28",
+      "mean_wer": 29.66,
+      "mean_cer": 14.32,
+      "speed_x": 38.4,
+      "coral_conversation_wer": 42.91,
+      "coral_read_aloud_wer": 37.24,
+      "ftspeech_wer": 24.13,
+      "cv17_da_wer": 23.34,
+      "fleurs_da_wer": 20.69,
+      "mean_wer_ci": {
+        "lo": 29.37,
+        "hi": 29.96
+      },
+      "mean_cer_ci": {
+        "lo": 14.16,
+        "hi": 14.48
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 42.35,
+        "hi": 43.52
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 36.71,
+        "hi": 37.76
+      },
+      "ftspeech_wer_ci": {
+        "lo": 23.69,
+        "hi": 24.64
+      },
+      "cv17_da_wer_ci": {
+        "lo": 22.59,
+        "hi": 24.09
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 19.81,
+        "hi": 21.53
+      }
     },
     {
-      "rank": 18,
+      "rank": 28,
       "name": "pluttodk/milo-asr",
       "url": "https://huggingface.co/pluttodk/milo-asr",
       "logo": "https://huggingface.co/avatars/fb98e261fd3502e46564b9ce125e868c.svg",
       "access": "open",
+      "license": "openrail",
       "size": "1.7",
-      "submitted": "2026-05-11",
-      "mean_wer": 30.63,
-      "mean_cer": 18.28,
-      "speed_x": 13.6,
-      "coral_conversation_wer": 56.17,
-      "coral_read_aloud_wer": 28.83,
-      "ftspeech_wer": 33.16,
-      "cv17_da_wer": 21.16,
-      "fleurs_da_wer": 13.81
+      "submitted": "2026-06-24",
+      "released": "2026-02-09",
+      "mean_wer": 30.41,
+      "mean_cer": 18.27,
+      "speed_x": 26.7,
+      "coral_conversation_wer": 58.2,
+      "coral_read_aloud_wer": 27.72,
+      "ftspeech_wer": 32.15,
+      "cv17_da_wer": 20.33,
+      "fleurs_da_wer": 13.64,
+      "mean_wer_ci": {
+        "lo": 29.76,
+        "hi": 31.09
+      },
+      "mean_cer_ci": {
+        "lo": 17.72,
+        "hi": 18.81
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 55.45,
+        "hi": 61.12
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 26.83,
+        "hi": 28.67
+      },
+      "ftspeech_wer_ci": {
+        "lo": 31.5,
+        "hi": 32.91
+      },
+      "cv17_da_wer_ci": {
+        "lo": 19.37,
+        "hi": 21.27
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 12.81,
+        "hi": 14.38
+      }
     },
     {
-      "rank": 19,
+      "rank": 29,
       "name": "nvidia/parakeet-tdt-0.6b-v3",
       "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
       "access": "open",
+      "license": "cc-by-4.0",
       "size": "0.6",
-      "submitted": "2026-04-23",
-      "mean_wer": 32.89,
-      "mean_cer": 21.08,
-      "speed_x": 594.0,
-      "coral_conversation_wer": 55.33,
-      "coral_read_aloud_wer": 41.49,
-      "ftspeech_wer": 30.6,
-      "cv17_da_wer": 18.24,
-      "fleurs_da_wer": 18.77
+      "submitted": "2026-06-22",
+      "released": "2025-08-04",
+      "mean_wer": 30.81,
+      "mean_cer": 15.53,
+      "speed_x": 376.6,
+      "coral_conversation_wer": 50.96,
+      "coral_read_aloud_wer": 40.27,
+      "ftspeech_wer": 26.16,
+      "cv17_da_wer": 18.05,
+      "fleurs_da_wer": 18.61,
+      "mean_wer_ci": {
+        "lo": 30.5,
+        "hi": 31.13
+      },
+      "mean_cer_ci": {
+        "lo": 15.32,
+        "hi": 15.72
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 50.26,
+        "hi": 51.76
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 39.69,
+        "hi": 40.85
+      },
+      "ftspeech_wer_ci": {
+        "lo": 25.55,
+        "hi": 26.78
+      },
+      "cv17_da_wer_ci": {
+        "lo": 17.23,
+        "hi": 18.93
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 17.83,
+        "hi": 19.46
+      }
     },
     {
-      "rank": 20,
+      "rank": 30,
       "name": "facebook/seamless-m4t-v2-large",
       "url": "https://huggingface.co/facebook/seamless-m4t-v2-large",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1592839207516-noauth.png",
       "access": "open",
+      "license": "cc-by-nc-4.0",
       "size": "2.0",
-      "submitted": "2026-04-27",
-      "mean_wer": 33.32,
-      "mean_cer": 23.22,
-      "speed_x": 96.0,
-      "coral_conversation_wer": 59.96,
-      "coral_read_aloud_wer": 30.78,
-      "ftspeech_wer": 47.51,
-      "cv17_da_wer": 15.49,
-      "fleurs_da_wer": 12.84
+      "submitted": "2026-06-24",
+      "released": "2023-11-29",
+      "mean_wer": 32.3,
+      "mean_cer": 22.26,
+      "speed_x": 65.5,
+      "coral_conversation_wer": 59.82,
+      "coral_read_aloud_wer": 28.31,
+      "ftspeech_wer": 46.85,
+      "cv17_da_wer": 15.5,
+      "fleurs_da_wer": 11.01,
+      "mean_wer_ci": {
+        "lo": 31.98,
+        "hi": 32.6
+      },
+      "mean_cer_ci": {
+        "lo": 21.98,
+        "hi": 22.5
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 59.23,
+        "hi": 60.4
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 27.76,
+        "hi": 28.83
+      },
+      "ftspeech_wer_ci": {
+        "lo": 45.97,
+        "hi": 47.73
+      },
+      "cv17_da_wer_ci": {
+        "lo": 14.76,
+        "hi": 16.31
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 10.24,
+        "hi": 11.65
+      }
     },
     {
-      "rank": 21,
+      "rank": 31,
       "name": "facebook/mms-1b-all",
       "url": "https://huggingface.co/facebook/mms-1b-all",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1592839207516-noauth.png",
       "access": "open",
+      "license": "cc-by-nc-4.0",
       "size": "1.0",
-      "submitted": "2026-05-10",
-      "mean_wer": 39.28,
-      "mean_cer": 16.79,
-      "speed_x": 60.8,
-      "coral_conversation_wer": 62.05,
-      "coral_read_aloud_wer": 43.84,
-      "ftspeech_wer": 44.88,
-      "cv17_da_wer": 22.02,
-      "fleurs_da_wer": 23.6
+      "submitted": "2026-06-24",
+      "released": "2023-05-27",
+      "mean_wer": 39.17,
+      "mean_cer": 17.06,
+      "speed_x": 40.5,
+      "coral_conversation_wer": 61.92,
+      "coral_read_aloud_wer": 43.39,
+      "ftspeech_wer": 44.7,
+      "cv17_da_wer": 21.98,
+      "fleurs_da_wer": 23.87,
+      "mean_wer_ci": {
+        "lo": 38.8,
+        "hi": 39.55
+      },
+      "mean_cer_ci": {
+        "lo": 16.86,
+        "hi": 17.27
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 61.33,
+        "hi": 62.55
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 42.89,
+        "hi": 43.91
+      },
+      "ftspeech_wer_ci": {
+        "lo": 43.64,
+        "hi": 45.78
+      },
+      "cv17_da_wer_ci": {
+        "lo": 21.25,
+        "hi": 22.73
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 22.97,
+        "hi": 24.75
+      }
     },
     {
-      "rank": 22,
-      "name": "microsoft/VibeVoice-ASR-HF",
-      "url": "https://huggingface.co/microsoft/VibeVoice-ASR-HF",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1583646260758-5e64858c87403103f9f1055d.png",
-      "access": "open",
-      "size": "8.0",
-      "submitted": "2026-05-12",
-      "mean_wer": 56.37,
-      "mean_cer": 32.92,
-      "speed_x": 1.4,
-      "coral_conversation_wer": 105.83,
-      "coral_read_aloud_wer": 62.61,
-      "ftspeech_wer": 34.0,
-      "cv17_da_wer": 48.88,
-      "fleurs_da_wer": 30.53
-    },
-    {
-      "rank": 23,
+      "rank": 32,
       "name": "openai/whisper-small",
       "url": "https://huggingface.co/openai/whisper-small",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "open",
+      "license": "apache-2.0",
       "size": "0.2",
-      "submitted": "2026-05-09",
-      "mean_wer": 59.74,
-      "mean_cer": 35.64,
-      "speed_x": 17.1,
-      "coral_conversation_wer": 95.07,
-      "coral_read_aloud_wer": 53.99,
-      "ftspeech_wer": 81.39,
-      "cv17_da_wer": 35.1,
-      "fleurs_da_wer": 33.13
+      "submitted": "2026-06-24",
+      "released": "2022-09-26",
+      "mean_wer": 47.13,
+      "mean_cer": 25.61,
+      "speed_x": 22.2,
+      "coral_conversation_wer": 81.74,
+      "coral_read_aloud_wer": 49.6,
+      "ftspeech_wer": 36.37,
+      "cv17_da_wer": 34.4,
+      "fleurs_da_wer": 33.54,
+      "mean_wer_ci": {
+        "lo": 45.81,
+        "hi": 48.56
+      },
+      "mean_cer_ci": {
+        "lo": 24.56,
+        "hi": 26.7
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 76.26,
+        "hi": 87.15
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 48.54,
+        "hi": 50.83
+      },
+      "ftspeech_wer_ci": {
+        "lo": 34.36,
+        "hi": 38.53
+      },
+      "cv17_da_wer_ci": {
+        "lo": 32.83,
+        "hi": 36.9
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 31.32,
+        "hi": 37.16
+      }
     },
     {
-      "rank": 24,
+      "rank": 33,
       "name": "openai/whisper-base",
       "url": "https://huggingface.co/openai/whisper-base",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "open",
+      "license": "apache-2.0",
       "size": "0.07",
-      "submitted": "2026-05-09",
-      "mean_wer": 120.39,
-      "mean_cer": 79.79,
-      "speed_x": 17.4,
-      "coral_conversation_wer": 271.99,
-      "coral_read_aloud_wer": 91.48,
-      "ftspeech_wer": 98.06,
-      "cv17_da_wer": 77.55,
-      "fleurs_da_wer": 62.87
+      "submitted": "2026-06-24",
+      "released": "2022-09-26",
+      "mean_wer": 96.57,
+      "mean_cer": 62.17,
+      "speed_x": 25.4,
+      "coral_conversation_wer": 208.42,
+      "coral_read_aloud_wer": 84.54,
+      "ftspeech_wer": 59.7,
+      "cv17_da_wer": 67.05,
+      "fleurs_da_wer": 63.12,
+      "mean_wer_ci": {
+        "lo": 93.1,
+        "hi": 99.64
+      },
+      "mean_cer_ci": {
+        "lo": 58.35,
+        "hi": 63.94
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 195.56,
+        "hi": 220.9
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 81.04,
+        "hi": 88.35
+      },
+      "ftspeech_wer_ci": {
+        "lo": 56.24,
+        "hi": 62.95
+      },
+      "cv17_da_wer_ci": {
+        "lo": 60.69,
+        "hi": 73.97
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 57.37,
+        "hi": 68.59
+      }
     },
     {
-      "rank": 25,
+      "rank": 34,
       "name": "openai/whisper-tiny",
       "url": "https://huggingface.co/openai/whisper-tiny",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "open",
+      "license": "apache-2.0",
       "size": "0.04",
-      "submitted": "2026-05-09",
-      "mean_wer": 145.42,
-      "mean_cer": 98.04,
-      "speed_x": 17.4,
-      "coral_conversation_wer": 282.62,
-      "coral_read_aloud_wer": 112.57,
-      "ftspeech_wer": 139.45,
-      "cv17_da_wer": 99.79,
-      "fleurs_da_wer": 92.69
+      "submitted": "2026-06-24",
+      "released": "2022-09-26",
+      "mean_wer": 132.14,
+      "mean_cer": 88.16,
+      "speed_x": 26.0,
+      "coral_conversation_wer": 246.66,
+      "coral_read_aloud_wer": 110.36,
+      "ftspeech_wer": 106.75,
+      "cv17_da_wer": 99.58,
+      "fleurs_da_wer": 97.36,
+      "mean_wer_ci": {
+        "lo": 128.18,
+        "hi": 136.75
+      },
+      "mean_cer_ci": {
+        "lo": 84.66,
+        "hi": 91.7
+      },
+      "coral_conversation_wer_ci": {
+        "lo": 233.4,
+        "hi": 259.54
+      },
+      "coral_read_aloud_wer_ci": {
+        "lo": 106.32,
+        "hi": 114.74
+      },
+      "ftspeech_wer_ci": {
+        "lo": 101.09,
+        "hi": 112.85
+      },
+      "cv17_da_wer_ci": {
+        "lo": 89.69,
+        "hi": 111.16
+      },
+      "fleurs_da_wer_ci": {
+        "lo": 89.14,
+        "hi": 107.68
+      }
     }
   ],
   "cer": [
     {
       "rank": 1,
-      "name": "syvai/hviske-v5",
-      "url": "https://huggingface.co/syvai/hviske-v5",
-      "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
-      "access": "open",
-      "size": "2.0",
-      "submitted": "2026-05-07",
-      "mean_cer": 6.26,
-      "coral_conversation_cer": 14.66,
-      "coral_read_aloud_cer": 5.79,
-      "ftspeech_cer": 3.93,
-      "cv17_da_cer": 3.41,
-      "fleurs_da_cer": 3.53
+      "name": "syv-transcribe",
+      "url": "https://syv.ai",
+      "logo": "https://syv.ai/_next/image?url=%2F7.png&w=256&q=75",
+      "access": "proprietary",
+      "license": "",
+      "size": "2.1",
+      "submitted": "2026-06-23",
+      "released": "2026-04-28",
+      "mean_cer": 5.22,
+      "coral_conversation_cer": 11.76,
+      "coral_read_aloud_cer": 3.88,
+      "ftspeech_cer": 4.3,
+      "cv17_da_cer": 2.54,
+      "fleurs_da_cer": 3.62,
+      "speed_x": null,
+      "mean_cer_ci": {
+        "lo": 5.09,
+        "hi": 5.34
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 11.47,
+        "hi": 12.06
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 3.73,
+        "hi": 4.01
+      },
+      "ftspeech_cer_ci": {
+        "lo": 4.11,
+        "hi": 4.51
+      },
+      "cv17_da_cer_ci": {
+        "lo": 2.34,
+        "hi": 2.75
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 3.16,
+        "hi": 4.02
+      }
     },
     {
       "rank": 2,
-      "name": "syvai/hviske-v5.3",
-      "url": "https://huggingface.co/syvai/hviske-v5.3",
-      "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
+      "name": "thorh/whisper-large-v3-turbo-danish",
+      "url": "https://huggingface.co/thorh/whisper-large-v3-turbo-danish",
+      "logo": "",
       "access": "open",
-      "size": "2.0",
-      "submitted": "2026-05-07",
-      "mean_cer": 8.17,
-      "coral_conversation_cer": 11.69,
-      "coral_read_aloud_cer": 3.99,
-      "ftspeech_cer": 17.07,
-      "cv17_da_cer": 3.85,
-      "fleurs_da_cer": 4.27
+      "license": "mit",
+      "size": "0.8",
+      "submitted": "2026-09-06",
+      "released": "2026-09-06",
+      "mean_cer": 5.44,
+      "coral_conversation_cer": 11.92,
+      "coral_read_aloud_cer": 4.8,
+      "ftspeech_cer": 4.19,
+      "cv17_da_cer": 2.65,
+      "fleurs_da_cer": 3.65,
+      "mean_cer_ci": {
+        "lo": 5.23,
+        "hi": 5.69
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 11.5,
+        "hi": 12.32
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 4.64,
+        "hi": 4.96
+      },
+      "ftspeech_cer_ci": {
+        "lo": 3.88,
+        "hi": 4.58
+      },
+      "cv17_da_cer_ci": {
+        "lo": 2.46,
+        "hi": 2.85
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 2.87,
+        "hi": 4.68
+      }
     },
     {
       "rank": 3,
-      "name": "CoRal-project/roest-v3-wav2vec2-315m",
-      "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
+      "name": "3dio-ai/svale-600M",
+      "url": "https://huggingface.co/3dio-ai/svale-600M",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/688a8f052b96413f38782e72/jLECs-GZtkY_ldt68Hkwr.png",
       "access": "open",
-      "size": "0.3",
-      "submitted": "2026-04-23",
-      "mean_cer": 9.0,
-      "coral_conversation_cer": 14.88,
-      "coral_read_aloud_cer": 8.37,
-      "ftspeech_cer": 9.8,
-      "cv17_da_cer": 5.58,
-      "fleurs_da_cer": 6.37
+      "license": "other",
+      "size": "0.6",
+      "submitted": "2026-09-10",
+      "released": "2026-09-09",
+      "mean_cer": 5.75,
+      "coral_conversation_cer": 12.5,
+      "coral_read_aloud_cer": 5.74,
+      "ftspeech_cer": 3.9,
+      "cv17_da_cer": 2.82,
+      "fleurs_da_cer": 3.79,
+      "mean_cer_ci": {
+        "lo": 5.64,
+        "hi": 5.86
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 12.18,
+        "hi": 12.79
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 5.57,
+        "hi": 5.9
+      },
+      "ftspeech_cer_ci": {
+        "lo": 3.76,
+        "hi": 4.07
+      },
+      "cv17_da_cer_ci": {
+        "lo": 2.62,
+        "hi": 3.01
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 3.46,
+        "hi": 4.16
+      }
     },
     {
       "rank": 4,
-      "name": "CoRal-project/roest-v2-wav2vec2-2B",
-      "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
+      "name": "syvai/hviske-v5",
+      "url": "https://huggingface.co/syvai/hviske-v5",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
       "access": "open",
+      "license": "cc-by-nc-4.0",
       "size": "2.0",
-      "submitted": "2026-04-26",
-      "mean_cer": 9.19,
-      "coral_conversation_cer": 17.36,
-      "coral_read_aloud_cer": 8.18,
-      "ftspeech_cer": 10.2,
-      "cv17_da_cer": 5.05,
-      "fleurs_da_cer": 5.17
+      "submitted": "2026-06-23",
+      "released": "2026-04-11",
+      "mean_cer": 6.23,
+      "coral_conversation_cer": 14.58,
+      "coral_read_aloud_cer": 5.55,
+      "ftspeech_cer": 3.91,
+      "cv17_da_cer": 3.38,
+      "fleurs_da_cer": 3.73,
+      "mean_cer_ci": {
+        "lo": 6.08,
+        "hi": 6.36
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 14.11,
+        "hi": 15.22
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 5.4,
+        "hi": 5.71
+      },
+      "ftspeech_cer_ci": {
+        "lo": 3.76,
+        "hi": 4.07
+      },
+      "cv17_da_cer_ci": {
+        "lo": 3.15,
+        "hi": 3.64
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 3.38,
+        "hi": 4.01
+      }
     },
     {
       "rank": 5,
-      "name": "CoRal-project/roest-v2-wav2vec2-1B",
-      "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
+      "name": "3dio-ai/svale-110M",
+      "url": "https://huggingface.co/3dio-ai/svale-110M",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/688a8f052b96413f38782e72/jLECs-GZtkY_ldt68Hkwr.png",
       "access": "open",
-      "size": "1.0",
-      "submitted": "2026-04-26",
-      "mean_cer": 9.7,
-      "coral_conversation_cer": 18.51,
-      "coral_read_aloud_cer": 8.49,
-      "ftspeech_cer": 10.32,
-      "cv17_da_cer": 5.37,
-      "fleurs_da_cer": 5.81
+      "license": "other",
+      "size": "0.1",
+      "submitted": "2026-09-10",
+      "released": "2026-09-09",
+      "mean_cer": 6.38,
+      "coral_conversation_cer": 16.6,
+      "coral_read_aloud_cer": 4.39,
+      "ftspeech_cer": 4.06,
+      "cv17_da_cer": 3.27,
+      "fleurs_da_cer": 3.58,
+      "mean_cer_ci": {
+        "lo": 6.26,
+        "hi": 6.51
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 16.22,
+        "hi": 16.99
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 4.24,
+        "hi": 4.53
+      },
+      "ftspeech_cer_ci": {
+        "lo": 3.9,
+        "hi": 4.23
+      },
+      "cv17_da_cer_ci": {
+        "lo": 3.02,
+        "hi": 3.52
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 3.27,
+        "hi": 3.95
+      }
     },
     {
       "rank": 6,
-      "name": "capacit-ai/saga",
-      "url": "https://huggingface.co/capacit-ai/saga",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/69b7cdab8f61eb5ff23c91db/Rr6Mwd7dYmooItMGUE6mH.png",
-      "access": "open",
-      "size": "1.7",
-      "submitted": "2026-04-23",
-      "mean_cer": 9.83,
-      "coral_conversation_cer": 16.71,
-      "coral_read_aloud_cer": 7.54,
-      "ftspeech_cer": 13.73,
-      "cv17_da_cer": 6.05,
-      "fleurs_da_cer": 5.14
-    },
-    {
-      "rank": 7,
-      "name": "scribe_v2",
-      "url": "https://elevenlabs.io/docs/capabilities/speech-to-text",
-      "logo": "https://elevenlabs.io/_next/image?url=https%3A%2F%2Feleven-public-cdn.elevenlabs.io%2Fpayloadcms%2Felevenlabs-official-logo-11-icon.webp&w=1920&q=95",
-      "access": "proprietary",
-      "size": "—",
-      "submitted": "2026-05-25",
-      "mean_cer": 11.33,
-      "coral_conversation_cer": 29.14,
-      "coral_read_aloud_cer": 10.22,
-      "ftspeech_cer": 8.43,
-      "cv17_da_cer": 5.97,
-      "fleurs_da_cer": 2.87
-    },
-    {
-      "rank": 8,
-      "name": "mistralai/Voxtral-Small-24B-2507",
-      "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
-      "access": "open",
-      "size": "24.0",
-      "submitted": "2026-05-08",
-      "mean_cer": 11.59,
-      "coral_conversation_cer": 27.18,
-      "coral_read_aloud_cer": 11.21,
-      "ftspeech_cer": 10.34,
-      "cv17_da_cer": 5.94,
-      "fleurs_da_cer": 3.28
-    },
-    {
-      "rank": 9,
-      "name": "openai/whisper-large-v3",
-      "url": "https://huggingface.co/openai/whisper-large-v3",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
-      "access": "open",
-      "size": "2.0",
-      "submitted": "2026-04-22",
-      "mean_cer": 11.66,
-      "coral_conversation_cer": 27.83,
-      "coral_read_aloud_cer": 10.68,
-      "ftspeech_cer": 10.5,
-      "cv17_da_cer": 4.93,
-      "fleurs_da_cer": 4.37
-    },
-    {
-      "rank": 10,
       "name": "CoRal-project/roest-v3-whisper-1.5b",
       "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
       "access": "open",
+      "license": "openrail",
       "size": "1.5",
-      "submitted": "2026-04-23",
-      "mean_cer": 12.85,
-      "coral_conversation_cer": 21.32,
-      "coral_read_aloud_cer": 7.65,
-      "ftspeech_cer": 22.0,
-      "cv17_da_cer": 9.5,
-      "fleurs_da_cer": 3.77
+      "submitted": "2026-06-23",
+      "released": "2026-01-11",
+      "mean_cer": 6.74,
+      "coral_conversation_cer": 12.58,
+      "coral_read_aloud_cer": 4.76,
+      "ftspeech_cer": 9.07,
+      "cv17_da_cer": 3.68,
+      "fleurs_da_cer": 3.63,
+      "mean_cer_ci": {
+        "lo": 6.55,
+        "hi": 6.92
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 12.12,
+        "hi": 13.11
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 4.61,
+        "hi": 4.91
+      },
+      "ftspeech_cer_ci": {
+        "lo": 8.45,
+        "hi": 9.82
+      },
+      "cv17_da_cer_ci": {
+        "lo": 3.44,
+        "hi": 3.95
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 3.27,
+        "hi": 3.91
+      }
+    },
+    {
+      "rank": 7,
+      "name": "syvai/hviske-v5-tiny",
+      "url": "https://huggingface.co/syvai/hviske-v5-tiny",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
+      "access": "open",
+      "license": "cc-by-nc-4.0",
+      "size": "0.3",
+      "submitted": "2026-08-14",
+      "released": "2026-08-11",
+      "mean_cer": 6.92,
+      "coral_conversation_cer": 16.01,
+      "coral_read_aloud_cer": 6.01,
+      "ftspeech_cer": 3.83,
+      "cv17_da_cer": 4.23,
+      "fleurs_da_cer": 4.5,
+      "mean_cer_ci": {
+        "lo": 6.76,
+        "hi": 7.06
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 15.52,
+        "hi": 16.58
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 5.78,
+        "hi": 6.27
+      },
+      "ftspeech_cer_ci": {
+        "lo": 3.67,
+        "hi": 3.99
+      },
+      "cv17_da_cer_ci": {
+        "lo": 3.93,
+        "hi": 4.55
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.08,
+        "hi": 4.87
+      }
+    },
+    {
+      "rank": 8,
+      "name": "scribe_v2",
+      "url": "https://elevenlabs.io/docs/capabilities/speech-to-text",
+      "logo": "https://elevenlabs.io/_next/image?url=https%3A%2F%2Feleven-public-cdn.elevenlabs.io%2Fpayloadcms%2Felevenlabs-official-logo-11-icon.webp&w=1920&q=95",
+      "access": "proprietary",
+      "license": "",
+      "size": "—",
+      "submitted": "2026-06-24",
+      "released": "2026-01-09",
+      "mean_cer": 7.07,
+      "coral_conversation_cer": 18.25,
+      "coral_read_aloud_cer": 7.08,
+      "ftspeech_cer": 5.96,
+      "cv17_da_cer": 1.9,
+      "fleurs_da_cer": 2.17,
+      "speed_x": null,
+      "mean_cer_ci": {
+        "lo": 6.94,
+        "hi": 7.19
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 17.8,
+        "hi": 18.69
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 6.88,
+        "hi": 7.28
+      },
+      "ftspeech_cer_ci": {
+        "lo": 5.75,
+        "hi": 6.18
+      },
+      "cv17_da_cer_ci": {
+        "lo": 1.73,
+        "hi": 2.12
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 1.86,
+        "hi": 2.43
+      }
+    },
+    {
+      "rank": 9,
+      "name": "syvai/hviske-v5.1",
+      "url": "https://huggingface.co/syvai/hviske-v5.1",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
+      "access": "open",
+      "license": "cc-by-nc-4.0",
+      "size": "2.1",
+      "submitted": "2026-06-23",
+      "released": "2026-04-23",
+      "mean_cer": 7.75,
+      "coral_conversation_cer": 20.16,
+      "coral_read_aloud_cer": 6.61,
+      "ftspeech_cer": 4.13,
+      "cv17_da_cer": 3.59,
+      "fleurs_da_cer": 4.25,
+      "mean_cer_ci": {
+        "lo": 7.39,
+        "hi": 8.11
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 18.58,
+        "hi": 21.63
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 6.44,
+        "hi": 6.78
+      },
+      "ftspeech_cer_ci": {
+        "lo": 3.98,
+        "hi": 4.3
+      },
+      "cv17_da_cer_ci": {
+        "lo": 3.35,
+        "hi": 3.82
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 3.54,
+        "hi": 5.27
+      }
+    },
+    {
+      "rank": 10,
+      "name": "CoRal-project/roest-v3-wav2vec2-315m",
+      "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
+      "access": "open",
+      "license": "openrail",
+      "size": "0.3",
+      "submitted": "2026-06-24",
+      "released": "2025-12-22",
+      "mean_cer": 7.77,
+      "coral_conversation_cer": 14.3,
+      "coral_read_aloud_cer": 6.24,
+      "ftspeech_cer": 8.11,
+      "cv17_da_cer": 4.65,
+      "fleurs_da_cer": 5.57,
+      "mean_cer_ci": {
+        "lo": 7.65,
+        "hi": 7.9
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 13.99,
+        "hi": 14.59
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 6.08,
+        "hi": 6.41
+      },
+      "ftspeech_cer_ci": {
+        "lo": 7.9,
+        "hi": 8.32
+      },
+      "cv17_da_cer_ci": {
+        "lo": 4.37,
+        "hi": 4.93
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 5.17,
+        "hi": 5.95
+      }
     },
     {
       "rank": 11,
-      "name": "syvai/hviske-v3-conversation",
-      "url": "https://huggingface.co/syvai/hviske-v3-conversation",
-      "logo": "https://www.gravatar.com/avatar/57697ba89f4b77035905b228e93c5bab?d=retro&size=100",
+      "name": "syvai/hviske-v5.3",
+      "url": "https://huggingface.co/syvai/hviske-v5.3",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
       "access": "open",
+      "license": "cc-by-nc-4.0",
       "size": "2.0",
-      "submitted": "2026-04-23",
-      "mean_cer": 13.53,
-      "coral_conversation_cer": 23.23,
-      "coral_read_aloud_cer": 11.66,
-      "ftspeech_cer": 14.05,
-      "cv17_da_cer": 11.18,
-      "fleurs_da_cer": 7.52
+      "submitted": "2026-06-23",
+      "released": "2026-04-28",
+      "mean_cer": 7.99,
+      "coral_conversation_cer": 11.59,
+      "coral_read_aloud_cer": 3.81,
+      "ftspeech_cer": 16.33,
+      "cv17_da_cer": 3.71,
+      "fleurs_da_cer": 4.52,
+      "mean_cer_ci": {
+        "lo": 7.75,
+        "hi": 8.24
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 11.29,
+        "hi": 11.88
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 3.66,
+        "hi": 3.97
+      },
+      "ftspeech_cer_ci": {
+        "lo": 15.42,
+        "hi": 17.31
+      },
+      "cv17_da_cer_ci": {
+        "lo": 3.44,
+        "hi": 3.99
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 3.89,
+        "hi": 5.14
+      }
     },
     {
       "rank": 12,
-      "name": "gpt-4o-mini-transcribe-benchmark",
-      "url": "https://platform.openai.com/docs/guides/speech-to-text",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
-      "access": "proprietary",
-      "size": "—",
-      "submitted": "2026-05-26",
-      "mean_cer": 13.96,
-      "coral_conversation_cer": 38.64,
-      "coral_read_aloud_cer": 8.54,
-      "ftspeech_cer": 14.99,
-      "cv17_da_cer": 4.98,
-      "fleurs_da_cer": 2.63
+      "name": "CoRal-project/roest-v2-wav2vec2-2B",
+      "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
+      "access": "open",
+      "license": "openrail",
+      "size": "2.0",
+      "submitted": "2026-06-24",
+      "released": "2025-06-23",
+      "mean_cer": 8.01,
+      "coral_conversation_cer": 16.82,
+      "coral_read_aloud_cer": 6.1,
+      "ftspeech_cer": 8.35,
+      "cv17_da_cer": 4.01,
+      "fleurs_da_cer": 4.77,
+      "mean_cer_ci": {
+        "lo": 7.87,
+        "hi": 8.13
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 16.47,
+        "hi": 17.17
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 5.93,
+        "hi": 6.26
+      },
+      "ftspeech_cer_ci": {
+        "lo": 8.14,
+        "hi": 8.6
+      },
+      "cv17_da_cer_ci": {
+        "lo": 3.74,
+        "hi": 4.29
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.32,
+        "hi": 5.17
+      }
     },
     {
       "rank": 13,
-      "name": "gpt-4o-transcribe-benchmark",
-      "url": "https://platform.openai.com/docs/guides/speech-to-text",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
-      "access": "proprietary",
-      "size": "—",
-      "submitted": "2026-05-25",
-      "mean_cer": 13.98,
-      "coral_conversation_cer": 38.13,
-      "coral_read_aloud_cer": 8.62,
-      "ftspeech_cer": 15.47,
-      "cv17_da_cer": 5.02,
-      "fleurs_da_cer": 2.64
+      "name": "CoRal-project/roest-v2-wav2vec2-1B",
+      "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6391b02bb600b504c666ff1f/YZe2fqQmW4XQsHMuCVmAn.png",
+      "access": "open",
+      "license": "openrail",
+      "size": "1.0",
+      "submitted": "2026-06-24",
+      "released": "2025-04-25",
+      "mean_cer": 8.57,
+      "coral_conversation_cer": 18.14,
+      "coral_read_aloud_cer": 6.4,
+      "ftspeech_cer": 8.67,
+      "cv17_da_cer": 4.33,
+      "fleurs_da_cer": 5.31,
+      "mean_cer_ci": {
+        "lo": 8.43,
+        "hi": 8.7
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 17.77,
+        "hi": 18.5
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 6.23,
+        "hi": 6.57
+      },
+      "ftspeech_cer_ci": {
+        "lo": 8.44,
+        "hi": 8.91
+      },
+      "cv17_da_cer_ci": {
+        "lo": 4.05,
+        "hi": 4.61
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.86,
+        "hi": 5.71
+      }
     },
     {
       "rank": 14,
+      "name": "MediaCatch/xls-r-300m-danish-mc-v2",
+      "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/63358001686c20e55973298d/9Rf_R1sNBFnVlHc5n5x2M.jpeg",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "0.3",
+      "submitted": "2026-08-20",
+      "released": "2025-09-29",
+      "mean_cer": 8.87,
+      "coral_conversation_cer": 19.73,
+      "coral_read_aloud_cer": 9.83,
+      "ftspeech_cer": 6.83,
+      "cv17_da_cer": 2.95,
+      "fleurs_da_cer": 5.01,
+      "mean_cer_ci": {
+        "lo": 8.71,
+        "hi": 9.0
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 19.33,
+        "hi": 20.12
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 9.61,
+        "hi": 10.04
+      },
+      "ftspeech_cer_ci": {
+        "lo": 6.63,
+        "hi": 7.04
+      },
+      "cv17_da_cer_ci": {
+        "lo": 2.73,
+        "hi": 3.19
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.5,
+        "hi": 5.44
+      }
+    },
+    {
+      "rank": 15,
+      "name": "syvai/hviske-v3-conversation",
+      "url": "https://huggingface.co/syvai/hviske-v3-conversation",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/645e2ecce4504cd77ca14016/M8RL_mxVaD-NPC-FT25gh.png",
+      "access": "open",
+      "license": "",
+      "size": "2.0",
+      "submitted": "2026-06-23",
+      "released": "2025-07-01",
+      "mean_cer": 8.87,
+      "coral_conversation_cer": 15.02,
+      "coral_read_aloud_cer": 8.36,
+      "ftspeech_cer": 10.06,
+      "cv17_da_cer": 5.48,
+      "fleurs_da_cer": 5.41,
+      "mean_cer_ci": {
+        "lo": 8.67,
+        "hi": 9.04
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 14.63,
+        "hi": 15.39
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 8.14,
+        "hi": 8.58
+      },
+      "ftspeech_cer_ci": {
+        "lo": 9.74,
+        "hi": 10.42
+      },
+      "cv17_da_cer_ci": {
+        "lo": 5.17,
+        "hi": 5.81
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.85,
+        "hi": 6.04
+      }
+    },
+    {
+      "rank": 16,
+      "name": "capacit-ai/saga",
+      "url": "https://huggingface.co/capacit-ai/saga",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/69b7cdab8f61eb5ff23c91db/Rr6Mwd7dYmooItMGUE6mH.png",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "1.7",
+      "submitted": "2026-06-24",
+      "released": "2026-03-30",
+      "mean_cer": 9.62,
+      "coral_conversation_cer": 16.68,
+      "coral_read_aloud_cer": 7.24,
+      "ftspeech_cer": 12.88,
+      "cv17_da_cer": 5.91,
+      "fleurs_da_cer": 5.37,
+      "mean_cer_ci": {
+        "lo": 9.45,
+        "hi": 9.77
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 16.32,
+        "hi": 17.04
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 7.05,
+        "hi": 7.44
+      },
+      "ftspeech_cer_ci": {
+        "lo": 12.48,
+        "hi": 13.35
+      },
+      "cv17_da_cer_ci": {
+        "lo": 5.6,
+        "hi": 6.24
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.94,
+        "hi": 5.72
+      }
+    },
+    {
+      "rank": 17,
+      "name": "mistralai/Voxtral-Small-24B-2507",
+      "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "24.0",
+      "submitted": "2026-06-25",
+      "released": "2025-07-01",
+      "mean_cer": 11.28,
+      "coral_conversation_cer": 26.87,
+      "coral_read_aloud_cer": 10.94,
+      "ftspeech_cer": 9.52,
+      "cv17_da_cer": 5.8,
+      "fleurs_da_cer": 3.27,
+      "mean_cer_ci": {
+        "lo": 11.05,
+        "hi": 11.5
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 26.25,
+        "hi": 27.47
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 10.49,
+        "hi": 11.41
+      },
+      "ftspeech_cer_ci": {
+        "lo": 9.23,
+        "hi": 9.79
+      },
+      "cv17_da_cer_ci": {
+        "lo": 5.24,
+        "hi": 6.53
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 2.97,
+        "hi": 3.55
+      }
+    },
+    {
+      "rank": 18,
+      "name": "nvidia/parakeet-rnnt-110m-da-dk",
+      "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
+      "access": "open",
+      "license": "other",
+      "size": "0.1",
+      "submitted": "2026-06-22",
+      "released": "2025-05-28",
+      "mean_cer": 11.49,
+      "coral_conversation_cer": 35.37,
+      "coral_read_aloud_cer": 4.35,
+      "ftspeech_cer": 10.42,
+      "cv17_da_cer": 3.42,
+      "fleurs_da_cer": 3.9,
+      "mean_cer_ci": {
+        "lo": 11.33,
+        "hi": 11.64
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 34.81,
+        "hi": 35.92
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 4.19,
+        "hi": 4.49
+      },
+      "ftspeech_cer_ci": {
+        "lo": 10.07,
+        "hi": 10.79
+      },
+      "cv17_da_cer_ci": {
+        "lo": 3.17,
+        "hi": 3.67
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 3.54,
+        "hi": 4.21
+      }
+    },
+    {
+      "rank": 19,
+      "name": "ordbogen/whisper",
+      "url": "https://odincore.ai/docs/models/ordbogen-whisper",
+      "logo": "https://odincore.ai/apple-touch-icon.png",
+      "access": "proprietary",
+      "license": "",
+      "size": "—",
+      "submitted": "2026-08-27",
+      "released": "2026-04-28",
+      "mean_cer": 12.81,
+      "coral_conversation_cer": 31.54,
+      "coral_read_aloud_cer": 11.46,
+      "ftspeech_cer": 11.24,
+      "cv17_da_cer": 5.34,
+      "fleurs_da_cer": 4.46,
+      "speed_x": null,
+      "mean_cer_ci": {
+        "lo": 12.46,
+        "hi": 13.16
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 30.22,
+        "hi": 32.99
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 11.12,
+        "hi": 11.78
+      },
+      "ftspeech_cer_ci": {
+        "lo": 10.41,
+        "hi": 12.17
+      },
+      "cv17_da_cer_ci": {
+        "lo": 5.02,
+        "hi": 5.68
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.12,
+        "hi": 4.85
+      }
+    },
+    {
+      "rank": 20,
+      "name": "openai/whisper-large-v3",
+      "url": "https://huggingface.co/openai/whisper-large-v3",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "2.0",
+      "submitted": "2026-06-23",
+      "released": "2023-11-07",
+      "mean_cer": 13.62,
+      "coral_conversation_cer": 37.55,
+      "coral_read_aloud_cer": 10.5,
+      "ftspeech_cer": 9.39,
+      "cv17_da_cer": 5.65,
+      "fleurs_da_cer": 5.02,
+      "mean_cer_ci": {
+        "lo": 12.8,
+        "hi": 14.57
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 34.28,
+        "hi": 41.08
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 10.1,
+        "hi": 10.95
+      },
+      "ftspeech_cer_ci": {
+        "lo": 8.71,
+        "hi": 10.18
+      },
+      "cv17_da_cer_ci": {
+        "lo": 4.49,
+        "hi": 7.7
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 3.79,
+        "hi": 7.12
+      }
+    },
+    {
+      "rank": 21,
+      "name": "gpt-4o-mini-transcribe",
+      "url": "https://platform.openai.com/docs/guides/speech-to-text",
+      "logo": "https://developers.openai.com/favicon.png",
+      "access": "proprietary",
+      "license": "",
+      "size": "—",
+      "submitted": "2026-06-24",
+      "released": "2025-03-20",
+      "mean_cer": 13.66,
+      "coral_conversation_cer": 38.11,
+      "coral_read_aloud_cer": 8.28,
+      "ftspeech_cer": 14.39,
+      "cv17_da_cer": 4.97,
+      "fleurs_da_cer": 2.54,
+      "speed_x": null,
+      "mean_cer_ci": {
+        "lo": 13.44,
+        "hi": 13.83
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 37.45,
+        "hi": 38.71
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 8.04,
+        "hi": 8.49
+      },
+      "ftspeech_cer_ci": {
+        "lo": 13.84,
+        "hi": 14.93
+      },
+      "cv17_da_cer_ci": {
+        "lo": 4.65,
+        "hi": 5.31
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 2.26,
+        "hi": 2.79
+      }
+    },
+    {
+      "rank": 22,
       "name": "mistralai/Voxtral-Mini-3B-2507",
       "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/634c17653d11eaedd88b314d/9OgyfKstSZtbmsmuG8MbU.png",
       "access": "open",
+      "license": "apache-2.0",
       "size": "3.0",
-      "submitted": "2026-05-07",
-      "mean_cer": 14.07,
-      "coral_conversation_cer": 31.67,
-      "coral_read_aloud_cer": 13.83,
-      "ftspeech_cer": 12.46,
-      "cv17_da_cer": 7.28,
-      "fleurs_da_cer": 5.09
+      "submitted": "2026-06-25",
+      "released": "2025-07-01",
+      "mean_cer": 13.8,
+      "coral_conversation_cer": 31.53,
+      "coral_read_aloud_cer": 13.42,
+      "ftspeech_cer": 11.8,
+      "cv17_da_cer": 7.14,
+      "fleurs_da_cer": 5.13,
+      "mean_cer_ci": {
+        "lo": 13.46,
+        "hi": 14.13
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 30.17,
+        "hi": 33.04
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 13.07,
+        "hi": 13.76
+      },
+      "ftspeech_cer_ci": {
+        "lo": 11.0,
+        "hi": 12.7
+      },
+      "cv17_da_cer_ci": {
+        "lo": 6.77,
+        "hi": 7.54
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.77,
+        "hi": 5.48
+      }
     },
     {
-      "rank": 15,
-      "name": "Qwen/Qwen3-ASR-1.7B",
-      "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/620760a26e3b7210c2ff1943/-s1gyJfvbE1RgO5iBeNOi.png",
-      "access": "open",
-      "size": "1.7",
-      "submitted": "2026-04-23",
-      "mean_cer": 14.61,
-      "coral_conversation_cer": 26.61,
-      "coral_read_aloud_cer": 16.35,
-      "ftspeech_cer": 12.79,
-      "cv17_da_cer": 8.95,
-      "fleurs_da_cer": 8.33
-    },
-    {
-      "rank": 16,
-      "name": "openai/whisper-large-v3-turbo",
-      "url": "https://huggingface.co/openai/whisper-large-v3-turbo",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
-      "access": "open",
-      "size": "0.8",
-      "submitted": "2026-04-22",
-      "mean_cer": 14.72,
-      "coral_conversation_cer": 39.34,
-      "coral_read_aloud_cer": 12.59,
-      "ftspeech_cer": 11.31,
-      "cv17_da_cer": 5.73,
-      "fleurs_da_cer": 4.61
-    },
-    {
-      "rank": 17,
-      "name": "facebook/mms-1b-all",
-      "url": "https://huggingface.co/facebook/mms-1b-all",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1592839207516-noauth.png",
-      "access": "open",
-      "size": "1.0",
-      "submitted": "2026-05-10",
-      "mean_cer": 16.79,
-      "coral_conversation_cer": 33.54,
-      "coral_read_aloud_cer": 15.05,
-      "ftspeech_cer": 22.27,
-      "cv17_da_cer": 6.2,
-      "fleurs_da_cer": 6.91
-    },
-    {
-      "rank": 18,
-      "name": "pluttodk/milo-asr",
-      "url": "https://huggingface.co/pluttodk/milo-asr",
-      "logo": "https://huggingface.co/avatars/fb98e261fd3502e46564b9ce125e868c.svg",
-      "access": "open",
-      "size": "1.7",
-      "submitted": "2026-05-11",
-      "mean_cer": 18.28,
-      "coral_conversation_cer": 38.44,
-      "coral_read_aloud_cer": 14.09,
-      "ftspeech_cer": 23.72,
-      "cv17_da_cer": 9.31,
-      "fleurs_da_cer": 5.86
-    },
-    {
-      "rank": 19,
-      "name": "nvidia/parakeet-tdt-0.6b-v3",
-      "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
-      "access": "open",
-      "size": "0.6",
-      "submitted": "2026-04-23",
-      "mean_cer": 21.08,
-      "coral_conversation_cer": 48.31,
-      "coral_read_aloud_cer": 17.14,
-      "ftspeech_cer": 26.57,
-      "cv17_da_cer": 6.74,
-      "fleurs_da_cer": 6.66
-    },
-    {
-      "rank": 20,
+      "rank": 23,
       "name": "nvidia/canary-1b-v2",
       "url": "https://huggingface.co/nvidia/canary-1b-v2",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
       "access": "open",
+      "license": "cc-by-4.0",
       "size": "1.0",
-      "submitted": "2026-04-23",
-      "mean_cer": 23.13,
-      "coral_conversation_cer": 76.52,
-      "coral_read_aloud_cer": 13.65,
-      "ftspeech_cer": 14.32,
-      "cv17_da_cer": 6.57,
-      "fleurs_da_cer": 4.57
+      "submitted": "2026-06-22",
+      "released": "2025-08-04",
+      "mean_cer": 13.99,
+      "coral_conversation_cer": 33.72,
+      "coral_read_aloud_cer": 12.72,
+      "ftspeech_cer": 13.42,
+      "cv17_da_cer": 5.72,
+      "fleurs_da_cer": 4.39,
+      "mean_cer_ci": {
+        "lo": 13.7,
+        "hi": 14.21
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 32.79,
+        "hi": 34.36
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 12.24,
+        "hi": 13.25
+      },
+      "ftspeech_cer_ci": {
+        "lo": 12.68,
+        "hi": 14.18
+      },
+      "cv17_da_cer_ci": {
+        "lo": 5.41,
+        "hi": 6.04
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.04,
+        "hi": 4.72
+      }
     },
     {
-      "rank": 21,
+      "rank": 24,
+      "name": "Qwen/Qwen3-ASR-1.7B",
+      "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/6215ca5692c0ecfba9186921/hrRM50-6XcdWgg2AKpENG.jpeg",
+      "access": "open",
+      "license": "apache-2.0",
+      "size": "1.7",
+      "submitted": "2026-06-24",
+      "released": "2026-01-28",
+      "mean_cer": 14.32,
+      "coral_conversation_cer": 26.3,
+      "coral_read_aloud_cer": 15.94,
+      "ftspeech_cer": 12.08,
+      "cv17_da_cer": 8.93,
+      "fleurs_da_cer": 8.33,
+      "mean_cer_ci": {
+        "lo": 14.16,
+        "hi": 14.48
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 25.9,
+        "hi": 26.71
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 15.65,
+        "hi": 16.21
+      },
+      "ftspeech_cer_ci": {
+        "lo": 11.77,
+        "hi": 12.41
+      },
+      "cv17_da_cer_ci": {
+        "lo": 8.58,
+        "hi": 9.29
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 7.93,
+        "hi": 8.73
+      }
+    },
+    {
+      "rank": 25,
+      "name": "gpt-4o-transcribe",
+      "url": "https://platform.openai.com/docs/guides/speech-to-text",
+      "logo": "https://developers.openai.com/favicon.png",
+      "access": "proprietary",
+      "license": "",
+      "size": "—",
+      "submitted": "2026-06-24",
+      "released": "2025-03-20",
+      "mean_cer": 14.61,
+      "coral_conversation_cer": 37.99,
+      "coral_read_aloud_cer": 8.25,
+      "ftspeech_cer": 19.35,
+      "cv17_da_cer": 4.86,
+      "fleurs_da_cer": 2.59,
+      "speed_x": null,
+      "mean_cer_ci": {
+        "lo": 13.49,
+        "hi": 16.63
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 37.34,
+        "hi": 38.59
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 8.02,
+        "hi": 8.47
+      },
+      "ftspeech_cer_ci": {
+        "lo": 14.19,
+        "hi": 29.35
+      },
+      "cv17_da_cer_ci": {
+        "lo": 4.55,
+        "hi": 5.2
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 2.3,
+        "hi": 2.86
+      }
+    },
+    {
+      "rank": 26,
+      "name": "nvidia/parakeet-tdt-0.6b-v3",
+      "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/65df9200dc3292a8983e5017/Vs5FPVCH-VZBipV3qKTuy.png",
+      "access": "open",
+      "license": "cc-by-4.0",
+      "size": "0.6",
+      "submitted": "2026-06-22",
+      "released": "2025-08-04",
+      "mean_cer": 15.53,
+      "coral_conversation_cer": 33.18,
+      "coral_read_aloud_cer": 16.43,
+      "ftspeech_cer": 15.05,
+      "cv17_da_cer": 6.31,
+      "fleurs_da_cer": 6.69,
+      "mean_cer_ci": {
+        "lo": 15.32,
+        "hi": 15.72
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 32.52,
+        "hi": 33.76
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 16.09,
+        "hi": 16.75
+      },
+      "ftspeech_cer_ci": {
+        "lo": 14.53,
+        "hi": 15.59
+      },
+      "cv17_da_cer_ci": {
+        "lo": 5.95,
+        "hi": 6.69
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 6.3,
+        "hi": 7.05
+      }
+    },
+    {
+      "rank": 27,
+      "name": "openai/whisper-large-v3-turbo",
+      "url": "https://huggingface.co/openai/whisper-large-v3-turbo",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
+      "access": "open",
+      "license": "mit",
+      "size": "0.8",
+      "submitted": "2026-06-23",
+      "released": "2024-10-01",
+      "mean_cer": 16.64,
+      "coral_conversation_cer": 49.2,
+      "coral_read_aloud_cer": 12.6,
+      "ftspeech_cer": 11.12,
+      "cv17_da_cer": 5.58,
+      "fleurs_da_cer": 4.69,
+      "mean_cer_ci": {
+        "lo": 15.65,
+        "hi": 17.31
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 45.12,
+        "hi": 53.22
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 11.78,
+        "hi": 12.99
+      },
+      "ftspeech_cer_ci": {
+        "lo": 9.9,
+        "hi": 11.74
+      },
+      "cv17_da_cer_ci": {
+        "lo": 5.26,
+        "hi": 5.91
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.28,
+        "hi": 5.1
+      }
+    },
+    {
+      "rank": 28,
+      "name": "facebook/mms-1b-all",
+      "url": "https://huggingface.co/facebook/mms-1b-all",
+      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1592839207516-noauth.png",
+      "access": "open",
+      "license": "cc-by-nc-4.0",
+      "size": "1.0",
+      "submitted": "2026-06-24",
+      "released": "2023-05-27",
+      "mean_cer": 17.06,
+      "coral_conversation_cer": 33.34,
+      "coral_read_aloud_cer": 15.8,
+      "ftspeech_cer": 22.19,
+      "cv17_da_cer": 6.21,
+      "fleurs_da_cer": 7.76,
+      "mean_cer_ci": {
+        "lo": 16.86,
+        "hi": 17.27
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 32.91,
+        "hi": 33.75
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 15.53,
+        "hi": 16.07
+      },
+      "ftspeech_cer_ci": {
+        "lo": 21.4,
+        "hi": 23.01
+      },
+      "cv17_da_cer_ci": {
+        "lo": 5.94,
+        "hi": 6.48
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 7.3,
+        "hi": 8.25
+      }
+    },
+    {
+      "rank": 29,
+      "name": "gpt-transcribe",
+      "url": "https://developers.openai.com/api/docs/models/gpt-transcribe",
+      "logo": "https://developers.openai.com/favicon.png",
+      "access": "proprietary",
+      "license": "",
+      "size": "—",
+      "submitted": "2026-08-27",
+      "released": "2026-07-29",
+      "mean_cer": 17.81,
+      "coral_conversation_cer": 48.45,
+      "coral_read_aloud_cer": 11.24,
+      "ftspeech_cer": 19.93,
+      "cv17_da_cer": 6.64,
+      "fleurs_da_cer": 2.78,
+      "speed_x": null,
+      "mean_cer_ci": {
+        "lo": 17.58,
+        "hi": 18.03
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 47.81,
+        "hi": 49.07
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 10.93,
+        "hi": 11.53
+      },
+      "ftspeech_cer_ci": {
+        "lo": 19.2,
+        "hi": 20.7
+      },
+      "cv17_da_cer_ci": {
+        "lo": 6.19,
+        "hi": 7.09
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 2.49,
+        "hi": 3.08
+      }
+    },
+    {
+      "rank": 30,
+      "name": "pluttodk/milo-asr",
+      "url": "https://huggingface.co/pluttodk/milo-asr",
+      "logo": "https://huggingface.co/avatars/fb98e261fd3502e46564b9ce125e868c.svg",
+      "access": "open",
+      "license": "openrail",
+      "size": "1.7",
+      "submitted": "2026-06-24",
+      "released": "2026-02-09",
+      "mean_cer": 18.27,
+      "coral_conversation_cer": 40.01,
+      "coral_read_aloud_cer": 13.54,
+      "ftspeech_cer": 22.83,
+      "cv17_da_cer": 9.01,
+      "fleurs_da_cer": 5.97,
+      "mean_cer_ci": {
+        "lo": 17.72,
+        "hi": 18.81
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 37.53,
+        "hi": 42.56
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 12.92,
+        "hi": 14.25
+      },
+      "ftspeech_cer_ci": {
+        "lo": 22.15,
+        "hi": 23.52
+      },
+      "cv17_da_cer_ci": {
+        "lo": 8.41,
+        "hi": 9.63
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 5.5,
+        "hi": 6.38
+      }
+    },
+    {
+      "rank": 31,
       "name": "facebook/seamless-m4t-v2-large",
       "url": "https://huggingface.co/facebook/seamless-m4t-v2-large",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1592839207516-noauth.png",
       "access": "open",
+      "license": "cc-by-nc-4.0",
       "size": "2.0",
-      "submitted": "2026-04-27",
-      "mean_cer": 23.22,
-      "coral_conversation_cer": 46.88,
-      "coral_read_aloud_cer": 16.19,
-      "ftspeech_cer": 39.77,
-      "cv17_da_cer": 6.62,
-      "fleurs_da_cer": 6.66
+      "submitted": "2026-06-24",
+      "released": "2023-11-29",
+      "mean_cer": 22.26,
+      "coral_conversation_cer": 46.66,
+      "coral_read_aloud_cer": 14.11,
+      "ftspeech_cer": 39.13,
+      "cv17_da_cer": 6.65,
+      "fleurs_da_cer": 4.77,
+      "mean_cer_ci": {
+        "lo": 21.98,
+        "hi": 22.5
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 46.15,
+        "hi": 47.15
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 13.78,
+        "hi": 14.42
+      },
+      "ftspeech_cer_ci": {
+        "lo": 38.2,
+        "hi": 40.07
+      },
+      "cv17_da_cer_ci": {
+        "lo": 6.23,
+        "hi": 7.07
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 4.33,
+        "hi": 5.14
+      }
     },
     {
-      "rank": 22,
-      "name": "microsoft/VibeVoice-ASR-HF",
-      "url": "https://huggingface.co/microsoft/VibeVoice-ASR-HF",
-      "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/1583646260758-5e64858c87403103f9f1055d.png",
-      "access": "open",
-      "size": "8.0",
-      "submitted": "2026-05-12",
-      "mean_cer": 32.92,
-      "coral_conversation_cer": 76.4,
-      "coral_read_aloud_cer": 29.52,
-      "ftspeech_cer": 18.78,
-      "cv17_da_cer": 25.82,
-      "fleurs_da_cer": 14.1
-    },
-    {
-      "rank": 23,
+      "rank": 32,
       "name": "openai/whisper-small",
       "url": "https://huggingface.co/openai/whisper-small",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "open",
+      "license": "apache-2.0",
       "size": "0.2",
-      "submitted": "2026-05-09",
-      "mean_cer": 35.64,
-      "coral_conversation_cer": 74.13,
-      "coral_read_aloud_cer": 22.61,
-      "ftspeech_cer": 55.48,
-      "cv17_da_cer": 14.01,
-      "fleurs_da_cer": 11.99
+      "submitted": "2026-06-24",
+      "released": "2022-09-26",
+      "mean_cer": 25.61,
+      "coral_conversation_cer": 61.79,
+      "coral_read_aloud_cer": 20.01,
+      "ftspeech_cer": 20.61,
+      "cv17_da_cer": 13.05,
+      "fleurs_da_cer": 12.57,
+      "mean_cer_ci": {
+        "lo": 24.56,
+        "hi": 26.7
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 57.21,
+        "hi": 66.04
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 19.35,
+        "hi": 20.67
+      },
+      "ftspeech_cer_ci": {
+        "lo": 19.0,
+        "hi": 22.47
+      },
+      "cv17_da_cer_ci": {
+        "lo": 12.42,
+        "hi": 14.04
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 11.29,
+        "hi": 14.68
+      }
     },
     {
-      "rank": 24,
+      "rank": 33,
       "name": "openai/whisper-base",
       "url": "https://huggingface.co/openai/whisper-base",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "open",
+      "license": "apache-2.0",
       "size": "0.07",
-      "submitted": "2026-05-09",
-      "mean_cer": 79.79,
-      "coral_conversation_cer": 225.17,
-      "coral_read_aloud_cer": 46.05,
-      "ftspeech_cer": 59.87,
-      "cv17_da_cer": 39.1,
-      "fleurs_da_cer": 28.77
+      "submitted": "2026-06-24",
+      "released": "2022-09-26",
+      "mean_cer": 62.17,
+      "coral_conversation_cer": 172.06,
+      "coral_read_aloud_cer": 41.6,
+      "ftspeech_cer": 33.55,
+      "cv17_da_cer": 33.64,
+      "fleurs_da_cer": 30.02,
+      "mean_cer_ci": {
+        "lo": 58.35,
+        "hi": 63.94
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 159.94,
+        "hi": 182.51
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 38.9,
+        "hi": 44.28
+      },
+      "ftspeech_cer_ci": {
+        "lo": 30.07,
+        "hi": 35.5
+      },
+      "cv17_da_cer_ci": {
+        "lo": 27.57,
+        "hi": 37.83
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 24.29,
+        "hi": 32.55
+      }
     },
     {
-      "rank": 25,
+      "rank": 34,
       "name": "openai/whisper-tiny",
       "url": "https://huggingface.co/openai/whisper-tiny",
       "logo": "https://cdn-avatars.huggingface.co/v1/production/uploads/68783facef79a05727260de3/UPX5RQxiPGA-ZbBmArIKq.png",
       "access": "open",
+      "license": "apache-2.0",
       "size": "0.04",
-      "submitted": "2026-05-09",
-      "mean_cer": 98.04,
-      "coral_conversation_cer": 234.69,
-      "coral_read_aloud_cer": 61.39,
-      "ftspeech_cer": 92.47,
-      "cv17_da_cer": 54.69,
-      "fleurs_da_cer": 46.97
+      "submitted": "2026-06-24",
+      "released": "2022-09-26",
+      "mean_cer": 88.16,
+      "coral_conversation_cer": 203.52,
+      "coral_read_aloud_cer": 60.76,
+      "ftspeech_cer": 68.45,
+      "cv17_da_cer": 55.11,
+      "fleurs_da_cer": 52.95,
+      "mean_cer_ci": {
+        "lo": 84.66,
+        "hi": 91.7
+      },
+      "coral_conversation_cer_ci": {
+        "lo": 192.01,
+        "hi": 215.73
+      },
+      "coral_read_aloud_cer_ci": {
+        "lo": 56.96,
+        "hi": 63.5
+      },
+      "ftspeech_cer_ci": {
+        "lo": 63.38,
+        "hi": 73.3
+      },
+      "cv17_da_cer_ci": {
+        "lo": 47.59,
+        "hi": 63.48
+      },
+      "fleurs_da_cer_ci": {
+        "lo": 45.74,
+        "hi": 61.39
+      }
     }
   ]
 }

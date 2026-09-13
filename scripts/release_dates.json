@@ -1,0 +1,158 @@
+{
+  "3dio-ai/svale-110M": {
+    "released": "2026-09-09",
+    "source": "huggingface"
+  },
+  "3dio-ai/svale-600M": {
+    "released": "2026-09-09",
+    "source": "huggingface"
+  },
+  "capacit-ai/saga": {
+    "released": "2026-03-30",
+    "source": "huggingface"
+  },
+  "CoRal-project/roest-v2-wav2vec2-1B": {
+    "released": "2025-04-25",
+    "source": "huggingface"
+  },
+  "CoRal-project/roest-v2-wav2vec2-2B": {
+    "released": "2025-06-23",
+    "source": "huggingface"
+  },
+  "CoRal-project/roest-v3-wav2vec2-315m": {
+    "released": "2025-12-22",
+    "source": "huggingface"
+  },
+  "CoRal-project/roest-v3-whisper-1.5b": {
+    "released": "2026-01-11",
+    "source": "huggingface"
+  },
+  "facebook/mms-1b-all": {
+    "released": "2023-05-27",
+    "source": "huggingface"
+  },
+  "facebook/seamless-m4t-v2-large": {
+    "released": "2023-11-29",
+    "source": "huggingface"
+  },
+  "gpt-4o-mini-transcribe": {
+    "released": "2025-03-20",
+    "source": "published",
+    "note": "https://openai.com/index/introducing-our-next-generation-audio-models/"
+  },
+  "gpt-4o-mini-transcribe-benchmark": {
+    "released": "2025-03-20",
+    "source": "published",
+    "note": "https://openai.com/index/introducing-our-next-generation-audio-models/"
+  },
+  "gpt-4o-transcribe": {
+    "released": "2025-03-20",
+    "source": "published",
+    "note": "https://openai.com/index/introducing-our-next-generation-audio-models/"
+  },
+  "gpt-4o-transcribe-benchmark": {
+    "released": "2025-03-20",
+    "source": "published",
+    "note": "https://openai.com/index/introducing-our-next-generation-audio-models/"
+  },
+  "gpt-transcribe": {
+    "released": "2026-07-29",
+    "source": "published",
+    "note": "Announcement date; OpenAI publishes no release date. https://community.openai.com/t/gpt-live-transcribe-and-gpt-transcribe-two-new-transcription-models-in-the-api/1388318"
+  },
+  "MediaCatch/xls-r-300m-danish-mc-v2": {
+    "released": "2025-09-29",
+    "source": "huggingface"
+  },
+  "microsoft/VibeVoice-ASR-HF": {
+    "released": "2026-03-02",
+    "source": "huggingface"
+  },
+  "mistralai/Voxtral-Mini-3B-2507": {
+    "released": "2025-07-01",
+    "source": "huggingface"
+  },
+  "mistralai/Voxtral-Small-24B-2507": {
+    "released": "2025-07-01",
+    "source": "huggingface"
+  },
+  "nvidia/canary-1b-v2": {
+    "released": "2025-08-04",
+    "source": "huggingface"
+  },
+  "nvidia/parakeet-rnnt-110m-da-dk": {
+    "released": "2025-05-28",
+    "source": "huggingface"
+  },
+  "nvidia/parakeet-tdt-0.6b-v3": {
+    "released": "2025-08-04",
+    "source": "huggingface"
+  },
+  "openai/whisper-base": {
+    "released": "2022-09-26",
+    "source": "huggingface"
+  },
+  "openai/whisper-large-v3": {
+    "released": "2023-11-07",
+    "source": "huggingface"
+  },
+  "openai/whisper-large-v3-turbo": {
+    "released": "2024-10-01",
+    "source": "huggingface"
+  },
+  "openai/whisper-small": {
+    "released": "2022-09-26",
+    "source": "huggingface"
+  },
+  "openai/whisper-tiny": {
+    "released": "2022-09-26",
+    "source": "huggingface"
+  },
+  "ordbogen/whisper": {
+    "released": "2026-04-28",
+    "source": "best guess",
+    "note": "No release date published by Ordbogen/odincore.ai and no public HF repo. Best guess: dated to the same reference as syv-transcribe (2026-04-28)."
+  },
+  "pluttodk/milo-asr": {
+    "released": "2026-02-09",
+    "source": "huggingface"
+  },
+  "Qwen/Qwen3-ASR-1.7B": {
+    "released": "2026-01-28",
+    "source": "huggingface"
+  },
+  "scribe_v2": {
+    "released": "2026-01-09",
+    "source": "published",
+    "note": "https://elevenlabs.io/blog/introducing-scribe-v2"
+  },
+  "syv-transcribe": {
+    "released": "2026-04-28",
+    "source": "best guess",
+    "note": "No release date published by syv.ai and no HF repo. Best guess: dated to syv.ai's most recent full-size hviske release (syvai/hviske-v5.3, 2026-04-28)."
+  },
+  "syvai/hviske-v3-conversation": {
+    "released": "2025-07-01",
+    "source": "huggingface"
+  },
+  "syvai/hviske-v5": {
+    "released": "2026-04-11",
+    "source": "huggingface"
+  },
+  "syvai/hviske-v5-tiny": {
+    "released": "2026-08-11",
+    "source": "huggingface"
+  },
+  "syvai/hviske-v5.1": {
+    "released": "2026-04-23",
+    "source": "huggingface"
+  },
+  "syvai/hviske-v5.3": {
+    "released": "2026-04-28",
+    "source": "huggingface"
+  },
+  "thorh/whisper-large-v3-turbo-danish": {
+    "released": "2026-09-06",
+    "source": "huggingface"
+  }
+}
