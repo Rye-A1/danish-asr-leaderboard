@@ -1452,8 +1452,11 @@
     </blockquote>
     <blockquote>
       <strong>Note:</strong> Danish hesitation fillers (<code>øh</code>,
-      <code>hmm</code>, …) are <strong>not</strong> removed in the published scores
-      (the eval harness supports it as an opt-in, but it is off by default).
+      <code>hmm</code>, …) <strong>are</strong> removed, from reference and
+      hypothesis alike, using the same pattern as
+      <a href="https://github.com/alexandrainst/coral" target="_blank" rel="noopener">alexandrainst/coral</a>.
+      Scoring them verbatim measured transcription convention rather than accuracy.
+      Verbatim scoring remains available offline via <code>--no-filler-words</code>.
     </blockquote>
     <blockquote>
       <strong>Note:</strong> Danish orthographic variants
@@ -1555,6 +1558,21 @@
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
       <div class="changelog-body">
+        <h3>2026-09 — Filler words removed</h3>
+        <ul>
+          <li><strong>Hesitation fillers are now stripped</strong> (<code>øh</code>,
+            <code>hmm</code>, …) from reference and hypothesis alike, using
+            <code>alexandrainst/coral</code>'s exact pattern. Verbatim scoring
+            measured convention, not accuracy: models trained to omit disfluencies
+            were penalised for a style choice. Proposed by an external contributor.</li>
+          <li>Measured over 34 models: mean WER −0.09&nbsp;pp, <strong>no rank
+            changes</strong> on mean WER or Avg. Rank. Only
+            <code>coral_conversation</code> reorders (5 models) — the correction
+            being made.</li>
+          <li>Not monotone: <code>whisper-tiny</code> +0.52 and
+            <code>whisper-base</code> +0.41, both already above 96&nbsp;WER.</li>
+          <li><code>--no-filler-words</code> restores verbatim scoring offline.</li>
+        </ul>
         <h3>2026-08 — Numeral normalisation</h3>
         <ul>
           <li><strong>Spelled-out numerals now fold onto their digit form.</strong>
@@ -1582,7 +1600,8 @@
             same time and rejected. It changed no ranking across the 29 models, and it
             is not monotone — <code>whisper-tiny</code> and <code>whisper-base</code>
             get worse, because at their error rates removing reference tokens raises
-            the rate. It remains available as an opt-in for offline re-scoring.</li>
+            the rate. It remains available as an opt-in for offline re-scoring.
+            <em>Superseded in 2026-09 — see below.</em></li>
         </ul>
         <h3>2026-08 — Decoding fixes &amp; re-runs</h3>
         <ul>

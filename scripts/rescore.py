@@ -114,8 +114,9 @@ def main() -> None:
                          "(otte og tredive == 38). ON by default (the published "
                          "methodology); --no-spoken-numbers recovers num2words-only "
                          "scoring.")
-    ap.add_argument("--filler-words", action="store_true",
-                    help="Remove Danish hesitation fillers (øh, hmm, ...) when re-scoring.")
+    ap.add_argument("--filler-words", action=argparse.BooleanOptionalAction, default=True,
+                    help="Remove Danish hesitation fillers (øh, hmm, ...) when re-scoring. "
+                         "ON by default; --no-filler-words restores verbatim scoring.")
     ap.add_argument("--out-dir", default="results_rescored",
                     help="Where to write the re-scored result JSONs")
     ap.add_argument("--compare", default="",
