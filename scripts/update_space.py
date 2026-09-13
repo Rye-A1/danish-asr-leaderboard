@@ -378,8 +378,10 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
         "coral_conversation_wer", "coral_read_aloud_wer",
         "ftspeech_wer", "cv17_da_wer", "fleurs_da_wer",
     ]
+    # mean_wer and speed_x belong here too: both tables show them as secondary
+    # columns, and omitting them left every CER row with two empty cells.
     cer_metrics = [
-        "mean_cer",
+        "mean_cer", "mean_wer", "speed_x",
         "coral_conversation_cer", "coral_read_aloud_cer",
         "ftspeech_cer", "cv17_da_cer", "fleurs_da_cer",
     ]
