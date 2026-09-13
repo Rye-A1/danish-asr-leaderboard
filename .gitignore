@@ -35,14 +35,17 @@ data/
 .vscode/
 .claude/
 
-# AppMap instrumentation + local temp
+# AppMap instrumentation 
 appmap.yml
 uv.lock
-tmp/
-**/tmp/
 
 # Env
 *.env
 
 # Local secrets (Mattermost webhook, etc.)
 .env
+
+# tmp files
+tmp/
+**/tmp/
+tmp.md
