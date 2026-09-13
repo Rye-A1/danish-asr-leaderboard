@@ -39,3 +39,13 @@ python scripts/update_space.py
 
 This bakes `leaderboard.json` from the parquet (resolving provider logos and
 formatting sizes server-side) and uploads the static files to the Space.
+
+`leaderboard.json` is generated, not tracked. To preview the page locally, fetch
+the deployed copy first — the page fetches it at runtime, so without it the table
+renders empty:
+
+```bash
+curl -sL https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/raw/main/leaderboard.json \
+  -o space/leaderboard.json
+python -m http.server 7860 --directory space
+```
