@@ -89,7 +89,7 @@ A dash between two digits becomes a space in step 4 rather than being deleted, s
 
 **Known limitation.** Colons and slashes are not yet treated the same way: `10:00` still collapses to `ettusind` and `4/5` to `femogfyrre`. Both need their own reading rule — a slash may be a fraction, a date is spoken differently again — so they are tracked separately rather than folded into the dash rule. Ordinals written with a full stop are also left alone (`3. plads` → `tre plads`); converting them to `tredje` was measured and rejected as net-harmful, because most `N.` in these references are sentence-final cardinals rather than true ordinals.
 
-An optional filler-word strip (`øh`, `hmm`, …) is available in the harness but **off** by default, since its effect concentrates on spontaneous-speech sets and can shift that column's relative order.
+Danish hesitation fillers (`øh`, `hmm`, …) are **removed**, from reference and hypothesis alike, using the same pattern as [`alexandrainst/coral`](https://github.com/alexandrainst/coral). Scoring them verbatim measured transcription *convention* rather than accuracy — a model trained to omit disfluencies was penalised for a style choice. Pass `--no-filler-words` to `scripts/rescore.py` to recover verbatim scoring from the saved raw outputs.
 
 Danish orthographic variants (`aa`↔`å`, `oe`↔`ø`, `ae`↔`æ`) are **not** normalised — the digraphs occur legitimately as letter sequences. Because the normaliser is parameterised, [`scripts/rescore.py`](https://github.com/Rye-A1/danish-asr-leaderboard) can re-derive WER/CER from the saved raw outputs under any configuration without re-running inference.
 

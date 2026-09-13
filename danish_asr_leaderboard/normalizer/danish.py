@@ -56,12 +56,20 @@ slashes are *not* yet handled the same way — ``10:00`` still glues to
 and rejected: ordinals net-hurt (most ``N.`` are sentence-final cardinals, not true
 ordinals) and symbols are too rare (~0.3%) to matter.
 
-Step 7 (``filler_words``, **OFF by default** — opt-in) removes Danish hesitation
-fillers (``øh``, ``øhm``, ``hmm``, ``ehm`` …), matching ``danish-speech-eval``'s
-filler strip. It is symmetric and principled (fillers are not recognition content),
-but unlike ``number_words`` its effect is concentrated on spontaneous-speech
-datasets (coral_conversation: −0.2 to −1.1pp) and can shift that column's relative
-order, so it stays a deliberate opt-in rather than the published default.
+Step 7 (``filler_words``, **ON by default**) removes Danish hesitation fillers
+(``øh``, ``hmm`` …) from reference and hypothesis alike, using the exact pattern
+from ``alexandrainst/coral``. Verbatim scoring measured transcription convention
+rather than accuracy: a model trained to omit disfluencies was penalised for a
+style choice.
+
+Measured over 34 models / 910k utterances: mean WER −0.09pp, no rank changes on
+mean WER or Avg. Rank; only ``coral_conversation`` reorders (5 models). Not
+monotone — ``whisper-tiny`` +0.52 and ``whisper-base`` +0.41, both already above
+96 WER, where a shrinking reference raises the rate.
+
+Limits: ``ah`` and ``mm`` survive (CoRal keeps them too, and a looser regex eats
+``arm``); 374 filler-only utterances become empty references and are dropped by
+``per_utterance_counts``.
 
 Because the normaliser is parameterised, ``scripts/rescore.py`` can re-derive
 WER/CER from those saved raw outputs under any configuration, so changing the
@@ -187,7 +195,7 @@ def normalise(
     unicode_form: str = "NFKC",
     number_words: bool = True,
     spoken_numbers: bool = True,
-    filler_words: bool = False,
+    filler_words: bool = True,
 ) -> str:
     """Unicode-normalise -> number canonicalisation -> lowercase -> punctuation strip -> collapse.
 
@@ -206,7 +214,7 @@ def normalise(
     the num2words-only behaviour. Has no effect when ``number_words=False`` is used
     to keep digits.
 
-    ``filler_words`` (default ``False`` — opt-in) removes Danish hesitation fillers
+    ``filler_words`` (default ``True``) removes Danish hesitation fillers
     (``øh``, ``hmm`` …). See the module docstring for rationale and measured impact.
     """
     if unicode_form not in _VALID_UNICODE_FORMS:

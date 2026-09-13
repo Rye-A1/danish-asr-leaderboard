@@ -64,10 +64,12 @@ def parse_args() -> argparse.Namespace:
                          "(4 -> fire) before scoring, folding the digit<->word formatting "
                          "difference. ON by default (the published methodology); pass "
                          "--no-number-words to recover digit-preserving scoring.")
-    ap.add_argument("--filler-words", action="store_true",
+    ap.add_argument("--filler-words", action=argparse.BooleanOptionalAction, default=True,
                     help="Remove Danish hesitation fillers (øh, hmm, ...) before scoring. "
-                         "OFF by default; raw outputs are saved regardless, so this can "
-                         "also be applied offline via scripts/rescore.py.")
+                         "ON by default, matching alexandrainst/coral; pass "
+                         "--no-filler-words for verbatim scoring. Raw outputs are saved "
+                         "regardless, so either can be applied offline via "
+                         "scripts/rescore.py.")
     ap.add_argument("--batch-size", type=int, default=16)
     ap.add_argument("--access", default="open", choices=["open", "proprietary"],
                     help="Whether model weights are openly available")
