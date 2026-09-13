@@ -667,6 +667,14 @@
       font-size: 14px; font-weight: 600; color: var(--text);
       margin-bottom: 10px;
     }
+    .chart-legend {
+      display: flex; flex-wrap: wrap; gap: 14px;
+      font-size: 11.5px; color: var(--muted);
+      margin: -4px 0 10px;
+    }
+    .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .legend-line { width: 16px; height: 0; border-top: 2px solid var(--accent); }
     .chart-with-panel {
       display: flex;
       gap: 12px;
@@ -682,6 +690,8 @@
       display: flex;
       min-height: 430px;
     }
+    /* Side panel next to a chart: the Pareto list on the Pareto tab and the
+       record-holder list on the Over Time tab share these styles. */
     .pareto-panel {
       width: 220px; flex: 0 0 220px;
       background: var(--surf);
@@ -748,7 +758,9 @@
       padding: 6px 10px;
       border-radius: 8px;
       max-width: 360px;
-      white-space: nowrap;
+
+      white-space: normal;
+      overflow-wrap: anywhere;
       pointer-events: none;
       z-index: 9999;
       opacity: 0;
@@ -1270,6 +1282,7 @@
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="wer">🏆 Leaderboard</button>
     <button class="tab-btn" data-tab="analysis">📈 Pareto</button>
+    <button class="tab-btn" data-tab="time">⏱️ Over Time</button>
     <button class="tab-btn" data-tab="about">ℹ️ About</button>
   </nav>
 
@@ -1309,6 +1322,14 @@
         <button class="tog-btn active" id="tog-analysis-wer">WER</button>
         <button class="tog-btn" id="tog-analysis-cer">CER</button>
       </div>
+      <div class="tog-wrap">
+        <span class="tog-label">Rank by</span>
+        <button class="tog-btn active" id="tog-analysis-mean">Mean</button>
+        <button class="tog-btn" id="tog-analysis-borda">Avg. Rank</button>
+        <button class="tog-btn" id="tog-analysis-bt">Win Rate</button>
+      </div>
+      <button class="ci-btn" id="tog-ci-analysis" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <button class="ci-btn" id="tog-open-analysis" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. The frontier is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
     </div>
     <div class="chart-section" style="margin-top:0">
       <h3 id="analysis-chart-title">Performance vs. Model Size</h3>
@@ -1317,6 +1338,39 @@
           <svg id="size-chart-analysis" style="width:100%;display:block;overflow:visible"></svg>
         </div>
         <div id="pareto-panel-analysis" class="pareto-panel"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Over Time tab -->
+  <div id="tab-time" class="tab-pane">
+    <div class="toolbar">
+      <div class="tog-wrap">
+        <span class="tog-label">Metric</span>
+        <button class="tog-btn active" id="tog-time-wer">WER</button>
+        <button class="tog-btn" id="tog-time-cer">CER</button>
+      </div>
+      <div class="tog-wrap">
+        <span class="tog-label" data-tip="Mean is the score the model had on release and still has. Avg. Rank and Win Rate are scored against the models on the board today, so a point plots the score that model has now, positioned at its release date — not the rank it held back then.">Rank by <span class="i-icon" aria-hidden="true">i</span></span>
+        <button class="tog-btn active" id="tog-time-mean">Mean</button>
+        <button class="tog-btn" id="tog-time-borda">Avg. Rank</button>
+        <button class="tog-btn" id="tog-time-bt">Win Rate</button>
+      </div>
+      <button class="ci-btn" id="tog-ci-time" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <button class="ci-btn" id="tog-open-time" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. The best-so-far line is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
+    </div>
+    <div class="chart-section" style="margin-top:0">
+      <h3 id="time-chart-title">Performance Over Time</h3>
+      <div class="chart-legend">
+        <span><i class="legend-dot" style="background:var(--accent)"></i>Open weights</span>
+        <span><i class="legend-dot" style="background:#94a3b8"></i>Proprietary API</span>
+        <span><i class="legend-line"></i>Best at date</span>
+      </div>
+      <div class="chart-with-panel">
+        <div id="time-chart-wrap-time" class="chart-plot-wrap">
+          <svg id="time-chart-time" style="width:100%;display:block;overflow:visible"></svg>
+        </div>
+        <div id="record-panel-time" class="pareto-panel"></div>
       </div>
     </div>
   </div>
@@ -2532,6 +2586,7 @@ let _chartState = {
   wer: { rows: [], method: 'mean' },
   cer: { rows: [], method: 'mean' },
   analysis: { rows: [], method: 'mean', sourceTab: 'wer' },
+  time:     { rows: [], method: 'mean', sourceTab: 'wer' },
 };
 let _activeParetoCleanup = null;
 
@@ -2544,6 +2599,103 @@ function niceTicks(lo, hi, n) {
   for (let v = start; v <= hi + step * 0.01; v = Math.round((v + step) * 1e9) / 1e9)
     ticks.push(v);
   return ticks;
+}
+
+/* SVG + chart-tooltip helpers, shared by the size chart and the over-time
+   chart. Both build their plots node by node rather than pulling in a charting
+   library, so these three primitives are the whole drawing API. */
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function svgMk(tag, attrs, parent) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs || {})) el.setAttribute(k, v);
+  if (parent) parent.appendChild(el);
+  return el;
+}
+function svgTx(text, attrs, parent) {
+  const el = svgMk('text', attrs, parent);
+  el.textContent = text;
+  return el;
+}
+
+/* One labelled row of a chart tooltip. The label is muted and the value is
+   not emphasised, so scanning two points compares values rather than weights. */
+function tipRow(label, value, color) {
+  const val = color ? `<span style="color:${color}">${value}</span>` : value;
+  return `<br><span style="color:var(--muted)">${label}:</span> ${val}`;
+}
+
+/* The three headline numbers for a model, each carrying its own interval, so a
+   tooltip answers "is this one better?" under every ranking without having to
+   switch the Rank by toggle and hover again. Formatting matches the tables:
+   two decimals and a % for an error rate, one decimal for a rank. */
+function tipMetricRows(r, meanKey, meanLbl) {
+  const metrics = [
+    [meanLbl,     meanKey,       v => v.toFixed(2) + '%'],
+    ['Avg. Rank', 'borda_score', v => v.toFixed(1)],
+    ['Win Rate',  'bt_score',    v => v.toFixed(1) + '%'],
+  ];
+  let html = '';
+  for (const [label, key, fmt] of metrics) {
+    const v = r[key];
+    if (v == null) continue;
+    let val = fmt(v);
+    if (showCI) {
+      const ci = r[key + '_ci'];
+      if (ci && ci.lo != null)
+        val += ` <span style="color:var(--muted)">[${fmt(ci.lo)}–${fmt(ci.hi)}]</span>`;
+    }
+    html += tipRow(label, val);
+  }
+  return html;
+}
+
+/* Place #chart-tip near (x, y), flipping it when it would run off-screen. */
+function positionChartTip(x, y) {
+  const tip = document.getElementById('chart-tip');
+  const tw = tip.offsetWidth, th = tip.offsetHeight;
+  let cx = x + 14, cy = y + 14;
+  if (cx + tw > window.innerWidth  - 8) cx = x - tw - 14;
+  if (cy + th > window.innerHeight - 8) cy = y - th - 14;
+  tip.style.left = cx + 'px';
+  tip.style.top  = cy + 'px';
+}
+
+/* Attach a point on the plot to its row in the side panel: hovering either one
+   highlights the point and shows its tooltip, clicking pins it until the next
+   click elsewhere. `points` maps model name → {circ, tipHTML}. */
+function wireChartPanel(panel, points) {
+  if (!panel) return;
+  const CTIP = document.getElementById('chart-tip');
+  panel.querySelectorAll('.pareto-item').forEach(item => {
+    const point = points.get(item.dataset.modelName || '');
+    if (!point) return;
+
+    const activate = () => {
+      item.classList.add('active');
+      point.circ.setAttribute('r', '8');
+      point.circ.setAttribute('stroke-width', '2.5');
+      point.circ.setAttribute('stroke', 'var(--text)');
+      CTIP.innerHTML = point.tipHTML;
+      CTIP.classList.add('show');
+      const rect = point.circ.getBoundingClientRect();
+      positionChartTip(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    };
+    const deactivate = () => {
+      item.classList.remove('active');
+      point.circ.setAttribute('r', '6');
+      point.circ.setAttribute('stroke-width', '1.5');
+      point.circ.setAttribute('stroke', 'var(--bg)');
+      CTIP.classList.remove('show');
+    };
+
+    item.addEventListener('mouseenter', activate);
+    item.addEventListener('mouseleave', deactivate);
+    item.addEventListener('click', () => {
+      if (_activeParetoCleanup) _activeParetoCleanup();
+      activate();
+      _activeParetoCleanup = deactivate;
+    });
+  });
 }
 
 function computePareto(pts, yUp) {
@@ -2595,18 +2747,12 @@ function _drawChart(rows, method, tab) {
   const ML = 58, MR = 28, MT = 22, MB = 50;
   const cW = W - ML - MR, cH = H - MT - MB;
 
-  const ns = 'http://www.w3.org/2000/svg';
-  const mk = (tag, a, p) => {
-    const el = document.createElementNS(ns, tag);
-    for (const [k, v] of Object.entries(a || {})) el.setAttribute(k, v);
-    if (p) p.appendChild(el);
-    return el;
-  };
-  const tx = (t, a, p) => { const el = mk('text', a, p); el.textContent = t; return el; };
+  const mk = svgMk, tx = svgTx;
   const chartPointByName = new Map();
 
   const metricTab = tab === 'analysis' ? (_chartState.analysis.sourceTab || 'wer') : tab;
   const meanKey = metricTab === 'cer' ? 'mean_cer' : 'mean_wer';
+  const meanLbl = metricTab === 'cer' ? 'Mean CER' : 'Mean WER';
   const yKey   = method === 'mean' ? meanKey         : method === 'borda' ? 'borda_score'    : 'bt_score';
   const yCIKey = method === 'mean' ? meanKey + '_ci' : method === 'borda' ? 'borda_score_ci' : 'bt_score_ci';
   const yLbl   = method === 'mean' ? (metricTab === 'cer' ? 'Mean CER (%)' : 'Mean WER (%)') : method === 'borda' ? 'Avg. Rank' : 'Win Rate (%)';
@@ -2674,10 +2820,10 @@ function _drawChart(rows, method, tab) {
     const yp = sy(best[yKey]);
     if (yp >= MT && yp <= MT + cH) {
       mk('line', { x1: ML, y1: yp, x2: ML + cW, y2: yp,
-        stroke: '#f97316', 'stroke-width': '1.5', 'stroke-dasharray': '5 3' }, svgEl);
+        stroke: '#94a3b8', 'stroke-width': '1.5', 'stroke-dasharray': '5 3' }, svgEl);
       const ly = yp > MT + 18 ? yp - 5 : yp + 14;
       tx(`Best proprietary: ${best.name} (${fmt(best[yKey])})`,
-        { x: ML + 6, y: ly, fill: '#f97316', 'font-size': '11', 'font-weight': '600' }, svgEl);
+        { x: ML + 6, y: ly, fill: '#94a3b8', 'font-size': '11', 'font-weight': '600' }, svgEl);
     }
   }
 
@@ -2689,7 +2835,7 @@ function _drawChart(rows, method, tab) {
     for (let i = 1; i < pareto.length; i++)
       d += ` V ${sy(pareto[i].yv).toFixed(1)} H ${sx(pareto[i].sz).toFixed(1)}`;
     d += ` H ${ML + cW}`;
-    mk('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': '1.5', 'stroke-dasharray': '5 3', opacity: '0.5' }, svgEl);
+    mk('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': '1.5', opacity: '0.5' }, svgEl);
   }
   updateParetoPanel(pareto, tab, yLbl, method);
 
@@ -2716,12 +2862,9 @@ function _drawChart(rows, method, tab) {
       }
     }
 
-    let tipHTML = `<strong>${r.name}</strong>  ·  ${r.size}B  ·  ${yLbl}: <strong>${fmt(yv)}</strong>`;
-    if (showCI) {
-      const ci = r[yCIKey];
-      if (ci && ci.lo != null)
-        tipHTML += `<br><span style="color:var(--muted);font-size:11px">95% CI: [${fmt(ci.lo)}–${fmt(ci.hi)}]</span>`;
-    }
+    const tipHTML = `<strong>${r.name}</strong>`
+      + tipRow('Parameters', `${r.size}B`)
+      + tipMetricRows(r, meanKey, meanLbl);
 
     const circ = mk('circle', {
       cx: xc, cy: yc, r: '6',
@@ -2731,57 +2874,11 @@ function _drawChart(rows, method, tab) {
     }, svgEl);
     chartPointByName.set(r.name, { circ, tipHTML });
     circ.addEventListener('mouseenter', () => { CTIP.innerHTML = tipHTML; CTIP.classList.add('show'); });
-    circ.addEventListener('mousemove', e => {
-      const tw = CTIP.offsetWidth, th = CTIP.offsetHeight;
-      let cx = e.clientX + 14, cy = e.clientY + 14;
-      if (cx + tw > window.innerWidth  - 8) cx = e.clientX - tw - 14;
-      if (cy + th > window.innerHeight - 8) cy = e.clientY - th - 14;
-      CTIP.style.left = cx + 'px'; CTIP.style.top = cy + 'px';
-    });
+    circ.addEventListener('mousemove', e => positionChartTip(e.clientX, e.clientY));
     circ.addEventListener('mouseleave', () => CTIP.classList.remove('show'));
   }
 
-  if (panel) {
-    const positionTip = (x, y) => {
-      const tw = CTIP.offsetWidth, th = CTIP.offsetHeight;
-      let cx = x + 14, cy = y + 14;
-      if (cx + tw > window.innerWidth  - 8) cx = x - tw - 14;
-      if (cy + th > window.innerHeight - 8) cy = y - th - 14;
-      CTIP.style.left = cx + 'px';
-      CTIP.style.top = cy + 'px';
-    };
-
-    panel.querySelectorAll('.pareto-item').forEach(item => {
-      const point = chartPointByName.get(item.dataset.modelName || '');
-      if (!point) return;
-
-      const activate = () => {
-        item.classList.add('active');
-        point.circ.setAttribute('r', '8');
-        point.circ.setAttribute('stroke-width', '2.5');
-        point.circ.setAttribute('stroke', 'var(--text)');
-        CTIP.innerHTML = point.tipHTML;
-        CTIP.classList.add('show');
-        const rect = point.circ.getBoundingClientRect();
-        positionTip(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      };
-      const deactivate = () => {
-        item.classList.remove('active');
-        point.circ.setAttribute('r', '6');
-        point.circ.setAttribute('stroke-width', '1.5');
-        point.circ.setAttribute('stroke', 'var(--bg)');
-        CTIP.classList.remove('show');
-      };
-
-      item.addEventListener('mouseenter', activate);
-      item.addEventListener('mouseleave', deactivate);
-      item.addEventListener('click', () => {
-        if (_activeParetoCleanup) _activeParetoCleanup();
-        activate();
-        _activeParetoCleanup = deactivate;
-      });
-    });
-  }
+  wireChartPanel(panel, chartPointByName);
 
   /* ── axis labels ── */
   tx(yLbl, { 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '12',
@@ -2801,13 +2898,279 @@ function renderSizeChart(rows, method, tab = 'wer') {
   requestAnimationFrame(() => _drawChart(rows, method, tab));
 }
 
+/* ── Performance-over-time chart ────────────────────────────────
+   Every model plotted at its release date, with a step line through the running
+   best: the Danish ASR state of the art as it actually moved. Release dates
+   come from leaderboard.json (`released`) — HF repo creation for open weights,
+   a curated map for the hosted APIs, both resolved at deploy time in
+   scripts/update_space.py. A model with no published release date carries an
+   empty string and is left off the chart rather than guessed at; the record
+   panel says how many. */
+const DAY_MS = 86400000;
+const MONTHS_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+/* "YYYY-MM-DD" → epoch ms at UTC midnight, or null. Parsed by hand so the date
+   is not shifted a day by the viewer's timezone, which `new Date(str)` on a
+   bare date string would do in some engines. */
+function parseISODate(str) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(str || ''));
+  return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : null;
+}
+
+function fmtDate(ms) {
+  const d = new Date(ms);
+  return `${d.getUTCDate()} ${MONTHS_ABBR[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+/* Tick positions for a time axis: month boundaries over a long span, whole
+   days over a short one, so labels land on dates a reader recognises rather
+   than on arbitrary fractions of the range. */
+function timeTicks(lo, hi, target = 8) {
+  const days = (hi - lo) / DAY_MS;
+  const ticks = [];
+  if (days > 100) {
+    const step = [1, 2, 3, 6, 12].find(m => days / (m * 30.44) <= target) ?? 12;
+    const d = new Date(lo);
+    let y = d.getUTCFullYear();
+    let m = d.getUTCMonth() + (d.getUTCDate() > 1 ? 1 : 0);
+    while (m % step !== 0) m++;
+    for (let ms = Date.UTC(y, m, 1); ms <= hi; ms = Date.UTC(y, (m += step), 1)) {
+      const t = new Date(ms);
+      ticks.push({ ms, label: `${MONTHS_ABBR[t.getUTCMonth()]} '${String(t.getUTCFullYear()).slice(2)}` });
+    }
+  } else {
+    const step = ([1, 2, 3, 7, 14].find(sd => days / sd <= target) ?? 14) * DAY_MS;
+    const start = Math.ceil(lo / DAY_MS) * DAY_MS;
+    for (let ms = start; ms <= hi; ms += step) {
+      const t = new Date(ms);
+      ticks.push({ ms, label: `${t.getUTCDate()} ${MONTHS_ABBR[t.getUTCMonth()]}` });
+    }
+  }
+  return ticks;
+}
+
+/* Points that were the best score on the board when they landed, oldest first.
+   `pts` must be sorted by date, better score first within a date. `yUp` is true
+   for metrics where higher is better (Win Rate). */
+function computeRecords(pts, yUp) {
+  const records = [];
+  let best = yUp ? -Infinity : Infinity;
+  for (const p of pts) if (yUp ? p.yv > best : p.yv < best) { best = p.yv; records.push(p); }
+  return records;
+}
+
+function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
+  const yUp = method === 'bt';
+  const panel = document.getElementById('record-panel-time');
+  if (!panel) return;
+  panel.innerHTML = `<div class="pareto-panel-title" data-tip="Every model that was the best score on this board when it was released, newest first. Each one is a step down in the line on the left.">Record holders <span class="i-icon" aria-hidden="true">i</span></div>`;
+  const footnote = (txt) => {
+    const el = document.createElement('p');
+    el.style.cssText = 'color:var(--muted);font-size:11px;margin-top:10px;line-height:1.5';
+    el.textContent = txt;
+    panel.appendChild(el);
+  };
+  if (!records.length) {
+    footnote('No release dates to plot.');
+    return;
+  }
+  for (const p of [...records].reverse()) {
+    const item = document.createElement('div');
+    item.className = 'pareto-item';
+    item.dataset.modelName = p.r.name;
+    const col = p.r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+    item.innerHTML =
+      `<span class="pareto-dot" style="background:${col}"></span>` +
+      `<span class="pareto-meta">${fmtDate(p.t)} · ${fmt(p.yv)}</span>` +
+      `<span class="pareto-name" title="${p.r.name}">${p.r.name}</span>`;
+    panel.appendChild(item);
+  }
+  if (records.length >= 2) {
+    const first = records[0], last = records[records.length - 1];
+    const gained = Math.abs(last.yv - first.yv);
+    /* The relative change is quoted for an error rate, where "fell 46 points
+       (77%)" is the headline. For a rank or a win probability it is noise —
+       a win rate going 10.8% → 95% is not a "777% improvement". */
+    const rel = method === 'mean' ? ` (${(gained / first.yv * 100).toFixed(0)}%)` : '';
+    footnote(`Best ${metricLbl} ${yUp ? 'rose' : 'fell'} ${gained.toFixed(2)} `
+      + `${method === 'borda' ? 'places' : 'points'}${rel} `
+      + `between ${fmtDate(first.t)} and ${fmtDate(last.t)}.`);
+  }
+  /* Named rather than silently dropped: a model missing from the plot is not
+     evidence of anything about the model. */
+  if (undated)
+    footnote(`${undated} model${undated > 1 ? 's have' : ' has'} no published `
+      + `release date and ${undated > 1 ? 'are' : 'is'} not plotted.`);
+}
+
+function _drawTimeChart(rows, metric, method) {
+  const wrap  = document.getElementById('time-chart-wrap-time');
+  const svgEl = document.getElementById('time-chart-time');
+  const panel = document.getElementById('record-panel-time');
+  if (!wrap || !svgEl) return;
+  wrap.style.minHeight = '';
+  const W = wrap.clientWidth;
+  if (W < 20) return;
+  const H = ANALYSIS_PANEL_HEIGHT - 12;
+  svgEl.setAttribute('width',  W);
+  svgEl.setAttribute('height', H);
+  svgEl.style.height = `${H}px`;
+  svgEl.innerHTML = '';
+
+  const ML = 58, MR = 28, MT = 22, MB = 50;
+  const cW = W - ML - MR, cH = H - MT - MB;
+  const mk = svgMk, tx = svgTx;
+  const chartPointByName = new Map();
+
+  /* Same keys, labels and formatting as the size chart, so a reader moving
+     between the two tabs is looking at the same quantity under the same name. */
+  const meanKey = metric === 'cer' ? 'mean_cer' : 'mean_wer';
+  const yKey    = method === 'mean' ? meanKey         : method === 'borda' ? 'borda_score'    : 'bt_score';
+  const yCIKey  = method === 'mean' ? meanKey + '_ci' : method === 'borda' ? 'borda_score_ci' : 'bt_score_ci';
+  const meanLbl   = metric === 'cer' ? 'Mean CER' : 'Mean WER';
+  const metricLbl = method === 'mean' ? meanLbl : method === 'borda' ? 'Avg. Rank' : 'Win Rate';
+  const yLbl    = method === 'mean' ? metricLbl + ' (%)' : method === 'borda' ? 'Avg. Rank' : 'Win Rate (%)';
+  const yUp     = method === 'bt';
+  const fmt     = v => method === 'borda' ? v.toFixed(1) : method === 'bt' ? v.toFixed(1) + '%' : v.toFixed(2) + '%';
+
+  /* Ties on a date are ordered best-first so the day's best model is the one
+     that takes the record, instead of a worse model on the same day taking it
+     and producing two steps at the same x. */
+  const dated = rows
+    .map(r => ({ r, t: parseISODate(r.released), yv: r[yKey] }))
+    .filter(({ yv }) => yv != null);
+  const undated = dated.filter(p => p.t == null).length;
+  const pts = dated.filter(p => p.t != null)
+    .sort((a, b) => a.t - b.t || (yUp ? b.yv - a.yv : a.yv - b.yv));
+
+  if (pts.length < 2) {
+    tx('Not enough release dates to plot.', { x: W / 2, y: H / 2, 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '13' }, svgEl);
+    updateRecordPanel([], metricLbl, fmt, method, undated);
+    return;
+  }
+
+  /* ── scales ── */
+  const tMin = pts[0].t, tMax = pts[pts.length - 1].t;
+  const tPad = (tMax - tMin) * 0.05 || DAY_MS;
+  const tL = tMin - tPad, tR = tMax + tPad;
+  const sx = t => ML + (t - tL) / (tR - tL) * cW;
+
+  const yVals = pts.map(d => d.yv);
+  const yDMin = Math.min(...yVals), yDMax = Math.max(...yVals);
+  const ySpan = yDMax - yDMin || 1;
+  const yLo = yDMin - ySpan * 0.18;
+  const yHi = yDMax + ySpan * 0.18;
+  const sy = v => MT + (yUp
+    ? (1 - (v - yLo) / (yHi - yLo)) * cH
+    :      (v - yLo) / (yHi - yLo)  * cH);
+
+  /* ── background ── */
+  mk('rect', { x: ML, y: MT, width: cW, height: cH, fill: 'var(--surf2)', rx: 3 }, svgEl);
+
+  /* ── Y grid + labels ── */
+  for (const v of niceTicks(yLo, yHi, 5)) {
+    const yc = sy(v);
+    if (yc < MT - 1 || yc > MT + cH + 1) continue;
+    mk('line', { x1: ML, y1: yc, x2: ML + cW, y2: yc, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
+    tx(method === 'borda' ? v.toFixed(1) : Math.round(v) + '%',
+      { x: ML - 6, y: yc + 4, 'text-anchor': 'end', fill: 'var(--muted)', 'font-size': '11' }, svgEl);
+  }
+
+  /* ── X grid + labels (time) ── */
+  for (const { ms, label } of timeTicks(tL, tR)) {
+    const xc = sx(ms);
+    if (xc < ML || xc > ML + cW) continue;
+    mk('line', { x1: xc, y1: MT, x2: xc, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
+    mk('line', { x1: xc, y1: MT + cH, x2: xc, y2: MT + cH + 4, stroke: 'var(--muted)', 'stroke-width': '1' }, svgEl);
+    tx(label, { x: xc, y: MT + cH + 16, 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '11' }, svgEl);
+  }
+
+  /* ── axis borders ── */
+  mk('line', { x1: ML, y1: MT, x2: ML, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
+  mk('line', { x1: ML, y1: MT + cH, x2: ML + cW, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
+
+  /* ── best-so-far step line ── */
+  const records = computeRecords(pts, yUp);
+  const recordSet = new Set(records.map(p => p.r.name));
+  if (records.length) {
+    let d = `M ${sx(records[0].t).toFixed(1)} ${sy(records[0].yv).toFixed(1)}`;
+    for (let i = 1; i < records.length; i++)
+      d += ` H ${sx(records[i].t).toFixed(1)} V ${sy(records[i].yv).toFixed(1)}`;
+    d += ` H ${(ML + cW).toFixed(1)}`;
+    mk('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2', opacity: '0.75' }, svgEl);
+  }
+  updateRecordPanel(records, metricLbl, fmt, method, undated);
+
+  /* ── data points ── */
+  const CTIP = document.getElementById('chart-tip');
+  for (const { r, t, yv } of pts) {
+    const xc = sx(t), yc = sy(yv);
+
+    /* error bars — clamped to plot area */
+    if (showCI) {
+      const ci = r[yCIKey];
+      if (ci && ci.lo != null) {
+        const yt = Math.max(MT, Math.min(sy(ci.lo), sy(ci.hi)));
+        const yb = Math.min(MT + cH, Math.max(sy(ci.lo), sy(ci.hi)));
+        if (yb > yt) {
+          const ecol = r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+          mk('line', { x1: xc, y1: yt, x2: xc, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
+          if (Math.min(sy(ci.lo), sy(ci.hi)) >= MT)
+            mk('line', { x1: xc-4, y1: yt, x2: xc+4, y2: yt, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
+          if (Math.max(sy(ci.lo), sy(ci.hi)) <= MT + cH)
+            mk('line', { x1: xc-4, y1: yb, x2: xc+4, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
+        }
+      }
+    }
+
+    let tipHTML = `<strong>${r.name}</strong>`
+      + tipRow('Released', fmtDate(t))
+      + tipMetricRows(r, meanKey, meanLbl);
+    if (recordSet.has(r.name))
+      tipHTML += tipRow('Record', 'best at date', 'var(--accent)');
+
+    const circ = mk('circle', {
+      cx: xc, cy: yc, r: '6',
+      fill: r.access === 'open' ? 'var(--accent)' : '#94a3b8',
+      stroke: 'var(--bg)', 'stroke-width': '1.5',
+      style: 'cursor:pointer',
+    }, svgEl);
+    chartPointByName.set(r.name, { circ, tipHTML });
+    circ.addEventListener('mouseenter', () => { CTIP.innerHTML = tipHTML; CTIP.classList.add('show'); });
+    circ.addEventListener('mousemove', e => positionChartTip(e.clientX, e.clientY));
+    circ.addEventListener('mouseleave', () => CTIP.classList.remove('show'));
+  }
+
+  wireChartPanel(panel, chartPointByName);
+
+  /* ── axis labels ── */
+  tx(yLbl, { 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '12',
+    transform: `translate(${ML - 46} ${MT + cH / 2}) rotate(-90)` }, svgEl);
+  tx('Model release date', { x: ML + cW / 2, y: H - 8,
+    'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '12' }, svgEl);
+  tx('Better ↑', { x: ML - 6, y: MT - 6, 'text-anchor': 'end',
+    fill: 'var(--muted)', 'font-size': '10' }, svgEl);
+}
+
+function renderTimeChart(rows, metric, method) {
+  _chartState.time = { ..._chartState.time, rows, sourceTab: metric, method };
+  requestAnimationFrame(() => _drawTimeChart(rows, metric, method));
+}
+
+/* One entry point per tab, so the resize and tab-switch handlers do not have to
+   know which chart a tab draws. */
+function redrawChart(tab) {
+  const st = _chartState[tab];
+  if (!st) return;
+  if (tab === 'time') _drawTimeChart(st.rows, st.sourceTab, st.method);
+  else                _drawChart(st.rows, st.method, tab);
+}
+
 let _chartResizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(_chartResizeTimer);
   _chartResizeTimer = setTimeout(() => {
-    _drawChart(_chartState.wer.rows, _chartState.wer.method, 'wer');
-    _drawChart(_chartState.cer.rows, _chartState.cer.method, 'cer');
-    _drawChart(_chartState.analysis.rows, _chartState.analysis.method, 'analysis');
+    ['wer', 'cer', 'analysis', 'time'].forEach(redrawChart);
   }, 150);
 });
 
@@ -2841,28 +3204,49 @@ async function init() {
 
     const werEl = document.getElementById('table-wer');
 
-    let werMethod = 'mean', cerMethod = 'mean', analysisMetric = 'wer', lbMetric = 'wer';
+    /* CI and open-weights are page-wide: the tabs are views of one comparison,
+       so a filter set on any of them holds everywhere. "Rank by" is remembered
+       per metric instead (werMethod / cerMethod), so switching a tab between WER
+       and CER restores the method that metric was last ranked by. */
+    let werMethod = 'mean', cerMethod = 'mean';
+    let lbMetric = 'wer', analysisMetric = 'wer', timeMetric = 'wer';
+
+    const methodFor = (metric) => (metric === 'wer' ? werMethod : cerMethod);
+    /* Which metric each tab is showing; its Rank by group acts on that one. */
+    const tabMetric = () => ({ wer: lbMetric, analysis: analysisMetric, time: timeMetric });
+
+    function applyTime(metric = timeMetric) {
+      timeMetric = metric;
+      const isWer = metric === 'wer';
+      const rows = isWer ? visible(data.wer) : visible(data.cer);
+      document.getElementById('tog-time-wer').classList.toggle('active', isWer);
+      document.getElementById('tog-time-cer').classList.toggle('active', !isWer);
+      document.getElementById('time-chart-title').textContent =
+        `Performance Over Time (${isWer ? 'WER' : 'CER'})`;
+      renderTimeChart(rows, metric, methodFor(metric));
+      syncMethodBtns();
+    }
 
     function applyAnalysis(metric = analysisMetric) {
       analysisMetric = metric;
       const isWer = metric === 'wer';
       const rows = isWer ? _chartState.wer.rows : _chartState.cer.rows;
-      const method = isWer ? werMethod : cerMethod;
       _chartState.analysis = {
         ..._chartState.analysis,
         rows,
-        method,
+        method: methodFor(metric),
         sourceTab: metric,
       };
       document.getElementById('tog-analysis-wer').classList.toggle('active', isWer);
       document.getElementById('tog-analysis-cer').classList.toggle('active', !isWer);
       document.getElementById('analysis-chart-title').textContent =
         `Performance vs. Model Size (${isWer ? 'WER' : 'CER'})`;
-      renderSizeChart(rows, method, 'analysis');
+      renderSizeChart(rows, methodFor(metric), 'analysis');
+      syncMethodBtns();
     }
 
-    function applyWer(method) {
-      werMethod = method;
+    function applyWer() {
+      const method = werMethod;
       const sorted = method === 'borda' ? visible(data.wer).sort((a, b) => a.borda_score - b.borda_score)
                    : method === 'bt'    ? visible(data.wer).sort((a, b) => b.bt_score - a.bt_score)
                    :                     visible(data.wer).sort((a, b) => (a.mean_wer ?? Infinity) - (b.mean_wer ?? Infinity));
@@ -2874,10 +3258,11 @@ async function init() {
         initSortControls();
       }
       if (analysisMetric === 'wer') applyAnalysis('wer');
+      if (timeMetric === 'wer') applyTime('wer');
     }
 
-    function applyCer(method) {
-      cerMethod = method;
+    function applyCer() {
+      const method = cerMethod;
       const sorted = method === 'borda' ? visible(data.cer).sort((a, b) => a.borda_score - b.borda_score)
                    : method === 'bt'    ? visible(data.cer).sort((a, b) => b.bt_score - a.bt_score)
                    :                     visible(data.cer).sort((a, b) => (a.mean_cer ?? Infinity) - (b.mean_cer ?? Infinity));
@@ -2889,63 +3274,96 @@ async function init() {
         initSortControls();
       }
       if (analysisMetric === 'cer') applyAnalysis('cer');
+      if (timeMetric === 'cer') applyTime('cer');
     }
 
-    /* Metric selector: which of the WER/CER rankings the Leaderboard table
-       shows. Each metric remembers its own "Rank by" method (werMethod /
-       cerMethod), so switching back and forth restores it. */
+    /* Rank by: one group per tab, each acting on the metric that tab shows. The
+       method is stored per metric, so a choice made on Pareto while it displays
+       CER is the one the Leaderboard uses when switched to CER. */
+    const METHOD_TABS = ['wer', 'analysis', 'time'];
+    function syncMethodBtns() {
+      const tm = tabMetric();
+      for (const tab of METHOD_TABS)
+        for (const m of ['mean', 'borda', 'bt']) {
+          const b = document.getElementById(`tog-${tab}-${m}`);
+          if (b) b.classList.toggle('active', m === methodFor(tm[tab]));
+        }
+    }
+    function applyMethod(tab, m) {
+      if (tabMetric()[tab] === 'wer') werMethod = m; else cerMethod = m;
+      applyWer();
+      applyCer();
+      syncMethodBtns();
+    }
+    for (const tab of METHOD_TABS)
+      for (const m of ['mean', 'borda', 'bt']) {
+        const b = document.getElementById(`tog-${tab}-${m}`);
+        if (b) b.addEventListener('click', () => applyMethod(tab, m));
+      }
+
+    /* Metric selector on the Leaderboard: one table, either ranking. */
     function applyLbMetric(metric) {
       lbMetric = metric;
       document.getElementById('tog-lb-wer').classList.toggle('active', metric === 'wer');
       document.getElementById('tog-lb-cer').classList.toggle('active', metric === 'cer');
-      const method = metric === 'wer' ? werMethod : cerMethod;
-      document.getElementById('tog-wer-mean').classList.toggle('active', method === 'mean');
-      document.getElementById('tog-wer-borda').classList.toggle('active', method === 'borda');
-      document.getElementById('tog-wer-bt').classList.toggle('active', method === 'bt');
-      if (metric === 'wer') applyWer(werMethod); else applyCer(cerMethod);
+      if (metric === 'wer') applyWer(); else applyCer();
+      syncMethodBtns();
     }
-
-    applyWer('mean');
-    applyCer('mean');
-    applyAnalysis('wer');
-
     document.getElementById('tog-lb-wer').addEventListener('click', () => applyLbMetric('wer'));
     document.getElementById('tog-lb-cer').addEventListener('click', () => applyLbMetric('cer'));
 
-    /* Ranking toggles */
-    const WER_TOGS = ['tog-wer-mean','tog-wer-borda','tog-wer-bt'];
-    [['tog-wer-mean','mean'],['tog-wer-borda','borda'],['tog-wer-bt','bt']].forEach(([id, method]) => {
-      document.getElementById(id).addEventListener('click', () => {
-        WER_TOGS.forEach(t => document.getElementById(t).classList.toggle('active', t === id));
-        if (lbMetric === 'wer') applyWer(method); else applyCer(method);
-      });
-    });
+    applyWer();
+    applyCer();
+    applyAnalysis('wer');
+    applyTime('wer');
+    syncMethodBtns();
     document.getElementById('tog-analysis-wer').addEventListener('click', () => applyAnalysis('wer'));
     document.getElementById('tog-analysis-cer').addEventListener('click', () => applyAnalysis('cer'));
+    document.getElementById('tog-time-wer').addEventListener('click', () => applyTime('wer'));
+    document.getElementById('tog-time-cer').addEventListener('click', () => applyTime('cer'));
 
     /* CI toggle */
+    const CI_BTNS = ['tog-ci-wer', 'tog-ci-analysis', 'tog-ci-time'];
+    function syncCIBtns() {
+      for (const id of CI_BTNS) {
+        const b = document.getElementById(id);
+        if (!b) continue;
+        b.classList.toggle('active', showCI);
+        b.setAttribute('aria-pressed', String(showCI));
+      }
+    }
     function toggleCI() {
       showCI = !showCI;
-      document.getElementById('tog-ci-wer').classList.toggle('active', showCI);
-      document.getElementById('tog-ci-wer').setAttribute('aria-pressed', String(showCI));
-      applyWer(werMethod);
-      applyCer(cerMethod);
+      syncCIBtns();
+      applyWer();
+      applyCer();
     }
-    document.getElementById('tog-ci-wer').addEventListener('click', toggleCI);
+    CI_BTNS.forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.addEventListener('click', toggleCI);
+    });
+    syncCIBtns();
 
     /* Open-weights filter */
+    const OPEN_BTNS = ['tog-open-wer', 'tog-open-analysis', 'tog-open-time'];
     function syncOpenBtns() {
-      const b = document.getElementById('tog-open-wer');
-      b.classList.toggle('active', openOnly);
-      b.setAttribute('aria-pressed', String(openOnly));
+      for (const id of OPEN_BTNS) {
+        const b = document.getElementById(id);
+        if (!b) continue;
+        b.classList.toggle('active', openOnly);
+        b.setAttribute('aria-pressed', String(openOnly));
+      }
     }
     function toggleOpen() {
       openOnly = !openOnly;
       syncOpenBtns();
-      applyWer(werMethod);
-      applyCer(cerMethod);
+      applyWer();
+      applyCer();
     }
-    document.getElementById('tog-open-wer').addEventListener('click', toggleOpen);
+    OPEN_BTNS.forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.addEventListener('click', toggleOpen);
+    });
     syncOpenBtns();
 
     /* Last updated */
@@ -2974,8 +3392,13 @@ document.querySelectorAll('.tab-btn').forEach(btn =>
       document.getElementById('tog-analysis-wer').classList.toggle('active', _chartState.analysis.sourceTab === 'wer');
       document.getElementById('tog-analysis-cer').classList.toggle('active', _chartState.analysis.sourceTab === 'cer');
     }
-    if (tab === 'wer' || tab === 'analysis') {
-      requestAnimationFrame(() => _drawChart(_chartState[tab].rows, _chartState[tab].method, tab));
+    if (tab === 'time') {
+      document.getElementById('tog-time-wer').classList.toggle('active', _chartState.time.sourceTab === 'wer');
+      document.getElementById('tog-time-cer').classList.toggle('active', _chartState.time.sourceTab === 'cer');
+    }
+    /* 'cer' is gone -- the Leaderboard carries a Metric toggle instead. */
+    if (tab === 'wer' || tab === 'analysis' || tab === 'time') {
+      requestAnimationFrame(() => redrawChart(tab));
     }
   })
 );

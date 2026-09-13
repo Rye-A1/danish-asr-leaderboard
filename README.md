@@ -280,6 +280,7 @@ danish_asr_leaderboard/
     api/            # hosted-API backends
 run_eval.py         # thin CLI entry point
 scripts/            # run_benchmark.sh, fetch_common_voice_da.py, push_results.py, push_outputs.py, update_space.py, rescore.py
+  release_dates.json  # hand-maintained model release dates (Over Time chart)
 outputs/            # raw per-sample model outputs (git-ignored)
 results/            # generated result JSONs (git-ignored)
 space/              # Static HTML leaderboard (deployed to the HF Space)

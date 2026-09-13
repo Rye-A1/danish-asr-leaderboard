@@ -24,9 +24,19 @@ id, backend, and where to find it. We'll run it through the harness and add it.
    - `results/<model-slug>.json` — the scores and metadata
    - `outputs/<model-slug>/` — the raw per-dataset transcriptions
      (`<dataset>.jsonl` + `meta.json`)
-3. Commit **both** and open a pull request. On merge, CI publishes them to the
-   Hugging Face dataset and redeploys the leaderboard automatically — no manual
-   `push_results.py` / `push_outputs.py` step needed.
+3. Add the model's release date to `scripts/release_dates.json`, which is what
+   the Over Time chart plots. For a Hugging Face repo it is `createdAt` from
+   `https://huggingface.co/api/models/<model>`:
+   ```json
+   "<model>": {"released": "YYYY-MM-DD", "source": "huggingface"}
+   ```
+   For a hosted API use `"source": "published"` with the announcement link in a
+   `"note"`, or `"source": "best guess"` when no date is published anywhere —
+   say in the `"note"` what the guess is based on. A model with no entry is
+   simply left off that chart.
+4. Commit **all of it** and open a pull request. On merge, CI publishes the
+   results to the Hugging Face dataset and redeploys the leaderboard
+   automatically — no manual `push_results.py` / `push_outputs.py` step needed.
 
 Please include in the PR description: the exact command you ran, the hardware
 (for context on `speed_x`), and whether the model is `open` or `proprietary`.
