@@ -111,7 +111,7 @@
   "ordbogen/whisper": {
     "released": "2026-04-28",
     "source": "best guess",
-    "note": "No release date published by Ordbogen/odincore.ai and no public HF repo. Best guess: dated to the same reference as syv-transcribe (2026-04-28)."
+    "note": "No release date published by Ordbogen/odincore.ai and no public HF repo. Best guess: dated to syvai/hviske-v5.3 (2026-04-28) as a recency proxy."
   },
   "pluttodk/milo-asr": {
     "released": "2026-02-09",
@@ -127,9 +127,9 @@
     "note": "https://elevenlabs.io/blog/introducing-scribe-v2"
   },
   "syv-transcribe": {
-    "released": "2026-04-28",
-    "source": "best guess",
-    "note": "No release date published by syv.ai and no HF repo. Best guess: dated to syv.ai's most recent full-size hviske release (syvai/hviske-v5.3, 2026-04-28)."
+    "released": "2026-06-24",
+    "source": "confirmed",
+    "note": "syv.ai publishes no release date and there is no HF repo; this date is confirmed rather than inferred."
   },
   "syvai/hviske-v3-conversation": {
     "released": "2025-07-01",
