@@ -1281,13 +1281,12 @@
   <!-- Tabs -->
   <nav class="tab-nav">
     <button class="tab-btn active" data-tab="wer">🏆 Leaderboard</button>
-    <button class="tab-btn" data-tab="cer">📊 CER Breakdown</button>
     <button class="tab-btn" data-tab="analysis">📈 Pareto</button>
     <button class="tab-btn" data-tab="time">⏱️ Over Time</button>
     <button class="tab-btn" data-tab="about">ℹ️ About</button>
   </nav>
 
-  <!-- WER tab -->
+  <!-- Leaderboard tab -->
   <div id="tab-wer" class="tab-pane active">
     <div class="toolbar">
       <div class="search-wrap">
@@ -1295,6 +1294,11 @@
         <input type="search" id="search-wer" class="search" placeholder="Filter models…">
       </div>
       <span id="count-wer" class="count"></span>
+      <div class="tog-wrap">
+        <span class="tog-label">Metric</span>
+        <button class="tog-btn active" id="tog-lb-wer">WER</button>
+        <button class="tog-btn" id="tog-lb-cer">CER</button>
+      </div>
       <div class="tog-wrap">
         <span class="tog-label">Rank by</span>
         <button class="tog-btn active" id="tog-wer-mean">Mean</button>
@@ -1308,26 +1312,6 @@
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
     </p>
-  </div>
-
-  <!-- CER tab -->
-  <div id="tab-cer" class="tab-pane">
-    <div class="toolbar">
-      <div class="search-wrap">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="search" id="search-cer" class="search" placeholder="Filter models…">
-      </div>
-      <span id="count-cer" class="count"></span>
-      <div class="tog-wrap">
-        <span class="tog-label">Rank by</span>
-        <button class="tog-btn active" id="tog-cer-mean">Mean</button>
-        <button class="tog-btn" id="tog-cer-borda">Avg. Rank</button>
-        <button class="tog-btn" id="tog-cer-bt">Win Rate</button>
-      </div>
-      <button class="ci-btn" id="tog-ci-cer" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
-      <button class="ci-btn" id="tog-open-cer" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. Ranks renumber within the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
-    </div>
-    <div class="table-scroll"><table id="table-cer"></table></div>
   </div>
 
   <!-- Analysis tab -->
@@ -1506,8 +1490,11 @@
     </blockquote>
     <blockquote>
       <strong>Note:</strong> Danish hesitation fillers (<code>øh</code>,
-      <code>hmm</code>, …) are <strong>not</strong> removed in the published scores
-      (the eval harness supports it as an opt-in, but it is off by default).
+      <code>hmm</code>, …) <strong>are</strong> removed, from reference and
+      hypothesis alike, using the same pattern as
+      <a href="https://github.com/alexandrainst/coral" target="_blank" rel="noopener">alexandrainst/coral</a>.
+      Scoring them verbatim measured transcription convention rather than accuracy.
+      Verbatim scoring remains available offline via <code>--no-filler-words</code>.
     </blockquote>
     <blockquote>
       <strong>Note:</strong> Danish orthographic variants
@@ -1609,6 +1596,21 @@
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
       <div class="changelog-body">
+        <h3>2026-09 — Filler words removed</h3>
+        <ul>
+          <li><strong>Hesitation fillers are now stripped</strong> (<code>øh</code>,
+            <code>hmm</code>, …) from reference and hypothesis alike, using
+            <code>alexandrainst/coral</code>'s exact pattern. Verbatim scoring
+            measured convention, not accuracy: models trained to omit disfluencies
+            were penalised for a style choice.</li>
+          <li>Measured over 34 models: mean WER −0.09&nbsp;pp, <strong>no rank
+            changes</strong> on mean WER or Avg. Rank. Only
+            <code>coral_conversation</code> reorders (5 models) — the correction
+            being made.</li>
+          <li>Not monotone: <code>whisper-tiny</code> +0.52 and
+            <code>whisper-base</code> +0.41, both already above 96&nbsp;WER.</li>
+          <li><code>--no-filler-words</code> restores verbatim scoring offline.</li>
+        </ul>
         <h3>2026-08 — Numeral normalisation</h3>
         <ul>
           <li><strong>Spelled-out numerals now fold onto their digit form.</strong>
@@ -1636,7 +1638,8 @@
             same time and rejected. It changed no ranking across the 29 models, and it
             is not monotone — <code>whisper-tiny</code> and <code>whisper-base</code>
             get worse, because at their error rates removing reference tokens raises
-            the rate. It remains available as an opt-in for offline re-scoring.</li>
+            the rate. It remains available as an opt-in for offline re-scoring.
+            <em>Superseded in 2026-09 — see below.</em></li>
         </ul>
         <h3>2026-08 — Decoding fixes &amp; re-runs</h3>
         <ul>
@@ -2025,8 +2028,10 @@ function initFilterToggles() {
     btn.append(ICON_FILTER(), 'Filters ', caret, count);
 
     /* Counts the controls that are not at their default, so a collapsed
-       toolbar still says whether anything is filtering the table. The first
-       .tog-btn is the default ranking (Mean), so only a later one counts. */
+       toolbar still says whether anything is filtering the table. Within
+       each .tog-wrap group, the first .tog-btn is that group's default (e.g.
+       Mean ranking, or the WER metric), so only a later one counts -- a
+       toolbar can hold more than one such group (Metric, Rank by, ...). */
     const activeCount = () => {
       let n = 0;
       const search = bar.querySelector('.search');
@@ -2034,9 +2039,11 @@ function initFilterToggles() {
       bar.querySelectorAll('.ci-btn').forEach(b => {
         if (b.getAttribute('aria-pressed') === 'true' || b.classList.contains('active')) n++;
       });
-      const togs = [...bar.querySelectorAll('.tog-btn')];
-      const active = togs.find(b => b.classList.contains('active'));
-      if (active && togs.indexOf(active) > 0) n++;
+      bar.querySelectorAll('.tog-wrap').forEach(wrap => {
+        const togs = [...wrap.querySelectorAll('.tog-btn')];
+        const active = togs.find(b => b.classList.contains('active'));
+        if (active && togs.indexOf(active) > 0) n++;
+      });
       return n;
     };
 
@@ -3196,12 +3203,17 @@ async function init() {
     };
 
     const werEl = document.getElementById('table-wer');
-    const cerEl = document.getElementById('table-cer');
 
-    /* One ranking method, one CI switch and one open-weights filter for the
-       whole page: the four tabs are four views of the same comparison, so a
-       control set on one carries to the rest rather than silently differing. */
-    let method = 'mean', analysisMetric = 'wer', timeMetric = 'wer';
+    /* CI and open-weights are page-wide: the tabs are views of one comparison,
+       so a filter set on any of them holds everywhere. "Rank by" is remembered
+       per metric instead (werMethod / cerMethod), so switching a tab between WER
+       and CER restores the method that metric was last ranked by. */
+    let werMethod = 'mean', cerMethod = 'mean';
+    let lbMetric = 'wer', analysisMetric = 'wer', timeMetric = 'wer';
+
+    const methodFor = (metric) => (metric === 'wer' ? werMethod : cerMethod);
+    /* Which metric each tab is showing; its Rank by group acts on that one. */
+    const tabMetric = () => ({ wer: lbMetric, analysis: analysisMetric, time: timeMetric });
 
     function applyTime(metric = timeMetric) {
       timeMetric = metric;
@@ -3211,7 +3223,8 @@ async function init() {
       document.getElementById('tog-time-cer').classList.toggle('active', !isWer);
       document.getElementById('time-chart-title').textContent =
         `Performance Over Time (${isWer ? 'WER' : 'CER'})`;
-      renderTimeChart(rows, metric, method);
+      renderTimeChart(rows, metric, methodFor(metric));
+      syncMethodBtns();
     }
 
     function applyAnalysis(metric = analysisMetric) {
@@ -3221,62 +3234,83 @@ async function init() {
       _chartState.analysis = {
         ..._chartState.analysis,
         rows,
-        method,
+        method: methodFor(metric),
         sourceTab: metric,
       };
       document.getElementById('tog-analysis-wer').classList.toggle('active', isWer);
       document.getElementById('tog-analysis-cer').classList.toggle('active', !isWer);
       document.getElementById('analysis-chart-title').textContent =
         `Performance vs. Model Size (${isWer ? 'WER' : 'CER'})`;
-      renderSizeChart(rows, method, 'analysis');
+      renderSizeChart(rows, methodFor(metric), 'analysis');
+      syncMethodBtns();
     }
 
     function applyWer() {
+      const method = werMethod;
       const sorted = method === 'borda' ? visible(data.wer).sort((a, b) => a.borda_score - b.borda_score)
                    : method === 'bt'    ? visible(data.wer).sort((a, b) => b.bt_score - a.bt_score)
                    :                     visible(data.wer).sort((a, b) => (a.mean_wer ?? Infinity) - (b.mean_wer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
-      renderTable(werEl, sorted, getWerCols(method), maxVals);
-      wireSearch('search-wer', 'count-wer', 'table-wer');
-      initSortControls();
       renderSizeChart(sorted, method, 'wer');
+      if (lbMetric === 'wer') {
+        renderTable(werEl, sorted, getWerCols(method), maxVals);
+        wireSearch('search-wer', 'count-wer', 'table-wer');
+        initSortControls();
+      }
       if (analysisMetric === 'wer') applyAnalysis('wer');
       if (timeMetric === 'wer') applyTime('wer');
     }
 
     function applyCer() {
+      const method = cerMethod;
       const sorted = method === 'borda' ? visible(data.cer).sort((a, b) => a.borda_score - b.borda_score)
                    : method === 'bt'    ? visible(data.cer).sort((a, b) => b.bt_score - a.bt_score)
                    :                     visible(data.cer).sort((a, b) => (a.mean_cer ?? Infinity) - (b.mean_cer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
-      renderTable(cerEl, sorted, getCerCols(method), maxVals);
-      initSortControls();
-      wireSearch('search-cer', 'count-cer', 'table-cer');
       renderSizeChart(sorted, method, 'cer');
+      if (lbMetric === 'cer') {
+        renderTable(werEl, sorted, getCerCols(method), maxVals);
+        wireSearch('search-wer', 'count-wer', 'table-wer');
+        initSortControls();
+      }
       if (analysisMetric === 'cer') applyAnalysis('cer');
       if (timeMetric === 'cer') applyTime('cer');
     }
 
-    /* Ranking toggles — the same control repeated on every tab. Re-rendering
-       both tables also refreshes both charts, which read from the same rows. */
-    const METHOD_TABS = ['wer', 'cer', 'analysis', 'time'];
+    /* Rank by: one group per tab, each acting on the metric that tab shows. The
+       method is stored per metric, so a choice made on Pareto while it displays
+       CER is the one the Leaderboard uses when switched to CER. */
+    const METHOD_TABS = ['wer', 'analysis', 'time'];
     function syncMethodBtns() {
+      const tm = tabMetric();
       for (const tab of METHOD_TABS)
         for (const m of ['mean', 'borda', 'bt']) {
           const b = document.getElementById(`tog-${tab}-${m}`);
-          if (b) b.classList.toggle('active', m === method);
+          if (b) b.classList.toggle('active', m === methodFor(tm[tab]));
         }
     }
-    function applyMethod(m) {
-      method = m;
-      syncMethodBtns();
+    function applyMethod(tab, m) {
+      if (tabMetric()[tab] === 'wer') werMethod = m; else cerMethod = m;
       applyWer();
       applyCer();
+      syncMethodBtns();
     }
     for (const tab of METHOD_TABS)
-      for (const m of ['mean', 'borda', 'bt'])
-        document.getElementById(`tog-${tab}-${m}`)
-          .addEventListener('click', () => applyMethod(m));
+      for (const m of ['mean', 'borda', 'bt']) {
+        const b = document.getElementById(`tog-${tab}-${m}`);
+        if (b) b.addEventListener('click', () => applyMethod(tab, m));
+      }
+
+    /* Metric selector on the Leaderboard: one table, either ranking. */
+    function applyLbMetric(metric) {
+      lbMetric = metric;
+      document.getElementById('tog-lb-wer').classList.toggle('active', metric === 'wer');
+      document.getElementById('tog-lb-cer').classList.toggle('active', metric === 'cer');
+      if (metric === 'wer') applyWer(); else applyCer();
+      syncMethodBtns();
+    }
+    document.getElementById('tog-lb-wer').addEventListener('click', () => applyLbMetric('wer'));
+    document.getElementById('tog-lb-cer').addEventListener('click', () => applyLbMetric('cer'));
 
     applyWer();
     applyCer();
@@ -3289,10 +3323,11 @@ async function init() {
     document.getElementById('tog-time-cer').addEventListener('click', () => applyTime('cer'));
 
     /* CI toggle */
-    const CI_BTNS = ['tog-ci-wer', 'tog-ci-cer', 'tog-ci-analysis', 'tog-ci-time'];
+    const CI_BTNS = ['tog-ci-wer', 'tog-ci-analysis', 'tog-ci-time'];
     function syncCIBtns() {
       for (const id of CI_BTNS) {
         const b = document.getElementById(id);
+        if (!b) continue;
         b.classList.toggle('active', showCI);
         b.setAttribute('aria-pressed', String(showCI));
       }
@@ -3303,14 +3338,18 @@ async function init() {
       applyWer();
       applyCer();
     }
-    CI_BTNS.forEach(id => document.getElementById(id).addEventListener('click', toggleCI));
+    CI_BTNS.forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.addEventListener('click', toggleCI);
+    });
     syncCIBtns();
 
     /* Open-weights filter */
-    const OPEN_BTNS = ['tog-open-wer', 'tog-open-cer', 'tog-open-analysis', 'tog-open-time'];
+    const OPEN_BTNS = ['tog-open-wer', 'tog-open-analysis', 'tog-open-time'];
     function syncOpenBtns() {
       for (const id of OPEN_BTNS) {
         const b = document.getElementById(id);
+        if (!b) continue;
         b.classList.toggle('active', openOnly);
         b.setAttribute('aria-pressed', String(openOnly));
       }
@@ -3321,7 +3360,10 @@ async function init() {
       applyWer();
       applyCer();
     }
-    OPEN_BTNS.forEach(id => document.getElementById(id).addEventListener('click', toggleOpen));
+    OPEN_BTNS.forEach(id => {
+      const b = document.getElementById(id);
+      if (b) b.addEventListener('click', toggleOpen);
+    });
     syncOpenBtns();
 
     /* Last updated */
@@ -3354,7 +3396,8 @@ document.querySelectorAll('.tab-btn').forEach(btn =>
       document.getElementById('tog-time-wer').classList.toggle('active', _chartState.time.sourceTab === 'wer');
       document.getElementById('tog-time-cer').classList.toggle('active', _chartState.time.sourceTab === 'cer');
     }
-    if (tab === 'wer' || tab === 'cer' || tab === 'analysis' || tab === 'time') {
+    /* 'cer' is gone -- the Leaderboard carries a Metric toggle instead. */
+    if (tab === 'wer' || tab === 'analysis' || tab === 'time') {
       requestAnimationFrame(() => redrawChart(tab));
     }
   })

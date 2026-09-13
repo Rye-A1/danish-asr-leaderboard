@@ -133,9 +133,37 @@ def test_filler_words_removed_when_enabled(text, expected):
     assert normalise(text, filler_words=True) == expected
 
 
-def test_filler_words_off_by_default():
-    # Opt-in: fillers are kept unless explicitly requested.
-    assert normalise("øh jeg tror det") == "øh jeg tror det"
+def test_filler_words_on_by_default():
+    """Fillers are stripped unless verbatim scoring is asked for.
+
+    Scoring them verbatim measured transcription convention rather than
+    accuracy: a model trained to omit disfluencies was penalised for a style
+    choice. The pattern matches alexandrainst/coral exactly.
+    """
+    assert normalise("øh jeg tror det") == "jeg tror det"
+    assert normalise("øh jeg tror det", filler_words=False) == "øh jeg tror det"
+
+
+def test_filler_strip_is_symmetric():
+    """Applied to reference and hypothesis alike, so neither emitting nor
+    omitting a filler is rewarded."""
+    ref, hyp = "øh jeg tror det", "jeg tror det"
+    assert normalise(ref) == normalise(hyp)
+
+
+def test_filler_only_utterance_empties():
+    """374 of 910k references are filler-only. Stripping empties them, and
+    per_utterance_counts drops empty-reference pairs -- documented here so the
+    behaviour is deliberate rather than incidental."""
+    assert normalise("øh") == ""
+    assert normalise("øh øhm hmm") == ""
+
+
+@pytest.mark.parametrize("text", ["armen gør ondt", "modstanden er en ohm", "mit hjem"])
+def test_filler_pattern_does_not_eat_real_words(text):
+    """A looser pattern would: 'arm' appears 238 times in the benchmark corpus
+    and a regex like a[rh]+m* swallows it."""
+    assert normalise(text) == text
 
 
 def test_filler_words_leaves_real_words_alone():
