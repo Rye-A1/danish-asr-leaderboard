@@ -197,15 +197,12 @@ def _model_license(model_id: str) -> str:
 def _release_date(model_id: str) -> str:
     """ISO release date for a model, or '' if there is no entry for it.
 
-    The substring fallback is for the suffixed variants of hosted-API rows the
-    parquet carries ("gpt-4o-transcribe-benchmark"), which share the date of
-    the provider row they came from.
+    Looked up exactly. The suffixed run names the harness produces
+    ("gpt-4o-transcribe-benchmark") carry their own entries, so the substring
+    fallback this used to have was never reached -- and it would have resolved
+    "syvai/hviske-v5.1" to whichever of "syvai/hviske-v5" came first.
     """
-    entry = RELEASE_DATES.get(model_id)
-    if entry is None:
-        low = model_id.lower()
-        entry = next((e for k, e in RELEASE_DATES.items() if k.lower() in low), {})
-    return entry.get("released", "")
+    return RELEASE_DATES.get(model_id, {}).get("released", "")
 
 
 def _fmt_size(x) -> str:
