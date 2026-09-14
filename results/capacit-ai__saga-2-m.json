@@ -1,0 +1,19 @@
+{
+  "model": "[capacit-ai/saga-2-m](https://huggingface.co/capacit-ai/saga-2-m)",
+  "params_b": 1.238,
+  "coral_conversation_wer": 19.77,
+  "coral_read_aloud_wer": 12.04,
+  "cv17_da_wer": 7.47,
+  "fleurs_da_wer": 7.97,
+  "ftspeech_wer": 6.16,
+  "mean_wer": 10.68,
+  "coral_conversation_cer": 11.62,
+  "coral_read_aloud_cer": 4.86,
+  "cv17_da_cer": 2.49,
+  "fleurs_da_cer": 3.13,
+  "ftspeech_cer": 3.39,
+  "mean_cer": 5.1,
+  "speed_x": 71.9,
+  "submitted": "2026-09-14",
+  "access": "open"
+}
