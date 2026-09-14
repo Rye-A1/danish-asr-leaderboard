@@ -456,24 +456,15 @@
     }
     .score-fill { height: 100%; border-radius: 3px; }
 
-    /* Rolling Hugging Face downloads: a compact number plus a log-scaled bar so
-       models below the largest repo remain distinguishable. */
+    /* Rolling Hugging Face downloads: the number plus the recent daily trend. */
     .download-wrap {
       display: flex;
       align-items: center;
-      gap: 7px;
-      min-width: 92px;
+      gap: 6px;
+      min-width: 98px;
     }
     .download-num { min-width: 34px; font-variant-numeric: tabular-nums; }
-    .download-bar {
-      flex: 1;
-      height: 5px;
-      min-width: 36px;
-      overflow: hidden;
-      border-radius: 3px;
-      background: var(--border);
-    }
-    .download-fill { height: 100%; border-radius: 3px; background: var(--link); }
+    .download-spark { width: 54px; height: 22px; flex: 0 0 auto; color: var(--link); }
 
     /* Access badge */
     .badge {
@@ -1060,8 +1051,8 @@
       tbody tr td[data-key="speed_x"]::before  { content: "SPEED"; }
       tbody tr td[data-key="hf_downloads"]::before { content: "HF DLs"; }
       tbody td[data-key="hf_downloads"] .download-wrap { min-width: 0; }
-      tbody td[data-key="hf_downloads"] .download-bar { display: none; }
       tbody td[data-key="hf_downloads"] .download-num { min-width: 0; }
+      tbody td[data-key="hf_downloads"] .download-spark { width: 40px; height: 18px; }
 
       /* 5 -- per-dataset scores, two per line, hidden until expanded. */
       tbody td[data-key$="_wer"]:not([data-key^="mean"]),
@@ -1856,7 +1847,73 @@ const DOWNLOAD_FORMAT = new Intl.NumberFormat('en', {
   maximumFractionDigits: 1,
 });
 
-function downloadCell(td, value, max) {
+let sparkId = 0;
+
+function downloadSparkline(values) {
+  const points = values.filter(value => Number.isFinite(value));
+  if (!points.length) return null;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const width = 54, height = 22, top = 2, baseline = 20;
+  const min = Math.min(...points);
+  const range = Math.max(1, Math.max(...points) - min);
+  const coords = points.map((value, index) => ({
+    x: points.length === 1 ? width / 2 : (index / (points.length - 1)) * width,
+    y: top + (1 - (value - min) / range) * (baseline - top - 2),
+  }));
+  const line = coords.map((point, index) =>
+    `${index ? 'L' : 'M'}${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ');
+
+  const svg = document.createElementNS(NS, 'svg');
+  svg.classList.add('download-spark');
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.setAttribute('aria-hidden', 'true');
+  const gradientId = `download-gradient-${sparkId++}`;
+  const defs = document.createElementNS(NS, 'defs');
+  const gradient = document.createElementNS(NS, 'linearGradient');
+  gradient.setAttribute('id', gradientId);
+  gradient.setAttribute('x1', '0');
+  gradient.setAttribute('y1', '0');
+  gradient.setAttribute('x2', '0');
+  gradient.setAttribute('y2', '1');
+  const start = document.createElementNS(NS, 'stop');
+  start.setAttribute('offset', '0%');
+  start.setAttribute('stop-color', 'currentColor');
+  start.setAttribute('stop-opacity', '.42');
+  const end = document.createElementNS(NS, 'stop');
+  end.setAttribute('offset', '100%');
+  end.setAttribute('stop-color', 'currentColor');
+  end.setAttribute('stop-opacity', '0');
+  gradient.append(start, end);
+  defs.appendChild(gradient);
+  svg.appendChild(defs);
+
+  if (coords.length > 1) {
+    const area = document.createElementNS(NS, 'path');
+    area.setAttribute('d', `${line} L${width},${baseline} L0,${baseline} Z`);
+    area.setAttribute('fill', `url(#${gradientId})`);
+    svg.appendChild(area);
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', line);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '1.8');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(path);
+  }
+
+  const latest = coords.at(-1);
+  const dot = document.createElementNS(NS, 'circle');
+  dot.setAttribute('cx', latest.x.toFixed(1));
+  dot.setAttribute('cy', latest.y.toFixed(1));
+  dot.setAttribute('r', '2');
+  dot.setAttribute('fill', 'currentColor');
+  svg.appendChild(dot);
+  return svg;
+}
+
+function downloadCell(td, value, history) {
   if (value == null) { td.textContent = '—'; return; }
   const wrap = document.createElement('div');
   wrap.className = 'download-wrap';
@@ -1864,14 +1921,9 @@ function downloadCell(td, value, max) {
   number.className = 'download-num';
   number.textContent = DOWNLOAD_FORMAT.format(value);
   number.title = value.toLocaleString('en') + ' Hugging Face downloads in the last 30 days';
-  const bar = document.createElement('div');
-  bar.className = 'download-bar';
-  const fill = document.createElement('div');
-  fill.className = 'download-fill';
-  const share = max > 0 ? Math.log1p(value) / Math.log1p(max) : 0;
-  fill.style.width = (share * 100).toFixed(1) + '%';
-  bar.appendChild(fill);
-  wrap.append(number, bar);
+  const sparkline = downloadSparkline(Array.isArray(history) ? history : []);
+  wrap.append(number);
+  if (sparkline) wrap.appendChild(sparkline);
   td.appendChild(wrap);
 }
 
@@ -1999,7 +2051,7 @@ function buildRow(row, cols, maxVals) {
       td.textContent = v != null ? v.toFixed(1) + 'x' : '—';
 
     } else if (c.key === 'hf_downloads') {
-      downloadCell(td, v, maxVals.hf_downloads);
+      downloadCell(td, v, row.hf_download_history);
 
     } else if (typeof v === 'number') {
       td.textContent = v.toFixed(2);
@@ -3260,7 +3312,6 @@ async function init() {
     const maxVals = {
       wer: Math.max(...data.wer.map(r => r.mean_wer || 0)),
       cer: Math.max(...data.cer.map(r => r.mean_cer || 0)),
-      hf_downloads: Math.max(1, ...data.wer.map(r => r.hf_downloads || 0)),
     };
 
     const werEl = document.getElementById('table-wer');

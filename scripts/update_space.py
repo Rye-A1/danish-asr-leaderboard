@@ -35,6 +35,8 @@ DATASET_PARQUET = "hf://datasets/RyeAI/danish-asr-leaderboard/data/results.parqu
 # scripts/compute_ci.py (too expensive to recompute on every deploy).
 DATASET_CI_JSON = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/resolve/main/data/ci.json"
 SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
+DOWNLOAD_HISTORY_PATH = Path(__file__).resolve().parent.parent / "history" / "hf_downloads.json"
+DOWNLOAD_HISTORY_WINDOW = 90
 
 UPLOAD = ["index.html", "leaderboard.json", "models.py", "README.md", "cover.jpeg"]
 OBSOLETE = ["app.py", "requirements.txt"]
@@ -199,8 +201,41 @@ def _model_license(model_id: str) -> str:
     return ""
 
 
+@functools.lru_cache(maxsize=1)
+def _download_history() -> dict:
+    """Daily Hugging Face download snapshots, or an empty history."""
+    try:
+        return json.loads(DOWNLOAD_HISTORY_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"snapshots": []}
+
+
+def _download_series(model_id: str, history: dict) -> list[int | None]:
+    """Return a model's daily download values, preserving missing snapshots."""
+    values: list[int | None] = []
+    for snapshot in history.get("snapshots", []):
+        value = snapshot.get("downloads", {}).get(model_id)
+        try:
+            downloads = int(value)
+        except (TypeError, ValueError):
+            values.append(None)
+            continue
+        values.append(downloads if downloads >= 0 else None)
+    return values
+
+
+@functools.lru_cache(maxsize=256)
+def _model_download_history(model_id: str) -> tuple[int | None, ...]:
+    """The most recent daily download values sent to the static Space."""
+    series = _download_series(model_id, _download_history())[-DOWNLOAD_HISTORY_WINDOW:]
+    return tuple(series) if any(value is not None for value in series) else ()
+
+
 def _model_downloads(model_id: str) -> int | None:
-    """Rolling 30-day Hub download count, or None if it is unavailable."""
+    """Latest recorded rolling 30-day Hub download count, with a live fallback."""
+    for downloads in reversed(_model_download_history(model_id)):
+        if downloads is not None:
+            return downloads
     value = _model_metadata(model_id).get("downloads")
     try:
         downloads = int(value)
@@ -379,6 +414,7 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 # Hugging Face reports a rolling 30-day download count. It is
                 # activity context, not a quality or historical trend metric.
                 "hf_downloads": _model_downloads(name) if is_repo else None,
+                "hf_download_history": list(_model_download_history(name)) if is_repo else [],
                 "size": _official_size(name, row.get("params_b")),
                 "submitted": str(submitted)[:10] if pd.notna(submitted) else "",
                 # Powers the Over Time chart. Distinct from "submitted", which

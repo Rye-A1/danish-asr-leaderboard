@@ -15,6 +15,7 @@ from update_space import (
     SEO_MARKER,
     THUMBNAIL_SIZE,
     _api_docs_url,
+    _download_series,
     _release_date,
     _fmt_size,
     _official_size,
@@ -155,7 +156,20 @@ def test_leaderboard_json_includes_hf_downloads(monkeypatch):
     for table in ("wer", "cer"):
         by_name = {row["name"]: row for row in data[table]}
         assert by_name["example/asr"]["hf_downloads"] == 1_234
+        assert by_name["example/asr"]["hf_download_history"] == []
         assert by_name["hosted-api-model"]["hf_downloads"] is None
+
+
+def test_download_series_preserves_missing_snapshots():
+    history = {
+        "snapshots": [
+            {"date": "2026-09-12", "downloads": {"example/asr": 100}},
+            {"date": "2026-09-13", "downloads": {}},
+            {"date": "2026-09-14", "downloads": {"example/asr": 125}},
+        ]
+    }
+
+    assert _download_series("example/asr", history) == [100, None, 125]
 
 
 def test_generate_cover_image(tmp_path):
