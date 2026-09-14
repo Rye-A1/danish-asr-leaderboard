@@ -228,16 +228,20 @@
       margin-bottom: 18px;
     }
     .tab-btn {
+      align-items: center;
       padding: 6px 16px;
       border: none;
       background: none;
       color: var(--muted);
       cursor: pointer;
       border-radius: 7px;
+      display: inline-flex;
       font-size: 14px;
       font-weight: 500;
+      gap: 7px;
       transition: background 0.12s, color 0.12s;
     }
+    .tab-icon { width: 15px; height: 15px; flex: none; }
     .tab-btn.active { background: var(--surf2); color: var(--text); }
     .tab-btn:hover:not(.active) { color: var(--text); }
     .tab-pane { display: none; }
@@ -1279,11 +1283,11 @@
   </header>
 
   <!-- Tabs -->
-  <nav class="tab-nav">
-    <button class="tab-btn active" data-tab="wer">🏆 Leaderboard</button>
-    <button class="tab-btn" data-tab="analysis">📈 Pareto</button>
-    <button class="tab-btn" data-tab="time">⏱️ Over Time</button>
-    <button class="tab-btn" data-tab="about">ℹ️ About</button>
+  <nav class="tab-nav" aria-label="Leaderboard views">
+    <button class="tab-btn active" data-tab="wer"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M5 6H3v2a4 4 0 0 0 4 4M19 6h2v2a4 4 0 0 1-4 4"/></svg>Leaderboard</button>
+    <button class="tab-btn" data-tab="analysis"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg>Pareto</button>
+    <button class="tab-btn" data-tab="time"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Over Time</button>
+    <button class="tab-btn" data-tab="about"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>About</button>
   </nav>
 
   <!-- Leaderboard tab -->

@@ -231,6 +231,10 @@ def test_an_unlisted_model_gets_no_date_rather_than_a_guess():
     assert _release_date("some-org/model-nobody-listed") == ""
 
 
+def test_saga2_release_date_is_tracked():
+    assert _release_date("capacit-ai/saga-2-m") == "2026-09-13"
+
+
 def test_bake_injects_into_head_and_marker():
     src = SPACE_INDEX.read_text(encoding="utf-8")
     out = bake_seo(src, _ROWS)
