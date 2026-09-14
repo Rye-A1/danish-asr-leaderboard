@@ -1,6 +1,8 @@
 """Auto-generated list of models registered in the Danish ASR leaderboard."""
 
 MODEL_NAMES = [
+    '3dio-ai/svale-110M',
+    '3dio-ai/svale-600M',
     'capacit-ai/saga',
     'CoRal-project/roest-v2-wav2vec2-1B',
     'CoRal-project/roest-v2-wav2vec2-2B',
@@ -8,10 +10,11 @@ MODEL_NAMES = [
     'CoRal-project/roest-v3-whisper-1.5b',
     'facebook/mms-1b-all',
     'facebook/seamless-m4t-v2-large',
-    'microsoft/VibeVoice-ASR-HF',
+    'MediaCatch/xls-r-300m-danish-mc-v2',
     'mistralai/Voxtral-Mini-3B-2507',
     'mistralai/Voxtral-Small-24B-2507',
     'nvidia/canary-1b-v2',
+    'nvidia/parakeet-rnnt-110m-da-dk',
     'nvidia/parakeet-tdt-0.6b-v3',
     'openai/whisper-base',
     'openai/whisper-large-v3',
@@ -22,5 +25,8 @@ MODEL_NAMES = [
     'Qwen/Qwen3-ASR-1.7B',
     'syvai/hviske-v3-conversation',
     'syvai/hviske-v5',
-    'syvai/hviske-v5.3'
+    'syvai/hviske-v5-tiny',
+    'syvai/hviske-v5.1',
+    'syvai/hviske-v5.3',
+    'thorh/whisper-large-v3-turbo-danish'
 ]

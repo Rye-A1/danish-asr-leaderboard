@@ -79,6 +79,10 @@ PROVIDER_LOGO = {
 # no explicit PROVIDER_LOGO entry (which takes precedence).
 PROVIDER_HF_ORG: dict[str, str] = {}
 
+# Hand-maintained model release dates; see CONTRIBUTING.md for the format.
+RELEASE_DATES = json.loads(
+    (Path(__file__).resolve().parent / "release_dates.json").read_text(encoding="utf-8"))
+
 _MD_LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
 # A size the model advertises in its own name: 24B, 1.7B, 0.6b, 315m, …
 _SIZE_IN_NAME = re.compile(r"(\d+(?:\.\d+)?)\s*([bBmM])(?![a-zA-Z])")
@@ -188,6 +192,17 @@ def _model_license(model_id: str) -> str:
     except Exception:
         pass
     return ""
+
+
+def _release_date(model_id: str) -> str:
+    """ISO release date for a model, or '' if there is no entry for it.
+
+    Looked up exactly. The suffixed run names the harness produces
+    ("gpt-4o-transcribe-benchmark") carry their own entries, so the substring
+    fallback this used to have was never reached -- and it would have resolved
+    "syvai/hviske-v5.1" to whichever of "syvai/hviske-v5" came first.
+    """
+    return RELEASE_DATES.get(model_id, {}).get("released", "")
 
 
 def _fmt_size(x) -> str:
@@ -348,6 +363,9 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "license": _model_license(name) if is_repo else "",
                 "size": _official_size(name, row.get("params_b")),
                 "submitted": str(submitted)[:10] if pd.notna(submitted) else "",
+                # Powers the Over Time chart. Distinct from "submitted", which
+                # is when *we* evaluated the model, not when it came out.
+                "released": _release_date(name),
             }
             for col in metric_cols:
                 entry[col] = _num(row.get(col))
@@ -378,8 +396,10 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
         "coral_conversation_wer", "coral_read_aloud_wer",
         "ftspeech_wer", "cv17_da_wer", "fleurs_da_wer",
     ]
+    # mean_wer and speed_x belong here too: both tables show them as secondary
+    # columns, and omitting them left every CER row with two empty cells.
     cer_metrics = [
-        "mean_cer",
+        "mean_cer", "mean_wer", "speed_x",
         "coral_conversation_cer", "coral_read_aloud_cer",
         "ftspeech_cer", "cv17_da_cer", "fleurs_da_cer",
     ]
@@ -679,6 +699,11 @@ def main() -> None:
     print("Building leaderboard.json …")
     df = load_leaderboard_df()
     data = build_leaderboard_json(df)
+    missing = [r["name"] for r in data["wer"] if not r["released"]]
+    if missing:
+        print(f"  no release date for {len(missing)} model(s) — add them to "
+              f"release_dates.json to plot them on the Over Time chart: "
+              f"{', '.join(missing)}")
     out = SPACE_DIR / "leaderboard.json"
     out.write_text(json.dumps(data, ensure_ascii=False, indent=2))
     print(f"  {out}  ({len(data['wer'])} WER rows, {len(data['cer'])} CER rows)")

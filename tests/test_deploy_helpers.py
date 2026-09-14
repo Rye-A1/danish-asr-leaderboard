@@ -1,6 +1,8 @@
 """Unit tests for update_space.py helper functions (no network required)."""
 import json
+import re
 import sys
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -8,9 +10,11 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 from update_space import (
+    RELEASE_DATES,
     SEO_MARKER,
     THUMBNAIL_SIZE,
     _api_docs_url,
+    _release_date,
     _fmt_size,
     _official_size,
     _parse_model,
@@ -201,6 +205,30 @@ def test_index_html_still_has_the_marker_and_head():
     src = SPACE_INDEX.read_text(encoding="utf-8")
     assert SEO_MARKER in src
     assert "</head>" in src
+
+def test_every_release_date_is_empty_or_a_real_iso_date():
+    """The Over Time chart plots `released`, so each value must parse as a date.
+
+    This used to read the generated space/leaderboard.json, which is no longer
+    tracked. release_dates.json is the hand-maintained source, so a typo'd or
+    half-written date is the regression that actually happens — and it would
+    otherwise surface only as a model silently missing from the chart.
+
+    An empty value is legitimate: a hosted API with no published date and no HF
+    repo to read one from is left off the chart and counted in the panel rather
+    than given a guessed date.
+    """
+    for name, entry in RELEASE_DATES.items():
+        released = entry.get("released", "")
+        assert released == "" or re.fullmatch(r"\d{4}-\d{2}-\d{2}", released), (
+            f"{name} -> {released!r}")
+        if released:
+            date.fromisoformat(released)        # rejects 2026-13-45
+        assert _release_date(name) == released, name
+
+
+def test_an_unlisted_model_gets_no_date_rather_than_a_guess():
+    assert _release_date("some-org/model-nobody-listed") == ""
 
 
 def test_bake_injects_into_head_and_marker():
