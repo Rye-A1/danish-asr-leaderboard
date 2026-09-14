@@ -456,6 +456,25 @@
     }
     .score-fill { height: 100%; border-radius: 3px; }
 
+    /* Rolling Hugging Face downloads: a compact number plus a log-scaled bar so
+       models below the largest repo remain distinguishable. */
+    .download-wrap {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      min-width: 92px;
+    }
+    .download-num { min-width: 34px; font-variant-numeric: tabular-nums; }
+    .download-bar {
+      flex: 1;
+      height: 5px;
+      min-width: 36px;
+      overflow: hidden;
+      border-radius: 3px;
+      background: var(--border);
+    }
+    .download-fill { height: 100%; border-radius: 3px; background: var(--link); }
+
     /* Access badge */
     .badge {
       display: inline-block;
@@ -993,6 +1012,7 @@
       tbody tr td[data-key="mean_wer"],
       tbody tr td[data-key="mean_cer"],
       tbody tr td[data-key="speed_x"],
+      tbody tr td[data-key="hf_downloads"],
       tbody tr td[data-key="borda_score"],
       tbody tr td[data-key="bt_score"] {
         order: 4;
@@ -1028,7 +1048,8 @@
       /* The arrows in "Mean WER down" are noise at tile size. */
       tbody tr td[data-key="mean_wer"]::before,
       tbody tr td[data-key="mean_cer"]::before,
-      tbody tr td[data-key="speed_x"]::before {
+      tbody tr td[data-key="speed_x"]::before,
+      tbody tr td[data-key="hf_downloads"]::before {
         font-size: 10px;
         font-weight: 500;
         letter-spacing: 0.03em;
@@ -1037,6 +1058,10 @@
       tbody tr td[data-key="mean_wer"]::before { content: "WER"; }
       tbody tr td[data-key="mean_cer"]::before { content: "CER"; }
       tbody tr td[data-key="speed_x"]::before  { content: "SPEED"; }
+      tbody tr td[data-key="hf_downloads"]::before { content: "HF DLs"; }
+      tbody td[data-key="hf_downloads"] .download-wrap { min-width: 0; }
+      tbody td[data-key="hf_downloads"] .download-bar { display: none; }
+      tbody td[data-key="hf_downloads"] .download-num { min-width: 0; }
 
       /* 5 -- per-dataset scores, two per line, hidden until expanded. */
       tbody td[data-key$="_wer"]:not([data-key^="mean"]),
@@ -1760,6 +1785,8 @@ const WER_COLS = [
     tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
       + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
+  { key:'hf_downloads',           label:'HF DLs (30d)',
+    tip:'Rolling 30-day downloads reported by Hugging Face and refreshed at deployment. This is activity context, not a quality score or historical trend.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
     tip:'WER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_wer',    label:'CoRal Read',
@@ -1787,6 +1814,8 @@ const CER_COLS = [
     tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
       + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
+  { key:'hf_downloads',           label:'HF DLs (30d)',
+    tip:'Rolling 30-day downloads reported by Hugging Face and refreshed at deployment. This is activity context, not a quality score or historical trend.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',
     tip:'CER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_cer',    label:'CoRal Read',
@@ -1819,6 +1848,30 @@ function scoreCell(td, v, max) {
   bar.appendChild(fill);
   wrap.appendChild(num);
   wrap.appendChild(bar);
+  td.appendChild(wrap);
+}
+
+const DOWNLOAD_FORMAT = new Intl.NumberFormat('en', {
+  notation: 'compact',
+  maximumFractionDigits: 1,
+});
+
+function downloadCell(td, value, max) {
+  if (value == null) { td.textContent = '—'; return; }
+  const wrap = document.createElement('div');
+  wrap.className = 'download-wrap';
+  const number = document.createElement('span');
+  number.className = 'download-num';
+  number.textContent = DOWNLOAD_FORMAT.format(value);
+  number.title = value.toLocaleString('en') + ' Hugging Face downloads in the last 30 days';
+  const bar = document.createElement('div');
+  bar.className = 'download-bar';
+  const fill = document.createElement('div');
+  fill.className = 'download-fill';
+  const share = max > 0 ? Math.log1p(value) / Math.log1p(max) : 0;
+  fill.style.width = (share * 100).toFixed(1) + '%';
+  bar.appendChild(fill);
+  wrap.append(number, bar);
   td.appendChild(wrap);
 }
 
@@ -1944,6 +1997,9 @@ function buildRow(row, cols, maxVals) {
 
     } else if (c.key === 'speed_x') {
       td.textContent = v != null ? v.toFixed(1) + 'x' : '—';
+
+    } else if (c.key === 'hf_downloads') {
+      downloadCell(td, v, maxVals.hf_downloads);
 
     } else if (typeof v === 'number') {
       td.textContent = v.toFixed(2);
@@ -3204,6 +3260,7 @@ async function init() {
     const maxVals = {
       wer: Math.max(...data.wer.map(r => r.mean_wer || 0)),
       cer: Math.max(...data.cer.map(r => r.mean_cer || 0)),
+      hf_downloads: Math.max(1, ...data.wer.map(r => r.hf_downloads || 0)),
     };
 
     const werEl = document.getElementById('table-wer');

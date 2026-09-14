@@ -6,6 +6,7 @@ from datetime import date
 from pathlib import Path
 
 import pytest
+import pandas as pd
 from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
@@ -20,6 +21,7 @@ from update_space import (
     _parse_model,
     _size_from_name,
     bake_seo,
+    build_leaderboard_json,
     build_seo_payload,
     generate_cover_image,
 )
@@ -122,6 +124,38 @@ def test_parse_model_plain():
 def test_parse_model_non_string():
     name, url = _parse_model(None)
     assert url == ""
+
+
+def test_leaderboard_json_includes_hf_downloads(monkeypatch):
+    import update_space
+
+    monkeypatch.setattr(update_space, "_provider_logo", lambda _org: "")
+    monkeypatch.setattr(update_space, "_model_license", lambda _model: "apache-2.0")
+    monkeypatch.setattr(update_space, "_model_downloads", lambda _model: 1_234)
+    monkeypatch.setattr(update_space, "_bootstrap_cis", lambda: {})
+    rows = pd.DataFrame([{
+        "model": "[example/asr](https://huggingface.co/example/asr)",
+        "access": "open",
+        "params_b": 1.0,
+        "mean_wer": 10.0,
+        "mean_cer": 5.0,
+        "speed_x": 20.0,
+        "submitted": "2026-09-14",
+    }, {
+        "model": "hosted-api-model",
+        "access": "proprietary",
+        "params_b": 0.0,
+        "mean_wer": 11.0,
+        "mean_cer": 6.0,
+        "submitted": "2026-09-14",
+    }])
+
+    data = build_leaderboard_json(rows)
+
+    for table in ("wer", "cer"):
+        by_name = {row["name"]: row for row in data[table]}
+        assert by_name["example/asr"]["hf_downloads"] == 1_234
+        assert by_name["hosted-api-model"]["hf_downloads"] is None
 
 
 def test_generate_cover_image(tmp_path):

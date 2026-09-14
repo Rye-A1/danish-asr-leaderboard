@@ -174,6 +174,17 @@ def _provider_logo(org: str) -> str:
 
 
 @functools.lru_cache(maxsize=256)
+def _model_metadata(model_id: str) -> dict:
+    """Model metadata from Hugging Face, or an empty dict if unavailable."""
+    try:
+        r = requests.get(f"https://huggingface.co/api/models/{model_id}", timeout=4)
+        if r.ok:
+            return r.json()
+    except Exception:
+        pass
+    return {}
+
+
 def _model_license(model_id: str) -> str:
     """Licence tag from the model's HF repo, or '' if none/unavailable.
 
@@ -182,16 +193,20 @@ def _model_license(model_id: str) -> str:
     deploy instead of going stale. Hosted API models have no repo — they get ''
     and render as an em dash.
     """
-    try:
-        r = requests.get(f"https://huggingface.co/api/models/{model_id}", timeout=4)
-        if not r.ok:
-            return ""
-        for tag in r.json().get("tags", []):
-            if tag.startswith("license:"):
-                return tag.split(":", 1)[1]
-    except Exception:
-        pass
+    for tag in _model_metadata(model_id).get("tags", []):
+        if tag.startswith("license:"):
+            return tag.split(":", 1)[1]
     return ""
+
+
+def _model_downloads(model_id: str) -> int | None:
+    """Rolling 30-day Hub download count, or None if it is unavailable."""
+    value = _model_metadata(model_id).get("downloads")
+    try:
+        downloads = int(value)
+    except (TypeError, ValueError):
+        return None
+    return downloads if downloads >= 0 else None
 
 
 def _release_date(model_id: str) -> str:
@@ -361,6 +376,9 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "logo": logo,
                 "access": str(row.get("access", "open")),
                 "license": _model_license(name) if is_repo else "",
+                # Hugging Face reports a rolling 30-day download count. It is
+                # activity context, not a quality or historical trend metric.
+                "hf_downloads": _model_downloads(name) if is_repo else None,
                 "size": _official_size(name, row.get("params_b")),
                 "submitted": str(submitted)[:10] if pd.notna(submitted) else "",
                 # Powers the Over Time chart. Distinct from "submitted", which
