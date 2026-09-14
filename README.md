@@ -160,9 +160,8 @@ re-running the model. Disable with `--outputs-dir ""`.
 
 ## Re-scoring (offline normalisation experiments)
 
-The normaliser is parameterised (Unicode form today; a word↔digit converter
-planned), and `scripts/rescore.py` recomputes WER/CER from the saved raw outputs
-under any configuration — no GPU, no re-inference:
+The normaliser is parameterised, and `scripts/rescore.py` recomputes WER/CER
+from saved raw outputs under any configuration — no GPU or re-inference needed:
 
 ```bash
 # Re-score every model under NFKC and diff mean_wer against the published results
@@ -173,9 +172,10 @@ python scripts/rescore.py --model openai/whisper-large-v3 \
   --unicode-form NFKC --out-dir results_nfkc
 ```
 
-The published default is **NFC**. `NFKC` (compatibility folding — ligatures,
-full-width forms, superscripts) is offered as a selectable variant to validate
-offline before deciding whether to promote it.
+The published default is **NFKC**, spoken-number folding, number-word
+normalisation, and filler removal. `scripts/rescore.py` exposes the corresponding
+`--no-*` options for comparison experiments; published scores must use the shared
+defaults.
 
 ## Publishing to the leaderboard
 
@@ -209,63 +209,34 @@ HF_TOKEN=hf_... python scripts/update_space.py
 ## Methodology
 
 ### Text normalisation
-Applied identically to hypothesis and reference before scoring:
+The same transform is applied to references and hypotheses:
 
-1. Unicode NFC (default; selectable via `--unicode-form` / `rescore.py`)
-2. Danish number formatting — digit separators removed so that the same numeral
-   scores identically regardless of formatting: thousand separators
-   (`1.234` → `1234`) and decimal separators (`3,14` and `3.14` → `314`)
-3. Lowercase
-4. Strip punctuation (apostrophes inside words are kept)
-5. Collapse whitespace
+1. Unicode NFKC compatibility folding.
+2. Danish numeral separator cleanup (`1.234` → `1234`, `3,14` → `314`).
+3. Lowercasing and punctuation/symbol removal, retaining apostrophes within words.
+4. Spoken Danish numerals → digits, then standalone integers → canonical Danish words.
+5. Danish hesitation filler removal and whitespace collapse.
 
-Broadly consistent with the Open ASR Leaderboard's `BasicTextNormalizer`, with
-the addition of Danish digit handling. The guiding principle is **consistency**:
-the exact same transform is applied to every model's hypothesis and to every
-reference, so scores stay comparable across the board.
-
-> Digit–word equivalence (`"4"` vs `"fire"`) is **not** normalised. A model that
-> consistently emits one form when the reference uses the other will incur
-> errors — a known limitation shared by most public ASR leaderboards.
-
-> Danish orthographic variants (`aa`↔`å`, `oe`↔`ø`, `ae`↔`æ`) are **not**
-> normalised either — the digraphs occur legitimately as letter sequences
-> (`ekstraarbejde`, place names like `Aarhus`), so a blind substitution would
-> introduce errors. Different Unicode encodings of the *same* letter **are**
-> unified by NFC.
-
-**Future improvement — digit↔word normalisation.** A robust fix would convert
-between digits and number words on *both* the hypothesis and the reference at
-scoring time (e.g. `"fire"` ↔ `"4"`), so models aren't penalised for a valid but
-differently-formatted numeral. This needs a correct Danish number↔word converter
-that handles years, ordinals, decimals, and phone numbers. The critical
-requirement is symmetry: it must be applied identically to refs and hyps.
-Applying it to only one side (e.g. normalising training transcripts but not the
-eval references) silently inflates WER — see the VoxPopuli regression documented
-on [RASMUS/Finnish-ASR-Canary-v2](https://huggingface.co/RASMUS/Finnish-ASR-Canary-v2),
-where training-only number normalisation drove an apparent 4.5% → 13.9% WER jump
-that was purely a normalisation artefact. Until such a converter is in place we
-deliberately normalise neither side, which keeps the benchmark consistent.
+This treats digit-versus-word formatting as equivalent while preserving real
+orthographic differences such as `aa` versus `å`. Colons, slashes, and ordinals
+remain intentionally conservative because their spoken forms are ambiguous.
 
 ### Metrics
-Corpus-level **WER** and **CER** (%), lower is better, computed with `jiwer`:
+Corpus-level **WER** and **CER** (%), lower is better, computed with RapidFuzz
+Levenshtein distance:
 
 ```
 WER = (substitutions + deletions + insertions) / reference_words   × 100
 CER = (char sub + del + ins)                   / reference_chars   × 100
 ```
 
-`mean_wer` / `mean_cer` are macro-averages across the five core test sets
-(equally weighted). References that normalise to empty are dropped from scoring
-to avoid divide-by-zero.
+`mean_wer` / `mean_cer` are macro-averages across the five core test sets.
+References that normalise to empty are dropped from scoring.
 
 ### Speed
-`speed_x` = total audio duration / total inference time. 30x means 30 seconds of
-audio per wall-clock second. Only the transcription call is timed (model load is
-excluded). Hardware-dependent and network-bound for APIs — not directly
-comparable across machines. There is **no warm-up run**: one-off costs (CUDA lazy
-init, kernel autotuning) fall into the first batch, which slightly understates
-throughput, more so on smaller test sets.
+`speed_x` = total audio duration / transcription time. Model load is excluded;
+hardware, runtime, batching, and API latency all affect it, so it is context
+rather than a pure model-quality metric.
 
 ## Repository layout
 
