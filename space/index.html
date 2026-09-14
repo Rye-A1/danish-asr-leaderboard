@@ -463,6 +463,7 @@
       justify-content: center;
       min-width: 58px;
     }
+    .download-num { display: none; font-variant-numeric: tabular-nums; }
     .download-spark { width: 54px; height: 22px; flex: 0 0 auto; color: var(--link); }
 
     /* Access badge */
@@ -1049,8 +1050,42 @@
       tbody tr td[data-key="mean_cer"]::before { content: "CER"; }
       tbody tr td[data-key="speed_x"]::before  { content: "SPEED"; }
       tbody tr td[data-key="hf_downloads"]::before { content: "POPULARITY"; }
-      tbody td[data-key="hf_downloads"] .download-wrap { min-width: 0; }
-      tbody td[data-key="hf_downloads"] .download-spark { width: 40px; height: 18px; }
+      tbody td[data-key="hf_downloads"] {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+      }
+      tbody td[data-key="hf_downloads"]::before {
+        position: absolute;
+        top: 9px;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        text-align: center;
+      }
+      tbody td[data-key="hf_downloads"] .download-wrap {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        min-width: 0;
+        place-items: center;
+        z-index: 1;
+      }
+      tbody td[data-key="hf_downloads"] .download-spark {
+        grid-area: 1 / 1;
+        width: 100%;
+        height: 100%;
+        opacity: .85;
+      }
+      tbody td[data-key="hf_downloads"] .download-num {
+        display: block;
+        grid-area: 1 / 1;
+        z-index: 1;
+        font-size: 15px;
+        font-weight: 700;
+        text-shadow: 0 1px 4px var(--surf);
+        transform: translateY(10px);
+      }
 
       /* 5 -- per-dataset scores, two per line, hidden until expanded. */
       tbody td[data-key$="_wer"]:not([data-key^="mean"]),
@@ -1860,6 +1895,7 @@ function downloadSparkline(values) {
   const svg = document.createElementNS(NS, 'svg');
   svg.classList.add('download-spark');
   svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.setAttribute('preserveAspectRatio', 'none');
   svg.setAttribute('aria-hidden', 'true');
   const gradientId = `download-gradient-${sparkId++}`;
   const defs = document.createElementNS(NS, 'defs');
@@ -1914,7 +1950,13 @@ function downloadCell(td, value, history) {
   if (!sparkline) { td.textContent = '—'; return; }
   const wrap = document.createElement('div');
   wrap.className = 'download-wrap';
-  wrap.appendChild(sparkline);
+  const number = document.createElement('span');
+  number.className = 'download-num';
+  number.textContent = new Intl.NumberFormat('en', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value);
+  wrap.append(sparkline, number);
   td.appendChild(wrap);
 }
 
