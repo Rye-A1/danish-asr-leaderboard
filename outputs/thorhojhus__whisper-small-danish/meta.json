@@ -1,0 +1,22 @@
+{
+  "model": "thorhojhus/whisper-small-danish",
+  "model_link": "[thorhojhus/whisper-small-danish](https://huggingface.co/thorhojhus/whisper-small-danish)",
+  "params_b": 0.241734912,
+  "access": "open",
+  "model_revision": "372c8ff2104bc2753f1411546e72f81b8e6cd08d",
+  "weights_sha256": "8c4b300a7fb0be21c4c033784ea4ff68b2374d1f44b7f10b851454da18211947",
+  "inference_evaluator_revision": "5af83d6ca050777b016f6b9480bf8ecddf6195f6",
+  "scoring_evaluator_revision": "ace5752",
+  "submitted": "2026-09-14",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 43.8,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}
