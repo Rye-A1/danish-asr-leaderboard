@@ -254,6 +254,14 @@ def test_index_html_still_has_the_marker_and_head():
     assert SEO_MARKER in src
     assert "</head>" in src
 
+
+def test_methodology_has_its_own_tab_with_data_changes():
+    src = SPACE_INDEX.read_text(encoding="utf-8")
+    assert 'data-tab="methodology"' in src
+    assert 'id="tab-methodology"' in src
+    assert src.index('id="tab-methodology"') < src.index("Methodology &amp; data changes")
+
+
 def test_every_release_date_is_empty_or_a_real_iso_date():
     """The Over Time chart plots `released`, so each value must parse as a date.
 
