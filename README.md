@@ -49,6 +49,7 @@ uv pip install -e ".[transformers]"    # Whisper, Røst, hviske, …
 uv pip install -e ".[nemo]"            # Canary / Parakeet / SALM
 uv pip install -e ".[faster-whisper]"
 uv pip install -e ".[qwen-asr]"
+uv pip install -e ".[saga2]"           # capacit-ai/saga-2-*
 uv pip install -e ".[voxtral]"
 uv pip install -e ".[elevenlabs]"      # API backends
 uv pip install -e ".[azure-openai]"
@@ -57,7 +58,7 @@ uv pip install -e ".[soniox]"
 ```
 
 Available extras match the `--backend` names: `transformers`, `wav2vec2`,
-`faster-whisper`, `qwen-asr`, `nemo`, `voxtral`, `seamless`, `cohere-asr`,
+`faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `voxtral`, `seamless`, `cohere-asr`,
 `vibevoice`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`.
 
 > **NeMo note:** install `nemo_toolkit[asr]` *first* to avoid
@@ -113,6 +114,9 @@ danish-asr-eval --model Qwen/Qwen3-ASR-1.7B --backend qwen-asr
 # Voxtral
 danish-asr-eval --model mistralai/Voxtral-Mini-3B-2507 --backend voxtral
 
+# Saga 2 (inference package is loaded from the model repo itself)
+danish-asr-eval --model capacit-ai/saga-2-m --backend saga2
+
 # API backends (params not applicable → defaults to 0.0)
 danish-asr-eval --model chirp_3 --backend google-chirp --google-cloud-project my-gcp-project
 danish-asr-eval --model soniox-v1 --backend soniox --soniox-api-key "$SONIOX_API_KEY"
@@ -143,7 +147,7 @@ no-op when unconfigured.
 Run `danish-asr-eval --help` for all options (device, batch size, beam/KenLM,
 per-API credentials, `--access open|proprietary`, …). Available backends:
 
-`transformers`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `nemo`, `nemo-salm`,
+`transformers`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`,
 `voxtral`, `seamless`, `cohere-asr`, `vibevoice`, `elevenlabs`, `azure-openai`,
 `google-chirp`, `soniox`.
 

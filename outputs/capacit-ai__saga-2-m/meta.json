@@ -1,0 +1,18 @@
+{
+  "model": "capacit-ai/saga-2-m",
+  "model_link": "[capacit-ai/saga-2-m](https://huggingface.co/capacit-ai/saga-2-m)",
+  "params_b": 1.238,
+  "access": "open",
+  "submitted": "2026-09-14",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 71.9,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}

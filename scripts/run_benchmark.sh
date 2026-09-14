@@ -99,6 +99,7 @@ LOCAL_MODELS=(
   "openai/whisper-base|transformers|"
   "openai/whisper-tiny|transformers|"
   "capacit-ai/saga|qwen-asr|"
+  "capacit-ai/saga-2-m|saga2|"       # WQwen arch — inference code imported from the model repo
   "pluttodk/milo-asr|qwen-asr|"
   "Qwen/Qwen3-ASR-1.7B|qwen-asr|"
   "CoRal-project/roest-v2-wav2vec2-2B|wav2vec2|"
