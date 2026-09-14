@@ -458,13 +458,20 @@
 
     /* Daily Hugging Face download tendency. */
     .download-wrap {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
       min-width: 58px;
+      place-items: center;
     }
-    .download-num { display: none; font-variant-numeric: tabular-nums; }
-    .download-spark { width: 54px; height: 22px; flex: 0 0 auto; color: var(--link); }
+    .download-num {
+      display: block;
+      grid-area: 1 / 1;
+      z-index: 1;
+      font-size: 11px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 1px 4px var(--surf);
+    }
+    .download-spark { grid-area: 1 / 1; width: 54px; height: 22px; color: var(--link); }
 
     /* Access badge */
     .badge {
@@ -1885,10 +1892,17 @@ function downloadSparkline(values) {
   const width = 54, height = 22, top = 2, baseline = 20;
   const min = Math.min(...points);
   const range = Math.max(1, Math.max(...points) - min);
-  const coords = points.map((value, index) => ({
-    x: points.length === 1 ? width / 2 : (index / (points.length - 1)) * width,
-    y: top + (1 - (value - min) / range) * (baseline - top - 2),
-  }));
+  const hasTrend = points.length > 1;
+  const coords = hasTrend
+    ? points.map((value, index) => ({
+        x: (index / (points.length - 1)) * width,
+        y: top + (1 - (value - min) / range) * (baseline - top - 2),
+      }))
+    : [
+        { x: 0, y: baseline - 3 },
+        { x: width * .72, y: baseline - 3 },
+        { x: width, y: top + 3 },
+      ];
   const line = coords.map((point, index) =>
     `${index ? 'L' : 'M'}${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ');
 
@@ -1932,13 +1946,15 @@ function downloadSparkline(values) {
     svg.appendChild(path);
   }
 
-  const latest = coords.at(-1);
-  const dot = document.createElementNS(NS, 'circle');
-  dot.setAttribute('cx', latest.x.toFixed(1));
-  dot.setAttribute('cy', latest.y.toFixed(1));
-  dot.setAttribute('r', '2');
-  dot.setAttribute('fill', 'currentColor');
-  svg.appendChild(dot);
+  if (hasTrend) {
+    const latest = coords.at(-1);
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('cx', latest.x.toFixed(1));
+    dot.setAttribute('cy', latest.y.toFixed(1));
+    dot.setAttribute('r', '2');
+    dot.setAttribute('fill', 'currentColor');
+    svg.appendChild(dot);
+  }
   return svg;
 }
 
@@ -2320,6 +2336,7 @@ const SORT_FIELDS = [
   { key: 'mean_wer',    label: 'Mean WER',  dir:  1 },
   { key: 'mean_cer',    label: 'Mean CER',  dir:  1 },
   { key: 'speed_x',     label: 'Speed',     dir: -1 },
+  { key: 'hf_downloads', label: 'Popularity', dir: -1 },
   { key: 'size',        label: 'Size',      dir: -1, always: true,
     read: r => parseFloat(r.size) },
   { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt'    },
