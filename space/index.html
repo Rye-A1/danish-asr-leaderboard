@@ -456,14 +456,13 @@
     }
     .score-fill { height: 100%; border-radius: 3px; }
 
-    /* Rolling Hugging Face downloads: the number plus the recent daily trend. */
+    /* Daily Hugging Face download tendency. */
     .download-wrap {
       display: flex;
       align-items: center;
-      gap: 6px;
-      min-width: 98px;
+      justify-content: center;
+      min-width: 58px;
     }
-    .download-num { min-width: 34px; font-variant-numeric: tabular-nums; }
     .download-spark { width: 54px; height: 22px; flex: 0 0 auto; color: var(--link); }
 
     /* Access badge */
@@ -1049,9 +1048,8 @@
       tbody tr td[data-key="mean_wer"]::before { content: "WER"; }
       tbody tr td[data-key="mean_cer"]::before { content: "CER"; }
       tbody tr td[data-key="speed_x"]::before  { content: "SPEED"; }
-      tbody tr td[data-key="hf_downloads"]::before { content: "HF DLs"; }
+      tbody tr td[data-key="hf_downloads"]::before { content: "POPULARITY"; }
       tbody td[data-key="hf_downloads"] .download-wrap { min-width: 0; }
-      tbody td[data-key="hf_downloads"] .download-num { min-width: 0; }
       tbody td[data-key="hf_downloads"] .download-spark { width: 40px; height: 18px; }
 
       /* 5 -- per-dataset scores, two per line, hidden until expanded. */
@@ -1776,8 +1774,8 @@ const WER_COLS = [
     tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
       + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
-  { key:'hf_downloads',           label:'HF DLs (30d)',
-    tip:'Rolling 30-day downloads reported by Hugging Face and refreshed at deployment. This is activity context, not a quality score or historical trend.' },
+  { key:'hf_downloads',           label:'Popularity',
+    tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
     tip:'WER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_wer',    label:'CoRal Read',
@@ -1805,8 +1803,8 @@ const CER_COLS = [
     tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
       + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
-  { key:'hf_downloads',           label:'HF DLs (30d)',
-    tip:'Rolling 30-day downloads reported by Hugging Face and refreshed at deployment. This is activity context, not a quality score or historical trend.' },
+  { key:'hf_downloads',           label:'Popularity',
+    tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',
     tip:'CER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_cer',    label:'CoRal Read',
@@ -1841,11 +1839,6 @@ function scoreCell(td, v, max) {
   wrap.appendChild(bar);
   td.appendChild(wrap);
 }
-
-const DOWNLOAD_FORMAT = new Intl.NumberFormat('en', {
-  notation: 'compact',
-  maximumFractionDigits: 1,
-});
 
 let sparkId = 0;
 
@@ -1914,16 +1907,14 @@ function downloadSparkline(values) {
 }
 
 function downloadCell(td, value, history) {
-  if (value == null) { td.textContent = '—'; return; }
+  const values = Array.isArray(history) && history.some(Number.isFinite)
+    ? history
+    : value == null ? [] : [value];
+  const sparkline = downloadSparkline(values);
+  if (!sparkline) { td.textContent = '—'; return; }
   const wrap = document.createElement('div');
   wrap.className = 'download-wrap';
-  const number = document.createElement('span');
-  number.className = 'download-num';
-  number.textContent = DOWNLOAD_FORMAT.format(value);
-  number.title = value.toLocaleString('en') + ' Hugging Face downloads in the last 30 days';
-  const sparkline = downloadSparkline(Array.isArray(history) ? history : []);
-  wrap.append(number);
-  if (sparkline) wrap.appendChild(sparkline);
+  wrap.appendChild(sparkline);
   td.appendChild(wrap);
 }
 
