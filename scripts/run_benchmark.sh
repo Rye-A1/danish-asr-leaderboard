@@ -83,7 +83,7 @@ skip_model() {  # honour SKIP_MODELS block-list
 # with BATCH=… if you want to trade comparability for speed. (qwen-asr and voxtral
 # transcribe one utterance at a time regardless — batch size won't help them.)
 BATCH="${BATCH:-16}"
-COMMON=(--device cuda --unicode-form NFC --batch-size "$BATCH")
+COMMON=(--device cuda --unicode-form NFKC --batch-size "$BATCH")
 [ "$MAX_SAMPLES" -gt 0 ] && COMMON+=(--max-samples "$MAX_SAMPLES")
 
 # model | backend | extra args (space-separated, may be empty)
