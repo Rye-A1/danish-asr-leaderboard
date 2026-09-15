@@ -99,11 +99,10 @@
       color: rgba(255,255,255,0.55);
       font-size: 13px;
     }
-    /* Facts the subtitle used to carry, as scannable chips. Wraps on narrow
-       viewports rather than overflowing the banner. */
-    /* The chips normally wrap onto as many lines as they need. On a phone that
-       costs two lines, so the strip clips and the track slides instead -- the
-       same idea as an overflowing model name. */
+    .banner-sub strong {
+      color: rgba(255,255,255,0.92);
+      font-weight: 700;
+    }
     .sticky-header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -202,27 +201,6 @@
     @media (prefers-reduced-motion: reduce) {
       .sticky-header { transition: none; }
     }
-
-    .banner-chips-track { display: contents; }
-    .banner-chips {
-      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 13px;
-    }
-    .banner-chip {
-      display: inline-flex; align-items: center; gap: 7px;
-      padding: 5px 12px; border-radius: 999px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.19);
-      color: rgba(255,255,255,0.78);
-      font-size: 12px; font-weight: 500; line-height: 1.5; white-space: nowrap;
-    }
-    .banner-chip svg { width: 13px; height: 13px; flex: none; opacity: .85; }
-    /* The count is the headline fact, so it gets the accent treatment. */
-    .banner-chip.is-key {
-      border-color: rgba(255,176,191,0.42);
-      color: #ffd9e1;
-    }
-    .banner-chip.is-key svg { color: #ffb0bf; opacity: 1; }
-
 
     /* ── Tabs ──────────────────────────────────────────────────────── */
     .tab-nav {
@@ -852,8 +830,6 @@
       .banner > div { min-width: 0; }
       .banner h1 { font-size: 18px; }
       .banner-sub { font-size: 12px; }
-      .banner-chip { font-size: 11px; padding: 4px 10px; gap: 6px; }
-      .banner-chip svg { width: 12px; height: 12px; }
       
       /* Tab nav scrolls on narrow screens. The fades are the only cue that
          there is more than fits -- without them the last tab is simply
@@ -1201,37 +1177,6 @@
       }
       tbody tr.expanded::after { content: "Hide per-dataset scores \25B4"; }
 
-      /* Chips on one clipped line; the track slides if they do not all fit. */
-      .banner-chips {
-        flex-wrap: nowrap;
-        overflow: hidden;
-        display: block;
-      }
-      .banner-chips-track {
-        display: flex;
-        flex-wrap: nowrap;
-        gap: 8px;
-        width: max-content;
-      }
-      .banner-chips-track.scrolls {
-        /* will-change + a 3d transform keep this on the compositor, where
-           sub-pixel offsets are preserved. Without it the browser rounds to
-           whole pixels and a 10px/s slide visibly steps. */
-        will-change: transform;
-        transform: translate3d(0, 0, 0);
-        backface-visibility: hidden;
-        animation: krumme-chips-slide var(--dur, 12s) ease-in-out infinite alternate;
-      }
-      @keyframes krumme-chips-slide {
-        0%, 12%   { transform: translate3d(0, 0, 0); }
-        88%, 100% { transform: translate3d(var(--shift, 0), 0, 0); }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .banner-chips { overflow-x: auto; scrollbar-width: none; }
-        .banner-chips::-webkit-scrollbar { display: none; }
-        .banner-chips-track.scrolls { animation: none; }
-      }
-
       /* Filters collapse behind a toggle; the table gets the screen. */
       .filters-toggle {
         display: inline-flex;
@@ -1355,24 +1300,8 @@
     <div>
       <h1>Open Danish ASR Leaderboard 🇩🇰</h1>
       <p class="banner-sub">
-        Consistent WER and CER evaluation across independent Danish test sets
+        <strong><span data-count="models">&mdash;</span> models</strong> · Consistent WER and CER evaluation across <strong><span data-count="datasets">&mdash;</span></strong> independent Danish test sets
       </p>
-      <div class="banner-chips">
-       <div class="banner-chips-track">
-        <span class="banner-chip is-key" id="chip-models">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/></svg>
-          <span><span data-count="models">&mdash;</span> models</span></span>
-        <span class="banner-chip" id="chip-sets">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg>
-          <span><span data-count="datasets">&mdash;</span> test sets</span></span>
-        <span class="banner-chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5M4 19h16"/><path d="M8 15l4-5 3 3 4-6"/></svg>
-          WER &amp; CER · lower is better</span>
-        <span class="banner-chip" id="chip-harness">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3M3 8V5a2 2 0 0 1 2-2h3"/></svg>
-          Open harness</span>
-       </div>
-      </div>
     </div>
   </header>
 
@@ -2187,30 +2116,10 @@ function fitModelNames(root) {
     }
   }
 }
-/* Same treatment for the banner chips: slide only when they actually overflow,
-   at a pace matched to the distance. */
-function fitChipStrip() {
-  const strip = document.querySelector('.banner-chips');
-  const track = document.querySelector('.banner-chips-track');
-  if (!strip || !track) return;
-  track.classList.remove('scrolls');
-  track.style.removeProperty('--shift');
-  track.style.removeProperty('--dur');
-  if (!NARROW.matches) return;
-  const over = track.scrollWidth - strip.clientWidth;
-  if (over > 1) {
-    track.style.setProperty('--shift', '-' + over + 'px');
-    // Ambient, so slower than the names -- but not so slow that each frame
-    // moves a fraction of a pixel, which is what makes a slide look steppy.
-    track.style.setProperty('--dur', Math.max(7, over / 20).toFixed(1) + 's');
-    track.classList.add('scrolls');
-  }
-}
-
 let fitTimer;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(() => { fitModelNames(); fitChipStrip(); }, 150);
+  fitTimer = setTimeout(fitModelNames, 150);
 });
 
 /* The filter block costs ~124px on a phone -- most of a card. Collapse it
@@ -2287,7 +2196,6 @@ NARROW.addEventListener('change', () => {
     b.setAttribute('aria-expanded', String(open));
   });
   fitModelNames();
-  fitChipStrip();
 });
 /* This script runs at the end of the body, so DOMContentLoaded may already
    have fired -- run now in that case rather than waiting for an event that
@@ -2459,7 +2367,6 @@ function initSortControls() {
 
 function initChrome() {
   initFilterToggles();
-  fitChipStrip();
   initStickyHeader();
   initTabFades();
 }
@@ -3379,14 +3286,14 @@ async function init() {
     const cerCIMap = new Map(data.cer.map(r => [r.name, r.mean_cer_ci]));
     data.wer.forEach(r => { r.mean_cer_ci = cerCIMap.get(r.name) ?? null; });
 
-    /* Banner chips read from the same payload as the table, so the counts
-       cannot drift from what is actually shown. */
-    const setChip = (key, value) => {
+     /* Header counts read from the same payload as the table, so they cannot
+       drift from what is actually shown. */
+     const setHeaderCount = (key, value) => {
       document.querySelectorAll(`[data-count="${key}"]`)
         .forEach(el => { el.textContent = value; });
     };
-    setChip('models', data.wer.length);
-    setChip('datasets', WER_DS_COLS.length);
+     setHeaderCount('models', data.wer.length);
+     setHeaderCount('datasets', WER_DS_COLS.length);
 
     const maxVals = {
       wer: Math.max(...data.wer.map(r => r.mean_wer || 0)),
