@@ -136,6 +136,15 @@
       visibility: hidden;
       transition: transform .2s ease, opacity .2s ease, visibility 0s linear .2s;
     }
+    .sticky-header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .38;
+      background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27180%27%20height%3D%27180%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.85%27%20numOctaves%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27180%27%20height%3D%27180%27%20filter%3D%27url%28%23n%29%27%20opacity%3D%270.55%27%2F%3E%3C%2Fsvg%3E");
+    }
+    .sticky-header > * { position: relative; z-index: 1; }
     /* pointer-events returns with visibility: while hidden the bar must not
        intercept taps, but once shown it has to stop them reaching the row
        underneath, which the reader cannot see. */
@@ -159,8 +168,8 @@
       flex: 1 1 auto;
       min-width: 0;
     }
-    /* Repo + About shortcuts. Muted by default so they sit behind the title
-       rather than competing with it, full white on hover/focus. */
+     /* Repository shortcut. Muted by default so it sits behind the title rather
+       than competing with it, full white on hover/focus. */
     .sticky-actions {
       display: flex;
       align-items: center;
@@ -217,33 +226,69 @@
 
     /* ── Tabs ──────────────────────────────────────────────────────── */
     .tab-nav {
+      position: sticky;
+      top: 0;
+      z-index: 45;
       display: flex;
-      gap: 3px;
-      padding: 4px;
-      background: var(--surf);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      width: fit-content;
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+      background: var(--bg);
+      border: 0;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0;
+      width: 100%;
       max-width: 100%;
       margin-bottom: 18px;
     }
+    .sticky-header.show ~ .app .tab-nav { top: 46px; }
     .tab-btn {
+      position: relative;
       align-items: center;
-      padding: 6px 16px;
+      padding: 12px 16px 11px;
       border: none;
-      background: none;
+      background: transparent;
       color: var(--muted);
       cursor: pointer;
-      border-radius: 7px;
+      border-radius: 0;
       display: inline-flex;
-      font-size: 14px;
-      font-weight: 500;
-      gap: 7px;
-      transition: background 0.12s, color 0.12s;
+      font-size: 13px;
+      font-weight: 600;
+      gap: 6px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transition: color 0.12s;
     }
-    .tab-icon { width: 15px; height: 15px; flex: none; }
-    .tab-btn.active { background: var(--surf2); color: var(--text); }
+    .tab-btn::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      bottom: -1px;
+      left: 0;
+      height: 2px;
+      background: transparent;
+      transition: background 0.12s;
+    }
+    .tab-icon { width: 14px; height: 14px; flex: none; }
+    .tab-btn.active {
+      background:
+        radial-gradient(115% 520% at  0% 125%, rgba(216, 20,  58, .28) 0%, rgba(216, 20,  58, 0) 58%),
+        radial-gradient( 95% 460% at 34% 150%, rgba(152, 20,  74, .16) 0%, rgba(152, 20,  74, 0) 62%),
+        radial-gradient( 80% 480% at 74% -55%, rgba( 92, 26, 104, .17) 0%, rgba( 92, 26, 104, 0) 66%),
+        radial-gradient( 85% 520% at 100% -30%, rgba( 58, 24, 106, .22) 0%, rgba( 58, 24, 106, 0) 62%);
+      color: var(--text);
+    }
+    .tab-btn.active::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .28;
+      background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27180%27%20height%3D%27180%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.85%27%20numOctaves%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27180%27%20height%3D%27180%27%20filter%3D%27url%28%23n%29%27%20opacity%3D%270.55%27%2F%3E%3C%2Fsvg%3E");
+    }
+    .tab-btn.active::after { background: #ffb0bf; }
     .tab-btn:hover:not(.active) { color: var(--text); }
+    .tab-btn:focus-visible { outline: 2px solid var(--link); outline-offset: -2px; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
 
@@ -831,7 +876,7 @@
         transition: --fade-l .15s linear, --fade-r .15s linear;
       }
       .tab-nav::-webkit-scrollbar { display: none; }
-      .tab-btn { flex: 0 0 auto; padding: 6px 14px; font-size: 13px; }
+      .tab-btn { flex: 0 0 auto; padding: 11px 14px 10px; font-size: 13px; }
       
       /* Toolbar stacks and wraps */
       .toolbar {
@@ -884,7 +929,7 @@
       .app { padding: 12px 8px 0; }
       .banner { padding: 16px 12px; }
       .banner h1 { font-size: 16px; }
-      .tab-btn { padding: 5px 10px; font-size: 12px; }
+      .tab-btn { padding: 10px 11px 9px; font-size: 13px; }
       .search { font-size: 13px; padding: 6px 10px; }
       .toolbar { gap: 6px; }
       .chart-plot-wrap { min-height: 280px; }
@@ -1301,13 +1346,6 @@
        target="_blank" rel="noopener" aria-label="Source code on GitHub" title="Source on GitHub">
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.4-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C18.6 4 19.6 4.3 19.6 4.3c.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/></svg>
     </a>
-    <button type="button" class="sticky-act" id="sticky-about"
-            aria-label="About this leaderboard" title="About">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
-      </svg>
-    </button>
   </div>
 </div>
 
@@ -2267,19 +2305,6 @@ function initStickyHeader() {
   ).observe(banner);
 }
 
-/* The About shortcut clicks the real tab button rather than reimplementing
-   tab activation, so chart redraws and toggle state keep working for free. */
-function initStickyActions() {
-  const btn = document.getElementById('sticky-about');
-  if (!btn) return;
-  btn.addEventListener('click', () => {
-    const tab = document.querySelector('.tab-btn[data-tab="about"]');
-    if (tab) tab.click();
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
-  });
-}
-
 /* Fade an edge of the tab strip only when there is content beyond it. */
 function updateTabFades() {
   const nav = document.querySelector('.tab-nav');
@@ -2437,7 +2462,6 @@ function initChrome() {
   initFilterToggles();
   fitChipStrip();
   initStickyHeader();
-  initStickyActions();
   initTabFades();
 }
 if (document.readyState === 'loading') {
