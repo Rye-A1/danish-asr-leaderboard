@@ -15,6 +15,7 @@ from update_space import (
     SEO_MARKER,
     THUMBNAIL_SIZE,
     _api_docs_url,
+    _download_history,
     _download_series,
     _release_date,
     _fmt_size,
@@ -133,6 +134,7 @@ def test_leaderboard_json_includes_hf_downloads(monkeypatch):
     monkeypatch.setattr(update_space, "_provider_logo", lambda _org: "")
     monkeypatch.setattr(update_space, "_model_license", lambda _model: "apache-2.0")
     monkeypatch.setattr(update_space, "_model_downloads", lambda _model: 1_234)
+    monkeypatch.setattr(update_space, "_model_download_history", lambda _model: ())
     monkeypatch.setattr(update_space, "_bootstrap_cis", lambda: {})
     rows = pd.DataFrame([{
         "model": "[example/asr](https://huggingface.co/example/asr)",
@@ -170,6 +172,24 @@ def test_download_series_preserves_missing_snapshots():
     }
 
     assert _download_series("example/asr", history) == [100, None, 125]
+
+
+def test_download_history_prefers_published_dataset(monkeypatch):
+    import update_space
+
+    class Response:
+        ok = True
+
+        @staticmethod
+        def json():
+            return {"snapshots": [{"date": "2026-09-15", "downloads": {"example/asr": 123}}]}
+
+    monkeypatch.setattr(update_space.requests, "get", lambda *_args, **_kwargs: Response())
+    update_space._download_history.cache_clear()
+    try:
+        assert _download_history()["snapshots"][0]["downloads"]["example/asr"] == 123
+    finally:
+        update_space._download_history.cache_clear()
 
 
 def test_generate_cover_image(tmp_path):

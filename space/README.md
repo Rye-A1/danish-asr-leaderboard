@@ -40,6 +40,11 @@ python scripts/update_space.py
 This bakes `leaderboard.json` from the parquet (resolving provider logos and
 formatting sizes server-side) and uploads the static files to the Space.
 
+The Popularity sparklines read daily rolling-download snapshots from
+`data/hf_downloads.json` in the results dataset. The scheduled GitHub workflow
+updates that dataset file directly, so protected-branch rules do not block the
+daily refresh.
+
 `leaderboard.json` is generated, not tracked. To preview the page locally, fetch
 the deployed copy first — the page fetches it at runtime, so without it the table
 renders empty:

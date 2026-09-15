@@ -30,10 +30,12 @@ from huggingface_hub import HfApi, get_token
 from PIL import Image, ImageDraw, ImageFont
 
 SPACE_REPO_ID   = "RyeAI/danish-asr-leaderboard"
+DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 DATASET_PARQUET = "hf://datasets/RyeAI/danish-asr-leaderboard/data/results.parquet"
 # Sample-level bootstrap CIs, precomputed from the raw outputs by
 # scripts/compute_ci.py (too expensive to recompute on every deploy).
 DATASET_CI_JSON = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/resolve/main/data/ci.json"
+DATASET_DOWNLOAD_HISTORY_JSON = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/resolve/main/data/hf_downloads.json"
 SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
 DOWNLOAD_HISTORY_PATH = Path(__file__).resolve().parent.parent / "history" / "hf_downloads.json"
 DOWNLOAD_HISTORY_WINDOW = 90
@@ -203,7 +205,13 @@ def _model_license(model_id: str) -> str:
 
 @functools.lru_cache(maxsize=1)
 def _download_history() -> dict:
-    """Daily Hugging Face download snapshots, or an empty history."""
+    """Published daily snapshots, with the repository seed as a fallback."""
+    try:
+        response = requests.get(DATASET_DOWNLOAD_HISTORY_JSON, timeout=10)
+        if response.ok:
+            return response.json()
+    except Exception:
+        pass
     try:
         return json.loads(DOWNLOAD_HISTORY_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
