@@ -297,14 +297,59 @@
        search, segmented control and toggles previously rendered at 32/34/30px
        with 8px/8px/999px radii, which is what made the row look assembled from
        spare parts. */
-    .filters-toggle, .sort-wrap { display: none; }
-    .toolbar {
+    .sort-wrap { display: none; }
+    .filters-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      height: 34px;
+      padding: 0 12px;
+      margin-bottom: 10px;
+      vertical-align: top;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surf);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .filters-toggle.has-filters {
+      color: var(--text);
+      border-color: color-mix(in srgb, var(--link) 55%, var(--border));
+    }
+    .filters-toggle .ctl-icon {
+      width: 14px;
+      height: 14px;
+      flex: 0 0 auto;
+      opacity: 0.75;
+    }
+    .filter-summary {
       display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .filter-summary .filters-toggle { margin-bottom: 0; }
+    .filter-summary .sort-wrap { margin: 0; }
+    .filter-summary .search-wrap {
+      flex: 1 1 200px;
+      min-width: 0;
+      max-width: 300px;
+    }
+    @media (max-width: 700px) {
+      .filter-summary .search-wrap { display: none; }
+      .filter-summary.open .search-wrap { display: block; }
+    }
+    .toolbar {
+      display: none;
       align-items: center;
       flex-wrap: wrap;
       gap: 8px 10px;
       margin-bottom: 12px;
     }
+    .toolbar.open { display: flex; }
     .search-wrap {
       position: relative;
       display: block;
@@ -930,6 +975,19 @@
       .banner { padding: 16px 12px; }
       .banner h1 { font-size: 16px; }
       .tab-btn { padding: 10px 11px 9px; font-size: 13px; }
+      .filter-summary .search {
+        width: 100%;
+        height: 34px;
+        min-height: 34px;
+        padding: 6px 10px 6px 30px;
+        font-size: 13px;
+      }
+      .filter-summary .search-icon {
+        width: 14px;
+        height: 14px;
+        left: 8px;
+        opacity: 0.5;
+      }
       .search { font-size: 13px; padding: 6px 10px; }
       .toolbar { gap: 6px; }
       .chart-plot-wrap { min-height: 280px; }
@@ -1233,28 +1291,6 @@
         .banner-chips-track.scrolls { animation: none; }
       }
 
-      /* Filters collapse behind a toggle; the table gets the screen. */
-      .filters-toggle {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        /* 34px matches the sort control (32px select + its 1px borders) and the
-           toolbar's own controls, so the row reads as one set. */
-        height: 34px;
-        padding: 0 12px;
-        margin-bottom: 10px;
-        vertical-align: top;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: var(--surf);
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 500;
-        cursor: pointer;
-      }
-      .toolbar { display: none; }
-      .toolbar.open { display: flex; }
-
       /* Sort control, beside Filters. Sorting otherwise lives on the table
          header, which the card layout hides. */
       .sort-wrap {
@@ -1321,8 +1357,6 @@
         line-height: 1;
       }
       .filters-count:empty { display: none; }
-      .filters-toggle.has-filters { color: var(--text); border-color: color-mix(in srgb, var(--link) 55%, var(--border)); }
-
       /* Confidence intervals go under the value, not beside it. */
       tbody td .ci-val { display: block; font-size: 10px; font-weight: 400; }
 
@@ -2214,9 +2248,8 @@ window.addEventListener('resize', () => {
   fitTimer = setTimeout(() => { fitModelNames(); fitChipStrip(); }, 150);
 });
 
-/* The filter block costs ~124px on a phone -- most of a card. Collapse it
-   behind a toggle there, leaving the numbers the screen. Desktop keeps it
-   open and hides the button entirely (CSS), so nothing changes on a laptop. */
+/* Keep filter controls out of the table's scanning path until a user asks for
+  them. The button carries an active-filter count while the toolbar is closed. */
 function initFilterToggles() {
   for (const bar of document.querySelectorAll('.toolbar')) {
     // Scoped to the pane rather than previousElementSibling: the sort control
@@ -2224,6 +2257,9 @@ function initFilterToggles() {
     // button and would insert a second one.
     const paneFor = bar.closest('.tab-pane');
     if (paneFor && paneFor.querySelector('.filters-toggle')) continue;
+    const summary = document.createElement('div');
+    summary.className = 'filter-summary';
+    const searchWrap = bar.querySelector('.search-wrap');
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'filters-toggle';
@@ -2239,7 +2275,7 @@ function initFilterToggles() {
        toolbar can hold more than one such group (Metric, Rank by, ...). */
     const activeCount = () => {
       let n = 0;
-      const search = bar.querySelector('.search');
+      const search = summary.querySelector('.search');
       if (search && search.value.trim()) n++;
       bar.querySelectorAll('.ci-btn').forEach(b => {
         if (b.getAttribute('aria-pressed') === 'true' || b.classList.contains('active')) n++;
@@ -2253,7 +2289,7 @@ function initFilterToggles() {
     };
 
     const label = () => {
-      const open = bar.classList.contains('open') || !NARROW.matches;
+      const open = bar.classList.contains('open');
       caret.textContent = open ? '▴' : '▾';
       btn.setAttribute('aria-expanded', String(open));
       const n = activeCount();
@@ -2265,6 +2301,7 @@ function initFilterToggles() {
 
     btn.addEventListener('click', () => {
       bar.classList.toggle('open');
+      summary.classList.toggle('open', bar.classList.contains('open'));
       label();
       // A newly revealed toolbar may change the name column's width.
       fitModelNames();
@@ -2273,16 +2310,20 @@ function initFilterToggles() {
     bar.addEventListener('input', label);
     bar.addEventListener('click', () => setTimeout(label, 0));
 
-    bar.parentNode.insertBefore(btn, bar);
+    summary.append(btn);
+    if (searchWrap) summary.append(searchWrap);
+    bar.parentNode.insertBefore(summary, bar);
+    const search = summary.querySelector('.search');
+    if (search) search.addEventListener('input', label);
     label();
   }
 }
-/* Crossing the breakpoint resets to the default for that width: collapsed on
-   narrow, always-open on desktop (where the button is hidden anyway). */
+/* Crossing the breakpoint resets the optional toolbar to its closed state. */
 NARROW.addEventListener('change', () => {
   document.querySelectorAll('.toolbar').forEach(bar => bar.classList.remove('open'));
+  document.querySelectorAll('.filter-summary').forEach(summary => summary.classList.remove('open'));
   document.querySelectorAll('.filters-toggle').forEach(b => {
-    const open = !NARROW.matches;
+    const open = false;
     const caret = b.querySelector('span');
     if (caret) caret.textContent = open ? '▴' : '▾';
     b.setAttribute('aria-expanded', String(open));
