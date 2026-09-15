@@ -1,6 +1,6 @@
 {
-  "model": "thorh/whisper-large-v3-turbo-danish",
-  "model_link": "[thorh/whisper-large-v3-turbo-danish](https://huggingface.co/thorh/whisper-large-v3-turbo-danish)",
+  "model": "thorhojhus/whisper-large-v3-turbo-danish",
+  "model_link": "[thorhojhus/whisper-large-v3-turbo-danish](https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish)",
   "params_b": 0.809,
   "access": "open",
   "submitted": "2026-09-06",
