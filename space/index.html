@@ -136,6 +136,15 @@
       visibility: hidden;
       transition: transform .2s ease, opacity .2s ease, visibility 0s linear .2s;
     }
+    .sticky-header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .38;
+      background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27180%27%20height%3D%27180%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.85%27%20numOctaves%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27180%27%20height%3D%27180%27%20filter%3D%27url%28%23n%29%27%20opacity%3D%270.55%27%2F%3E%3C%2Fsvg%3E");
+    }
+    .sticky-header > * { position: relative; z-index: 1; }
     /* pointer-events returns with visibility: while hidden the bar must not
        intercept taps, but once shown it has to stop them reaching the row
        underneath, which the reader cannot see. */
@@ -253,21 +262,23 @@
     .tab-btn::after {
       content: "";
       position: absolute;
-      right: 16px;
+      right: 0;
       bottom: -1px;
-      left: 16px;
+      left: 0;
       height: 2px;
       background: transparent;
-      transform: scaleX(.65);
-      transform-origin: center;
-      transition: background 0.12s, transform 0.12s;
+      transition: background 0.12s;
     }
     .tab-icon { width: 14px; height: 14px; flex: none; }
     .tab-btn.active {
-      background: linear-gradient(180deg, rgba(216,20,58,.13) 0%, rgba(216,20,58,.04) 62%, rgba(216,20,58,0) 100%);
+      background:
+        radial-gradient(115% 520% at  0% 125%, rgba(216, 20,  58, .28) 0%, rgba(216, 20,  58, 0) 58%),
+        radial-gradient( 95% 460% at 34% 150%, rgba(152, 20,  74, .16) 0%, rgba(152, 20,  74, 0) 62%),
+        radial-gradient( 80% 480% at 74% -55%, rgba( 92, 26, 104, .17) 0%, rgba( 92, 26, 104, 0) 66%),
+        radial-gradient( 85% 520% at 100% -30%, rgba( 58, 24, 106, .22) 0%, rgba( 58, 24, 106, 0) 62%);
       color: var(--text);
     }
-    .tab-btn.active::after { background: #f36a7f; transform: scaleX(1); }
+    .tab-btn.active::after { background: #ffb0bf; }
     .tab-btn:hover:not(.active) { color: var(--text); }
     .tab-btn:focus-visible { outline: 2px solid var(--link); outline-offset: -2px; }
     .tab-pane { display: none; }
