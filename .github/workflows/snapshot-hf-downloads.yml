@@ -1,6 +1,16 @@
 name: Snapshot Hugging Face downloads
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'results/**'
+      - 'history/hf_downloads.json'
+      - 'scripts/snapshot_hf_downloads.py'
+      - 'scripts/sync_download_history.py'
+      - 'scripts/update_space.py'
+      - '.github/workflows/snapshot-hf-downloads.yml'
   schedule:
     - cron: "17 3 * * *"
   workflow_dispatch:
