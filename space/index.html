@@ -217,11 +217,14 @@
 
     /* ── Tabs ──────────────────────────────────────────────────────── */
     .tab-nav {
+      position: sticky;
+      top: 0;
+      z-index: 45;
       display: flex;
       align-items: stretch;
       gap: 0;
       padding: 0;
-      background: transparent;
+      background: var(--bg);
       border: 0;
       border-bottom: 1px solid var(--border);
       border-radius: 0;
@@ -229,6 +232,7 @@
       max-width: 100%;
       margin-bottom: 18px;
     }
+    .sticky-header.show ~ .app .tab-nav { top: 46px; }
     .tab-btn {
       position: relative;
       align-items: center;
@@ -260,7 +264,7 @@
     }
     .tab-icon { width: 14px; height: 14px; flex: none; }
     .tab-btn.active {
-      background: linear-gradient(180deg, rgba(198,12,48,0) 26%, rgba(198,12,48,.20) 100%);
+      background: linear-gradient(180deg, rgba(216,20,58,.13) 0%, rgba(216,20,58,.04) 62%, rgba(216,20,58,0) 100%);
       color: var(--text);
     }
     .tab-btn.active::after { background: #f36a7f; transform: scaleX(1); }
