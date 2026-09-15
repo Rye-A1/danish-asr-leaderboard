@@ -332,6 +332,10 @@
       min-width: 0;
       max-width: 300px;
     }
+    @media (max-width: 700px) {
+      .filter-summary .search-wrap { display: none; }
+      .filter-summary.open .search-wrap { display: block; }
+    }
     .toolbar {
       display: none;
       align-items: center;
@@ -2290,6 +2294,7 @@ function initFilterToggles() {
 
     btn.addEventListener('click', () => {
       bar.classList.toggle('open');
+      summary.classList.toggle('open', bar.classList.contains('open'));
       label();
       // A newly revealed toolbar may change the name column's width.
       fitModelNames();
@@ -2309,6 +2314,7 @@ function initFilterToggles() {
 /* Crossing the breakpoint resets the optional toolbar to its closed state. */
 NARROW.addEventListener('change', () => {
   document.querySelectorAll('.toolbar').forEach(bar => bar.classList.remove('open'));
+  document.querySelectorAll('.filter-summary').forEach(summary => summary.classList.remove('open'));
   document.querySelectorAll('.filters-toggle').forEach(b => {
     const open = false;
     const caret = b.querySelector('span');
