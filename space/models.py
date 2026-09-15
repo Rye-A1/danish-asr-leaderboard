@@ -28,5 +28,5 @@ MODEL_NAMES = [
     'syvai/hviske-v5-tiny',
     'syvai/hviske-v5.1',
     'syvai/hviske-v5.3',
-    'thorh/whisper-large-v3-turbo-danish'
+    'thorhojhus/whisper-large-v3-turbo-danish'
 ]
