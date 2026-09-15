@@ -158,5 +158,9 @@
   "thorh/whisper-large-v3-turbo-danish": {
     "released": "2026-09-06",
     "source": "huggingface"
+  },
+  "thorhojhus/whisper-small-danish": {
+    "released": "2026-09-14",
+    "source": "huggingface"
   }
 }
