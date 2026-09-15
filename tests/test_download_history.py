@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 
 from snapshot_hf_downloads import model_repositories, upsert_snapshot
+from sync_download_history import snapshot_date
 
 
 def test_upsert_snapshot_replaces_today_and_preserves_prior_values():
@@ -34,3 +35,13 @@ def test_model_repositories_skips_proprietary_rows(tmp_path):
     )
 
     assert model_repositories(tmp_path) == {"example/asr": "example/asr"}
+
+
+def test_snapshot_date_uses_the_latest_record(tmp_path):
+    history = tmp_path / "hf_downloads.json"
+    history.write_text(
+        '{"snapshots":[{"date":"2026-09-14"},{"date":"2026-09-15"}]}',
+        encoding="utf-8",
+    )
+
+    assert snapshot_date(history) == "2026-09-15"
