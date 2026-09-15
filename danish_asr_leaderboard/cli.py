@@ -55,9 +55,9 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--outputs-dir", default="outputs",
                     help="Where to persist raw per-sample model outputs (for offline "
                          "re-scoring). Empty string disables saving.")
-    ap.add_argument("--unicode-form", default="NFC", choices=["NFC", "NFKC", "NFD", "NFKD"],
+    ap.add_argument("--unicode-form", default="NFKC", choices=["NFC", "NFKC", "NFD", "NFKD"],
                     help="Unicode normalisation form applied before scoring (published "
-                         "default: NFC). Raw outputs are saved regardless, so other forms "
+                         "default: NFKC). Raw outputs are saved regardless, so other forms "
                          "can be compared later via scripts/rescore.py.")
     ap.add_argument("--number-words", action=argparse.BooleanOptionalAction, default=True,
                     help="Expand standalone integer tokens to Danish cardinal words "

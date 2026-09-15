@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "snapshots": [
+    {
+      "date": "2026-09-14",
+      "downloads": {
+        "3dio-ai/svale-110M": 8,
+        "3dio-ai/svale-600M": 22,
+        "CoRal-project/roest-v2-wav2vec2-1B": 38,
+        "CoRal-project/roest-v2-wav2vec2-2B": 38,
+        "CoRal-project/roest-v3-wav2vec2-315m": 751,
+        "CoRal-project/roest-v3-whisper-1.5b": 1196,
+        "MediaCatch/xls-r-300m-danish-mc-v2": 1515,
+        "Qwen/Qwen3-ASR-1.7B": 2717766,
+        "capacit-ai/saga": 442,
+        "capacit-ai/saga-2-m": 12,
+        "facebook/mms-1b-all": 280887,
+        "facebook/seamless-m4t-v2-large": 302925,
+        "mistralai/Voxtral-Mini-3B-2507": 395000,
+        "mistralai/Voxtral-Small-24B-2507": 105125,
+        "nvidia/canary-1b-v2": 30769,
+        "nvidia/parakeet-rnnt-110m-da-dk": 557,
+        "nvidia/parakeet-tdt-0.6b-v3": 639368,
+        "openai/whisper-base": 1706592,
+        "openai/whisper-large-v3": 4801728,
+        "openai/whisper-large-v3-turbo": 6720104,
+        "openai/whisper-small": 2972883,
+        "openai/whisper-tiny": 1658450,
+        "pluttodk/milo-asr": 11,
+        "syvai/hviske-v3-conversation": 6891,
+        "syvai/hviske-v5": 244,
+        "syvai/hviske-v5-tiny": 386,
+        "syvai/hviske-v5.1": 245,
+        "syvai/hviske-v5.3": 23399,
+        "thorh/whisper-large-v3-turbo-danish": 142
+      }
+    }
+  ]
+}

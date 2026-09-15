@@ -1,0 +1,65 @@
+name: Snapshot Hugging Face downloads
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'results/**'
+      - 'history/hf_downloads.json'
+      - 'scripts/snapshot_hf_downloads.py'
+      - 'scripts/sync_download_history.py'
+      - 'scripts/update_space.py'
+      - '.github/workflows/snapshot-hf-downloads.yml'
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hf-download-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Restore published history
+        run: uv run --no-project --with huggingface_hub python scripts/sync_download_history.py pull
+
+      - name: Snapshot Hub downloads
+        id: snapshot
+        run: |
+          cp history/hf_downloads.json "$RUNNER_TEMP/hf_downloads.before.json"
+          python scripts/snapshot_hf_downloads.py
+          if cmp -s history/hf_downloads.json "$RUNNER_TEMP/hf_downloads.before.json"; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish snapshot
+        if: steps.snapshot.outputs.changed == 'true'
+        run: uv run --no-project --with huggingface_hub python scripts/sync_download_history.py push
+
+      - name: Refresh Space
+        if: steps.snapshot.outputs.changed == 'true'
+        run: uv run --no-project --with pandas --with pyarrow --with requests --with huggingface_hub --with pillow --with numpy python scripts/update_space.py

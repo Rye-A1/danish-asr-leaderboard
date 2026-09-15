@@ -30,11 +30,15 @@ from huggingface_hub import HfApi, get_token
 from PIL import Image, ImageDraw, ImageFont
 
 SPACE_REPO_ID   = "RyeAI/danish-asr-leaderboard"
+DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 DATASET_PARQUET = "hf://datasets/RyeAI/danish-asr-leaderboard/data/results.parquet"
 # Sample-level bootstrap CIs, precomputed from the raw outputs by
 # scripts/compute_ci.py (too expensive to recompute on every deploy).
 DATASET_CI_JSON = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/resolve/main/data/ci.json"
+DATASET_DOWNLOAD_HISTORY_JSON = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/resolve/main/data/hf_downloads.json"
 SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
+DOWNLOAD_HISTORY_PATH = Path(__file__).resolve().parent.parent / "history" / "hf_downloads.json"
+DOWNLOAD_HISTORY_WINDOW = 90
 
 UPLOAD = ["index.html", "leaderboard.json", "models.py", "README.md", "cover.jpeg"]
 OBSOLETE = ["app.py", "requirements.txt"]
@@ -174,6 +178,17 @@ def _provider_logo(org: str) -> str:
 
 
 @functools.lru_cache(maxsize=256)
+def _model_metadata(model_id: str) -> dict:
+    """Model metadata from Hugging Face, or an empty dict if unavailable."""
+    try:
+        r = requests.get(f"https://huggingface.co/api/models/{model_id}", timeout=4)
+        if r.ok:
+            return r.json()
+    except Exception:
+        pass
+    return {}
+
+
 def _model_license(model_id: str) -> str:
     """Licence tag from the model's HF repo, or '' if none/unavailable.
 
@@ -182,16 +197,59 @@ def _model_license(model_id: str) -> str:
     deploy instead of going stale. Hosted API models have no repo — they get ''
     and render as an em dash.
     """
+    for tag in _model_metadata(model_id).get("tags", []):
+        if tag.startswith("license:"):
+            return tag.split(":", 1)[1]
+    return ""
+
+
+@functools.lru_cache(maxsize=1)
+def _download_history() -> dict:
+    """Published daily snapshots, with the repository seed as a fallback."""
     try:
-        r = requests.get(f"https://huggingface.co/api/models/{model_id}", timeout=4)
-        if not r.ok:
-            return ""
-        for tag in r.json().get("tags", []):
-            if tag.startswith("license:"):
-                return tag.split(":", 1)[1]
+        response = requests.get(DATASET_DOWNLOAD_HISTORY_JSON, timeout=10)
+        if response.ok:
+            return response.json()
     except Exception:
         pass
-    return ""
+    try:
+        return json.loads(DOWNLOAD_HISTORY_PATH.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {"snapshots": []}
+
+
+def _download_series(model_id: str, history: dict) -> list[int | None]:
+    """Return a model's daily download values, preserving missing snapshots."""
+    values: list[int | None] = []
+    for snapshot in history.get("snapshots", []):
+        value = snapshot.get("downloads", {}).get(model_id)
+        try:
+            downloads = int(value)
+        except (TypeError, ValueError):
+            values.append(None)
+            continue
+        values.append(downloads if downloads >= 0 else None)
+    return values
+
+
+@functools.lru_cache(maxsize=256)
+def _model_download_history(model_id: str) -> tuple[int | None, ...]:
+    """The most recent daily download values sent to the static Space."""
+    series = _download_series(model_id, _download_history())[-DOWNLOAD_HISTORY_WINDOW:]
+    return tuple(series) if any(value is not None for value in series) else ()
+
+
+def _model_downloads(model_id: str) -> int | None:
+    """Latest recorded rolling 30-day Hub download count, with a live fallback."""
+    for downloads in reversed(_model_download_history(model_id)):
+        if downloads is not None:
+            return downloads
+    value = _model_metadata(model_id).get("downloads")
+    try:
+        downloads = int(value)
+    except (TypeError, ValueError):
+        return None
+    return downloads if downloads >= 0 else None
 
 
 def _release_date(model_id: str) -> str:
@@ -361,6 +419,10 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "logo": logo,
                 "access": str(row.get("access", "open")),
                 "license": _model_license(name) if is_repo else "",
+                # Hugging Face reports a rolling 30-day download count. It is
+                # activity context, not a quality or historical trend metric.
+                "hf_downloads": _model_downloads(name) if is_repo else None,
+                "hf_download_history": list(_model_download_history(name)) if is_repo else [],
                 "size": _official_size(name, row.get("params_b")),
                 "submitted": str(submitted)[:10] if pd.notna(submitted) else "",
                 # Powers the Over Time chart. Distinct from "submitted", which

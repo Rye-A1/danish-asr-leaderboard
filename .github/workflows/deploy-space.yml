@@ -9,6 +9,7 @@ on:
       - 'results/**'
       - 'outputs/**'
       - 'scripts/update_space.py'
+      - 'history/hf_downloads.json'
       - 'dataset_card.md'
       - 'assets/fonts/**'
       - 'scripts/push_results.py'

@@ -456,6 +456,23 @@
     }
     .score-fill { height: 100%; border-radius: 3px; }
 
+    /* Daily Hugging Face download tendency. */
+    .download-wrap {
+      display: grid;
+      min-width: 58px;
+      place-items: center;
+    }
+    .download-num {
+      display: block;
+      grid-area: 1 / 1;
+      z-index: 1;
+      font-size: 11px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 1px 4px var(--surf);
+    }
+    .download-spark { grid-area: 1 / 1; width: 54px; height: 22px; color: var(--link); }
+
     /* Access badge */
     .badge {
       display: inline-block;
@@ -993,6 +1010,7 @@
       tbody tr td[data-key="mean_wer"],
       tbody tr td[data-key="mean_cer"],
       tbody tr td[data-key="speed_x"],
+      tbody tr td[data-key="hf_downloads"],
       tbody tr td[data-key="borda_score"],
       tbody tr td[data-key="bt_score"] {
         order: 4;
@@ -1028,7 +1046,8 @@
       /* The arrows in "Mean WER down" are noise at tile size. */
       tbody tr td[data-key="mean_wer"]::before,
       tbody tr td[data-key="mean_cer"]::before,
-      tbody tr td[data-key="speed_x"]::before {
+      tbody tr td[data-key="speed_x"]::before,
+      tbody tr td[data-key="hf_downloads"]::before {
         font-size: 10px;
         font-weight: 500;
         letter-spacing: 0.03em;
@@ -1037,6 +1056,43 @@
       tbody tr td[data-key="mean_wer"]::before { content: "WER"; }
       tbody tr td[data-key="mean_cer"]::before { content: "CER"; }
       tbody tr td[data-key="speed_x"]::before  { content: "SPEED"; }
+      tbody tr td[data-key="hf_downloads"]::before { content: "POPULARITY"; }
+      tbody td[data-key="hf_downloads"] {
+        position: relative;
+        isolation: isolate;
+        overflow: hidden;
+      }
+      tbody td[data-key="hf_downloads"]::before {
+        position: absolute;
+        top: 9px;
+        left: 0;
+        right: 0;
+        z-index: 2;
+        text-align: center;
+      }
+      tbody td[data-key="hf_downloads"] .download-wrap {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        min-width: 0;
+        place-items: center;
+        z-index: 1;
+      }
+      tbody td[data-key="hf_downloads"] .download-spark {
+        grid-area: 1 / 1;
+        width: 100%;
+        height: 100%;
+        opacity: .85;
+      }
+      tbody td[data-key="hf_downloads"] .download-num {
+        display: block;
+        grid-area: 1 / 1;
+        z-index: 1;
+        font-size: 15px;
+        font-weight: 700;
+        text-shadow: 0 1px 4px var(--surf);
+        transform: translateY(10px);
+      }
 
       /* 5 -- per-dataset scores, two per line, hidden until expanded. */
       tbody td[data-key$="_wer"]:not([data-key^="mean"]),
@@ -1287,6 +1343,7 @@
     <button class="tab-btn active" data-tab="wer"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M5 6H3v2a4 4 0 0 0 4 4M19 6h2v2a4 4 0 0 1-4 4"/></svg>Leaderboard</button>
     <button class="tab-btn" data-tab="analysis"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg>Pareto</button>
     <button class="tab-btn" data-tab="time"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Over Time</button>
+    <button class="tab-btn" data-tab="methodology"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Methodology</button>
     <button class="tab-btn" data-tab="about"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>About</button>
   </nav>
 
@@ -1435,6 +1492,10 @@
       </table>
     </div>
 
+  </div><!-- /about -->
+
+  <!-- Methodology tab -->
+  <div id="tab-methodology" class="tab-pane about">
     <h2>Methodology</h2>
 
     <h3>Text normalisation</h3>
@@ -1593,9 +1654,7 @@
       confirm the scores reproduce and catch any configuration differences.
     </blockquote>
 
-  </div><!-- /about -->
-
-  <!-- Changelog — shown on all pages -->
+    <!-- Methodology & data changes -->
   <div style="max-width:800px;margin:32px 0 0">
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
@@ -1711,6 +1770,8 @@
     </details>
   </div>
 
+  </div><!-- /methodology -->
+
   <!-- Footer -->
   <footer>
     <span id="updated-ts">Updated</span>
@@ -1760,6 +1821,8 @@ const WER_COLS = [
     tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
       + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
+  { key:'hf_downloads',           label:'Popularity',
+    tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
     tip:'WER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_wer',    label:'CoRal Read',
@@ -1787,6 +1850,8 @@ const CER_COLS = [
     tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
       + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
+  { key:'hf_downloads',           label:'Popularity',
+    tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',
     tip:'CER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_cer',    label:'CoRal Read',
@@ -1819,6 +1884,100 @@ function scoreCell(td, v, max) {
   bar.appendChild(fill);
   wrap.appendChild(num);
   wrap.appendChild(bar);
+  td.appendChild(wrap);
+}
+
+let sparkId = 0;
+
+function downloadSparkline(values) {
+  const points = values.filter(value => Number.isFinite(value));
+  if (!points.length) return null;
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const width = 54, height = 22, top = 2, baseline = 20;
+  const min = Math.min(...points);
+  const range = Math.max(1, Math.max(...points) - min);
+  const hasTrend = points.length > 1;
+  const coords = hasTrend
+    ? points.map((value, index) => ({
+        x: (index / (points.length - 1)) * width,
+        y: top + (1 - (value - min) / range) * (baseline - top - 2),
+      }))
+    : [
+        { x: 0, y: baseline - 3 },
+        { x: width * .72, y: baseline - 3 },
+        { x: width, y: top + 3 },
+      ];
+  const line = coords.map((point, index) =>
+    `${index ? 'L' : 'M'}${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(' ');
+
+  const svg = document.createElementNS(NS, 'svg');
+  svg.classList.add('download-spark');
+  svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+  svg.setAttribute('preserveAspectRatio', 'none');
+  svg.setAttribute('aria-hidden', 'true');
+  const gradientId = `download-gradient-${sparkId++}`;
+  const defs = document.createElementNS(NS, 'defs');
+  const gradient = document.createElementNS(NS, 'linearGradient');
+  gradient.setAttribute('id', gradientId);
+  gradient.setAttribute('x1', '0');
+  gradient.setAttribute('y1', '0');
+  gradient.setAttribute('x2', '0');
+  gradient.setAttribute('y2', '1');
+  const start = document.createElementNS(NS, 'stop');
+  start.setAttribute('offset', '0%');
+  start.setAttribute('stop-color', 'currentColor');
+  start.setAttribute('stop-opacity', '.42');
+  const end = document.createElementNS(NS, 'stop');
+  end.setAttribute('offset', '100%');
+  end.setAttribute('stop-color', 'currentColor');
+  end.setAttribute('stop-opacity', '0');
+  gradient.append(start, end);
+  defs.appendChild(gradient);
+  svg.appendChild(defs);
+
+  if (coords.length > 1) {
+    const area = document.createElementNS(NS, 'path');
+    area.setAttribute('d', `${line} L${width},${baseline} L0,${baseline} Z`);
+    area.setAttribute('fill', `url(#${gradientId})`);
+    svg.appendChild(area);
+    const path = document.createElementNS(NS, 'path');
+    path.setAttribute('d', line);
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'currentColor');
+    path.setAttribute('stroke-width', '1.8');
+    path.setAttribute('stroke-linecap', 'round');
+    path.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(path);
+  }
+
+  if (hasTrend) {
+    const latest = coords.at(-1);
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('cx', latest.x.toFixed(1));
+    dot.setAttribute('cy', latest.y.toFixed(1));
+    dot.setAttribute('r', '2');
+    dot.setAttribute('fill', 'currentColor');
+    svg.appendChild(dot);
+  }
+  return svg;
+}
+
+function downloadCell(td, value, history) {
+  const values = Array.isArray(history) && history.some(Number.isFinite)
+    ? history
+    : value == null ? [] : [value];
+  const sparkline = downloadSparkline(values);
+  if (!sparkline) { td.textContent = '—'; return; }
+  const wrap = document.createElement('div');
+  wrap.className = 'download-wrap';
+  const number = document.createElement('span');
+  number.className = 'download-num';
+  number.textContent = new Intl.NumberFormat('en', {
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(value);
+  wrap.append(sparkline, number);
   td.appendChild(wrap);
 }
 
@@ -1944,6 +2103,9 @@ function buildRow(row, cols, maxVals) {
 
     } else if (c.key === 'speed_x') {
       td.textContent = v != null ? v.toFixed(1) + 'x' : '—';
+
+    } else if (c.key === 'hf_downloads') {
+      downloadCell(td, v, row.hf_download_history);
 
     } else if (typeof v === 'number') {
       td.textContent = v.toFixed(2);
@@ -2179,6 +2341,7 @@ const SORT_FIELDS = [
   { key: 'mean_wer',    label: 'Mean WER',  dir:  1 },
   { key: 'mean_cer',    label: 'Mean CER',  dir:  1 },
   { key: 'speed_x',     label: 'Speed',     dir: -1 },
+  { key: 'hf_downloads', label: 'Popularity', dir: -1 },
   { key: 'size',        label: 'Size',      dir: -1, always: true,
     read: r => parseFloat(r.size) },
   { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt'    },
