@@ -1,5 +1,5 @@
 {
-  "model": "[thorh/whisper-large-v3-turbo-danish](https://huggingface.co/thorh/whisper-large-v3-turbo-danish)",
+  "model": "[thorhojhus/whisper-large-v3-turbo-danish](https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish)",
   "params_b": 0.809,
   "coral_conversation_wer": 19.75,
   "coral_read_aloud_wer": 12.93,
