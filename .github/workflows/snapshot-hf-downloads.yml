@@ -12,7 +12,7 @@ on:
       - 'scripts/update_space.py'
       - '.github/workflows/snapshot-hf-downloads.yml'
   schedule:
-    - cron: "17 3 * * *"
+    - cron: "0 12 * * *"
   workflow_dispatch:
 
 permissions:
