@@ -155,6 +155,10 @@
     "released": "2026-04-28",
     "source": "huggingface"
   },
+  "syvai/hviske-v6": {
+    "released": "2026-09-22",
+    "source": "huggingface"
+  },
   "thorhojhus/whisper-large-v3-turbo-danish": {
     "released": "2026-09-06",
     "source": "huggingface"

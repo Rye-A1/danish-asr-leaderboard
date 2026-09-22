@@ -50,6 +50,10 @@ qwen-asr       = ["torch>=2.0.0", "transformers>=4.54.0", "qwen-asr>=0.0.6"]
 # model repo and is imported from the snapshot. Pins follow its requirements.txt.
 saga2          = ["torch>=2.4", "transformers>=4.51,<5", "librosa>=0.10",
                   "soundfile>=0.12.1", "safetensors", "huggingface_hub>=0.30"]
+# hviske-v6 (syvai): custom WhisperQwen arch, inference code ships in the model
+# repo and is imported from the snapshot.
+hviske-v6      = ["torch>=2.4", "transformers>=4.51,<5", "librosa>=0.10",
+                  "soundfile>=0.12.1", "safetensors", "huggingface_hub>=0.30"]
 nemo           = ["torch>=2.0.0", "nemo_toolkit[asr]>=2.4.0"]
 voxtral        = ["torch>=2.0.0", "transformers>=4.54.0", "mistral-common[audio]>=1.8.1"]
 seamless       = ["torch>=2.0.0", "transformers>=4.54.0"]

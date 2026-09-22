@@ -1,0 +1,18 @@
+{
+  "model": "syvai/hviske-v6",
+  "model_link": "[syvai/hviske-v6](https://huggingface.co/syvai/hviske-v6)",
+  "params_b": 1.238,
+  "access": "open",
+  "submitted": "2026-09-22",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 47.2,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}
