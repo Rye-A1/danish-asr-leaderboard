@@ -44,7 +44,7 @@ The `results` config (shown by default) has one row per evaluated model. Scores 
 | `coral_conversation` | [CoRal-project/coral-v3](https://huggingface.co/datasets/CoRal-project/coral-v3) — conversation | test | Spontaneous conversation |
 | `coral_read_aloud` | [CoRal-project/coral-v3](https://huggingface.co/datasets/CoRal-project/coral-v3) — read_aloud | test | Read-aloud speech |
 | `ftspeech` | [alexandrainst/ftspeech](https://huggingface.co/datasets/alexandrainst/ftspeech) | test_balanced | Parliamentary / broadcast |
-| `cv17_da` | [mozilla-foundation/common_voice_17_0](https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0) — da | test | Crowd-sourced read speech |
+| `cv17_da` | [RyeAI/common-voice-25-da-test](https://huggingface.co/datasets/RyeAI/common-voice-25-da-test) — Common Voice 25.0 da | test | Crowd-sourced read speech |
 | `fleurs_da` | [google/fleurs](https://huggingface.co/datasets/google/fleurs) — da_dk | test | Read speech |
 
 ## Schema
@@ -61,12 +61,12 @@ The `results` config (shown by default) has one row per evaluated model. Scores 
 | `coral_conversation_wer` | float\|null | WER on CoRal v3 conversation |
 | `coral_read_aloud_wer` | float\|null | WER on CoRal v3 read-aloud |
 | `ftspeech_wer` | float\|null | WER on FTSpeech |
-| `cv17_da_wer` | float\|null | WER on Common Voice 17 (Danish) |
+| `cv17_da_wer` | float\|null | WER on Common Voice 25.0 (Danish) |
 | `fleurs_da_wer` | float\|null | WER on FLEURS (Danish) |
 | `coral_conversation_cer` | float\|null | CER on CoRal v3 conversation |
 | `coral_read_aloud_cer` | float\|null | CER on CoRal v3 read-aloud |
 | `ftspeech_cer` | float\|null | CER on FTSpeech |
-| `cv17_da_cer` | float\|null | CER on Common Voice 17 (Danish) |
+| `cv17_da_cer` | float\|null | CER on Common Voice 25.0 (Danish) |
 | `fleurs_da_cer` | float\|null | CER on FLEURS (Danish) |
 | `speed_x` | float\|null | Audio seconds / wall-clock second (higher = faster). Measured on one NVIDIA A100 80&nbsp;GB at batch size 16; network-bound for API models. `NaN` if not measured. |
 | `submitted` | string | ISO 8601 date the result was submitted (`YYYY-MM-DD`) |

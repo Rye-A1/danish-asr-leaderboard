@@ -20,10 +20,9 @@
 #   DEFAULT_PY=.venv/bin/python NEMO_PY=.venv-nemo/bin/python QWEN_PY=.venv-qwen/bin/python \
 #     bash scripts/run_benchmark.sh
 #
-# Common Voice: cv17_da needs a local manifest (modern `datasets` can't load the
-# script-based HF repo). Fetch it once and export CV_DATA_DIR, else cv17 is skipped:
-#   python scripts/fetch_common_voice_da.py --output-dir cv_da   # needs MOZILLA_API_KEY
-#   export CV_DATA_DIR=$PWD/cv_da
+# Common Voice: cv17_da is Common Voice 25.0, loaded from the gated, pinned
+# RyeAI/common-voice-25-da-test (accept its terms on the Hub, set HF_TOKEN).
+# CV_DATA_DIR still overrides it with a local copy, which must match that split.
 #
 # Usage:
 #   bash scripts/run_benchmark.sh                 # local (open-weight) models

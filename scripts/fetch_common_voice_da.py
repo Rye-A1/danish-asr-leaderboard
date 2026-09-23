@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Fetch the Common Voice Danish **test** split for the cv17_da leaderboard column.
 
-Modern ``datasets`` (>=4) no longer runs the script-based
-``mozilla-foundation/common_voice_17_0`` loader, and that repo ships no plain
-parquet, so the HF path can't materialise the test split. Instead we pull the
+The column is scored on Common Voice **25.0**, and the harness loads that exact
+split from ``RyeAI/common-voice-25-da-test`` by default -- you don't need this
+script to reproduce the board. It builds a local copy for ``CV_DATA_DIR``
+instead, and a full run only accepts that copy if it matches the leaderboard's
+split (see ``load_common_voice``). It pulls the
 official Common Voice Danish tarball from the Mozilla Data Collective API,
 extract the requested split's clips (mp3 → 16 kHz mono wav), and write a
 NeMo-style JSONL manifest that the eval harness reads via ``CV_DATA_DIR``.

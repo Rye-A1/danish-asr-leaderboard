@@ -4,8 +4,8 @@ These lock in the disk-bomb fix: ``_materialise`` must *iterate* the dataset so 
 works on streaming ``IterableDataset``s and never triggers HF's generate-all-splits
 path. A streaming dataset has no ``__len__`` and no ``__getitem__`` — the
 ``_StreamingLike`` stand-in below has neither, so any regression to ``len(ds)`` or
-``ds[i]`` raises immediately. Also covers the cv17 local-manifest path
-(``CV_DATA_DIR``), which is the supported way to load Common Voice.
+``ds[i]`` raises immediately. Also covers Common Voice: both the pinned hub
+dataset and a local ``CV_DATA_DIR`` copy must match the leaderboard's split.
 """
 import json
 from pathlib import Path
@@ -102,22 +102,79 @@ def test_materialise_reuses_manifest_without_loading(tmp_path):
     assert out == [{"audio_path": str(audio), "reference_text": "cached"}]
 
 
-def test_load_common_voice_reads_local_manifest(tmp_path, monkeypatch):
+def _cv_manifest(tmp_path, sentences):
     cv = tmp_path / "cv"
     (cv / "test").mkdir(parents=True)
-    a1, a2 = cv / "test" / "1.wav", cv / "test" / "2.wav"
-    a1.write_bytes(b"RIFF\x00\x00")
-    a2.write_bytes(b"RIFF\x00\x00")
-    (cv / "test" / "test_manifest.jsonl").write_text(
-        json.dumps({"audio_filepath": str(a1), "text": "én"}) + "\n"
-        + json.dumps({"audio_filepath": str(a2), "text": "to"}) + "\n"
-    )
+    lines = []
+    for i, text in enumerate(sentences):
+        audio = cv / "test" / f"{i}.wav"
+        audio.write_bytes(b"RIFF\x00\x00")
+        lines.append(json.dumps({"audio_filepath": str(audio), "text": text}))
+    (cv / "test" / "test_manifest.jsonl").write_text("\n".join(lines) + "\n")
+    return cv
+
+
+def _declare_canonical(monkeypatch, sentences):
+    """Make a tiny fixture stand in for the real 2,756-row split."""
+    monkeypatch.setattr(ds_mod, "CV_ROWS", len(sentences))
+    monkeypatch.setattr(ds_mod, "CV_SENTENCE_SHA256", ds_mod.cv_fingerprint(sentences))
+
+
+def test_load_common_voice_reads_local_manifest(tmp_path, monkeypatch):
+    cv = _cv_manifest(tmp_path, ["én", "to"])
+    _declare_canonical(monkeypatch, ["én", "to"])
     monkeypatch.setenv("CV_DATA_DIR", str(cv))
     out = load_common_voice(tmp_path, max_samples=0)
     assert out == [
-        {"audio_path": str(a1), "reference_text": "én"},
-        {"audio_path": str(a2), "reference_text": "to"},
+        {"audio_path": str(cv / "test" / "0.wav"), "reference_text": "én"},
+        {"audio_path": str(cv / "test" / "1.wav"), "reference_text": "to"},
     ]
+
+
+def test_load_common_voice_rejects_a_different_local_split(tmp_path, monkeypatch):
+    """The failure that motivated the check: a full run on another CV split.
+
+    Two September 2026 submissions scored a 2,530-row split while the board uses
+    2,756 rows; nothing stopped them, and the scores looked comparable.
+    """
+    cv = _cv_manifest(tmp_path, ["én", "to", "tre"])
+    _declare_canonical(monkeypatch, ["én", "to"])
+    monkeypatch.setenv("CV_DATA_DIR", str(cv))
+    with pytest.raises(ValueError, match="not the leaderboard's"):
+        load_common_voice(tmp_path, max_samples=0)
+
+
+def test_load_common_voice_rejects_same_size_different_sentences(tmp_path, monkeypatch):
+    cv = _cv_manifest(tmp_path, ["én", "fire"])
+    _declare_canonical(monkeypatch, ["én", "to"])
+    monkeypatch.setenv("CV_DATA_DIR", str(cv))
+    with pytest.raises(ValueError, match="not the leaderboard's"):
+        load_common_voice(tmp_path, max_samples=0)
+
+
+def test_cv_fingerprint_ignores_order_and_file_names():
+    """A renumbered copy of the right split must pass."""
+    assert ds_mod.cv_fingerprint(["b", "a", "c"]) == ds_mod.cv_fingerprint(["c", "b", "a"])
+    assert ds_mod.cv_fingerprint(["a", "b"]) != ds_mod.cv_fingerprint(["a", "b", "b"])
+
+
+def test_load_common_voice_hub_path_is_checked(tmp_path, monkeypatch):
+    monkeypatch.delenv("CV_DATA_DIR", raising=False)
+    rows = [{"audio_path": "x.wav", "reference_text": t} for t in ("én", "to")]
+    monkeypatch.setattr(ds_mod, "_materialise", lambda **kw: rows)
+    _declare_canonical(monkeypatch, ["én", "to"])
+    assert load_common_voice(tmp_path, max_samples=0) == rows
+    _declare_canonical(monkeypatch, ["én", "tre"])
+    with pytest.raises(ValueError, match="not the leaderboard's"):
+        load_common_voice(tmp_path, max_samples=0)
+
+
+def test_load_common_voice_smoke_runs_are_not_checked(tmp_path, monkeypatch):
+    """A capped run can never match the full split, so it must not be blocked."""
+    monkeypatch.delenv("CV_DATA_DIR", raising=False)
+    rows = [{"audio_path": "x.wav", "reference_text": "én"}]
+    monkeypatch.setattr(ds_mod, "_materialise", lambda **kw: rows)
+    assert load_common_voice(tmp_path, max_samples=1) == rows
 
 
 def test_load_common_voice_local_manifest_respects_max_samples(tmp_path, monkeypatch):
