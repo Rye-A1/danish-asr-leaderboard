@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
-"""Fetch the Common Voice Danish **test** split for the cv17_da leaderboard column.
+"""Fetch the Common Voice Danish **test** set for the cv17_da leaderboard column.
 
-The column is scored on Common Voice **25.0**, and the harness loads that exact
-split from ``RyeAI/common-voice-25-da-test`` by default -- you don't need this
-script to reproduce the board. It builds a local copy for ``CV_DATA_DIR``
-instead, and a full run only accepts that copy if it matches the leaderboard's
-split (see ``load_common_voice``). It pulls the
-official Common Voice Danish tarball from the Mozilla Data Collective API,
-extract the requested split's clips (mp3 → 16 kHz mono wav), and write a
-NeMo-style JSONL manifest that the eval harness reads via ``CV_DATA_DIR``.
+The column is scored on a fixed set of 2,756 clips: the Danish test split of
+Common Voice 25.0. Mozilla no longer serves 25.0, and its terms forbid
+re-hosting, so each user downloads Common Voice **27.0** themselves. 27.0's test
+split holds those 2,756 clips byte-identical (same MP3s, same sentences) plus 5
+added later; ``cv_da_test_clips.txt`` lists the 2,756 and this script keeps only
+those. The harness refuses any other set on a full run (see ``load_common_voice``).
+
+The script pulls the official tarball from the Mozilla Data Collective API
+(accept the dataset's terms on its page first), extracts the requested split's
+clips (mp3 → 16 kHz mono wav), and writes a NeMo-style JSONL manifest that the
+eval harness reads via ``CV_DATA_DIR``.
 
 Reproduce (fresh machine):
     export MOZILLA_API_KEY=...        # https://datacollective.mozillafoundation.org/
@@ -36,11 +39,15 @@ from pathlib import Path
 
 import soundfile as sf
 
-# Common Voice Danish scripted-speech dataset on the Mozilla Data Collective.
+# Common Voice Scripted Speech 27.0 - Danish on the Mozilla Data Collective.
 # Overridable via --dataset-id / --tarball for other versions.
-CV_DATASET_ID = "cmn2cptsh01hymm07mulngxv0"
+CV_DATASET_ID = "cmu5unqiw008jnq079btgdfgm"
 CV_API_BASE = "https://mozilladatacollective.com/api/datasets"
-CV_TARBALL_NAME = "common-voice-scripted-speech-25-0-danish.tar.gz"
+CV_TARBALL_NAME = "common-voice-scripted-speech-27-0-danish.tar.gz"
+# The leaderboard's test clips; test-split clips outside this list are dropped.
+CV_TEST_CLIPS = Path(__file__).resolve().parent / "cv_da_test_clips.txt"
+# The API sits behind Cloudflare, which rejects urllib's default client (error 1010).
+USER_AGENT = "danish-asr-leaderboard/fetch_common_voice_da"
 CV_TARBALL_GLOBS = ["common-voice-scripted-speech-*danish*.tar.gz", "cv-corpus-*da*.tar.gz"]
 
 
@@ -81,7 +88,8 @@ def _download_tarball(output_dir: Path, dataset_id: str) -> Path:
     print("Requesting download URL from Mozilla Data Collective…")
     req = urllib.request.Request(
         f"{CV_API_BASE}/{dataset_id}/download", method="POST",
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json",
+                 "User-Agent": USER_AGENT},
         data=b"{}",
     )
     with urllib.request.urlopen(req, timeout=30) as resp:
@@ -159,6 +167,14 @@ def extract_split(tarball_path: Path, split: str, output_dir: Path, force: bool)
         print(f"[{split}] no entries in {split}.tsv", file=sys.stderr)
         return 0
     print(f"[{split}] {len(tsv)} entries in TSV")
+    if split == "test":
+        wanted = CV_TEST_CLIPS.read_text(encoding="utf-8").split()
+        missing = [c for c in wanted if c not in tsv]
+        if missing:
+            raise SystemExit(f"[test] {len(missing)} leaderboard clips missing from this release's "
+                             f"test.tsv (e.g. {missing[0]}); use Common Voice 27.0.")
+        tsv = {c: tsv[c] for c in wanted}
+        print(f"[test] keeping the {len(tsv)} leaderboard clips from {CV_TEST_CLIPS.name}")
 
     rows: list[dict] = []
     skipped = 0

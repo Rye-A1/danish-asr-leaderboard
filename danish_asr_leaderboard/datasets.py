@@ -5,7 +5,7 @@ materialising audio to 16 kHz mono WAV under an on-disk cache and writing a
 JSONL manifest so subsequent runs skip the download/transcode step.
 
 The five *core* test sets (whose macro-average forms ``mean_wer`` / ``mean_cer``)
-are CoRal-v3 conversation, CoRal-v3 read-aloud, Common Voice 25.0 (da), FLEURS
+are CoRal-v3 conversation, CoRal-v3 read-aloud, Common Voice (da), FLEURS
 (da_dk) and FTSpeech.
 """
 from __future__ import annotations
@@ -136,12 +136,16 @@ def _coral_loader(config: str, slug: str, label: str) -> Loader:
 # (cv-corpus-25.0-2026-03-09/da/test.tsv), not Common Voice 17. Mozilla re-splits
 # test sets between releases, so "the Common Voice test set" is ambiguous: two
 # submissions in September 2026 arrived scored on a different 2,530-row split.
-# The exact set is published as a pinned dataset, and any copy -- from the Hub or
-# a local CV_DATA_DIR -- must match it before a full run is allowed to score.
-CV_REPO = "RyeAI/common-voice-25-da-test"
-CV_REVISION = "38a819f90be8d2d4ca62139ac3b8e1858b99f475"
+# 25.0 is no longer served and Mozilla's terms forbid re-hosting, so
+# scripts/fetch_common_voice_da.py extracts the same 2,756 clips (byte-identical
+# MP3s) from Common Voice 27.0. A full run must match them before it may score.
 CV_ROWS = 2756
 CV_SENTENCE_SHA256 = "a7630b9d7b4114026b4b08f97b398d5bd1813e8f7d737eb610924fe1b155e326"
+_CV_FETCH_HINT = (
+    "Build the leaderboard's set from Common Voice 27.0 with "
+    "`python scripts/fetch_common_voice_da.py --output-dir cv_da` and set CV_DATA_DIR=$PWD/cv_da."
+)
+
 
 
 def cv_fingerprint(sentences) -> str:
@@ -160,55 +164,38 @@ def _check_common_voice(rows: list[Row], source: str) -> None:
     raise ValueError(
         f"Common Voice set from {source} is not the leaderboard's: {len(rows)} rows, "
         f"fingerprint {fingerprint[:12]}; expected {CV_ROWS} rows, "
-        f"{CV_SENTENCE_SHA256[:12]} (Common Voice 25.0 da test). Unset CV_DATA_DIR to "
-        f"load {CV_REPO}, and delete any cached cv17_da.manifest.jsonl from an older run."
+        f"{CV_SENTENCE_SHA256[:12]}. {_CV_FETCH_HINT}"
     )
 
 
 def load_common_voice(audio_dir: Path, max_samples: int = 0) -> list[Row]:
-    """Common Voice 25.0 (da) test split -- the ``cv17_da`` column.
+    """Common Voice (da) leaderboard test set -- the ``cv17_da`` column.
 
-    Loads the pinned ``RyeAI/common-voice-25-da-test`` dataset, which is gated:
-    accept its terms on the Hub and set ``HF_TOKEN``. A local manifest at
-    ``$CV_DATA_DIR/test/test_manifest.jsonl`` (e.g. from
-    ``scripts/fetch_common_voice_da.py``) still overrides it. Either way a full
-    run must match the canonical split; capped smoke runs are not checked.
+    Reads the manifest at ``$CV_DATA_DIR/test/test_manifest.jsonl`` written by
+    ``scripts/fetch_common_voice_da.py``. A full run must match the leaderboard's
+    2,756 clips; capped smoke runs are not checked.
     """
     cv_data_dir = os.environ.get("CV_DATA_DIR", "")
     local_manifest = Path(cv_data_dir) / "test" / "test_manifest.jsonl" if cv_data_dir else None
-    if local_manifest and local_manifest.exists():
-        print("\n--- Loading Common Voice da test split (local manifest) ---")
-        rows: list[Row] = []
-        with open(local_manifest, encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                entry = json.loads(line)
-                audio_path = entry.get("audio_filepath", "")
-                text = (entry.get("text") or "").strip()
-                if audio_path and text and Path(audio_path).exists():
-                    rows.append({"audio_path": audio_path, "reference_text": text})
-        if max_samples > 0:
-            rows = rows[:max_samples]
-        else:
-            _check_common_voice(rows, str(local_manifest))
-        print(f"  Common Voice da: {len(rows)} usable samples (local)")
-        return rows
-
-    def load_ds():
-        from datasets import Audio, load_dataset
-
-        ds = load_dataset(CV_REPO, split="test", revision=CV_REVISION,
-                          streaming=True, token=True)
-        return ds.cast_column("audio", Audio(decode=False))
-
-    rows = _materialise(
-        slug="cv17_da", label="Common Voice 25.0 da test split", audio_dir=audio_dir,
-        load_ds=load_ds, text_keys=("sentence",), max_samples=max_samples,
-    )
-    if max_samples == 0:
-        _check_common_voice(rows, CV_REPO)
+    if not (local_manifest and local_manifest.exists()):
+        raise FileNotFoundError(f"Common Voice needs a local manifest. {_CV_FETCH_HINT}")
+    print("\n--- Loading Common Voice da test set (local manifest) ---")
+    rows: list[Row] = []
+    with open(local_manifest, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            entry = json.loads(line)
+            audio_path = entry.get("audio_filepath", "")
+            text = (entry.get("text") or "").strip()
+            if audio_path and text and Path(audio_path).exists():
+                rows.append({"audio_path": audio_path, "reference_text": text})
+    if max_samples > 0:
+        rows = rows[:max_samples]
+    else:
+        _check_common_voice(rows, str(local_manifest))
+    print(f"  Common Voice da: {len(rows)} usable samples (local)")
     return rows
 
 
@@ -277,7 +264,7 @@ DATASETS: dict[str, DatasetSpec] = {
                     "CoRal-v3 read-aloud", "CoRal-project/coral-v3", "test", True,
                     _coral_loader("read_aloud", "coral_read_aloud", "CoRal-v3 read_aloud test split")),
         DatasetSpec("cv17", "cv17_da",
-                    "Common Voice 25.0 (da)", CV_REPO, "test", True,
+                    "Common Voice (da)", "Common Voice 27.0 (Mozilla Data Collective)", "test", True,
                     load_common_voice),
         DatasetSpec("fleurs", "fleurs_da",
                     "FLEURS (da_dk)", "google/fleurs", "test", True,

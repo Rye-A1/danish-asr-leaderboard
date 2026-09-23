@@ -4,8 +4,8 @@ These lock in the disk-bomb fix: ``_materialise`` must *iterate* the dataset so 
 works on streaming ``IterableDataset``s and never triggers HF's generate-all-splits
 path. A streaming dataset has no ``__len__`` and no ``__getitem__`` — the
 ``_StreamingLike`` stand-in below has neither, so any regression to ``len(ds)`` or
-``ds[i]`` raises immediately. Also covers Common Voice: both the pinned hub
-dataset and a local ``CV_DATA_DIR`` copy must match the leaderboard's split.
+``ds[i]`` raises immediately. Also covers Common Voice: the local
+``CV_DATA_DIR`` copy must match the leaderboard's 2,756-clip set.
 """
 import json
 from pathlib import Path
@@ -158,23 +158,23 @@ def test_cv_fingerprint_ignores_order_and_file_names():
     assert ds_mod.cv_fingerprint(["a", "b"]) != ds_mod.cv_fingerprint(["a", "b", "b"])
 
 
-def test_load_common_voice_hub_path_is_checked(tmp_path, monkeypatch):
+def test_load_common_voice_without_manifest_says_how_to_fetch(tmp_path, monkeypatch):
     monkeypatch.delenv("CV_DATA_DIR", raising=False)
-    rows = [{"audio_path": "x.wav", "reference_text": t} for t in ("én", "to")]
-    monkeypatch.setattr(ds_mod, "_materialise", lambda **kw: rows)
-    _declare_canonical(monkeypatch, ["én", "to"])
-    assert load_common_voice(tmp_path, max_samples=0) == rows
-    _declare_canonical(monkeypatch, ["én", "tre"])
-    with pytest.raises(ValueError, match="not the leaderboard's"):
+    with pytest.raises(FileNotFoundError, match="fetch_common_voice_da.py"):
         load_common_voice(tmp_path, max_samples=0)
 
 
 def test_load_common_voice_smoke_runs_are_not_checked(tmp_path, monkeypatch):
     """A capped run can never match the full split, so it must not be blocked."""
-    monkeypatch.delenv("CV_DATA_DIR", raising=False)
-    rows = [{"audio_path": "x.wav", "reference_text": "én"}]
-    monkeypatch.setattr(ds_mod, "_materialise", lambda **kw: rows)
-    assert load_common_voice(tmp_path, max_samples=1) == rows
+    cv = _cv_manifest(tmp_path, ["én", "to", "tre"])
+    _declare_canonical(monkeypatch, ["fire"])
+    monkeypatch.setenv("CV_DATA_DIR", str(cv))
+    assert len(load_common_voice(tmp_path, max_samples=2)) == 2
+
+
+def test_committed_clip_list_matches_the_declared_size():
+    clips = (Path(__file__).parents[1] / "scripts" / "cv_da_test_clips.txt").read_text().split()
+    assert len(clips) == len(set(clips)) == ds_mod.CV_ROWS
 
 
 def test_load_common_voice_local_manifest_respects_max_samples(tmp_path, monkeypatch):

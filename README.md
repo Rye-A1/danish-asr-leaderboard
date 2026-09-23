@@ -30,7 +30,7 @@ The leaderboard reports a per-dataset and a macro-averaged score over five
 |--------|---------|-------|--------|
 | `coral_conversation` | [CoRal-project/coral-v3](https://huggingface.co/datasets/CoRal-project/coral-v3) — conversation | test | Spontaneous conversation |
 | `coral_read_aloud` | [CoRal-project/coral-v3](https://huggingface.co/datasets/CoRal-project/coral-v3) — read_aloud | test | Read-aloud speech |
-| `cv17_da` | [RyeAI/common-voice-25-da-test](https://huggingface.co/datasets/RyeAI/common-voice-25-da-test) — Common Voice 25.0 da | test | Crowd-sourced read speech |
+| `cv17_da` | [Common Voice 27.0](https://mozilladatacollective.com/datasets/cmu5unqiw008jnq079btgdfgm) — da, 2,756 clips (the CV 25.0 test split) | test | Crowd-sourced read speech |
 | `fleurs_da` | [google/fleurs](https://huggingface.co/datasets/google/fleurs) — da_dk | test | Read speech |
 | `ftspeech` | [alexandrainst/ftspeech](https://huggingface.co/datasets/alexandrainst/ftspeech) | test_balanced | Parliamentary / broadcast |
 
@@ -70,15 +70,18 @@ Available extras match the `--backend` names: `transformers`, `wav2vec2`,
 > Pin modern versions explicitly:
 > `uv pip install -e ".[nemo]" "numba==0.64.0" "llvmlite==0.46.0"`.
 
-> **Common Voice note:** the `cv17_da` column is the Danish test split of
-> **Common Voice 25.0**, not 17 — the key is kept for compatibility. Mozilla
-> re-splits test sets between releases, so the harness loads the exact 2,756-clip
-> set from [`RyeAI/common-voice-25-da-test`](https://huggingface.co/datasets/RyeAI/common-voice-25-da-test)
-> at a pinned revision. The dataset is gated: accept its terms on the Hub and set
-> `HF_TOKEN`. A full run refuses any other Common Voice split, including a local
-> copy via `CV_DATA_DIR` (still supported, e.g. from
-> `scripts/fetch_common_voice_da.py`), unless it matches row count and sentence
-> fingerprint.
+> **Common Voice note:** the `cv17_da` column is scored on 2,756 fixed clips:
+> the Danish test split of **Common Voice 25.0**, not 17 (the key is kept for
+> compatibility). Mozilla no longer serves 25.0 and forbids re-hosting, but
+> Common Voice 27.0's test split contains the same clips byte-identical, plus 5
+> newer ones that the fetch script drops. Accept the terms on the
+> [dataset page](https://mozilladatacollective.com/datasets/cmu5unqiw008jnq079btgdfgm), then:
+> ```bash
+> export MOZILLA_API_KEY=...        # mozilladatacollective.com
+> python scripts/fetch_common_voice_da.py --output-dir cv_da
+> export CV_DATA_DIR=$PWD/cv_da     # load_common_voice reads cv_da/test/test_manifest.jsonl
+> ```
+> A full run refuses any other Common Voice set (row count and sentence fingerprint).
 
 Log in for pushing results (read access is anonymous):
 

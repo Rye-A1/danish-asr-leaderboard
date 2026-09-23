@@ -1547,8 +1547,8 @@
             <td>test</td><td>Read-aloud speech</td>
           </tr>
           <tr>
-            <td><strong>CV25 (da)</strong></td>
-            <td><a href="https://huggingface.co/datasets/RyeAI/common-voice-25-da-test" target="_blank" rel="noopener">RyeAI/common-voice-25-da-test</a> — Common Voice 25.0 da</td>
+            <td><strong>CV (da)</strong></td>
+            <td><a href="https://mozilladatacollective.com/datasets/cmu5unqiw008jnq079btgdfgm" target="_blank" rel="noopener">Common Voice 27.0</a> — da, 2,756 clips (the CV 25.0 test split)</td>
             <td>test</td><td>Crowd-sourced read speech</td>
           </tr>
           <tr>
@@ -1732,14 +1732,14 @@
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
       <div class="changelog-body">
-        <h3>2026-09 — Common Voice column relabelled 25.0</h3>
+        <h3>2026-09 — Common Voice column relabelled</h3>
         <ul>
-          <li><strong>The Common Voice column was always Common Voice 25.0</strong>
-            (2,756-clip Danish test split), not 17 as labelled. No scores change;
+          <li><strong>The Common Voice column was always the Common Voice 25.0</strong>
+            Danish test split (2,756 clips), not 17 as labelled. No scores change;
             the <code>cv17_da</code> key is kept for compatibility.</li>
-          <li>Mozilla re-splits test sets between releases, so the exact set is now
-            published as <code>RyeAI/common-voice-25-da-test</code>, and the harness
-            refuses any other split on a full run.</li>
+          <li>25.0 is no longer available, so the harness now builds the same clips
+            from Common Voice 27.0 (byte-identical audio and sentences) and refuses
+            any other set on a full run.</li>
         </ul>
         <h3>2026-09 — Filler words removed</h3>
         <ul>
@@ -1911,8 +1911,8 @@ const WER_COLS = [
     tip:'WER on CoRal v3 read-aloud subset.' },
   { key:'ftspeech_wer',            label:'FTSpeech',
     tip:'WER on FTSpeech (parliamentary / broadcast speech).' },
-  { key:'cv17_da_wer',             label:'CV25 (da)',
-    tip:'WER on Common Voice 25.0 (Danish) test split.' },
+  { key:'cv17_da_wer',             label:'CV (da)',
+    tip:'WER on Common Voice Danish: the 2,756-clip CV 25.0 test split, also in CV 27.0.' },
   { key:'fleurs_da_wer',           label:'FLEURS (da)',
     tip:'WER on FLEURS (Danish).' },
   { key:'submitted',               label:'Submitted',      cls:'c-submitted',
@@ -1940,8 +1940,8 @@ const CER_COLS = [
     tip:'CER on CoRal v3 read-aloud subset.' },
   { key:'ftspeech_cer',            label:'FTSpeech',
     tip:'CER on FTSpeech (parliamentary / broadcast speech).' },
-  { key:'cv17_da_cer',             label:'CV25 (da)',
-    tip:'CER on Common Voice 25.0 (Danish) test split.' },
+  { key:'cv17_da_cer',             label:'CV (da)',
+    tip:'CER on Common Voice Danish: the 2,756-clip CV 25.0 test split, also in CV 27.0.' },
   { key:'fleurs_da_cer',           label:'FLEURS (da)',
     tip:'CER on FLEURS (Danish).' },
   { key:'submitted',               label:'Submitted',      cls:'c-submitted',
