@@ -1,13 +1,13 @@
 {
-  "model": "capacit-ai/saga-2-m",
-  "model_link": "[capacit-ai/saga-2-m](https://huggingface.co/capacit-ai/saga-2-m)",
+  "model": "syvai/hviske-v6",
+  "model_link": "[syvai/hviske-v6](https://huggingface.co/syvai/hviske-v6)",
   "params_b": 1.238,
   "access": "open",
   "submitted": "2026-09-23",
   "unicode_form": "NFKC",
   "number_words": true,
   "filler_words": true,
-  "speed_x": 73.2,
+  "speed_x": 66.5,
   "datasets": [
     "coral_conversation",
     "coral_read_aloud",
