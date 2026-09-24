@@ -64,6 +64,10 @@
     "source": "published",
     "note": "Announcement date; OpenAI publishes no release date. https://community.openai.com/t/gpt-live-transcribe-and-gpt-transcribe-two-new-transcription-models-in-the-api/1388318"
   },
+  "hinge/danstral-v1": {
+    "released": "2025-09-19",
+    "source": "huggingface"
+  },
   "MediaCatch/xls-r-300m-danish-mc-v2": {
     "released": "2025-09-29",
     "source": "huggingface"
