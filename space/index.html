@@ -575,8 +575,8 @@
     .badge-open { background: rgba(34,197,94,.15); color: #4ade80; }
     .badge-prop { background: rgba(148,163,184,.12); color: #94a3b8; }
 
-    /* Compact profile signals live in the leaderboard; the full evidence map
-       floats outside the scrolling table so links and labels stay readable. */
+    /* Compact profile signals live in the leaderboard; the status card floats
+       outside the scrolling table so it stays readable on narrow screens. */
     .c-profile { width: 116px; min-width: 116px; }
     .profile-trigger {
       display: flex; flex-direction: column; justify-content: center; width: 100%;
@@ -607,27 +607,34 @@
       .profile-segment.yes .profile-icon { color: #fff; }
     }
     .profile-popover {
-      display: none; position: fixed; z-index: 10000; width: min(380px, calc(100vw - 24px));
-      max-height: min(70vh, 520px); overflow: auto; padding: 16px;
-      border: 1px solid var(--border); border-radius: 10px;
+      display: none; position: fixed; z-index: 10000; width: min(360px, calc(100vw - 24px));
+      max-height: min(70vh, 520px); overflow: auto; padding: 18px 20px;
+      border: 1px solid var(--border); border-radius: 12px;
       background: var(--surf2); color: var(--text); box-shadow: 0 16px 44px rgba(0,0,0,.36);
     }
     .profile-popover.show { display: block; }
-    .profile-popover h3 { margin: 0 0 4px; font-size: 14px; overflow-wrap: anywhere; }
-    .profile-popover .profile-group-head { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 700; }
-    .profile-popover .profile-group-head span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
-    .profile-popover .profile-segments { margin-top: 10px; }
-    .profile-popover .profile-segment { width: 26px; }
-    .profile-popover .profile-icon { width: 16px; height: 16px; }
-    .profile-labels { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 4px; color: var(--muted); font-size: 10px; margin-top: 5px; }
-    .profile-labels span { overflow-wrap: anywhere; }
-    .profile-evidence { list-style: none; padding: 8px 0 0; margin: 10px 0 0; border-top: 1px solid var(--border); font-size: 12px; }
-    .profile-evidence li { padding: 5px 0; line-height: 1.4; }
-    .profile-evidence a { color: var(--link); }
-    .profile-status { font-weight: 700; text-transform: capitalize; }
-    .profile-status.yes { color: var(--link); }
-    .profile-status.partial { color: #fbbf24; }
-    .profile-status.no, .profile-status.unknown { color: var(--muted); }
+    .profile-popover h3 {
+      margin: 0 0 16px; color: var(--link); font-size: 13px; font-weight: 800;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .profile-summary { display: flex; align-items: center; gap: 14px; }
+    .profile-summary .profile-segments { flex: 1; gap: 5px; }
+    .profile-summary .profile-segment { width: 100%; height: 10px; aspect-ratio: auto; border-radius: 5px; }
+    .profile-summary .profile-icon { display: none; }
+    .profile-tally { flex: none; font-size: 23px; font-weight: 750; line-height: 1; font-variant-numeric: tabular-nums; }
+    .profile-tally span { color: var(--muted); font-size: 17px; font-weight: 500; }
+    .profile-map {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px;
+      list-style: none; margin: 20px 0 0; padding: 0;
+    }
+    .profile-map li { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 13px; line-height: 1.3; }
+    .profile-map .profile-mark { flex: 0 0 16px; width: 16px; text-align: center; font-size: 18px; line-height: 1; }
+    .profile-map li.yes .profile-mark { color: var(--link); }
+    .profile-map li.partial .profile-mark { color: #fbbf24; }
+    .profile-map li.no, .profile-map li.unknown { color: var(--muted); }
+    .profile-map a { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+    .profile-map a:hover, .profile-map a:focus-visible { color: var(--link); text-decoration: underline; }
+    .profile-note { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--muted); font-size: 11px; }
 
     /* ── Custom tooltip ─────────────────────────────────────────────── */
     #col-tip {
@@ -1509,7 +1516,7 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
-      Openness and Features show individual signals. Blue means confirmed; muted tiles mean not confirmed, including unreviewed signals. Hover, focus, or tap a cell for each status and its evidence.
+      Openness and Features show individual signals. Blue means confirmed; muted tiles mean not confirmed, including unreviewed signals. Hover, focus, or tap a cell for a status map; select a field name to open its source.
     </p>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
@@ -1957,6 +1964,19 @@ const PROFILE_GROUPS = [
    fields: [['punctuation_case', 'Punc. + case'], ['timestamps', 'Timestamps'],
             ['diarization', 'Speakers'], ['streaming', 'Streaming']]},
 ];
+const PROFILE_DETAIL_FIELDS = {
+  openness: [['weights', 'Open weights'], ['license', 'Open license'],
+             ['data', 'Training data'], ['paper', 'Paper'],
+             ['code', 'Training code'], ['model_card', 'Model card']],
+  features: [['punctuation_case', 'Formatting'], ['timestamps', 'Timestamps'],
+             ['diarization', 'Speakers'], ['streaming', 'Streaming']],
+};
+const PROFILE_STATUS = {
+  yes: {mark: '✓', label: 'Confirmed'},
+  partial: {mark: '◐', label: 'Partial'},
+  no: {mark: '×', label: 'No'},
+  unknown: {mark: '?', label: 'Unknown'},
+};
 
 // A small, consistent glyph for each signal, visible in both the table and its evidence map.
 const PROFILE_ICON_PATHS = {
@@ -2004,7 +2024,7 @@ let profilePinned = false;
 let profileHideTimer = null;
 let suppressProfileFocus = false;
 
-function profileSegments(items, group, withLabels = false) {
+function profileSegments(items, group) {
   const segments = document.createElement('div');
   segments.className = 'profile-segments';
   segments.style.setProperty('--segment-count', group.fields.length);
@@ -2017,16 +2037,7 @@ function profileSegments(items, group, withLabels = false) {
     segment.appendChild(profileIcon(key));
     segments.appendChild(segment);
   }
-  if (!withLabels) return [segments];
-  const labels = document.createElement('div');
-  labels.className = 'profile-labels';
-  labels.style.setProperty('--segment-count', group.fields.length);
-  for (const [, label] of group.fields) {
-    const caption = document.createElement('span');
-    caption.textContent = label;
-    labels.appendChild(caption);
-  }
-  return [segments, labels];
+  return segments;
 }
 
 function closeProfilePopover(restoreFocus = false) {
@@ -2067,57 +2078,47 @@ function showProfilePopover(trigger, row, group, pin = false) {
   PROFILE_POPOVER.replaceChildren();
 
   const heading = document.createElement('h3');
-  heading.textContent = `${row.name} · ${group.title}`;
-  const sectionHead = document.createElement('div');
-  sectionHead.className = 'profile-group-head';
-  const title = document.createElement('span');
-  title.textContent = group.title;
-  const count = document.createElement('span');
-  count.textContent = `${score}/${group.fields.length} confirmed`;
-  sectionHead.append(title, count);
+  heading.textContent = group.title;
+  const summary = document.createElement('div');
+  summary.className = 'profile-summary';
+  const tally = document.createElement('strong');
+  tally.className = 'profile-tally';
+  tally.setAttribute('aria-label', `${score} of ${group.fields.length} confirmed`);
+  tally.append(String(score));
+  const total = document.createElement('span');
+  total.textContent = `/${group.fields.length}`;
+  tally.appendChild(total);
+  summary.append(profileSegments(items, group), tally);
   const list = document.createElement('ul');
-  list.className = 'profile-evidence';
-  for (const [key, label] of group.fields) {
-    const item = items[key] || {state: 'unknown', detail: 'Not reviewed'};
+  list.className = 'profile-map';
+  for (const [key, label] of PROFILE_DETAIL_FIELDS[group.key]) {
+    const item = items[key] || {state: 'unknown'};
+    const state = PROFILE_STATUS[item.state] ? item.state : 'unknown';
     const li = document.createElement('li');
-    const status = document.createElement('span');
-    status.className = `profile-status ${item.state}`;
-    status.textContent = `${label}: ${item.state}`;
-    li.appendChild(status);
-    if (item.detail) li.append(` — ${item.detail}`);
-    if (item.suggestion && !item.reviewed) li.append(' (review candidate)');
+    li.className = state;
+    li.setAttribute('aria-label', `${label}: ${PROFILE_STATUS[state].label}`);
+    const mark = document.createElement('span');
+    mark.className = 'profile-mark';
+    mark.setAttribute('aria-hidden', 'true');
+    mark.textContent = PROFILE_STATUS[state].mark;
+    const name = document.createElement(item.url?.startsWith('https://') ? 'a' : 'span');
+    name.textContent = label;
     if (item.url?.startsWith('https://')) {
-      const source = document.createElement('a');
-      source.href = item.url;
-      source.target = '_blank';
-      source.rel = 'noopener noreferrer';
-      source.textContent = ' Source ↗';
-      li.appendChild(source);
+      name.href = item.url;
+      name.target = '_blank';
+      name.rel = 'noopener noreferrer';
+      name.setAttribute('aria-label', `${label}: ${PROFILE_STATUS[state].label}. Open source in a new tab.`);
     }
+    li.append(mark, name);
     list.appendChild(li);
   }
+  PROFILE_POPOVER.append(heading, summary, list);
   if (group.key === 'openness') {
-    for (const [key, label] of [['code', 'Training code'], ['model_card', 'Model card']]) {
-      const item = items[key];
-      if (!item) continue;
-      const li = document.createElement('li');
-      const status = document.createElement('span');
-      status.className = `profile-status ${item.state}`;
-      status.textContent = `${label} (additional): ${item.state}`;
-      li.appendChild(status);
-      if (item.detail) li.append(` — ${item.detail}`);
-      if (item.url?.startsWith('https://')) {
-        const source = document.createElement('a');
-        source.href = item.url;
-        source.target = '_blank';
-        source.rel = 'noopener noreferrer';
-        source.textContent = ' Source ↗';
-        li.appendChild(source);
-      }
-      list.appendChild(li);
-    }
+    const note = document.createElement('p');
+    note.className = 'profile-note';
+    note.textContent = 'Training code and model card are unscored.';
+    PROFILE_POPOVER.appendChild(note);
   }
-  PROFILE_POPOVER.append(heading, sectionHead, ...profileSegments(items, group, true), list);
   PROFILE_POPOVER.classList.add('show');
 
   const rect = trigger.getBoundingClientRect();
@@ -2145,7 +2146,7 @@ function profileCell(td, row, group) {
   const label = document.createElement('span');
   label.className = 'profile-compact-label';
   label.textContent = group.title;
-  button.append(label, ...profileSegments(items, group));
+  button.append(label, profileSegments(items, group));
   button.addEventListener('mouseenter', () => showProfilePopover(button, row, group));
   button.addEventListener('focus', () => {
     if (!suppressProfileFocus) showProfilePopover(button, row, group);
