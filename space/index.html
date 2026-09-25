@@ -3555,7 +3555,13 @@ window.addEventListener('resize', () => {
 
 async function init() {
   try {
-    const data = await fetch('leaderboard.json', {cache: 'no-cache'}).then(r => r.json());
+    const embedded = document.getElementById('embedded-leaderboard');
+    if (!embedded && location.protocol === 'file:') {
+      throw new Error('Run python scripts/build_local_preview.py and open space/local-preview.html.');
+    }
+    const data = embedded
+      ? JSON.parse(embedded.textContent)
+      : await fetch('leaderboard.json', {cache: 'no-cache'}).then(r => r.json());
 
     addBordaRanks(data.wer, WER_DS_COLS);
     addBordaRanks(data.cer, CER_DS_COLS);

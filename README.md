@@ -208,6 +208,17 @@ To redeploy the static Space after editing `space/index.html`:
 HF_TOKEN=hf_... python scripts/update_space.py
 ```
 
+To preview the page locally without a server or Hub credentials:
+
+```bash
+python scripts/build_local_preview.py
+```
+
+Open `space/local-preview.html` in a browser. The generated file embeds the
+checked-in `results/*.json` and is ignored by Git. Opening `space/index.html`
+directly will not load scores because browsers block its `leaderboard.json`
+request under `file://`.
+
 ## Methodology
 
 ### Text normalisation
