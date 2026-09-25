@@ -590,7 +590,7 @@
     .profile-segments { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 3px; }
     .profile-trigger .profile-segments {
       width: 100%;
-      grid-template-columns: repeat(var(--segment-count), var(--tile-size, 18px));
+      grid-template-columns: repeat(var(--segment-count), var(--tile-size, 16px));
       justify-content: center;
     }
     .profile-segment {
@@ -599,7 +599,7 @@
       background: color-mix(in srgb, var(--link) 10%, var(--border));
     }
     .profile-segment.yes { background: var(--link); }
-    .profile-trigger .profile-segment { width: var(--tile-size, 18px); }
+    .profile-trigger .profile-segment { width: var(--tile-size, 16px); }
     .profile-popover {
       display: none; position: fixed; z-index: 10000; width: min(380px, calc(100vw - 24px));
       max-height: min(70vh, 520px); overflow: auto; padding: 16px;
@@ -1158,7 +1158,7 @@
         flex: 1 1 calc(50% - 3px);
         min-width: 0;
       }
-      .profile-trigger { --tile-size: 16px; flex-direction: row; align-items: center; gap: 7px; background: var(--surf2); }
+      .profile-trigger { --tile-size: 14px; flex-direction: row; align-items: center; gap: 7px; background: var(--surf2); }
       .profile-compact-label { display: inline; color: var(--muted); font-size: 11px; }
       .profile-trigger .profile-segments { flex: 1; min-width: 25px; }
 
