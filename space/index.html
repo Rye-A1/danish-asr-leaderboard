@@ -2964,7 +2964,7 @@ function updateParetoPanel(pareto, tab, yLbl, method) {
     const item = document.createElement('div');
     item.className = 'pareto-item';
     item.dataset.modelName = p.r.name;
-    const col = p.r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+    const col = p.r.access === 'open' ? 'var(--link)' : '#94a3b8';
     item.innerHTML =
       `<span class="pareto-dot" style="background:${col}"></span>` +
       `<span class="pareto-meta">${p.r.size}B · ${fmt(p.yv)}</span>` +
@@ -3078,7 +3078,7 @@ function _drawChart(rows, method, tab) {
     for (let i = 1; i < pareto.length; i++)
       d += ` V ${sy(pareto[i].yv).toFixed(1)} H ${sx(pareto[i].sz).toFixed(1)}`;
     d += ` H ${ML + cW}`;
-    mk('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': '1.5', opacity: '0.5' }, svgEl);
+    mk('path', { d, fill: 'none', stroke: 'var(--link)', 'stroke-width': '1.5', opacity: '0.5' }, svgEl);
   }
   updateParetoPanel(pareto, tab, yLbl, method);
 
@@ -3097,7 +3097,7 @@ function _drawChart(rows, method, tab) {
         const yt = Math.max(MT, rawYt);
         const yb = Math.min(MT + cH, rawYb);
         if (yb > yt) {
-          const ecol = r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+          const ecol = r.access === 'open' ? 'var(--link)' : '#94a3b8';
           mk('line', { x1: xc, y1: yt, x2: xc, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
           if (rawYt >= MT)    mk('line', { x1: xc-4, y1: yt, x2: xc+4, y2: yt, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
           if (rawYb <= MT+cH) mk('line', { x1: xc-4, y1: yb, x2: xc+4, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
@@ -3111,7 +3111,7 @@ function _drawChart(rows, method, tab) {
 
     const circ = mk('circle', {
       cx: xc, cy: yc, r: '6',
-      fill: r.access === 'open' ? 'var(--accent)' : '#94a3b8',
+      fill: r.access === 'open' ? 'var(--link)' : '#94a3b8',
       stroke: 'var(--bg)', 'stroke-width': '1.5',
       style: 'cursor:pointer',
     }, svgEl);
