@@ -5,8 +5,8 @@ Usage from the repo root:
     python scripts/build_local_preview.py
 
 Open space/local-preview.html directly. This file is ignored by Git and is not
-uploaded to the Space. Hub metadata is unavailable offline, so some profile
-fields remain unknown in the preview.
+uploaded to the Space. Download counts and trends use the checked-in Hugging
+Face snapshots; other Hub metadata is unavailable offline.
 """
 from __future__ import annotations
 
@@ -38,11 +38,12 @@ def main() -> None:
         raise SystemExit("No results/*.json files found for the local preview")
 
     # Reuse the deployment builder, while keeping preview generation offline.
+    history = json.loads(update_space.DOWNLOAD_HISTORY_PATH.read_text(encoding="utf-8"))
+    update_space._download_history = lambda: history
+    update_space._model_download_history.cache_clear()
     update_space._model_metadata = lambda _name: {}
     update_space._provider_logo = lambda _org: ""
     update_space._bootstrap_cis = lambda: {}
-    update_space._model_downloads = lambda _name: None
-    update_space._model_download_history = lambda _name: ()
     data = update_space.build_leaderboard_json(pd.DataFrame(rows, columns=COLUMNS))
 
     source = (ROOT / "space" / "index.html").read_text(encoding="utf-8")
@@ -51,8 +52,10 @@ def main() -> None:
         raise SystemExit("Could not find the leaderboard script in space/index.html")
     payload = json.dumps(data, ensure_ascii=False).replace("<", "\\u003c")
     embedded = f'\n<script id="embedded-leaderboard" type="application/json">{payload}</script>'
+    last_snapshot = history["snapshots"][-1]["date"] if history.get("snapshots") else "an unknown date"
     note = ('  <p role="status" style="margin:12px 0;color:#fbbf24;font-size:13px">'
-            'Local preview from checked-in results. Hub metadata and download counts are unavailable offline.'
+            f'Local preview from checked-in results and Hugging Face download snapshots through {last_snapshot}. '
+            'Other Hub metadata is unavailable offline.'
             '</p>\n')
     preview = source.replace("  <!-- Tabs -->\n", note + "  <!-- Tabs -->\n", 1)
     OUTPUT.write_text(preview.replace(marker, embedded + marker), encoding="utf-8")
