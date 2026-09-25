@@ -1,0 +1,21 @@
+{
+  "model": "hinge/danstral-v1",
+  "model_link": "[hinge/danstral-v1](https://huggingface.co/hinge/danstral-v1)",
+  "params_b": 24.262,
+  "access": "open",
+  "submitted": "2026-09-23",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 21.3,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "model_revision": "4f64cce0fda23a5ef97c7f1747a7e09a59279335",
+  "base_model": "mistralai/Voxtral-Small-24B-2507@da5b42409f279fdd92febee0511a6c32828569c1",
+  "audio_encoder": "CoRal-project/roest-v1-whisper-1.5b@a6c1e24d9f10e6289607a1ba32341b68e8660688"
+}

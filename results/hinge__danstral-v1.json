@@ -1,0 +1,19 @@
+{
+  "model": "[hinge/danstral-v1](https://huggingface.co/hinge/danstral-v1)",
+  "params_b": 24.262,
+  "coral_conversation_wer": 62.68,
+  "coral_read_aloud_wer": 9.9,
+  "cv17_da_wer": 12.56,
+  "fleurs_da_wer": 8.41,
+  "ftspeech_wer": 32.73,
+  "mean_wer": 25.26,
+  "coral_conversation_cer": 45.87,
+  "coral_read_aloud_cer": 4.17,
+  "cv17_da_cer": 4.83,
+  "fleurs_da_cer": 3.64,
+  "ftspeech_cer": 24.37,
+  "mean_cer": 16.58,
+  "speed_x": 21.3,
+  "submitted": "2026-09-23",
+  "access": "open"
+}

@@ -56,6 +56,9 @@ hviske-v6      = ["torch>=2.4", "transformers>=4.51,<5", "librosa>=0.10",
                   "soundfile>=0.12.1", "safetensors", "huggingface_hub>=0.30"]
 nemo           = ["torch>=2.0.0", "nemo_toolkit[asr]>=2.4.0"]
 voxtral        = ["torch>=2.0.0", "transformers>=4.54.0", "mistral-common[audio]>=1.8.1"]
+# hinge/danstral-v1: LoRA on Voxtral-Small with a CoRal Whisper encoder swapped in.
+danstral       = ["torch>=2.0.0", "transformers>=4.54.0", "mistral-common[audio]>=1.8.1",
+                  "peft>=0.17", "librosa>=0.10"]
 seamless       = ["torch>=2.0.0", "transformers>=4.54.0"]
 cohere-asr     = ["torch>=2.0.0", "transformers>=4.54", "librosa>=0.10", "sentencepiece>=0.1.99"]
 vibevoice      = ["torch>=2.0.0", "transformers>=5.3.0"]
