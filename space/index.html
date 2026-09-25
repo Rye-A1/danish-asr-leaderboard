@@ -1954,7 +1954,7 @@ const PROFILE_GROUPS = [
    fields: [['data', 'Training data'], ['code', 'Training code'],
             ['model_card', 'Model card'], ['license', 'License']]},
   {key: 'features', title: 'Features', count: 'feature_count',
-   fields: [['punctuation_case', 'Format control'], ['timestamps', 'Timestamps'],
+   fields: [['punctuation_case', 'Formatting'], ['timestamps', 'Timestamps'],
             ['diarization', 'Speakers'], ['streaming', 'Streaming']]},
 ];
 
@@ -2195,7 +2195,7 @@ const WER_COLS = [
   { key:'openness_score',          label:'Openness',      cls:'c-profile',
     tip:'Training data for this checkpoint, training code, substantive model card, and effective license terms. Hover or tap for evidence.' },
   { key:'feature_count',           label:'Features',      cls:'c-profile',
-    tip:'Formatting controls, Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
+    tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
     tip:'WER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_wer',    label:'CoRal Read',
@@ -2228,7 +2228,7 @@ const CER_COLS = [
   { key:'openness_score',          label:'Openness',       cls:'c-profile',
     tip:'Training data for this checkpoint, training code, substantive model card, and effective license terms. Hover or tap for evidence.' },
   { key:'feature_count',           label:'Features',       cls:'c-profile',
-    tip:'Formatting controls, Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
+    tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',
     tip:'CER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_cer',    label:'CoRal Read',

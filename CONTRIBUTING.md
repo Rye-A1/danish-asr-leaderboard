@@ -68,9 +68,14 @@ An optional `report` links a paper or technical report about this checkpoint.
 It is displayed in the details but does not add an openness tile or score.
 Do not count a base model's paper for a fine-tune.
 
-The separate feature fields are `punctuation_case` (independent formatting
-controls for case and punctuation), `timestamps` (word or segment output for
-Danish), `diarization` (speaker labels), and `streaming` (incremental output).
+The separate feature fields are `punctuation_case` (cased and punctuated Danish
+output, either by default or through an option), `timestamps` (word or segment
+output for Danish), `diarization` (speaker labels), and `streaming`
+(incremental output). A formatting `yes` does not require independent controls.
+Mark `no` when the scored output contains no cased, punctuated text and no
+formatting option is documented; use `unknown` if neither output nor documentation
+is available. Saved raw hypotheses are evidence for what the released inference
+path actually returns.
 Link documentation or a reproducible example for the released checkpoint or
 its official inference package. An external aligner or chunking demo is not
 automatically a native model feature. `partial` means only part of the claim is

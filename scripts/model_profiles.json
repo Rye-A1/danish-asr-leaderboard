@@ -20,8 +20,8 @@
     "features": {
       "punctuation_case": {
         "state": "no",
-        "detail": "Card specifies lowercase output without punctuation.",
-        "url": "https://huggingface.co/3dio-ai/svale-110M"
+        "detail": "None of 26,768 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option. The card explicitly says lowercase without punctuation.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/3dio-ai__svale-110M.parquet"
       }
     },
     "reviewed_source": "https://huggingface.co/3dio-ai/svale-110M",
@@ -48,8 +48,8 @@
     "features": {
       "punctuation_case": {
         "state": "no",
-        "detail": "Card specifies lowercase output without punctuation.",
-        "url": "https://huggingface.co/3dio-ai/svale-600M"
+        "detail": "None of 26,759 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option. The card explicitly says lowercase without punctuation.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/3dio-ai__svale-600M.parquet"
       }
     },
     "reviewed_source": "https://huggingface.co/3dio-ai/svale-600M",
@@ -74,6 +74,11 @@
       }
     },
     "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 1,167 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/capacit-ai__saga.parquet"
+      },
       "streaming": {
         "state": "partial",
         "detail": "Card describes accumulated-audio continuation in configurable steps, but not interim text while live audio arrives.",
@@ -108,9 +113,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Outputs cased, punctuated Danish; independent format controls are not documented.",
-        "url": "https://huggingface.co/capacit-ai/saga-2-m#architecture"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 3,128 of 26,779 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/capacit-ai__saga-2-m.parquet"
       },
       "timestamps": {
         "state": "partial",
@@ -155,7 +160,14 @@
       }
     },
     "reviewed_source": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v2-wav2vec2-1B.parquet"
+      }
+    }
   },
   "CoRal-project/roest-v2-wav2vec2-2B": {
     "openness": {
@@ -181,7 +193,14 @@
       }
     },
     "reviewed_source": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v2-wav2vec2-2B.parquet"
+      }
+    }
   },
   "CoRal-project/roest-v3-wav2vec2-315m": {
     "openness": {
@@ -207,7 +226,14 @@
       }
     },
     "reviewed_source": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,778 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v3-wav2vec2-315m.parquet"
+      }
+    }
   },
   "CoRal-project/roest-v3-whisper-1.5b": {
     "openness": {
@@ -233,7 +259,14 @@
       }
     },
     "reviewed_source": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 1,889 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v3-whisper-1__5b.parquet"
+      }
+    }
   },
   "facebook/mms-1b-all": {
     "openness": {
@@ -264,7 +297,14 @@
       "url": "https://arxiv.org/abs/2305.13516"
     },
     "reviewed_source": "https://huggingface.co/facebook/mms-1b-all",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,777 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/facebook__mms-1b-all.parquet"
+      }
+    }
   },
   "facebook/seamless-m4t-v2-large": {
     "openness": {
@@ -290,7 +330,14 @@
       "url": "https://arxiv.org/abs/2312.05187"
     },
     "reviewed_source": "https://huggingface.co/facebook/seamless-m4t-v2-large",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 18,084 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/facebook__seamless-m4t-v2-large.parquet"
+      }
+    }
   },
   "gpt-4o-mini-transcribe": {
     "openness": {
@@ -302,9 +349,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Prompting can bias punctuation and capitalization, but independent format controls are not documented.",
-        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#prompting"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 25,406 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/gpt-4o-mini-transcribe.parquet"
       },
       "timestamps": {
         "state": "no",
@@ -335,9 +382,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Prompting can bias punctuation and capitalization, but independent format controls are not documented.",
-        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#prompting"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 25,387 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/gpt-4o-transcribe.parquet"
       },
       "timestamps": {
         "state": "no",
@@ -368,9 +415,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Prompting can bias punctuation and capitalization, but independent format controls are not documented.",
-        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#prompting"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 24,981 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/gpt-transcribe.parquet"
       },
       "timestamps": {
         "state": "no",
@@ -415,7 +462,14 @@
       }
     },
     "reviewed_source": "https://huggingface.co/hinge/danstral-v1",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/hinge__danstral-v1.parquet"
+      }
+    }
   },
   "MediaCatch/xls-r-300m-danish-mc-v2": {
     "openness": {
@@ -441,7 +495,14 @@
       }
     },
     "reviewed_source": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/MediaCatch__xls-r-300m-danish-mc-v2.parquet"
+      }
+    }
   },
   "mistralai/Voxtral-Mini-3B-2507": {
     "openness": {
@@ -467,7 +528,14 @@
       "url": "https://arxiv.org/abs/2507.13264"
     },
     "reviewed_source": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 24,520 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/mistralai__Voxtral-Mini-3B-2507.parquet"
+      }
+    }
   },
   "mistralai/Voxtral-Small-24B-2507": {
     "openness": {
@@ -493,7 +561,14 @@
       "url": "https://arxiv.org/abs/2507.13264"
     },
     "reviewed_source": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 25,427 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/mistralai__Voxtral-Small-24B-2507.parquet"
+      }
+    }
   },
   "nvidia/canary-1b-v2": {
     "openness": {
@@ -520,9 +595,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Automatic punctuation and capitalization, without documented independent controls.",
-        "url": "https://huggingface.co/nvidia/canary-1b-v2#key-features"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 21,946 of 26,033 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/nvidia__canary-1b-v2.parquet"
       },
       "timestamps": {
         "state": "yes",
@@ -562,6 +637,11 @@
       }
     },
     "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,524 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/nvidia__parakeet-rnnt-110m-da-dk.parquet"
+      },
       "streaming": {
         "state": "unknown",
         "detail": "Riva offers streaming generally, but the card explicitly says this Danish checkpoint is not yet supported by Riva; no other incremental path is shown.",
@@ -596,9 +676,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Automatic punctuation and capitalization, without documented independent controls.",
-        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#key-features"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 22,841 of 26,217 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/nvidia__parakeet-tdt-0__6b-v3.parquet"
       },
       "timestamps": {
         "state": "yes",
@@ -644,9 +724,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Examples show formatted text; independent casing and punctuation controls are not documented.",
-        "url": "https://huggingface.co/openai/whisper-base#usage"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 24,962 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-base.parquet"
       },
       "timestamps": {
         "state": "yes",
@@ -687,9 +767,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Formatted output is shown, without independent controls.",
-        "url": "https://huggingface.co/openai/whisper-large-v3#usage"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 23,516 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-large-v3.parquet"
       },
       "timestamps": {
         "state": "yes",
@@ -725,9 +805,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Formatted output is shown, without independent controls.",
-        "url": "https://huggingface.co/openai/whisper-large-v3-turbo#usage"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 23,776 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-large-v3-turbo.parquet"
       },
       "timestamps": {
         "state": "yes",
@@ -763,9 +843,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Examples show formatted text; independent casing and punctuation controls are not documented.",
-        "url": "https://huggingface.co/openai/whisper-small#usage"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 24,606 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-small.parquet"
       },
       "timestamps": {
         "state": "yes",
@@ -806,9 +886,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Examples show formatted text; independent casing and punctuation controls are not documented.",
-        "url": "https://huggingface.co/openai/whisper-tiny#usage"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 25,479 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-tiny.parquet"
       },
       "timestamps": {
         "state": "yes",
@@ -838,7 +918,14 @@
       }
     },
     "reviewed_source": "https://odincore.ai/docs/models/ordbogen-whisper",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 23,816 of 26,632 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/ordbogen__whisper.parquet"
+      }
+    }
   },
   "pluttodk/milo-asr": {
     "openness": {
@@ -859,6 +946,11 @@
       }
     },
     "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 19,427 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/pluttodk__milo-asr.parquet"
+      },
       "timestamps": {
         "state": "partial",
         "detail": "Card shows external forced aligner, but Qwen lists no Danish support for that aligner.",
@@ -897,6 +989,11 @@
       }
     },
     "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 21,614 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/Qwen__Qwen3-ASR-1__7B.parquet"
+      },
       "timestamps": {
         "state": "no",
         "detail": "Optional forced aligner lists 11 languages and excludes Danish; no confirmed Danish timestamps.",
@@ -926,9 +1023,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "The example response is cased and punctuated, but independent formatting controls are not documented.",
-        "url": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text#example-api-response"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 18,138 of 26,777 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/scribe_v2.parquet"
       },
       "timestamps": {
         "state": "yes",
@@ -958,7 +1055,14 @@
       }
     },
     "reviewed_source": "https://syv.ai/",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 1,439 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syv-transcribe.parquet"
+      }
+    }
   },
   "syvai/hviske-v3-conversation": {
     "openness": {
@@ -979,7 +1083,14 @@
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v3-conversation",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 2,719 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v3-conversation.parquet"
+      }
+    }
   },
   "syvai/hviske-v5": {
     "openness": {
@@ -1001,9 +1112,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Punctuation flag appears in usage; independent casing control is not documented.",
-        "url": "https://huggingface.co/syvai/hviske-v5#usage"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 1,577 of 26,779 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v5.parquet"
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v5",
@@ -1028,6 +1139,11 @@
       }
     },
     "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 540 of 26,779 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v5-tiny.parquet"
+      },
       "timestamps": {
         "state": "no",
         "detail": "Card explicitly excludes timestamps.",
@@ -1066,7 +1182,14 @@
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v5.1",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-25",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 2,331 of 26,779 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v5__1.parquet"
+      }
+    }
   },
   "syvai/hviske-v5.3": {
     "openness": {
@@ -1088,9 +1211,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Processor controls punctuation; independent casing control is not documented.",
-        "url": "https://huggingface.co/syvai/hviske-v5.3#5-punctuation-control"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 952 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v5__3.parquet"
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v5.3",
@@ -1122,8 +1245,8 @@
     "features": {
       "punctuation_case": {
         "state": "yes",
-        "detail": "Independent casing and punctuation controls are shown in inference API.",
-        "url": "https://huggingface.co/syvai/hviske-v6#controlling-casing-and-punctuation"
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 2,540 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v6.parquet"
       },
       "timestamps": {
         "state": "no",
@@ -1169,9 +1292,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Training retained original casing and punctuation; user controls are not documented.",
-        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#02--training"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 5,988 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/thorh__whisper-large-v3-turbo-danish.parquet"
       },
       "timestamps": {
         "state": "partial",
@@ -1207,9 +1330,9 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "partial",
-        "detail": "Training retained original casing and punctuation; user controls are not documented.",
-        "url": "https://huggingface.co/thorhojhus/whisper-small-danish#02--training"
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 8,903 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/thorhojhus__whisper-small-danish.parquet"
       },
       "timestamps": {
         "state": "partial",

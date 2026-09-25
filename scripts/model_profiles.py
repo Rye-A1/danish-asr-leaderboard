@@ -15,7 +15,7 @@ UNCONFIRMED = {
     "code": "Checkpoint-specific training and preprocessing code is not established by the reviewed source.",
     "model_card": "A substantive checkpoint card is not established by the reviewed source.",
     "license": "Effective checkpoint terms are not established by the reviewed source.",
-    "punctuation_case": "Independent casing and punctuation controls are not documented for this checkpoint.",
+    "punctuation_case": "Cased, punctuated output is not established for this checkpoint.",
     "timestamps": "Danish word or segment timestamp output is not documented for this checkpoint.",
     "diarization": "Speaker-labeled output is not documented for this checkpoint.",
     "streaming": "Incremental audio streaming is not documented for this checkpoint.",
