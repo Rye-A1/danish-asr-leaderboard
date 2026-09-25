@@ -4,11 +4,10 @@ The checkpoint ships a transformers export next to its ``.nemo`` (transformers
 >=5.13), so no NeMo install is needed. The model is multilingual and conditions on
 a language-ID prompt: without one the processor defaults to ``auto`` detection,
 so the Danish prompt (``da-DK``) is passed explicitly. Transcription is offline
-(full utterance), in float32 like the NeMo backends, with the largest supported
-right context (13 frames = 1120 ms chunks): the model's most accurate setting,
-since the leaderboard scores whole utterances rather than live latency. The
-transformers default is 3 (320 ms), 2.5 WER points worse on FLEURS-da per the
-model card.
+(full utterance), in float32 like the NeMo backends, at the checkpoint's default
+right context (3 frames = 320 ms chunks), pinned so the score does not drift if
+the default changes. Larger lookahead (up to 13 = 1120 ms) is more accurate
+but is not the model's out-of-the-box configuration.
 """
 from __future__ import annotations
 
@@ -18,7 +17,7 @@ from danish_asr_leaderboard.backends._torch_util import cuda_ok
 from danish_asr_leaderboard.backends.base import Backend, LoadOptions, register
 
 LANGUAGE = "da-DK"
-NUM_LOOKAHEAD_TOKENS = 13
+NUM_LOOKAHEAD_TOKENS = 3
 
 
 class NemotronAsrBackend(Backend):
