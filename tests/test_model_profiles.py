@@ -72,3 +72,20 @@ def test_review_requires_evidence_for_positive_claim(tmp_path):
     }}))
     with pytest.raises(ValueError, match="needs evidence URL"):
         load_reviews(path)
+
+
+def test_reviewed_source_marks_missing_signals_unknown_without_scoring_them(tmp_path):
+    path = tmp_path / "profiles.json"
+    path.write_text(json.dumps({"example/asr": {
+        "reviewed_source": REPO,
+        "reviewed_on": "2026-09-25",
+        "features": {"timestamps": {"state": "yes", "url": REPO}},
+    }}))
+    reviews = load_reviews(path)
+    profile = build_profile("example/asr", REPO, {}, reviews)
+    assert profile["openness_score"] == 0
+    assert profile["feature_count"] == 1
+    assert profile["features"]["diarization"]["state"] == "unknown"
+    assert profile["features"]["diarization"]["reviewed"] is True
+    assert profile["features"]["diarization"]["url"] == REPO
+    assert profile["features"]["timestamps"]["state"] == "yes"

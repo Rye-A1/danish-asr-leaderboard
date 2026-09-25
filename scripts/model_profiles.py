@@ -3,18 +3,39 @@ from __future__ import annotations
 
 import json
 import re
+from datetime import date
 from pathlib import Path
 
 PROFILE_FILE = Path(__file__).with_name("model_profiles.json")
 OPENNESS = ("data", "code", "model_card", "license")
 FEATURES = ("punctuation_case", "timestamps", "diarization", "streaming")
 STATES = {"yes", "no", "partial", "unknown"}
+UNCONFIRMED = {
+    "data": "Exact training data and release terms are not established by the reviewed source.",
+    "code": "Checkpoint-specific training and preprocessing code is not established by the reviewed source.",
+    "model_card": "A substantive checkpoint card is not established by the reviewed source.",
+    "license": "Effective checkpoint terms are not established by the reviewed source.",
+    "punctuation_case": "Independent casing and punctuation controls are not documented for this checkpoint.",
+    "timestamps": "Danish word or segment timestamp output is not documented for this checkpoint.",
+    "diarization": "Speaker-labeled output is not documented for this checkpoint.",
+    "streaming": "Incremental audio streaming is not documented for this checkpoint.",
+}
 
 def load_reviews(path: Path = PROFILE_FILE) -> dict:
     reviews = json.loads(path.read_text(encoding="utf-8"))
     for model, fields in reviews.items():
-        if set(fields) - {"openness", "features", "report"}:
+        if set(fields) - {"openness", "features", "report", "reviewed_source", "reviewed_on"}:
             raise ValueError(f"Unknown profile group for {model}")
+        source = fields.get("reviewed_source")
+        if source is not None and (not isinstance(source, str) or not source.startswith("https://")):
+            raise ValueError(f"Invalid review source for {model}")
+        if fields.get("reviewed_on"):
+            if not fields.get("reviewed_source"):
+                raise ValueError(f"Review date needs source for {model}")
+            try:
+                date.fromisoformat(fields["reviewed_on"])
+            except (TypeError, ValueError) as exc:
+                raise ValueError(f"Invalid review date for {model}") from exc
         for group, keys in (("openness", OPENNESS), ("features", FEATURES)):
             for key, decision in fields.get(group, {}).items():
                 if key not in keys or decision.get("state") not in STATES:
@@ -85,6 +106,11 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict) -> 
     }
     features = {key: _candidate(detail="Capability not reviewed") for key in FEATURES}
     reviewed = reviews.get(model, {})
+    if source := reviewed.get("reviewed_source", ""):
+        for entries in (openness, features):
+            for key, entry in entries.items():
+                if entry["state"] == "unknown":
+                    entry.update(detail=UNCONFIRMED[key], url=source, reviewed=True)
     for group, entries in (("openness", openness), ("features", features)):
         for key, decision in reviewed.get(group, {}).items():
             entries[key] = {"state": decision["state"],

@@ -23,7 +23,9 @@
         "detail": "Card specifies lowercase output without punctuation.",
         "url": "https://huggingface.co/3dio-ai/svale-110M"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/3dio-ai/svale-110M",
+    "reviewed_on": "2026-09-25"
   },
   "3dio-ai/svale-600M": {
     "openness": {
@@ -49,7 +51,9 @@
         "detail": "Card specifies lowercase output without punctuation.",
         "url": "https://huggingface.co/3dio-ai/svale-600M"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/3dio-ai/svale-600M",
+    "reviewed_on": "2026-09-25"
   },
   "capacit-ai/saga": {
     "openness": {
@@ -68,7 +72,16 @@
         "detail": "Hub tag says Apache 2.0, but the CoRal training-data terms and their effect on this fine-tune are not clarified.",
         "url": "https://huggingface.co/capacit-ai/saga"
       }
-    }
+    },
+    "features": {
+      "streaming": {
+        "state": "partial",
+        "detail": "Card describes accumulated-audio continuation in configurable steps, but not interim text while live audio arrives.",
+        "url": "https://huggingface.co/capacit-ai/saga#long-form-audio"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/capacit-ai/saga",
+    "reviewed_on": "2026-09-25"
   },
   "capacit-ai/saga-2-m": {
     "openness": {
@@ -114,7 +127,9 @@
         "detail": "Card specifies offline decoding, no streaming.",
         "url": "https://huggingface.co/capacit-ai/saga-2-m#inference-details"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/capacit-ai/saga-2-m",
+    "reviewed_on": "2026-09-25"
   },
   "CoRal-project/roest-v2-wav2vec2-1B": {
     "openness": {
@@ -138,7 +153,9 @@
         "detail": "OpenRAIL-based terms permit commercial use but prohibit specified uses.",
         "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B#model-details"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
+    "reviewed_on": "2026-09-25"
   },
   "CoRal-project/roest-v2-wav2vec2-2B": {
     "openness": {
@@ -162,7 +179,9 @@
         "detail": "OpenRAIL-based terms permit commercial use but prohibit specified uses.",
         "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B#model-details"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
+    "reviewed_on": "2026-09-25"
   },
   "CoRal-project/roest-v3-wav2vec2-315m": {
     "openness": {
@@ -186,7 +205,9 @@
         "detail": "OpenRAIL-based terms permit commercial use with synthesis and biometric-use restrictions.",
         "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m#model-details"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
+    "reviewed_on": "2026-09-25"
   },
   "CoRal-project/roest-v3-whisper-1.5b": {
     "openness": {
@@ -210,7 +231,9 @@
         "detail": "OpenRAIL-based terms permit commercial use with synthesis and biometric-use restrictions.",
         "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b#model-details"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b",
+    "reviewed_on": "2026-09-25"
   },
   "facebook/mms-1b-all": {
     "openness": {
@@ -239,7 +262,9 @@
       "state": "yes",
       "detail": "MMS paper",
       "url": "https://arxiv.org/abs/2305.13516"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/facebook/mms-1b-all",
+    "reviewed_on": "2026-09-25"
   },
   "facebook/seamless-m4t-v2-large": {
     "openness": {
@@ -263,7 +288,9 @@
       "state": "yes",
       "detail": "SeamlessM4T v2 paper",
       "url": "https://arxiv.org/abs/2312.05187"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/facebook/seamless-m4t-v2-large",
+    "reviewed_on": "2026-09-25"
   },
   "gpt-4o-mini-transcribe": {
     "openness": {
@@ -272,7 +299,31 @@
         "detail": "API-only entry; model weights are not licensed for redistribution.",
         "url": "https://platform.openai.com/docs/models"
       }
-    }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Prompting can bias punctuation and capitalization, but independent format controls are not documented.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#prompting"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "The file-transcription guide directs users to whisper-1 for word or segment timestamps.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#timestamps"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Speaker-labeled output requires the separate gpt-4o-transcribe-diarize model.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#speaker-diarization"
+      },
+      "streaming": {
+        "state": "partial",
+        "detail": "Can stream transcript deltas after a complete file upload; live microphone audio uses a separate Realtime path.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#streaming-transcriptions"
+      }
+    },
+    "reviewed_source": "https://developers.openai.com/api/docs/guides/speech-to-text",
+    "reviewed_on": "2026-09-25"
   },
   "gpt-4o-transcribe": {
     "openness": {
@@ -281,7 +332,31 @@
         "detail": "API-only entry; model weights are not licensed for redistribution.",
         "url": "https://platform.openai.com/docs/models"
       }
-    }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Prompting can bias punctuation and capitalization, but independent format controls are not documented.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#prompting"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "The file-transcription guide directs users to whisper-1 for word or segment timestamps.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#timestamps"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Speaker-labeled output requires the separate gpt-4o-transcribe-diarize model.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#speaker-diarization"
+      },
+      "streaming": {
+        "state": "partial",
+        "detail": "Can stream transcript deltas after a complete file upload; live microphone audio uses a separate Realtime path.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#streaming-transcriptions"
+      }
+    },
+    "reviewed_source": "https://developers.openai.com/api/docs/guides/speech-to-text",
+    "reviewed_on": "2026-09-25"
   },
   "gpt-transcribe": {
     "openness": {
@@ -290,7 +365,31 @@
         "detail": "API-only entry; model weights are not licensed for redistribution.",
         "url": "https://platform.openai.com/docs/models"
       }
-    }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Prompting can bias punctuation and capitalization, but independent format controls are not documented.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#prompting"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "The file-transcription guide directs users to whisper-1 for word or segment timestamps.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#timestamps"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Speaker-labeled output requires the separate gpt-4o-transcribe-diarize model.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#speaker-diarization"
+      },
+      "streaming": {
+        "state": "partial",
+        "detail": "Can stream transcript deltas after a complete file upload; live microphone audio uses a separate Realtime path.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#streaming-transcriptions"
+      }
+    },
+    "reviewed_source": "https://developers.openai.com/api/docs/guides/speech-to-text",
+    "reviewed_on": "2026-09-25"
   },
   "hinge/danstral-v1": {
     "openness": {
@@ -314,7 +413,9 @@
         "detail": "No checkpoint-specific license tag or terms on Hub page; parent and adapter terms need review.",
         "url": "https://huggingface.co/hinge/danstral-v1"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/hinge/danstral-v1",
+    "reviewed_on": "2026-09-25"
   },
   "MediaCatch/xls-r-300m-danish-mc-v2": {
     "openness": {
@@ -338,7 +439,9 @@
         "detail": "Hub tag says Apache 2.0, but the base checkpoint and preprocessed-data terms are not described.",
         "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2",
+    "reviewed_on": "2026-09-25"
   },
   "mistralai/Voxtral-Mini-3B-2507": {
     "openness": {
@@ -362,7 +465,9 @@
       "state": "yes",
       "detail": "Voxtral paper",
       "url": "https://arxiv.org/abs/2507.13264"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
+    "reviewed_on": "2026-09-25"
   },
   "mistralai/Voxtral-Small-24B-2507": {
     "openness": {
@@ -386,7 +491,9 @@
       "state": "yes",
       "detail": "Voxtral paper",
       "url": "https://arxiv.org/abs/2507.13264"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
+    "reviewed_on": "2026-09-25"
   },
   "nvidia/canary-1b-v2": {
     "openness": {
@@ -427,7 +534,9 @@
       "state": "yes",
       "detail": "Canary 1B v2 technical report",
       "url": "https://arxiv.org/abs/2509.14128"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/nvidia/canary-1b-v2",
+    "reviewed_on": "2026-09-25"
   },
   "nvidia/parakeet-rnnt-110m-da-dk": {
     "openness": {
@@ -454,11 +563,13 @@
     },
     "features": {
       "streaming": {
-        "state": "partial",
-        "detail": "Card advertises streaming through NVIDIA Riva; checkpoint-specific incremental path is not shown.",
+        "state": "unknown",
+        "detail": "Riva offers streaming generally, but the card explicitly says this Danish checkpoint is not yet supported by Riva; no other incremental path is shown.",
         "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk#nvidia-riva-deployment"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk",
+    "reviewed_on": "2026-09-25"
   },
   "nvidia/parakeet-tdt-0.6b-v3": {
     "openness": {
@@ -504,7 +615,9 @@
       "state": "yes",
       "detail": "Parakeet technical report",
       "url": "https://arxiv.org/abs/2509.14128"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
+    "reviewed_on": "2026-09-25"
   },
   "openai/whisper-base": {
     "openness": {
@@ -545,7 +658,9 @@
       "state": "yes",
       "detail": "Whisper paper",
       "url": "https://arxiv.org/abs/2212.04356"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-base",
+    "reviewed_on": "2026-09-25"
   },
   "openai/whisper-large-v3": {
     "openness": {
@@ -581,7 +696,9 @@
         "detail": "Card documents sentence and word timestamps in official pipeline.",
         "url": "https://huggingface.co/openai/whisper-large-v3#usage"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-large-v3",
+    "reviewed_on": "2026-09-25"
   },
   "openai/whisper-large-v3-turbo": {
     "openness": {
@@ -617,7 +734,9 @@
         "detail": "Card documents sentence and word timestamps in official pipeline.",
         "url": "https://huggingface.co/openai/whisper-large-v3-turbo#usage"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-large-v3-turbo",
+    "reviewed_on": "2026-09-25"
   },
   "openai/whisper-small": {
     "openness": {
@@ -658,7 +777,9 @@
       "state": "yes",
       "detail": "Whisper paper",
       "url": "https://arxiv.org/abs/2212.04356"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-small",
+    "reviewed_on": "2026-09-25"
   },
   "openai/whisper-tiny": {
     "openness": {
@@ -699,21 +820,25 @@
       "state": "yes",
       "detail": "Whisper paper",
       "url": "https://arxiv.org/abs/2212.04356"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-tiny",
+    "reviewed_on": "2026-09-25"
   },
   "ordbogen/whisper": {
     "openness": {
       "model_card": {
         "state": "unknown",
-        "detail": "Linked Hugging Face model page currently returns 404; card cannot be reviewed.",
-        "url": "https://huggingface.co/ordbogen/whisper"
+        "detail": "No accessible checkpoint card: the Hugging Face slug returns 401, and the provider docs page has no readable model details.",
+        "url": "https://odincore.ai/docs/models/ordbogen-whisper"
       },
       "license": {
-        "state": "unknown",
-        "detail": "Linked model page currently returns 404; effective terms cannot be checked.",
-        "url": "https://huggingface.co/ordbogen/whisper"
+        "state": "no",
+        "detail": "Hosted API entry; no redistributable checkpoint weights or public model license are offered.",
+        "url": "https://odincore.ai/docs/models/ordbogen-whisper"
       }
-    }
+    },
+    "reviewed_source": "https://odincore.ai/docs/models/ordbogen-whisper",
+    "reviewed_on": "2026-09-25"
   },
   "pluttodk/milo-asr": {
     "openness": {
@@ -744,7 +869,9 @@
         "detail": "Card documents incremental vLLM transcription for this fine-tune.",
         "url": "https://huggingface.co/pluttodk/milo-asr#streaming-vllm"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/pluttodk/milo-asr",
+    "reviewed_on": "2026-09-25"
   },
   "Qwen/Qwen3-ASR-1.7B": {
     "openness": {
@@ -785,7 +912,9 @@
       "state": "yes",
       "detail": "Qwen3-ASR paper",
       "url": "https://arxiv.org/abs/2601.21337"
-    }
+    },
+    "reviewed_source": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
+    "reviewed_on": "2026-09-25"
   },
   "scribe_v2": {
     "openness": {
@@ -794,7 +923,31 @@
         "detail": "API-only entry; model weights are not licensed for redistribution.",
         "url": "https://elevenlabs.io/docs/capabilities/speech-to-text"
       }
-    }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "The example response is cased and punctuated, but independent formatting controls are not documented.",
+        "url": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text#example-api-response"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Scribe v2 documents word-level start and end timestamps.",
+        "url": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text#models"
+      },
+      "diarization": {
+        "state": "yes",
+        "detail": "Scribe v2 documents diarization for up to 32 speakers and speaker IDs in the response.",
+        "url": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text#models"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Real-time transcription is offered by the separate Scribe v2 Realtime model.",
+        "url": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text#models"
+      }
+    },
+    "reviewed_source": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text",
+    "reviewed_on": "2026-09-25"
   },
   "syv-transcribe": {
     "openness": {
@@ -803,7 +956,9 @@
         "detail": "Hosted service entry; ensemble weights are not released as a redistributable checkpoint.",
         "url": "https://syv.ai"
       }
-    }
+    },
+    "reviewed_source": "https://syv.ai/",
+    "reviewed_on": "2026-09-25"
   },
   "syvai/hviske-v3-conversation": {
     "openness": {
@@ -822,7 +977,9 @@
         "detail": "Card refers to a stated license, but no Hub license tag or effective checkpoint terms were found.",
         "url": "https://huggingface.co/syvai/hviske-v3-conversation"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v3-conversation",
+    "reviewed_on": "2026-09-25"
   },
   "syvai/hviske-v5": {
     "openness": {
@@ -848,7 +1005,9 @@
         "detail": "Punctuation flag appears in usage; independent casing control is not documented.",
         "url": "https://huggingface.co/syvai/hviske-v5#usage"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v5",
+    "reviewed_on": "2026-09-25"
   },
   "syvai/hviske-v5-tiny": {
     "openness": {
@@ -884,7 +1043,9 @@
         "detail": "Card says model is offline; browser demo uses VAD chunks rather than native incremental decoding.",
         "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v5-tiny",
+    "reviewed_on": "2026-09-25"
   },
   "syvai/hviske-v5.1": {
     "openness": {
@@ -903,7 +1064,9 @@
         "detail": "CC BY-NC 4.0; commercial use requires separate license.",
         "url": "https://huggingface.co/syvai/hviske-v5.1#license"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v5.1",
+    "reviewed_on": "2026-09-25"
   },
   "syvai/hviske-v5.3": {
     "openness": {
@@ -929,7 +1092,9 @@
         "detail": "Processor controls punctuation; independent casing control is not documented.",
         "url": "https://huggingface.co/syvai/hviske-v5.3#5-punctuation-control"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v5.3",
+    "reviewed_on": "2026-09-25"
   },
   "syvai/hviske-v6": {
     "openness": {
@@ -975,7 +1140,9 @@
         "detail": "Card explicitly excludes streaming.",
         "url": "https://huggingface.co/syvai/hviske-v6#limitations"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v6",
+    "reviewed_on": "2026-09-25"
   },
   "thorhojhus/whisper-large-v3-turbo-danish": {
     "openness": {
@@ -1011,7 +1178,9 @@
         "detail": "Card uses timestamped sequential decoding for long clips, but shows no timestamp-output API.",
         "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#03--evaluation"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish",
+    "reviewed_on": "2026-09-25"
   },
   "thorhojhus/whisper-small-danish": {
     "openness": {
@@ -1047,6 +1216,8 @@
         "detail": "Card uses timestamped sequential decoding for long clips, but shows no timestamp-output API.",
         "url": "https://huggingface.co/thorhojhus/whisper-small-danish#03--evaluation"
       }
-    }
+    },
+    "reviewed_source": "https://huggingface.co/thorhojhus/whisper-small-danish",
+    "reviewed_on": "2026-09-25"
   }
 }

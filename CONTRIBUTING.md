@@ -77,6 +77,14 @@ automatically a native model feature. `partial` means only part of the claim is
 supported, `no` means documented absence or restrictive terms, and `unknown`
 means the available sources do not decide it.
 
+For streaming, a completed-file API that sends partial text is `partial`; a
+documented path that accepts ongoing audio and emits interim results is `yes`.
+
+Each reviewed model may set `reviewed_source` and `reviewed_on` in
+`model_profiles.json`. Missing fields then appear as reviewed `unknown` with a
+link to the source instead of implying that nobody checked them. This does not
+add a positive tile or infer unsupported features from a base model.
+
 Hub license tags are review leads, not automatic positive license claims: a
 model card, attached terms, or base license can narrow them. A non-commercial
 tag is marked `no`; custom commercial licenses with field-of-use restrictions
