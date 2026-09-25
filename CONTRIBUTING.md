@@ -33,7 +33,9 @@ id, backend, and where to find it. We'll run it through the harness and add it.
    For a hosted API use `"source": "published"` with the announcement link in a
    `"note"`, or `"source": "best guess"` when no date is published anywhere —
    say in the `"note"` what the guess is based on. A model with no entry is
-   simply left off that chart.
+   simply left off that chart. For an API that changes after launch, use
+   `"source": "score snapshot"` when the plotted date represents the current
+   evaluated score, and explain the original launch and benchmark dates in the note.
 4. Commit **all of it** and open a pull request. On merge, CI publishes the
    results to the Hugging Face dataset and redeploys the leaderboard
    automatically — no manual `push_results.py` / `push_outputs.py` step needed.

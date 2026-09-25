@@ -426,8 +426,14 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "size": _official_size(name, row.get("params_b")),
                 "submitted": str(submitted)[:10] if pd.notna(submitted) else "",
                 # Powers the Over Time chart. Distinct from "submitted", which
-                # is when *we* evaluated the model, not when it came out.
+                # is when *we* evaluated the model. A mutable API may instead
+                # use the date its current score became the plotted snapshot.
                 "released": _release_date(name),
+                "date_basis": (
+                    "score"
+                    if RELEASE_DATES.get(name, {}).get("source") == "score snapshot"
+                    else "release"
+                ),
             }
             for col in metric_cols:
                 entry[col] = _num(row.get(col))

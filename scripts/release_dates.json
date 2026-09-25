@@ -135,9 +135,9 @@
     "note": "https://elevenlabs.io/blog/introducing-scribe-v2"
   },
   "syv-transcribe": {
-    "released": "2026-06-24",
-    "source": "confirmed",
-    "note": "syv.ai publishes no release date and there is no HF repo; this date is confirmed rather than inferred."
+    "released": "2026-09-26",
+    "source": "score snapshot",
+    "note": "The service was released on 2026-06-24. This plotted date represents the current API score from the 2026-09-25 benchmark rerun, published on 2026-09-26."
   },
   "syvai/hviske-v3-conversation": {
     "released": "2025-07-01",
