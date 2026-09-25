@@ -422,7 +422,8 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "access": str(row.get("access", "open")),
                 "license": _model_license(name) if is_repo else "",
                 "profile": build_profile(name, url,
-                                         _model_metadata(name) if is_repo else {}, reviews),
+                                         _model_metadata(name) if is_repo else {}, reviews,
+                                         access=access),
                 # Hugging Face reports a rolling 30-day download count. It is
                 # activity context, not a quality or historical trend metric.
                 "hf_downloads": _model_downloads(name) if is_repo else None,

@@ -59,14 +59,16 @@ fields are:
 
 | Field | What a `yes` means |
 |---|---|
-| `data` | The exact fine-tuning data, splits, and filtering are disclosed and accessible under published terms. For a base model, assess its full training corpus. |
-| `code` | Scripts, preprocessing, and configuration for this checkpoint's training run are public. Inference code alone does not count. |
-| `model_card` | The card explains base-model lineage, intended use, training data and method, evaluation, and limitations. |
+| `weights` | The current model weights can be downloaded. This is filled from the benchmark's reviewed `access=open` flag and the model repository link. |
 | `license` | The checkpoint and its base permit commercial reuse and redistribution without model-specific field-of-use restrictions. |
+| `data` | The exact fine-tuning data, splits, and filtering are disclosed and accessible under published terms. For a base model, assess its full training corpus. |
+| `paper` | A public paper or technical report documents this specific model. A base model's paper does not count for a fine-tune. |
 
-An optional `report` links a paper or technical report about this checkpoint.
-It is displayed in the details but does not add an openness tile or score.
-Do not count a base model's paper for a fine-tune.
+`code` and `model_card` are useful additional disclosures in the detail view,
+outside the four-tile score. `code=yes` requires the checkpoint's training and
+preprocessing code, not just inference code. `model_card=yes` requires lineage,
+intended use, training data and method, evaluation, and limitations. The legacy
+`report` field in existing reviews supplies the `paper` tile.
 
 The separate feature fields are `punctuation_case` (cased and punctuated Danish
 output, either by default or through an option), `timestamps` (word or segment

@@ -7,14 +7,17 @@ from datetime import date
 from pathlib import Path
 
 PROFILE_FILE = Path(__file__).with_name("model_profiles.json")
-OPENNESS = ("data", "code", "model_card", "license")
+OPENNESS = ("weights", "license", "data", "paper")
+ADDITIONAL = ("code", "model_card")
 FEATURES = ("punctuation_case", "timestamps", "diarization", "streaming")
 STATES = {"yes", "no", "partial", "unknown"}
 UNCONFIRMED = {
+    "weights": "Downloadable weights are not established by the reviewed source.",
     "data": "Exact training data and release terms are not established by the reviewed source.",
     "code": "Checkpoint-specific training and preprocessing code is not established by the reviewed source.",
     "model_card": "A substantive checkpoint card is not established by the reviewed source.",
     "license": "Effective checkpoint terms are not established by the reviewed source.",
+    "paper": "A public paper or technical report for this checkpoint is not established by the reviewed source.",
     "punctuation_case": "Cased, punctuated output is not established for this checkpoint.",
     "timestamps": "Danish word or segment timestamp output is not documented for this checkpoint.",
     "diarization": "Speaker-labeled output is not documented for this checkpoint.",
@@ -36,7 +39,7 @@ def load_reviews(path: Path = PROFILE_FILE) -> dict:
                 date.fromisoformat(fields["reviewed_on"])
             except (TypeError, ValueError) as exc:
                 raise ValueError(f"Invalid review date for {model}") from exc
-        for group, keys in (("openness", OPENNESS), ("features", FEATURES)):
+        for group, keys in (("openness", OPENNESS + ADDITIONAL), ("features", FEATURES)):
             for key, decision in fields.get(group, {}).items():
                 if key not in keys or decision.get("state") not in STATES:
                     raise ValueError(f"Invalid {group}.{key} for {model}")
@@ -57,7 +60,8 @@ def _candidate(state: str = "unknown", *, detail: str = "", url: str = "", sugge
     return {"state": state, "detail": detail, "url": url, "suggestion": suggestion, "reviewed": False}
 
 
-def build_profile(model: str, model_url: str, metadata: dict, reviews: dict) -> dict:
+def build_profile(model: str, model_url: str, metadata: dict, reviews: dict,
+                  *, access: str = "unknown") -> dict:
     """Build a display profile; Hub tags are review leads, not positive proof."""
     tags = metadata.get("tags") or []
     if not isinstance(tags, list):
@@ -66,6 +70,15 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict) -> 
     if not isinstance(card, dict):
         card = {}
     repo_url = model_url if model_url.startswith("https://huggingface.co/") else ""
+    weight_state = "yes" if access == "open" and repo_url else "no" if access == "proprietary" else "unknown"
+    weight_candidate = _candidate(
+        weight_state,
+        detail=("Downloadable model repository" if weight_state == "yes" else
+                "Hosted API; weights not downloadable" if weight_state == "no" else
+                "Weight availability not reviewed"),
+        url=repo_url,
+    )
+    weight_candidate["reviewed"] = weight_state != "unknown"
     license_tag = next((t.split(":", 1)[1] for t in tags if isinstance(t, str) and t.startswith("license:")), "")
     license_tag = str(card.get("license") or license_tag).lower()
     # A Hub tag is a useful lead, but a model card or a parent-model license can
@@ -99,10 +112,12 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict) -> 
         url=paper_url, suggestion="linked" if paper_url else "",
     )
     openness = {
+        "weights": weight_candidate,
+        "license": license_candidate,
         "data": data_candidate,
+        "paper": report_candidate,
         "code": _candidate(detail="Training code not reviewed", url=repo_url),
         "model_card": _candidate(detail="Card completeness not reviewed", url=repo_url),
-        "license": license_candidate,
     }
     features = {key: _candidate(detail="Capability not reviewed") for key in FEATURES}
     reviewed = reviews.get(model, {})
@@ -123,6 +138,10 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict) -> 
                             "detail": decision.get("detail", ""),
                             "url": decision.get("url", ""),
                             "suggestion": "", "reviewed": True}
+        if "paper" not in reviewed.get("openness", {}):
+            openness["paper"] = report_candidate
+    else:
+        report_candidate = openness["paper"]
     return {"openness": openness, "features": features, "report": report_candidate,
             "openness_score": sum(openness[key]["state"] == "yes" for key in OPENNESS),
             "feature_count": sum(features[key]["state"] == "yes" for key in FEATURES)}

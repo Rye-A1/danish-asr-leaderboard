@@ -1951,21 +1951,23 @@ function visible(rows) {
 
 const PROFILE_GROUPS = [
   {key: 'openness', title: 'Openness', count: 'openness_score',
-   fields: [['data', 'Training data'], ['code', 'Training code'],
-            ['model_card', 'Model card'], ['license', 'License']]},
+   fields: [['weights', 'Weights'], ['license', 'License'],
+            ['data', 'Training data'], ['paper', 'Paper']]},
   {key: 'features', title: 'Features', count: 'feature_count',
-   fields: [['punctuation_case', 'Formatting'], ['timestamps', 'Timestamps'],
+   fields: [['punctuation_case', 'Punc. + case'], ['timestamps', 'Timestamps'],
             ['diarization', 'Speakers'], ['streaming', 'Streaming']]},
 ];
 
 // A small, consistent glyph for each signal, visible in both the table and its evidence map.
 const PROFILE_ICON_PATHS = {
+  weights: ['M2.5 3h11v8h-11z', 'M5 13.5h6', 'M8 5.5v4', 'M6.5 8l1.5 1.5L9.5 8'],
   data: ['M13 3.5c0 1.1-2.2 2-5 2s-5-.9-5-2 2.2-2 5-2 5 .9 5 2Z',
          'M3 3.5v4c0 1.1 2.2 2 5 2s5-.9 5-2v-4',
          'M3 7.5v4c0 1.1 2.2 2 5 2s5-.9 5-2v-4'],
   code: ['M5.5 4.5 2 8l3.5 3.5', 'M10.5 4.5 14 8l-3.5 3.5', 'M9.5 3.5l-3 9'],
   model_card: ['M4 1.75h5l3 3v9.5H4a1 1 0 0 1-1-1V2.75a1 1 0 0 1 1-1Z',
                'M9 1.75v3h3', 'M5.5 8h5', 'M5.5 10.5h4'],
+  paper: ['M3 2h7l3 3v9H3z', 'M10 2v3h3', 'M5 7h6', 'M5 9.5h6', 'M5 12h4'],
   license: ['M7 2H3a1 1 0 0 0-1 1v4.5l6.5 6.5a1 1 0 0 0 1.4 0L14 9.9a1 1 0 0 0 0-1.4L7 2Z',
             'M5.5 5.5h.01'],
   punctuation_case: ['M2 12.5 5.5 3.5 9 12.5', 'M3.1 10h4.8', 'M12.5 12.5h.01'],
@@ -2094,16 +2096,26 @@ function showProfilePopover(trigger, row, group, pin = false) {
     }
     list.appendChild(li);
   }
-  if (group.key === 'openness' && profile.report?.state === 'yes' && profile.report.url?.startsWith('https://')) {
-    const li = document.createElement('li');
-    li.append('Model paper/report: ');
-    const link = document.createElement('a');
-    link.href = profile.report.url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.textContent = profile.report.detail || 'Read report ↗';
-    li.appendChild(link);
-    list.appendChild(li);
+  if (group.key === 'openness') {
+    for (const [key, label] of [['code', 'Training code'], ['model_card', 'Model card']]) {
+      const item = items[key];
+      if (!item) continue;
+      const li = document.createElement('li');
+      const status = document.createElement('span');
+      status.className = `profile-status ${item.state}`;
+      status.textContent = `${label} (additional): ${item.state}`;
+      li.appendChild(status);
+      if (item.detail) li.append(` — ${item.detail}`);
+      if (item.url?.startsWith('https://')) {
+        const source = document.createElement('a');
+        source.href = item.url;
+        source.target = '_blank';
+        source.rel = 'noopener noreferrer';
+        source.textContent = ' Source ↗';
+        li.appendChild(source);
+      }
+      list.appendChild(li);
+    }
   }
   PROFILE_POPOVER.append(heading, sectionHead, ...profileSegments(items, group, true), list);
   PROFILE_POPOVER.classList.add('show');
@@ -2193,7 +2205,7 @@ const WER_COLS = [
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'openness_score',          label:'Openness',      cls:'c-profile',
-    tip:'Training data for this checkpoint, training code, substantive model card, and effective license terms. Hover or tap for evidence.' },
+    tip:'Downloadable weights, effective license terms, complete training data, and a model-specific paper or report. Hover or tap for evidence.' },
   { key:'feature_count',           label:'Features',      cls:'c-profile',
     tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
@@ -2226,7 +2238,7 @@ const CER_COLS = [
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'openness_score',          label:'Openness',       cls:'c-profile',
-    tip:'Training data for this checkpoint, training code, substantive model card, and effective license terms. Hover or tap for evidence.' },
+    tip:'Downloadable weights, effective license terms, complete training data, and a model-specific paper or report. Hover or tap for evidence.' },
   { key:'feature_count',           label:'Features',       cls:'c-profile',
     tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',

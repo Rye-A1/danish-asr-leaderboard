@@ -161,7 +161,8 @@ def test_leaderboard_json_includes_hf_downloads(monkeypatch):
         assert by_name["example/asr"]["hf_downloads"] == 1_234
         assert by_name["example/asr"]["hf_download_history"] == []
         assert by_name["hosted-api-model"]["hf_downloads"] is None
-        assert by_name["example/asr"]["profile"]["openness_score"] == 0
+        assert by_name["example/asr"]["profile"]["openness_score"] == 1
+        assert by_name["hosted-api-model"]["profile"]["openness_score"] == 0
         assert by_name["hosted-api-model"]["profile"]["openness_score"] == 0
 
 

@@ -53,7 +53,7 @@ def test_review_overrides_hub_license_and_adds_linked_capabilities():
     assert profile["features"]["timestamps"]["reviewed"] is True
 
 
-def test_report_is_informational_and_does_not_add_openness_point():
+def test_model_specific_report_adds_paper_point():
     reviews = {"example/asr": {
         "report": {"state": "yes", "url": "https://example.org/report"},
         "openness": {"license": {"state": "partial", "url": REPO,
@@ -61,8 +61,21 @@ def test_report_is_informational_and_does_not_add_openness_point():
     }}
     profile = build_profile("example/asr", REPO, {"tags": ["license:mit"]}, reviews)
     assert profile["report"]["state"] == "yes"
-    assert profile["openness_score"] == 0
+    assert profile["openness"]["paper"]["state"] == "yes"
+    assert profile["openness_score"] == 1
     assert profile["openness"]["license"]["state"] == "partial"
+
+
+def test_downloadable_weights_count_separately_from_license():
+    open_model = build_profile("example/asr", REPO, {"tags": ["license:cc-by-nc-4.0"]},
+                               {}, access="open")
+    api_model = build_profile("api-model", "https://example.org/docs", {}, {},
+                              access="proprietary")
+    assert open_model["openness"]["weights"]["state"] == "yes"
+    assert open_model["openness"]["license"]["state"] == "no"
+    assert open_model["openness_score"] == 1
+    assert api_model["openness"]["weights"]["state"] == "no"
+    assert api_model["openness_score"] == 0
 
 
 def test_review_requires_evidence_for_positive_claim(tmp_path):
