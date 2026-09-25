@@ -54,27 +54,35 @@ run the harness as-is.
 The leaderboard's **Openness** and **Features** columns read
 `scripts/model_profiles.json`. A profile is optional; unreviewed fields display
 as unknown. Hover, focus, or tap a column value to see the status map and source
-links. Add a source URL for each confirmed `yes` claim. The five openness
+links. Add a source URL for each confirmed `yes` claim. The four openness
 fields are:
 
 | Field | What a `yes` means |
 |---|---|
-| `data` | The model's training data is publicly accessible and reusable; link the dataset and its terms. |
-| `code` | Training code for this model is public; link the repository. |
-| `paper` | A public paper or technical report describes this model; link it. |
-| `model_card` | The model card explains intended use, training data, evaluation, and limitations; link it. |
-| `license` | The model's terms allow commercial use and redistribution; link the terms. |
+| `data` | The exact fine-tuning data, splits, and filtering are disclosed and accessible under published terms. For a base model, assess its full training corpus. |
+| `code` | Scripts, preprocessing, and configuration for this checkpoint's training run are public. Inference code alone does not count. |
+| `model_card` | The card explains base-model lineage, intended use, training data and method, evaluation, and limitations. |
+| `license` | The checkpoint and its base permit commercial reuse and redistribution without model-specific field-of-use restrictions. |
 
-The separate feature fields are `punctuation_case`, `timestamps`,
-`diarization`, and `streaming`. Link model documentation or a reproducible
-example for a supported feature. `partial`, `no`, and `unknown` are available
-when the evidence does not support a full `yes`.
+An optional `report` links a paper or technical report about this checkpoint.
+It is displayed in the details but does not add an openness tile or score.
+Do not count a base model's paper for a fine-tune.
 
-The deploy script recognizes common open SPDX license tags. A non-commercial
-tag is marked `no`; unfamiliar terms stay `unknown`. Hub dataset and arXiv tags
-are shown as review leads, not proof that the data is open or the paper covers
-the exact model. Manual decisions in `model_profiles.json` override these
-automatic hints. Example:
+The separate feature fields are `punctuation_case` (independent formatting
+controls for case and punctuation), `timestamps` (word or segment output for
+Danish), `diarization` (speaker labels), and `streaming` (incremental output).
+Link documentation or a reproducible example for the released checkpoint or
+its official inference package. An external aligner or chunking demo is not
+automatically a native model feature. `partial` means only part of the claim is
+supported, `no` means documented absence or restrictive terms, and `unknown`
+means the available sources do not decide it.
+
+Hub license tags are review leads, not automatic positive license claims: a
+model card, attached terms, or base license can narrow them. A non-commercial
+tag is marked `no`; custom commercial licenses with field-of-use restrictions
+are `partial`. Dataset and arXiv tags are also leads, not proof that all data
+is open or the paper covers this checkpoint. Manual decisions in
+`model_profiles.json` override these hints. Example:
 
 ```json
 {

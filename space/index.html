@@ -1944,10 +1944,10 @@ function visible(rows) {
 
 const PROFILE_GROUPS = [
   {key: 'openness', title: 'Openness', count: 'openness_score',
-   fields: [['data', 'Open data'], ['code', 'Open code'], ['paper', 'Paper'],
+   fields: [['data', 'Training data'], ['code', 'Training code'],
             ['model_card', 'Model card'], ['license', 'License']]},
   {key: 'features', title: 'Features', count: 'feature_count',
-   fields: [['punctuation_case', 'Punc. & case'], ['timestamps', 'Timestamps'],
+   fields: [['punctuation_case', 'Format control'], ['timestamps', 'Timestamps'],
             ['diarization', 'Speakers'], ['streaming', 'Streaming']]},
 ];
 
@@ -2048,6 +2048,17 @@ function showProfilePopover(trigger, row, group, pin = false) {
     }
     list.appendChild(li);
   }
+  if (group.key === 'openness' && profile.report?.state === 'yes' && profile.report.url?.startsWith('https://')) {
+    const li = document.createElement('li');
+    li.append('Model paper/report: ');
+    const link = document.createElement('a');
+    link.href = profile.report.url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.textContent = profile.report.detail || 'Read report ↗';
+    li.appendChild(link);
+    list.appendChild(li);
+  }
   PROFILE_POPOVER.append(heading, sectionHead, ...profileSegments(items, group, true), list);
   PROFILE_POPOVER.classList.add('show');
 
@@ -2136,9 +2147,9 @@ const WER_COLS = [
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'openness_score',          label:'Openness',      cls:'c-profile',
-    tip:'Confirmed open training data, training code, model-specific paper, complete model card, and open license. Hover or tap for evidence.' },
+    tip:'Training data for this checkpoint, training code, substantive model card, and effective license terms. Hover or tap for evidence.' },
   { key:'feature_count',           label:'Features',      cls:'c-profile',
-    tip:'Confirmed punctuation and case, timestamps, diarization, and streaming support. Hover or tap for evidence.' },
+    tip:'Formatting controls, Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
     tip:'WER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_wer',    label:'CoRal Read',
@@ -2169,9 +2180,9 @@ const CER_COLS = [
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'openness_score',          label:'Openness',       cls:'c-profile',
-    tip:'Confirmed open training data, training code, model-specific paper, complete model card, and open license. Hover or tap for evidence.' },
+    tip:'Training data for this checkpoint, training code, substantive model card, and effective license terms. Hover or tap for evidence.' },
   { key:'feature_count',           label:'Features',       cls:'c-profile',
-    tip:'Confirmed punctuation and case, timestamps, diarization, and streaming support. Hover or tap for evidence.' },
+    tip:'Formatting controls, Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',
     tip:'CER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_cer',    label:'CoRal Read',
@@ -2409,7 +2420,7 @@ function buildRow(row, cols, maxVals) {
       const lic = document.createElement('span');
       lic.className = 'm-license';
       lic.append(ICON_LICENSE(), row.license || '—');
-      lic.title = 'Licence: ' + (row.license || 'not declared');
+      lic.title = 'Hub license tag: ' + (row.license || 'not declared') + '. See Openness for effective terms.';
       meta.appendChild(lic);
 
       td.appendChild(meta);

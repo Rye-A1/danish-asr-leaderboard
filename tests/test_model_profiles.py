@@ -18,10 +18,10 @@ def test_hub_hints_do_not_claim_open_data_code_or_model_specific_paper():
         "cardData": {"datasets": ["example/speech"]},
     }, {})
 
-    assert profile["openness_score"] == 1
-    assert profile["openness"]["license"]["state"] == "yes"
-    assert profile["openness"]["paper"]["state"] == "unknown"
-    assert profile["openness"]["paper"]["url"] == "https://arxiv.org/abs/2401.12345"
+    assert profile["openness_score"] == 0
+    assert profile["openness"]["license"]["state"] == "unknown"
+    assert profile["report"]["state"] == "unknown"
+    assert profile["report"]["url"] == "https://arxiv.org/abs/2401.12345"
     assert profile["openness"]["data"]["url"] == "https://huggingface.co/datasets/example/speech"
     assert all(profile["openness"][key]["state"] == "unknown"
                for key in ("data", "code", "model_card"))
@@ -29,7 +29,7 @@ def test_hub_hints_do_not_claim_open_data_code_or_model_specific_paper():
 
 
 @pytest.mark.parametrize("tag,expected", [
-    ("license:mit", "yes"),
+    ("license:mit", "unknown"),
     ("license:cc-by-nc-4.0", "no"),
     ("license:other", "unknown"),
 ])
@@ -51,6 +51,18 @@ def test_review_overrides_hub_license_and_adds_linked_capabilities():
     assert profile["openness"]["license"]["state"] == "no"
     assert profile["feature_count"] == 1
     assert profile["features"]["timestamps"]["reviewed"] is True
+
+
+def test_report_is_informational_and_does_not_add_openness_point():
+    reviews = {"example/asr": {
+        "report": {"state": "yes", "url": "https://example.org/report"},
+        "openness": {"license": {"state": "partial", "url": REPO,
+                                 "detail": "Commercial use with field restrictions"}},
+    }}
+    profile = build_profile("example/asr", REPO, {"tags": ["license:mit"]}, reviews)
+    assert profile["report"]["state"] == "yes"
+    assert profile["openness_score"] == 0
+    assert profile["openness"]["license"]["state"] == "partial"
 
 
 def test_review_requires_evidence_for_positive_claim(tmp_path):

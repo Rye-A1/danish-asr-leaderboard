@@ -1,10 +1,1051 @@
 {
+  "3dio-ai/svale-110M": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Five named public corpora; CoRal v3 requires acceptance of access conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Names nvidia/parakeet-rnnt-110m-da-dk as base, training sources, use and terms; no detailed training recipe or evaluation.",
+        "url": "https://huggingface.co/3dio-ai/svale-110M"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "NVIDIA terms permit commercial use; card also applies CoRal restrictions on synthesis and biometric identification.",
+        "url": "https://huggingface.co/3dio-ai/svale-110M#licence"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "Card specifies lowercase output without punctuation.",
+        "url": "https://huggingface.co/3dio-ai/svale-110M"
+      }
+    }
+  },
+  "3dio-ai/svale-600M": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Five named public corpora; CoRal v3 requires acceptance of access conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Names nvidia/parakeet-tdt-0.6b-v3 as base, training sources, use and terms; no detailed training recipe or evaluation.",
+        "url": "https://huggingface.co/3dio-ai/svale-600M"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "NVIDIA terms permit commercial use; card also applies CoRal restrictions on synthesis and biometric identification.",
+        "url": "https://huggingface.co/3dio-ai/svale-600M#licence"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "Card specifies lowercase output without punctuation.",
+        "url": "https://huggingface.co/3dio-ai/svale-600M"
+      }
+    }
+  },
+  "capacit-ai/saga": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "CoRal dataset family is named without exact versions, splits or preprocessing.",
+        "url": "https://huggingface.co/capacit-ai/saga#model-summary"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Gives lineage, usage and evaluation; training data and limitations are thin.",
+        "url": "https://huggingface.co/capacit-ai/saga"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "Hub tag says Apache 2.0, but the CoRal training-data terms and their effect on this fine-tune are not clarified.",
+        "url": "https://huggingface.co/capacit-ai/saga"
+      }
+    }
+  },
   "capacit-ai/saga-2-m": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Six fine-tuning corpora are named; CoRal access is gated and exact run data are not redistributed.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Card gives a recipe and repo ships inference code; no executable fine-tuning script is linked.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#training-recipe"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents lineage, data, recipe, evaluation, use, limitations and license.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m"
+      },
+      "license": {
+        "state": "no",
+        "detail": "Current weights use CC BY-NC 4.0 from 2026-09-24; commercial use needs separate permission. Earlier revisions had Apache 2.0.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Outputs cased, punctuated Danish; independent format controls are not documented.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#architecture"
+      },
+      "timestamps": {
+        "state": "partial",
+        "detail": "Only chunk boundaries; no word-level timestamps.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#inference-details"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Card explicitly excludes speaker diarization.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#inference-details"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Card specifies offline decoding, no streaming.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#inference-details"
+      }
+    }
+  },
+  "CoRal-project/roest-v2-wav2vec2-1B": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v2, published with gated access and use conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v2"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card gives the training command and links the CoRal training framework.",
+        "url": "https://github.com/alexandrainst/coral"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents base, data, training, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "OpenRAIL-based terms permit commercial use but prohibit specified uses.",
+        "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B#model-details"
+      }
+    }
+  },
+  "CoRal-project/roest-v2-wav2vec2-2B": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v2, published with gated access and use conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v2"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card gives the training command and links the CoRal training framework.",
+        "url": "https://github.com/alexandrainst/coral"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents base, data, training, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "OpenRAIL-based terms permit commercial use but prohibit specified uses.",
+        "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B#model-details"
+      }
+    }
+  },
+  "CoRal-project/roest-v3-wav2vec2-315m": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v3, published with gated access and use conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card identifies the training framework and invocation.",
+        "url": "https://github.com/alexandrainst/coral"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Documents use, data and evaluation; limitations are sparse.",
+        "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "OpenRAIL-based terms permit commercial use with synthesis and biometric-use restrictions.",
+        "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m#model-details"
+      }
+    }
+  },
+  "CoRal-project/roest-v3-whisper-1.5b": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v3, published with gated access and use conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card identifies the training framework and invocation.",
+        "url": "https://github.com/alexandrainst/coral"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Documents use, data and evaluation; limitations are sparse.",
+        "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "OpenRAIL-based terms permit commercial use with synthesis and biometric-use restrictions.",
+        "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b#model-details"
+      }
+    }
+  },
+  "facebook/mms-1b-all": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "The card's example datasets do not establish public access to the full training corpus.",
+        "url": "https://huggingface.co/facebook/mms-1b-all"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "MMS research code is linked; exact checkpoint training inputs and run configuration need review.",
+        "url": "https://github.com/facebookresearch/fairseq/tree/main/examples/mms#asr"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Usage and language coverage are detailed; data and checkpoint limitations are limited.",
+        "url": "https://huggingface.co/facebook/mms-1b-all"
+      },
+      "license": {
+        "state": "no",
+        "detail": "Model is released under CC BY-NC 4.0; commercial use is excluded.",
+        "url": "https://huggingface.co/facebook/mms-1b-all#model-details"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "MMS paper",
+      "url": "https://arxiv.org/abs/2305.13516"
+    }
+  },
+  "facebook/seamless-m4t-v2-large": {
+    "openness": {
+      "code": {
+        "state": "partial",
+        "detail": "Finetuning code is linked; exact release training recipe and data remain unclear.",
+        "url": "https://github.com/facebookresearch/seamless_communication/tree/main/src/seamless_communication/cli/m4t/finetune"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Describes tasks, usage and evaluation; training-data disclosure is limited.",
+        "url": "https://huggingface.co/facebook/seamless-m4t-v2-large"
+      },
+      "license": {
+        "state": "no",
+        "detail": "Hub declares CC BY-NC 4.0; commercial use is excluded.",
+        "url": "https://huggingface.co/facebook/seamless-m4t-v2-large"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "SeamlessM4T v2 paper",
+      "url": "https://arxiv.org/abs/2312.05187"
+    }
+  },
+  "gpt-4o-mini-transcribe": {
     "openness": {
       "license": {
         "state": "no",
-        "detail": "CC BY-NC 4.0 applies from 2026-09-24; commercial use requires a separate license. Earlier revisions remain under Apache 2.0.",
-        "url": "https://huggingface.co/capacit-ai/saga-2-m"
+        "detail": "API-only entry; model weights are not licensed for redistribution.",
+        "url": "https://platform.openai.com/docs/models"
+      }
+    }
+  },
+  "gpt-4o-transcribe": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "API-only entry; model weights are not licensed for redistribution.",
+        "url": "https://platform.openai.com/docs/models"
+      }
+    }
+  },
+  "gpt-transcribe": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "API-only entry; model weights are not licensed for redistribution.",
+        "url": "https://platform.openai.com/docs/models"
+      }
+    }
+  },
+  "hinge/danstral-v1": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v1, which has access conditions; base-model corpus is undisclosed.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Author links the Danstral training script.",
+        "url": "https://github.com/ChristianHinge/danstral"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Explains lineage, training data, usage, evaluation and contamination risk.",
+        "url": "https://huggingface.co/hinge/danstral-v1"
+      },
+      "license": {
+        "state": "unknown",
+        "detail": "No checkpoint-specific license tag or terms on Hub page; parent and adapter terms need review.",
+        "url": "https://huggingface.co/hinge/danstral-v1"
+      }
+    }
+  },
+  "MediaCatch/xls-r-300m-danish-mc-v2": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card names only a 'Preprocessed Dataset'; the corpus and splits are not identified.",
+        "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2#training-and-evaluation-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Trainer hyperparameters are published, but no checkpoint-specific training script is linked.",
+        "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2#training-procedure"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Metrics and hyperparameters are present; description, data and limitations say 'More information needed'.",
+        "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2"
+      },
+      "license": {
+        "state": "unknown",
+        "detail": "Hub tag says Apache 2.0, but the base checkpoint and preprocessed-data terms are not described.",
+        "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2"
+      }
+    }
+  },
+  "mistralai/Voxtral-Mini-3B-2507": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card does not identify a downloadable training corpus or exact mixture.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Use and benchmarks are documented; training provenance and limitations are sparse.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Voxtral paper",
+      "url": "https://arxiv.org/abs/2507.13264"
+    }
+  },
+  "mistralai/Voxtral-Small-24B-2507": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card does not identify a downloadable training corpus or exact mixture.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Use and benchmarks are documented; training provenance and limitations are sparse.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Voxtral paper",
+      "url": "https://arxiv.org/abs/2507.13264"
+    }
+  },
+  "nvidia/canary-1b-v2": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Granary is public; training mix also includes in-house NeMo ASR Set 3.0.",
+        "url": "https://huggingface.co/nvidia/canary-1b-v2#training-dataset"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card links the NeMo training script and describes the staged recipe.",
+        "url": "https://github.com/NVIDIA/NeMo/blob/main/examples/asr/speech_multitask/speech_to_text_aed.py"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed terms, data, training, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/nvidia/canary-1b-v2"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Card states CC BY 4.0 and explicitly permits commercial use.",
+        "url": "https://huggingface.co/nvidia/canary-1b-v2#licenseterms-of-use"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Automatic punctuation and capitalization, without documented independent controls.",
+        "url": "https://huggingface.co/nvidia/canary-1b-v2#key-features"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "NeMo example returns word and segment timestamps.",
+        "url": "https://huggingface.co/nvidia/canary-1b-v2#how-to-use-this-model"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Canary 1B v2 technical report",
+      "url": "https://arxiv.org/abs/2509.14128"
+    }
+  },
+  "nvidia/parakeet-rnnt-110m-da-dk": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "CoRal, Common Voice and Granary sources are listed; CoRal has gated access.",
+        "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk#training-datasets"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "NeMo toolkit is linked; exact checkpoint run configuration is not in the card.",
+        "url": "https://github.com/NVIDIA/NeMo"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents terms, data, use, evaluation and deployment limitations.",
+        "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "NVIDIA terms permit commercial redistribution but impose guardrail and AI-use conditions.",
+        "url": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/"
+      }
+    },
+    "features": {
+      "streaming": {
+        "state": "partial",
+        "detail": "Card advertises streaming through NVIDIA Riva; checkpoint-specific incremental path is not shown.",
+        "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk#nvidia-riva-deployment"
+      }
+    }
+  },
+  "nvidia/parakeet-tdt-0.6b-v3": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Granary is public, but card also lists in-house NeMo ASR Set 3.0.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#training-dataset"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card links NeMo training example and TDT configuration.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#training"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed terms, data, training, use, evaluation and limitations.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Card states CC BY 4.0 and explicitly permits commercial use.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#licenseterms-of-use"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Automatic punctuation and capitalization, without documented independent controls.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#key-features"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "NeMo example returns character, word and segment timestamps.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#how-to-use-this-model"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Card links an official chunked incremental NeMo streaming script.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#how-to-use-this-model"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Parakeet technical report",
+      "url": "https://arxiv.org/abs/2509.14128"
+    }
+  },
+  "openai/whisper-base": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Original Whisper training corpus is described but not released.",
+        "url": "https://huggingface.co/openai/whisper-base#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Model and inference source are public; the exact training pipeline is not linked.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed training overview, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-base"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-base"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Examples show formatted text; independent casing and punctuation controls are not documented.",
+        "url": "https://huggingface.co/openai/whisper-base#usage"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Whisper timestamp tokens and long-form timestamp decoding are documented.",
+        "url": "https://huggingface.co/openai/whisper-base#model-details"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Whisper paper",
+      "url": "https://arxiv.org/abs/2212.04356"
+    }
+  },
+  "openai/whisper-large-v3": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Training mix is described but the underlying corpus is not released.",
+        "url": "https://huggingface.co/openai/whisper-large-v3#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Model and inference source are public; exact checkpoint training pipeline is not linked.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed lineage, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-large-v3"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-large-v3"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Formatted output is shown, without independent controls.",
+        "url": "https://huggingface.co/openai/whisper-large-v3#usage"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Card documents sentence and word timestamps in official pipeline.",
+        "url": "https://huggingface.co/openai/whisper-large-v3#usage"
+      }
+    }
+  },
+  "openai/whisper-large-v3-turbo": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Training mix is described but the underlying corpus is not released.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Model and inference source are public; exact checkpoint training pipeline is not linked.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed lineage, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies MIT for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Formatted output is shown, without independent controls.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo#usage"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Card documents sentence and word timestamps in official pipeline.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo#usage"
+      }
+    }
+  },
+  "openai/whisper-small": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Original Whisper training corpus is described but not released.",
+        "url": "https://huggingface.co/openai/whisper-small#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Model and inference source are public; the exact training pipeline is not linked.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed training overview, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-small"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-small"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Examples show formatted text; independent casing and punctuation controls are not documented.",
+        "url": "https://huggingface.co/openai/whisper-small#usage"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Whisper timestamp tokens and long-form timestamp decoding are documented.",
+        "url": "https://huggingface.co/openai/whisper-small#model-details"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Whisper paper",
+      "url": "https://arxiv.org/abs/2212.04356"
+    }
+  },
+  "openai/whisper-tiny": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Original Whisper training corpus is described but not released.",
+        "url": "https://huggingface.co/openai/whisper-tiny#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Model and inference source are public; the exact training pipeline is not linked.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed training overview, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-tiny"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-tiny"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Examples show formatted text; independent casing and punctuation controls are not documented.",
+        "url": "https://huggingface.co/openai/whisper-tiny#usage"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Whisper timestamp tokens and long-form timestamp decoding are documented.",
+        "url": "https://huggingface.co/openai/whisper-tiny#model-details"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Whisper paper",
+      "url": "https://arxiv.org/abs/2212.04356"
+    }
+  },
+  "ordbogen/whisper": {
+    "openness": {
+      "model_card": {
+        "state": "unknown",
+        "detail": "Linked Hugging Face model page currently returns 404; card cannot be reviewed.",
+        "url": "https://huggingface.co/ordbogen/whisper"
+      },
+      "license": {
+        "state": "unknown",
+        "detail": "Linked model page currently returns 404; effective terms cannot be checked.",
+        "url": "https://huggingface.co/ordbogen/whisper"
+      }
+    }
+  },
+  "pluttodk/milo-asr": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "CoRal v2 is listed; stage-two podcast and Azure podcast data are not linked.",
+        "url": "https://huggingface.co/pluttodk/milo-asr#tr%C3%A6ningsdetaljer"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Gives use, evaluation and two-stage recipe; dataset provenance and limitations are incomplete.",
+        "url": "https://huggingface.co/pluttodk/milo-asr"
+      },
+      "license": {
+        "state": "unknown",
+        "detail": "Hub says OpenRAIL, but card does not spell out effective commercial and redistribution terms.",
+        "url": "https://huggingface.co/pluttodk/milo-asr"
+      }
+    },
+    "features": {
+      "timestamps": {
+        "state": "partial",
+        "detail": "Card shows external forced aligner, but Qwen lists no Danish support for that aligner.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B#released-models-description-and-download"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Card documents incremental vLLM transcription for this fine-tune.",
+        "url": "https://huggingface.co/pluttodk/milo-asr#streaming-vllm"
+      }
+    }
+  },
+  "Qwen/Qwen3-ASR-1.7B": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card refers to large-scale speech data without an accessible full corpus or exact mixture.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"
+      },
+      "code": {
+        "state": "unknown",
+        "detail": "Public repository documents inference and serving; checkpoint training scripts need review.",
+        "url": "https://github.com/QwenLM/Qwen3-ASR"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Extensive usage, architecture and evaluation, but training-data provenance is limited.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"
+      }
+    },
+    "features": {
+      "timestamps": {
+        "state": "no",
+        "detail": "Optional forced aligner lists 11 languages and excludes Danish; no confirmed Danish timestamps.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B#released-models-description-and-download"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Official vLLM path supports incremental streaming; Danish is listed for the ASR checkpoint.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B#streaming-demo"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Qwen3-ASR paper",
+      "url": "https://arxiv.org/abs/2601.21337"
+    }
+  },
+  "scribe_v2": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "API-only entry; model weights are not licensed for redistribution.",
+        "url": "https://elevenlabs.io/docs/capabilities/speech-to-text"
+      }
+    }
+  },
+  "syv-transcribe": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "Hosted service entry; ensemble weights are not released as a redistributable checkpoint.",
+        "url": "https://syv.ai"
+      }
+    }
+  },
+  "syvai/hviske-v3-conversation": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card shows evaluation data but does not identify fine-tuning corpus and splits.",
+        "url": "https://huggingface.co/syvai/hviske-v3-conversation"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Danish usage and evaluation are documented; fine-tune data and limitations are sparse.",
+        "url": "https://huggingface.co/syvai/hviske-v3-conversation"
+      },
+      "license": {
+        "state": "unknown",
+        "detail": "Card refers to a stated license, but no Hub license tag or effective checkpoint terms were found.",
+        "url": "https://huggingface.co/syvai/hviske-v3-conversation"
+      }
+    }
+  },
+  "syvai/hviske-v5": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Unified training corpus is published, but source terms and exact filtering need review.",
+        "url": "https://huggingface.co/datasets/syvai/danish-asr-unified"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Training, dataset mix, evaluation and use are given; limitations are sparse.",
+        "url": "https://huggingface.co/syvai/hviske-v5"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0; card explicitly excludes use by or for a commercial entity without separate license.",
+        "url": "https://huggingface.co/syvai/hviske-v5#license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Punctuation flag appears in usage; independent casing control is not documented.",
+        "url": "https://huggingface.co/syvai/hviske-v5#usage"
+      }
+    }
+  },
+  "syvai/hviske-v5-tiny": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Distilled from teacher pseudo-labels; exact distillation corpus is not linked.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed usage, evaluation, runtimes, limitations and license.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0 inherited from teacher; commercial use requires separate permission.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#license"
+      }
+    },
+    "features": {
+      "timestamps": {
+        "state": "no",
+        "detail": "Card explicitly excludes timestamps.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Card explicitly excludes diarization.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Card says model is offline; browser demo uses VAD chunks rather than native incremental decoding.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
+      }
+    }
+  },
+  "syvai/hviske-v5.1": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Unified corpus is published, but exact source permissions and filtering need review.",
+        "url": "https://huggingface.co/datasets/syvai/danish-asr-unified"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Lineage, usage, evaluation and training settings are documented; limitations are sparse.",
+        "url": "https://huggingface.co/syvai/hviske-v5.1"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0; commercial use requires separate license.",
+        "url": "https://huggingface.co/syvai/hviske-v5.1#license"
+      }
+    }
+  },
+  "syvai/hviske-v5.3": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on gated CoRal v3 train splits; base v5.1 used published unified corpus.",
+        "url": "https://huggingface.co/syvai/hviske-v5.3#training-details"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Lineage, use, evaluation and training are detailed; limitations are sparse.",
+        "url": "https://huggingface.co/syvai/hviske-v5.3"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0; card explicitly excludes commercial use without separate license.",
+        "url": "https://huggingface.co/syvai/hviske-v5.3#license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Processor controls punctuation; independent casing control is not documented.",
+        "url": "https://huggingface.co/syvai/hviske-v5.3#5-punctuation-control"
+      }
+    }
+  },
+  "syvai/hviske-v6": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Card links public corpus, but cleaned 2,755-hour subset and filtering are not released as exact split.",
+        "url": "https://huggingface.co/syvai/hviske-v6#training"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Detailed recipe and inference implementations; no executable fine-tuning script is linked.",
+        "url": "https://huggingface.co/syvai/hviske-v6#training"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents lineage, data, recipe, evaluation, use, limitations and license.",
+        "url": "https://huggingface.co/syvai/hviske-v6"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0; commercial use is excluded by checkpoint license.",
+        "url": "https://huggingface.co/syvai/hviske-v6#license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Independent casing and punctuation controls are shown in inference API.",
+        "url": "https://huggingface.co/syvai/hviske-v6#controlling-casing-and-punctuation"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "Card explicitly excludes timestamps.",
+        "url": "https://huggingface.co/syvai/hviske-v6#limitations"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Card explicitly excludes diarization.",
+        "url": "https://huggingface.co/syvai/hviske-v6#limitations"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Card explicitly excludes streaming.",
+        "url": "https://huggingface.co/syvai/hviske-v6#limitations"
+      }
+    }
+  },
+  "thorhojhus/whisper-large-v3-turbo-danish": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Five public corpora named, but filtered pseudo-labeled data are not redistributed.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#02--training"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "training_recipe.json records configuration; executable training script is not linked.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish/blob/main/training_recipe.json"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents lineage, data, recipe, evaluation, limitations and terms.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Card states MIT for weights and distinguishes upstream data terms.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#05--license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Training retained original casing and punctuation; user controls are not documented.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#02--training"
+      },
+      "timestamps": {
+        "state": "partial",
+        "detail": "Card uses timestamped sequential decoding for long clips, but shows no timestamp-output API.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#03--evaluation"
+      }
+    }
+  },
+  "thorhojhus/whisper-small-danish": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Five public corpora named, but filtered pseudo-labeled data are not redistributed.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish#02--training"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "training_recipe.json records configuration; executable training script is not linked.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish/blob/main/training_recipe.json"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents lineage, data, recipe, evaluation, limitations and terms.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Card states MIT for weights and distinguishes upstream data terms.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish#05--license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "partial",
+        "detail": "Training retained original casing and punctuation; user controls are not documented.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish#02--training"
+      },
+      "timestamps": {
+        "state": "partial",
+        "detail": "Card uses timestamped sequential decoding for long clips, but shows no timestamp-output API.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish#03--evaluation"
       }
     }
   }

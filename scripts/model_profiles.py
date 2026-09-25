@@ -6,23 +6,14 @@ import re
 from pathlib import Path
 
 PROFILE_FILE = Path(__file__).with_name("model_profiles.json")
-OPENNESS = ("data", "code", "paper", "model_card", "license")
+OPENNESS = ("data", "code", "model_card", "license")
 FEATURES = ("punctuation_case", "timestamps", "diarization", "streaming")
 STATES = {"yes", "no", "partial", "unknown"}
-
-# Standard licenses that allow commercial use and redistribution. Custom,
-# gated and unfamiliar terms require a manual review.
-OPEN_LICENSES = {
-    "apache-2.0", "mit", "bsd-2-clause", "bsd-3-clause", "isc", "cc0-1.0",
-    "cc-by-4.0", "cc-by-sa-4.0", "unlicense", "mpl-2.0", "epl-2.0",
-    "gpl-3.0", "lgpl-3.0", "agpl-3.0",
-}
-
 
 def load_reviews(path: Path = PROFILE_FILE) -> dict:
     reviews = json.loads(path.read_text(encoding="utf-8"))
     for model, fields in reviews.items():
-        if set(fields) - {"openness", "features"}:
+        if set(fields) - {"openness", "features", "report"}:
             raise ValueError(f"Unknown profile group for {model}")
         for group, keys in (("openness", OPENNESS), ("features", FEATURES)):
             for key, decision in fields.get(group, {}).items():
@@ -33,6 +24,11 @@ def load_reviews(path: Path = PROFILE_FILE) -> dict:
                     raise ValueError(f"Invalid evidence URL: {model} {group}.{key}")
                 if decision["state"] == "yes" and not decision.get("url"):
                     raise ValueError(f"Positive {group}.{key} needs evidence URL: {model}")
+        report = fields.get("report", {})
+        if report and (report.get("state") not in STATES or
+                       (report.get("url") and not report["url"].startswith("https://")) or
+                       (report.get("state") == "yes" and not report.get("url"))):
+            raise ValueError(f"Invalid report for {model}")
     return reviews
 
 
@@ -41,7 +37,7 @@ def _candidate(state: str = "unknown", *, detail: str = "", url: str = "", sugge
 
 
 def build_profile(model: str, model_url: str, metadata: dict, reviews: dict) -> dict:
-    """Build a display profile; Hub tags do not prove code or data openness."""
+    """Build a display profile; Hub tags are review leads, not positive proof."""
     tags = metadata.get("tags") or []
     if not isinstance(tags, list):
         tags = []
@@ -51,14 +47,16 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict) -> 
     repo_url = model_url if model_url.startswith("https://huggingface.co/") else ""
     license_tag = next((t.split(":", 1)[1] for t in tags if isinstance(t, str) and t.startswith("license:")), "")
     license_tag = str(card.get("license") or license_tag).lower()
-    license_state = "yes" if license_tag in OPEN_LICENSES else "unknown"
+    # A Hub tag is a useful lead, but a model card or a parent-model license can
+    # narrow it. Never award a positive license tile without reviewing the terms.
+    license_state = "unknown"
     if re.search(r"(^|[-_])(nc|non-commercial|noncommercial)([-_]|$)", license_tag):
         license_state = "no"
     license_detail = f"Hub license: {license_tag}" if license_tag else "License not reviewed"
     if license_tag and license_state == "unknown":
-        license_detail += "; terms need review"
+        license_detail += "; effective terms need review"
     license_candidate = _candidate(license_state, detail=license_detail, url=repo_url)
-    license_candidate["reviewed"] = license_state != "unknown"
+    license_candidate["reviewed"] = license_state == "no"
 
     dataset_tags = [t.split(":", 1)[1] for t in tags if isinstance(t, str) and t.startswith("dataset:")]
     card_datasets = card.get("datasets") or []
@@ -75,14 +73,13 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict) -> 
     )
     arxiv = next((t.split(":", 1)[1] for t in tags if isinstance(t, str) and t.startswith("arxiv:")), "")
     paper_url = f"https://arxiv.org/abs/{arxiv}" if re.fullmatch(r"\d{4}\.\d{4,5}", arxiv) else ""
-    paper_candidate = _candidate(
-        detail="Paper link in Hub metadata; confirm it describes this model" if paper_url else "Paper or report not reviewed",
+    report_candidate = _candidate(
+        detail="Paper link in Hub metadata; confirm it describes this checkpoint" if paper_url else "Model-specific paper or report not reviewed",
         url=paper_url, suggestion="linked" if paper_url else "",
     )
     openness = {
         "data": data_candidate,
         "code": _candidate(detail="Training code not reviewed", url=repo_url),
-        "paper": paper_candidate,
         "model_card": _candidate(detail="Card completeness not reviewed", url=repo_url),
         "license": license_candidate,
     }
@@ -94,6 +91,12 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict) -> 
                             "detail": decision.get("detail", ""),
                             "url": decision.get("url", ""),
                             "suggestion": "", "reviewed": True}
-    return {"openness": openness, "features": features,
+    if "report" in reviewed:
+        decision = reviewed["report"]
+        report_candidate = {"state": decision["state"],
+                            "detail": decision.get("detail", ""),
+                            "url": decision.get("url", ""),
+                            "suggestion": "", "reviewed": True}
+    return {"openness": openness, "features": features, "report": report_candidate,
             "openness_score": sum(openness[key]["state"] == "yes" for key in OPENNESS),
             "feature_count": sum(features[key]["state"] == "yes" for key in FEATURES)}
