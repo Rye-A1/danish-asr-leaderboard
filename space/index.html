@@ -786,7 +786,7 @@
     }
     .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
     .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
-    .legend-line { width: 16px; height: 0; border-top: 2px solid var(--accent); }
+    .legend-line { width: 16px; height: 0; border-top: 2px solid var(--link); }
     .chart-with-panel {
       display: flex;
       gap: 12px;
@@ -1291,7 +1291,7 @@
         .banner-chips-track.scrolls { animation: none; }
       }
 
-      /* Sort control, beside Filters. Sorting otherwise lives on the table
+      /* Sort control, beside Settings. Sorting otherwise lives on the table
          header, which the card layout hides. */
       .sort-wrap {
         display: inline-flex;
@@ -1496,7 +1496,7 @@
     <div class="chart-section" style="margin-top:0">
       <h3 id="time-chart-title">Performance Over Time</h3>
       <div class="chart-legend">
-        <span><i class="legend-dot" style="background:var(--accent)"></i>Open weights</span>
+        <span><i class="legend-dot" style="background:var(--link)"></i>Open weights</span>
         <span><i class="legend-dot" style="background:#94a3b8"></i>Proprietary API</span>
         <span><i class="legend-line"></i>Best at date</span>
         <span>Models with mean WER &gt; 50% are excluded.</span>
@@ -2276,7 +2276,7 @@ function initFilterToggles() {
     const caret = document.createElement('span');
     const count = document.createElement('span');
     count.className = 'filters-count';
-    btn.append(ICON_FILTER(), 'Filters ', caret, count);
+    btn.append(ICON_FILTER(), 'Settings ', caret, count);
 
     /* Counts the controls that are not at their default, so a collapsed
        toolbar still says whether anything is filtering the table. Within
@@ -2306,7 +2306,7 @@ function initFilterToggles() {
       count.textContent = n ? String(n) : '';
       btn.classList.toggle('has-filters', n > 0);
       btn.setAttribute('aria-label',
-        n ? 'Filters, ' + n + ' active' : 'Filters');
+        n ? 'Settings, ' + n + ' active' : 'Settings');
     };
 
     btn.addEventListener('click', () => {
@@ -3221,7 +3221,7 @@ function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
     const item = document.createElement('div');
     item.className = 'pareto-item';
     item.dataset.modelName = p.r.name;
-    const col = p.r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+    const col = p.r.access === 'open' ? 'var(--link)' : '#94a3b8';
     item.innerHTML =
       `<span class="pareto-dot" style="background:${col}"></span>` +
       `<span class="pareto-meta">${fmtDate(p.t)} · ${fmt(p.yv)}</span>` +
@@ -3340,7 +3340,7 @@ function _drawTimeChart(rows, metric, method) {
     for (let i = 1; i < records.length; i++)
       d += ` H ${sx(records[i].t).toFixed(1)} V ${sy(records[i].yv).toFixed(1)}`;
     d += ` H ${(ML + cW).toFixed(1)}`;
-    mk('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2', opacity: '0.75' }, svgEl);
+    mk('path', { d, fill: 'none', stroke: 'var(--link)', 'stroke-width': '2', opacity: '0.75' }, svgEl);
   }
   updateRecordPanel(records, metricLbl, fmt, method, undated);
 
@@ -3356,7 +3356,7 @@ function _drawTimeChart(rows, metric, method) {
         const yt = Math.max(MT, Math.min(sy(ci.lo), sy(ci.hi)));
         const yb = Math.min(MT + cH, Math.max(sy(ci.lo), sy(ci.hi)));
         if (yb > yt) {
-          const ecol = r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+          const ecol = r.access === 'open' ? 'var(--link)' : '#94a3b8';
           mk('line', { x1: xc, y1: yt, x2: xc, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
           if (Math.min(sy(ci.lo), sy(ci.hi)) >= MT)
             mk('line', { x1: xc-4, y1: yt, x2: xc+4, y2: yt, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
@@ -3370,11 +3370,11 @@ function _drawTimeChart(rows, metric, method) {
       + tipRow('Released', fmtDate(t))
       + tipMetricRows(r, meanKey, meanLbl);
     if (recordSet.has(r.name))
-      tipHTML += tipRow('Record', 'best at date', 'var(--accent)');
+      tipHTML += tipRow('Record', 'best at date', 'var(--link)');
 
     const circ = mk('circle', {
       cx: xc, cy: yc, r: '6',
-      fill: r.access === 'open' ? 'var(--accent)' : '#94a3b8',
+      fill: r.access === 'open' ? 'var(--link)' : '#94a3b8',
       stroke: 'var(--bg)', 'stroke-width': '1.5',
       style: 'cursor:pointer',
     }, svgEl);
