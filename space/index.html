@@ -587,17 +587,14 @@
     .profile-trigger:hover, .profile-trigger:focus-visible,
     .profile-trigger[aria-expanded="true"] { background: var(--surf2); border-color: var(--border); outline: none; }
     .profile-compact-label { display: none; }
-    .profile-segments { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 4px; }
+    .profile-segments { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 3px; }
     .profile-trigger .profile-segments { width: 100%; }
     .profile-segment {
       width: min(100%, 22px); aspect-ratio: 1; justify-self: center;
-      border-radius: 2px;
-      border: 1px solid color-mix(in srgb, var(--link) 38%, var(--border));
-      background: linear-gradient(180deg,
-        color-mix(in srgb, var(--link) 42%, var(--surf)),
-        color-mix(in srgb, var(--link) 8%, var(--surf)));
+      border-radius: 4px;
+      background: color-mix(in srgb, var(--link) 10%, var(--border));
     }
-    .profile-segment.yes { background: var(--link); border-color: var(--link); }
+    .profile-segment.yes { background: var(--link); }
     .profile-popover {
       display: none; position: fixed; z-index: 10000; width: min(380px, calc(100vw - 24px));
       max-height: min(70vh, 520px); overflow: auto; padding: 16px;
@@ -1500,7 +1497,7 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
-      Openness and Features show individual signals. Strong blue means confirmed; pale blue means not confirmed, including unreviewed signals. Hover, focus, or tap a cell for each status and its evidence.
+      Openness and Features show individual signals. Blue means confirmed; muted tiles mean not confirmed, including unreviewed signals. Hover, focus, or tap a cell for each status and its evidence.
     </p>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
