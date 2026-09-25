@@ -1,0 +1,11 @@
+{
+  "capacit-ai/saga-2-m": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0 applies from 2026-09-24; commercial use requires a separate license. Earlier revisions remain under Apache 2.0.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m"
+      }
+    }
+  }
+}

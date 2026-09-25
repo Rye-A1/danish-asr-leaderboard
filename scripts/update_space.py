@@ -28,6 +28,7 @@ import pandas as pd
 import requests
 from huggingface_hub import HfApi, get_token
 from PIL import Image, ImageDraw, ImageFont
+from model_profiles import build_profile, load_reviews
 
 SPACE_REPO_ID   = "RyeAI/danish-asr-leaderboard"
 DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
@@ -391,6 +392,7 @@ def load_leaderboard_df() -> pd.DataFrame:
 
 
 def build_leaderboard_json(df: pd.DataFrame) -> dict:
+    reviews = load_reviews()
 
     def build_rows(df_sorted: pd.DataFrame, metric_cols: list[str]) -> list[dict]:
         rows = []
@@ -419,6 +421,8 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "logo": logo,
                 "access": str(row.get("access", "open")),
                 "license": _model_license(name) if is_repo else "",
+                "profile": build_profile(name, url,
+                                         _model_metadata(name) if is_repo else {}, reviews),
                 # Hugging Face reports a rolling 30-day download count. It is
                 # activity context, not a quality or historical trend metric.
                 "hf_downloads": _model_downloads(name) if is_repo else None,

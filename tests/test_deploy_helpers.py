@@ -133,6 +133,7 @@ def test_leaderboard_json_includes_hf_downloads(monkeypatch):
 
     monkeypatch.setattr(update_space, "_provider_logo", lambda _org: "")
     monkeypatch.setattr(update_space, "_model_license", lambda _model: "apache-2.0")
+    monkeypatch.setattr(update_space, "_model_metadata", lambda _model: {"tags": ["license:apache-2.0"]})
     monkeypatch.setattr(update_space, "_model_downloads", lambda _model: 1_234)
     monkeypatch.setattr(update_space, "_model_download_history", lambda _model: ())
     monkeypatch.setattr(update_space, "_bootstrap_cis", lambda: {})
@@ -160,6 +161,8 @@ def test_leaderboard_json_includes_hf_downloads(monkeypatch):
         assert by_name["example/asr"]["hf_downloads"] == 1_234
         assert by_name["example/asr"]["hf_download_history"] == []
         assert by_name["hosted-api-model"]["hf_downloads"] is None
+        assert by_name["example/asr"]["profile"]["openness_score"] == 1
+        assert by_name["hosted-api-model"]["profile"]["openness_score"] == 0
 
 
 def test_download_series_preserves_missing_snapshots():

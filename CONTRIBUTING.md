@@ -49,6 +49,52 @@ run the harness as-is.
 > and catch any configuration differences. Submitting the raw `outputs/` lets us
 > diff transcriptions directly.
 
+## Model openness and feature profiles
+
+The leaderboard's **Openness & Features** view reads
+`scripts/model_profiles.json`. A profile is optional; unreviewed fields display
+as unknown. Add a source URL for each confirmed `yes` claim. The five openness
+fields are:
+
+| Field | What a `yes` means |
+|---|---|
+| `data` | The model's training data is publicly accessible and reusable; link the dataset and its terms. |
+| `code` | Training code for this model is public; link the repository. |
+| `paper` | A public paper or technical report describes this model; link it. |
+| `model_card` | The model card explains intended use, training data, evaluation, and limitations; link it. |
+| `license` | The model's terms allow commercial use and redistribution; link the terms. |
+
+The separate feature fields are `punctuation_case`, `timestamps`,
+`diarization`, and `streaming`. Link model documentation or a reproducible
+example for a supported feature. `partial`, `no`, and `unknown` are available
+when the evidence does not support a full `yes`.
+
+The deploy script recognizes common open SPDX license tags. A non-commercial
+tag is marked `no`; unfamiliar terms stay `unknown`. Hub dataset and arXiv tags
+are shown as review leads, not proof that the data is open or the paper covers
+the exact model. Manual decisions in `model_profiles.json` override these
+automatic hints. Example:
+
+```json
+{
+  "example/asr": {
+    "openness": {
+      "code": {
+        "state": "yes",
+        "url": "https://github.com/example/asr",
+        "detail": "Training recipe and scripts"
+      }
+    },
+    "features": {
+      "timestamps": {
+        "state": "yes",
+        "url": "https://example.org/asr/timestamps"
+      }
+    }
+  }
+}
+```
+
 ## Adding a backend
 
 1. Create `danish_asr_leaderboard/backends/<name>_backend.py`.

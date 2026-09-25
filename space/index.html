@@ -575,6 +575,35 @@
     .badge-open { background: rgba(34,197,94,.15); color: #4ade80; }
     .badge-prop { background: rgba(148,163,184,.12); color: #94a3b8; }
 
+    /* Evidence-first model profiles. Unknown segments are outlined. */
+    .profiles-intro { color: var(--muted); font-size: 13px; line-height: 1.6; max-width: 850px; }
+    .profiles-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 16px; }
+    .profile-card { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf); }
+    .profile-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+    .profile-head a { color: var(--link); font-weight: 700; overflow-wrap: anywhere; }
+    .profile-wer { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .profile-access { color: var(--muted); font-size: 11px; margin-top: 4px; }
+    .profile-group { margin-top: 16px; }
+    .profile-group-head { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 700; }
+    .profile-group-head span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .profile-segments { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 5px; margin: 8px 0 5px; }
+    .profile-segment { height: 7px; border-radius: 5px; border: 1px solid var(--border); background: transparent; }
+    .profile-segment.yes { background: #4ade80; border-color: #4ade80; }
+    .profile-segment.no { background: #64748b; border-color: #64748b; }
+    .profile-segment.partial { background: #fbbf24; border-color: #fbbf24; }
+    .profile-labels { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 5px; color: var(--muted); font-size: 10px; }
+    .profile-labels span { overflow-wrap: anywhere; }
+    .profile-evidence { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; font-size: 12px; }
+    .profile-evidence summary { color: var(--link); cursor: pointer; }
+    .profile-evidence ul { list-style: none; padding: 0; margin: 10px 0 0; }
+    .profile-evidence li { padding: 5px 0; line-height: 1.4; }
+    .profile-evidence a { color: var(--link); }
+    .profile-status { font-weight: 700; text-transform: capitalize; }
+    .profile-status.yes { color: #4ade80; }
+    .profile-status.partial { color: #fbbf24; }
+    .profile-status.no, .profile-status.unknown { color: var(--muted); }
+    @media (max-width: 760px) { .profiles-grid { grid-template-columns: 1fr; } }
+
     /* ── Custom tooltip ─────────────────────────────────────────────── */
     #col-tip {
       position: fixed;
@@ -1414,6 +1443,7 @@
   <!-- Tabs -->
   <nav class="tab-nav" aria-label="Leaderboard views">
     <button class="tab-btn active" data-tab="wer"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M5 6H3v2a4 4 0 0 0 4 4M19 6h2v2a4 4 0 0 1-4 4"/></svg>Leaderboard</button>
+    <button class="tab-btn" data-tab="profiles"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Openness &amp; Features</button>
     <button class="tab-btn" data-tab="analysis"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg>Pareto</button>
     <button class="tab-btn" data-tab="time"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Over Time</button>
     <button class="tab-btn" data-tab="methodology"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Methodology</button>
@@ -1446,6 +1476,16 @@
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
     </p>
+  </div>
+
+  <!-- Evidence-backed disclosures, kept separate from benchmark scores. -->
+  <div id="tab-profiles" class="tab-pane">
+    <p class="profiles-intro">Five openness signals: publicly available training data and code, a model-specific paper or report, a complete model card, and a license permitting commercial use and redistribution. The count includes confirmed positives only; weight access is shown separately. Hub tags can suggest data and paper links, but their relevance still needs review. Feature support is recorded separately. Unknown means unreviewed.</p>
+    <div class="toolbar">
+      <div class="search-wrap"><input type="search" id="search-profiles" class="search" placeholder="Filter models…" aria-label="Filter model profiles"></div>
+      <span id="count-profiles" class="count"></span>
+    </div>
+    <div id="profiles-grid" class="profiles-grid"></div>
   </div>
 
   <!-- Analysis tab -->
@@ -1878,6 +1918,103 @@ let openOnly = false;   // hide hosted/API (proprietary) models — opt-in
 // visible set rather than leaving gaps.
 function visible(rows) {
   return openOnly ? rows.filter(r => r.access !== 'proprietary') : [...rows];
+}
+
+const PROFILE_GROUPS = [
+  {key: 'openness', title: 'Openness', count: 'openness_score',
+   fields: [['data', 'Open data'], ['code', 'Open code'], ['paper', 'Paper'],
+            ['model_card', 'Model card'], ['license', 'License']]},
+  {key: 'features', title: 'Features', count: 'feature_count',
+   fields: [['punctuation_case', 'Punc. & case'], ['timestamps', 'Timestamps'],
+            ['diarization', 'Speakers'], ['streaming', 'Streaming']]},
+];
+
+function renderProfiles(rows) {
+  const grid = document.getElementById('profiles-grid');
+  const search = document.getElementById('search-profiles');
+  const draw = () => {
+    const q = search.value.trim().toLocaleLowerCase();
+    const matches = rows.filter(row => row.name.toLocaleLowerCase().includes(q));
+    document.getElementById('count-profiles').textContent = `${matches.length} model${matches.length === 1 ? '' : 's'}`;
+    grid.replaceChildren();
+    for (const row of matches) {
+      const profile = row.profile || {};
+      const card = document.createElement('article');
+      card.className = 'profile-card';
+      const head = document.createElement('div');
+      head.className = 'profile-head';
+      const name = document.createElement(row.url ? 'a' : 'strong');
+      name.textContent = row.name;
+      if (row.url) { name.href = row.url; name.target = '_blank'; name.rel = 'noopener noreferrer'; }
+      const wer = document.createElement('span');
+      wer.className = 'profile-wer';
+      wer.textContent = row.mean_wer == null ? '' : `${row.mean_wer.toFixed(2)} WER`;
+      head.append(name, wer);
+      card.appendChild(head);
+      const access = document.createElement('div');
+      access.className = 'profile-access';
+      access.textContent = row.access === 'open' ? 'Open-weight model' : 'Hosted API';
+      card.appendChild(access);
+      const evidence = document.createElement('details');
+      evidence.className = 'profile-evidence';
+      const summary = document.createElement('summary');
+      summary.textContent = 'Status & evidence';
+      evidence.appendChild(summary);
+      const list = document.createElement('ul');
+      for (const group of PROFILE_GROUPS) {
+        const items = profile[group.key] || {};
+        const section = document.createElement('div');
+        section.className = 'profile-group';
+        const sectionHead = document.createElement('div');
+        sectionHead.className = 'profile-group-head';
+        const title = document.createElement('span');
+        title.textContent = group.title;
+        const count = document.createElement('span');
+        count.textContent = `${profile[group.count] || 0}/${group.fields.length} confirmed`;
+        sectionHead.append(title, count);
+        section.appendChild(sectionHead);
+        const segments = document.createElement('div');
+        segments.className = 'profile-segments';
+        const labels = document.createElement('div');
+        labels.className = 'profile-labels';
+        segments.style.setProperty('--segment-count', group.fields.length);
+        labels.style.setProperty('--segment-count', group.fields.length);
+        for (const [key, label] of group.fields) {
+          const item = items[key] || {state: 'unknown', detail: 'Not reviewed'};
+          const segment = document.createElement('span');
+          segment.className = `profile-segment ${item.state}`;
+          segment.title = `${label}: ${item.state}`;
+          segments.appendChild(segment);
+          const caption = document.createElement('span');
+          caption.textContent = label;
+          labels.appendChild(caption);
+          const li = document.createElement('li');
+          const status = document.createElement('span');
+          status.className = `profile-status ${item.state}`;
+          status.textContent = `${label}: ${item.state}`;
+          li.appendChild(status);
+          if (item.detail) li.append(` — ${item.detail}`);
+          if (item.suggestion && !item.reviewed) li.append(' (review candidate)');
+          if (item.url && item.url.startsWith('https://')) {
+            const source = document.createElement('a');
+            source.href = item.url;
+            source.target = '_blank';
+            source.rel = 'noopener noreferrer';
+            source.textContent = ' Source ↗';
+            li.appendChild(source);
+          }
+          list.appendChild(li);
+        }
+        section.append(segments, labels);
+        card.appendChild(section);
+      }
+      evidence.appendChild(list);
+      card.appendChild(evidence);
+      grid.appendChild(card);
+    }
+  };
+  search.addEventListener('input', draw);
+  draw();
 }
 
 const ANALYSIS_PANEL_HEIGHT = 430;
@@ -3438,6 +3575,7 @@ async function init() {
     };
     setChip('models', data.wer.length);
     setChip('datasets', WER_DS_COLS.length);
+    renderProfiles(data.wer);
 
     const maxVals = {
       wer: Math.max(...data.wer.map(r => r.mean_wer || 0)),
