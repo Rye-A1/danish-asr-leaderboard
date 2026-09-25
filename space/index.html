@@ -1151,10 +1151,10 @@
         tbody td[data-key="model"] a.scrolls .m-name-inner { animation: none; }
       }
 
-      /* Openness and features stay visible just below the model identity. */
+      /* Openness and features follow the headline numbers on mobile too. */
       tbody tr td[data-key="openness_score"],
       tbody tr td[data-key="feature_count"] {
-        order: 2;
+        order: 5;
         flex: 1 1 calc(50% - 3px);
         min-width: 0;
       }
@@ -2125,10 +2125,6 @@ const WER_COLS = [
     tip:'Rank by the selected method (Mean WER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',         cls:'c-model',
     tip:'Click to open the model on Hugging Face (opens in new tab).' },
-  { key:'openness_score',          label:'Openness',      cls:'c-profile',
-    tip:'Confirmed open training data, training code, model-specific paper, complete model card, and open license. Hover or tap for evidence.' },
-  { key:'feature_count',           label:'Features',      cls:'c-profile',
-    tip:'Confirmed punctuation and case, timestamps, diarization, and streaming support. Hover or tap for evidence.' },
   { key:'mean_wer',               label:'Mean WER ↓',
     tip:'Word Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_cer',               label:'Mean CER ↓',
@@ -2139,6 +2135,10 @@ const WER_COLS = [
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
+  { key:'openness_score',          label:'Openness',      cls:'c-profile',
+    tip:'Confirmed open training data, training code, model-specific paper, complete model card, and open license. Hover or tap for evidence.' },
+  { key:'feature_count',           label:'Features',      cls:'c-profile',
+    tip:'Confirmed punctuation and case, timestamps, diarization, and streaming support. Hover or tap for evidence.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
     tip:'WER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_wer',    label:'CoRal Read',
@@ -2158,10 +2158,6 @@ const CER_COLS = [
     tip:'Rank by the selected method (Mean CER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',          cls:'c-model',
     tip:'Click to open the model on Hugging Face (opens in new tab).' },
-  { key:'openness_score',          label:'Openness',       cls:'c-profile',
-    tip:'Confirmed open training data, training code, model-specific paper, complete model card, and open license. Hover or tap for evidence.' },
-  { key:'feature_count',           label:'Features',       cls:'c-profile',
-    tip:'Confirmed punctuation and case, timestamps, diarization, and streaming support. Hover or tap for evidence.' },
   { key:'mean_cer',               label:'Mean CER ↓',
     tip:'Character Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_wer',               label:'Mean WER ↓',
@@ -2172,6 +2168,10 @@ const CER_COLS = [
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
+  { key:'openness_score',          label:'Openness',       cls:'c-profile',
+    tip:'Confirmed open training data, training code, model-specific paper, complete model card, and open license. Hover or tap for evidence.' },
+  { key:'feature_count',           label:'Features',       cls:'c-profile',
+    tip:'Confirmed punctuation and case, timestamps, diarization, and streaming support. Hover or tap for evidence.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',
     tip:'CER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_cer',    label:'CoRal Read',
