@@ -67,6 +67,7 @@ azure-openai   = ["openai>=1.0.0"]
 ordbogen       = ["openai>=1.0.0"]
 google-chirp   = ["google-cloud-speech>=2.26.0"]
 soniox         = ["soniox>=0.1.0"]
+syv            = ["openai>=1.0.0"]
 dev            = ["pytest>=8.0"]
 
 [dependency-groups]
