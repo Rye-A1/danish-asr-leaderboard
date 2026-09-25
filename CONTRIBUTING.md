@@ -51,9 +51,10 @@ run the harness as-is.
 
 ## Model openness and feature profiles
 
-The leaderboard's **Openness & Features** view reads
+The leaderboard's **Openness** and **Features** columns read
 `scripts/model_profiles.json`. A profile is optional; unreviewed fields display
-as unknown. Add a source URL for each confirmed `yes` claim. The five openness
+as unknown. Hover, focus, or tap a column value to see the status map and source
+links. Add a source URL for each confirmed `yes` claim. The five openness
 fields are:
 
 | Field | What a `yes` means |
