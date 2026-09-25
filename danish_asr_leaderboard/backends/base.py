@@ -49,6 +49,10 @@ class LoadOptions:
     ordbogen_base_url: str | None = None
     ordbogen_rpm: int = 110
     ordbogen_concurrency: int = 8
+    # syv.ai (OpenAI-compatible)
+    syv_api_key: str | None = None
+    syv_concurrency: int = 8
+    syv_cache: str | None = None
 
 
 class Backend(ABC):

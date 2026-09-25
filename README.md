@@ -59,7 +59,7 @@ uv pip install -e ".[soniox]"
 
 Available extras match the `--backend` names: `transformers`, `wav2vec2`,
 `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `voxtral`, `danstral`, `seamless`, `cohere-asr`,
-`vibevoice`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`.
+`vibevoice`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`, `syv`.
 
 > **NeMo note:** install `nemo_toolkit[asr]` *first* to avoid
 > dependency-resolver conflicts: `uv pip install "nemo_toolkit[asr]"` then
@@ -151,7 +151,7 @@ per-API credentials, `--access open|proprietary`, …). Available backends:
 
 `transformers`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`,
 `voxtral`, `danstral`, `seamless`, `cohere-asr`, `vibevoice`, `elevenlabs`, `azure-openai`,
-`google-chirp`, `soniox`.
+`google-chirp`, `soniox`, `syv`.
 
 Each run writes `results/<model-slug>.json` with per-dataset WER/CER, the core
 means, speed, and metadata. It also persists the **raw, un-normalised** per-sample
