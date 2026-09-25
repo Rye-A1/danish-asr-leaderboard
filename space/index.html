@@ -595,11 +595,17 @@
     }
     .profile-segment {
       width: min(100%, 22px); aspect-ratio: 1; justify-self: center;
-      border-radius: 4px;
+      display: grid; place-items: center; border-radius: 4px;
       background: color-mix(in srgb, var(--link) 10%, var(--border));
     }
     .profile-segment.yes { background: var(--link); }
+    .profile-icon { width: 12px; height: 12px; color: var(--link); opacity: .8; }
+    .profile-segment.yes .profile-icon { color: #10233e; opacity: .9; }
     .profile-trigger .profile-segment { width: var(--tile-size, 16px); }
+    .profile-trigger .profile-icon { width: calc(var(--tile-size, 16px) - 4px); height: calc(var(--tile-size, 16px) - 4px); }
+    @media (prefers-color-scheme: light) {
+      .profile-segment.yes .profile-icon { color: #fff; }
+    }
     .profile-popover {
       display: none; position: fixed; z-index: 10000; width: min(380px, calc(100vw - 24px));
       max-height: min(70vh, 520px); overflow: auto; padding: 16px;
@@ -612,6 +618,7 @@
     .profile-popover .profile-group-head span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
     .profile-popover .profile-segments { margin-top: 10px; }
     .profile-popover .profile-segment { width: 26px; }
+    .profile-popover .profile-icon { width: 16px; height: 16px; }
     .profile-labels { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 4px; color: var(--muted); font-size: 10px; margin-top: 5px; }
     .profile-labels span { overflow-wrap: anywhere; }
     .profile-evidence { list-style: none; padding: 8px 0 0; margin: 10px 0 0; border-top: 1px solid var(--border); font-size: 12px; }
@@ -1951,6 +1958,44 @@ const PROFILE_GROUPS = [
             ['diarization', 'Speakers'], ['streaming', 'Streaming']]},
 ];
 
+// A small, consistent glyph for each signal, visible in both the table and its evidence map.
+const PROFILE_ICON_PATHS = {
+  data: ['M13 3.5c0 1.1-2.2 2-5 2s-5-.9-5-2 2.2-2 5-2 5 .9 5 2Z',
+         'M3 3.5v4c0 1.1 2.2 2 5 2s5-.9 5-2v-4',
+         'M3 7.5v4c0 1.1 2.2 2 5 2s5-.9 5-2v-4'],
+  code: ['M5.5 4.5 2 8l3.5 3.5', 'M10.5 4.5 14 8l-3.5 3.5', 'M9.5 3.5l-3 9'],
+  model_card: ['M4 1.75h5l3 3v9.5H4a1 1 0 0 1-1-1V2.75a1 1 0 0 1 1-1Z',
+               'M9 1.75v3h3', 'M5.5 8h5', 'M5.5 10.5h4'],
+  license: ['M7 2H3a1 1 0 0 0-1 1v4.5l6.5 6.5a1 1 0 0 0 1.4 0L14 9.9a1 1 0 0 0 0-1.4L7 2Z',
+            'M5.5 5.5h.01'],
+  punctuation_case: ['M2 12.5 5.5 3.5 9 12.5', 'M3.1 10h4.8', 'M12.5 12.5h.01'],
+  timestamps: ['M13.5 8a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0Z', 'M8 4.5v3.8l2.5 1.6'],
+  diarization: ['M8 5a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z',
+                'M12.9 5.5a1.6 1.6 0 1 1-3.2 0 1.6 1.6 0 0 1 3.2 0Z',
+                'M1.8 13v-1c0-2.2 1.9-3.5 4.2-3.5s4.2 1.3 4.2 3.5v1H1.8Z',
+                'M11 9c1.8 0 3.2 1 3.2 2.7V13H12'],
+  streaming: ['M8 11.5h.01', 'M5.5 9a3.5 3.5 0 0 1 5 0', 'M3.3 6.7a6.5 6.5 0 0 1 9.4 0'],
+};
+
+function profileIcon(key) {
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.classList.add('profile-icon');
+  svg.setAttribute('viewBox', '0 0 16 16');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', '1.5');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
+  svg.setAttribute('aria-hidden', 'true');
+  for (const d of PROFILE_ICON_PATHS[key] || []) {
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', d);
+    svg.appendChild(path);
+  }
+  return svg;
+}
+
 const PROFILE_POPOVER = document.getElementById('profile-popover');
 let profileTrigger = null;
 let profilePinned = false;
@@ -1967,6 +2012,7 @@ function profileSegments(items, group, withLabels = false) {
     const segment = document.createElement('span');
     segment.className = `profile-segment ${item.state}`;
     segment.title = `${label}: ${item.state}`;
+    segment.appendChild(profileIcon(key));
     segments.appendChild(segment);
   }
   if (!withLabels) return [segments];
