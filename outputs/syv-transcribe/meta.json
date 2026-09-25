@@ -1,0 +1,18 @@
+{
+  "model": "syv-transcribe",
+  "model_link": "[syv-transcribe](https://syv.ai)",
+  "params_b": 2.047,
+  "access": "proprietary",
+  "submitted": "2026-09-25",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 15.7,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}
