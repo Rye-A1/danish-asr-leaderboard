@@ -1499,6 +1499,7 @@
         <span><i class="legend-dot" style="background:var(--accent)"></i>Open weights</span>
         <span><i class="legend-dot" style="background:#94a3b8"></i>Proprietary API</span>
         <span><i class="legend-line"></i>Best at date</span>
+        <span>Models with mean WER &gt; 50% are excluded.</span>
       </div>
       <div class="chart-with-panel">
         <div id="time-chart-wrap-time" class="chart-plot-wrap">
@@ -3460,7 +3461,8 @@ async function init() {
     function applyTime(metric = timeMetric) {
       timeMetric = metric;
       const isWer = metric === 'wer';
-      const rows = isWer ? visible(data.wer) : visible(data.cer);
+      const rows = (isWer ? visible(data.wer) : visible(data.cer))
+        .filter(r => r.mean_wer == null || r.mean_wer <= 50);
       document.getElementById('tog-time-wer').classList.toggle('active', isWer);
       document.getElementById('tog-time-cer').classList.toggle('active', !isWer);
       document.getElementById('time-chart-title').textContent =
