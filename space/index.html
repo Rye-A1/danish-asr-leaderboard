@@ -577,7 +577,7 @@
 
     /* Compact profile signals live in the leaderboard; the full evidence map
        floats outside the scrolling table so links and labels stay readable. */
-    .c-profile { width: 98px; min-width: 98px; }
+    .c-profile { width: 116px; min-width: 116px; }
     .profile-trigger {
       display: flex; flex-direction: column; justify-content: center; width: 100%;
       min-height: 32px; padding: 5px 7px; border: 1px solid transparent; border-radius: 7px;
@@ -589,10 +589,15 @@
     .profile-compact-label { display: none; }
     .profile-segments { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 4px; }
     .profile-trigger .profile-segments { width: 100%; }
-    .profile-segment { height: 6px; border-radius: 4px; border: 1px solid var(--border); background: transparent; }
-    .profile-segment.yes { background: #4ade80; border-color: #4ade80; }
-    .profile-segment.no { background: #64748b; border-color: #64748b; }
-    .profile-segment.partial { background: #fbbf24; border-color: #fbbf24; }
+    .profile-segment {
+      width: min(100%, 22px); aspect-ratio: 1; justify-self: center;
+      border-radius: 2px;
+      border: 1px solid color-mix(in srgb, var(--link) 38%, var(--border));
+      background: linear-gradient(180deg,
+        color-mix(in srgb, var(--link) 42%, var(--surf)),
+        color-mix(in srgb, var(--link) 8%, var(--surf)));
+    }
+    .profile-segment.yes { background: var(--link); border-color: var(--link); }
     .profile-popover {
       display: none; position: fixed; z-index: 10000; width: min(380px, calc(100vw - 24px));
       max-height: min(70vh, 520px); overflow: auto; padding: 16px;
@@ -604,13 +609,14 @@
     .profile-popover .profile-group-head { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 700; }
     .profile-popover .profile-group-head span:last-child { color: var(--muted); font-variant-numeric: tabular-nums; }
     .profile-popover .profile-segments { margin-top: 10px; }
+    .profile-popover .profile-segment { width: 26px; }
     .profile-labels { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 4px; color: var(--muted); font-size: 10px; margin-top: 5px; }
     .profile-labels span { overflow-wrap: anywhere; }
     .profile-evidence { list-style: none; padding: 8px 0 0; margin: 10px 0 0; border-top: 1px solid var(--border); font-size: 12px; }
     .profile-evidence li { padding: 5px 0; line-height: 1.4; }
     .profile-evidence a { color: var(--link); }
     .profile-status { font-weight: 700; text-transform: capitalize; }
-    .profile-status.yes { color: #4ade80; }
+    .profile-status.yes { color: var(--link); }
     .profile-status.partial { color: #fbbf24; }
     .profile-status.no, .profile-status.unknown { color: var(--muted); }
 
@@ -1494,7 +1500,7 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
-      Openness and Features show individual signals. Green means confirmed, grey means no, amber means partial, and an outline means unreviewed. Hover, focus, or tap a cell for the full map and evidence.
+      Openness and Features show individual signals. Strong blue means confirmed; pale blue means not confirmed, including unreviewed signals. Hover, focus, or tap a cell for each status and its evidence.
     </p>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
