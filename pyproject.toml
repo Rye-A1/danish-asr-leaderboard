@@ -55,6 +55,8 @@ saga2          = ["torch>=2.4", "transformers>=4.51,<5", "librosa>=0.10",
 hviske-v6      = ["torch>=2.4", "transformers>=4.51,<5", "librosa>=0.10",
                   "soundfile>=0.12.1", "safetensors", "huggingface_hub>=0.30"]
 nemo           = ["torch>=2.0.0", "nemo_toolkit[asr]>=2.4.0"]
+# nvidia/nemotron-3.5-asr-*: native transformers port, no NeMo needed.
+nemotron-asr   = ["torch>=2.0.0", "transformers>=5.13.0", "librosa>=0.10", "soundfile>=0.12.1"]
 voxtral        = ["torch>=2.0.0", "transformers>=4.54.0", "mistral-common[audio]>=1.8.1"]
 # hinge/danstral-v1: LoRA on Voxtral-Small with a CoRal Whisper encoder swapped in.
 danstral       = ["torch>=2.0.0", "transformers>=4.54.0", "mistral-common[audio]>=1.8.1",

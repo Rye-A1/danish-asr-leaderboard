@@ -1,0 +1,19 @@
+{
+  "model": "[nvidia/nemotron-3.5-asr-streaming-0.6b](https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b)",
+  "params_b": 0.638,
+  "coral_conversation_wer": 68.87,
+  "coral_read_aloud_wer": 52.6,
+  "cv17_da_wer": null,
+  "fleurs_da_wer": 28.59,
+  "ftspeech_wer": 30.84,
+  "mean_wer": 45.23,
+  "coral_conversation_cer": 50.36,
+  "coral_read_aloud_cer": 24.53,
+  "cv17_da_cer": null,
+  "fleurs_da_cer": 10.57,
+  "ftspeech_cer": 15.36,
+  "mean_cer": 25.21,
+  "speed_x": 157.1,
+  "submitted": "2026-09-25",
+  "access": "open"
+}
