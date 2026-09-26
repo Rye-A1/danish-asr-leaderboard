@@ -628,7 +628,6 @@
     .profile-map li.no, .profile-map li.unknown { color: var(--muted); }
     .profile-map a { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
     .profile-map a:hover, .profile-map a:focus-visible { color: var(--link); text-decoration: underline; }
-    .profile-note { margin-top: 16px; padding-top: 10px; border-top: 1px solid var(--border); color: var(--muted); font-size: 11px; }
 
     /* ── Custom tooltip ─────────────────────────────────────────────── */
     #col-tip {
@@ -1952,19 +1951,12 @@ function visible(rows) {
 
 const PROFILE_GROUPS = [
   {key: 'openness', title: 'Openness', count: 'openness_score',
-   fields: [['weights', 'Weights'], ['license', 'License'],
+   fields: [['weights', 'Open weights'], ['license', 'Open license'],
             ['data', 'Training data'], ['paper', 'Paper']]},
   {key: 'features', title: 'Features', count: 'feature_count',
-   fields: [['punctuation_case', 'Punc. + case'], ['timestamps', 'Timestamps'],
+   fields: [['punctuation_case', 'Formatting'], ['timestamps', 'Timestamps'],
             ['diarization', 'Speakers'], ['streaming', 'Streaming']]},
 ];
-const PROFILE_DETAIL_FIELDS = {
-  openness: [['weights', 'Open weights'], ['license', 'Open license'],
-             ['data', 'Training data'], ['paper', 'Paper'],
-             ['code', 'Training code'], ['model_card', 'Model card']],
-  features: [['punctuation_case', 'Formatting'], ['timestamps', 'Timestamps'],
-             ['diarization', 'Speakers'], ['streaming', 'Streaming']],
-};
 const PROFILE_STATUS = {
   yes: {mark: '✓', label: 'Confirmed'},
   partial: {mark: '◐', label: 'Partial'},
@@ -2043,7 +2035,7 @@ function showProfilePopover(trigger, row, group, pin = false) {
   summary.append(profileSegments(items, group), tally);
   const list = document.createElement('ul');
   list.className = 'profile-map';
-  for (const [key, label] of PROFILE_DETAIL_FIELDS[group.key]) {
+  for (const [key, label] of group.fields) {
     const item = items[key] || {state: 'unknown'};
     const state = PROFILE_STATUS[item.state] ? item.state : 'unknown';
     const li = document.createElement('li');
@@ -2065,12 +2057,6 @@ function showProfilePopover(trigger, row, group, pin = false) {
     list.appendChild(li);
   }
   PROFILE_POPOVER.append(heading, summary, list);
-  if (group.key === 'openness') {
-    const note = document.createElement('p');
-    note.className = 'profile-note';
-    note.textContent = 'Training code and model card are unscored.';
-    PROFILE_POPOVER.appendChild(note);
-  }
   PROFILE_POPOVER.classList.add('show');
 
   const rect = trigger.getBoundingClientRect();
