@@ -1,0 +1,18 @@
+{
+  "model": "nvidia/nemotron-3.5-asr-streaming-0.6b",
+  "model_link": "[nvidia/nemotron-3.5-asr-streaming-0.6b](https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b)",
+  "params_b": 0.638,
+  "access": "open",
+  "submitted": "2026-09-26",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 176.1,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}

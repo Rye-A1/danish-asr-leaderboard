@@ -171,5 +171,9 @@
   "thorhojhus/whisper-small-danish": {
     "released": "2026-09-14",
     "source": "huggingface"
+  },
+  "nvidia/nemotron-3.5-asr-streaming-0.6b": {
+    "released": "2026-05-15",
+    "source": "huggingface"
   }
 }
