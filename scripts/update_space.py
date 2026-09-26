@@ -37,6 +37,7 @@ DATASET_PARQUET = "hf://datasets/RyeAI/danish-asr-leaderboard/data/results.parqu
 DATASET_CI_JSON = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/resolve/main/data/ci.json"
 DATASET_DOWNLOAD_HISTORY_JSON = "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/resolve/main/data/hf_downloads.json"
 SPACE_DIR = Path(__file__).resolve().parent.parent / "space"
+RESULTS_DIR = SPACE_DIR.parent / "results"
 DOWNLOAD_HISTORY_PATH = Path(__file__).resolve().parent.parent / "history" / "hf_downloads.json"
 DOWNLOAD_HISTORY_WINDOW = 90
 
@@ -158,6 +159,15 @@ def _bootstrap_cis() -> dict:
 def _slugify(model_id: str) -> str:
     """Match danish_asr_leaderboard.results.slugify (outputs/ file naming)."""
     return re.sub(r"[^a-zA-Z0-9_-]", "__", model_id.strip("/"))
+
+
+@functools.lru_cache(maxsize=256)
+def _score_history(model_id: str) -> list[dict]:
+    """Older dated evaluations from the model's result JSON, if present."""
+    path = RESULTS_DIR / f"{_slugify(model_id)}.json"
+    if not path.exists():
+        return []
+    return json.loads(path.read_text(encoding="utf-8")).get("history", [])
 
 
 @functools.lru_cache(maxsize=256)
@@ -412,6 +422,8 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 url = docs
                 logo = _api_logo(name)
             submitted = row.get("submitted")
+            submitted_date = str(submitted)[:10] if pd.notna(submitted) else ""
+            plot_by_submission = RELEASE_DATES.get(name, {}).get("plot_by") == "submitted"
             entry: dict = {
                 "rank": rank,
                 "name": name,
@@ -424,10 +436,12 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "hf_downloads": _model_downloads(name) if is_repo else None,
                 "hf_download_history": list(_model_download_history(name)) if is_repo else [],
                 "size": _official_size(name, row.get("params_b")),
-                "submitted": str(submitted)[:10] if pd.notna(submitted) else "",
-                # Powers the Over Time chart. Distinct from "submitted", which
-                # is when *we* evaluated the model, not when it came out.
-                "released": _release_date(name),
+                "submitted": submitted_date,
+                "history": _score_history(name),
+                # A mutable API is plotted at each score's evaluation date;
+                # release_dates.json retains its actual service launch date.
+                "released": submitted_date if plot_by_submission else _release_date(name),
+                "date_basis": "score" if plot_by_submission else "release",
             }
             for col in metric_cols:
                 entry[col] = _num(row.get(col))

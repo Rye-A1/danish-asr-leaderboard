@@ -162,6 +162,26 @@ def test_leaderboard_json_includes_hf_downloads(monkeypatch):
         assert by_name["hosted-api-model"]["hf_downloads"] is None
 
 
+def test_syv_history_keeps_one_current_leaderboard_row(monkeypatch):
+    import update_space
+
+    monkeypatch.setattr(update_space, "_bootstrap_cis", lambda: {})
+    current = json.loads((Path(__file__).resolve().parent.parent
+                          / "results/syv-transcribe.json").read_text(encoding="utf-8"))
+    data = build_leaderboard_json(pd.DataFrame([current]))
+    assert _release_date("syv-transcribe") == "2026-06-24"
+
+    for table in ("wer", "cer"):
+        assert len(data[table]) == 1
+        row = data[table][0]
+        assert row["mean_wer"] == 9.79
+        assert row["released"] == "2026-09-25"
+        assert row["date_basis"] == "score"
+        assert [(h["submitted"], h["mean_wer"]) for h in row["history"]] == [
+            ("2026-06-23", 10.97)
+        ]
+
+
 def test_download_series_preserves_missing_snapshots():
     history = {
         "snapshots": [

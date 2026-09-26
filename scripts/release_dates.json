@@ -137,7 +137,8 @@
   "syv-transcribe": {
     "released": "2026-06-24",
     "source": "confirmed",
-    "note": "syv.ai publishes no release date and there is no HF repo; this date is confirmed rather than inferred."
+    "plot_by": "submitted",
+    "note": "The service launched on 2026-06-24. The Over Time chart plots each evaluated score on its submission date."
   },
   "syvai/hviske-v3-conversation": {
     "released": "2025-07-01",
