@@ -1,0 +1,18 @@
+{
+  "model": "danish-foundation-models/edda-v0.1",
+  "model_link": "[danish-foundation-models/edda-v0.1](https://huggingface.co/danish-foundation-models/edda-v0.1)",
+  "params_b": 0.809,
+  "access": "open",
+  "submitted": "2026-09-24",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 18.6,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}
