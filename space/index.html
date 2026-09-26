@@ -700,6 +700,29 @@
     }
     .tog-btn.active { background: var(--surf2); color: var(--text); }
     .tog-btn:hover:not(.active) { color: var(--text); }
+    .size-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 9px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surf);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .size-filter select {
+      max-width: 140px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .size-filter select:focus-visible { outline: 2px solid var(--link); }
 
     /* ── Rank delta cell ────────────────────────────────────────────── */
     .delta-up { color: #4ade80; font-weight: 700; }
@@ -1441,6 +1464,18 @@
       </div>
       <button class="ci-btn" id="tog-ci-wer" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
       <button class="ci-btn" id="tog-open-wer" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. Ranks renumber within the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <label class="size-filter" title="Models without a published parameter count are hidden when a size limit is selected.">Max size
+        <select id="size-wer" aria-label="Maximum model size">
+          <option value="">All sizes</option>
+          <option value="0.1">≤ 0.1B</option>
+          <option value="0.5">≤ 0.5B</option>
+          <option value="1">≤ 1B</option>
+          <option value="2">≤ 2B</option>
+          <option value="3">≤ 3B</option>
+          <option value="5">≤ 5B</option>
+          <option value="10">≤ 10B</option>
+        </select>
+      </label>
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
@@ -1464,6 +1499,18 @@
       </div>
       <button class="ci-btn" id="tog-ci-analysis" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
       <button class="ci-btn" id="tog-open-analysis" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. The frontier is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <label class="size-filter" title="Models without a published parameter count are hidden when a size limit is selected.">Max size
+        <select id="size-analysis" aria-label="Maximum model size">
+          <option value="">All sizes</option>
+          <option value="0.1">≤ 0.1B</option>
+          <option value="0.5">≤ 0.5B</option>
+          <option value="1">≤ 1B</option>
+          <option value="2">≤ 2B</option>
+          <option value="3">≤ 3B</option>
+          <option value="5">≤ 5B</option>
+          <option value="10">≤ 10B</option>
+        </select>
+      </label>
     </div>
     <div class="chart-section" style="margin-top:0">
       <h3 id="analysis-chart-title">Performance vs. Model Size</h3>
@@ -1492,6 +1539,18 @@
       </div>
       <button class="ci-btn" id="tog-ci-time" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
       <button class="ci-btn" id="tog-open-time" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. The best-so-far line is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <label class="size-filter" title="Models without a published parameter count are hidden when a size limit is selected.">Max size
+        <select id="size-time" aria-label="Maximum model size">
+          <option value="">All sizes</option>
+          <option value="0.1">≤ 0.1B</option>
+          <option value="0.5">≤ 0.5B</option>
+          <option value="1">≤ 1B</option>
+          <option value="2">≤ 2B</option>
+          <option value="3">≤ 3B</option>
+          <option value="5">≤ 5B</option>
+          <option value="10">≤ 10B</option>
+        </select>
+      </label>
     </div>
     <div class="chart-section" style="margin-top:0">
       <h3 id="time-chart-title">Performance Over Time</h3>
@@ -1873,12 +1932,17 @@
 const MEDALS = ['🥇','🥈','🥉'];
 let showCI = false;
 let openOnly = false;   // hide hosted/API (proprietary) models — opt-in
+let maxSizeB = null;    // billions of parameters; null includes unknown sizes
 
-// Rows for a tab, honouring the open-weights filter. Filtering happens before
-// ranks are assigned in applyWer/applyCer, so ranks renumber 1..N within the
-// visible set rather than leaving gaps.
+// Rows for a tab, honouring the shared access and size filters. A size limit
+// excludes unknown sizes because their position relative to the limit is unknown.
 function visible(rows) {
-  return openOnly ? rows.filter(r => r.access !== 'proprietary') : [...rows];
+  return rows.filter(r => {
+    if (openOnly && r.access === 'proprietary') return false;
+    if (maxSizeB == null) return true;
+    const size = parseFloat(r.size);
+    return Number.isFinite(size) && size <= maxSizeB;
+  });
 }
 
 const ANALYSIS_PANEL_HEIGHT = 430;
@@ -2295,6 +2359,7 @@ function initFilterToggles() {
         const active = togs.find(b => b.classList.contains('active'));
         if (active && togs.indexOf(active) > 0) n++;
       });
+      if (bar.querySelector('.size-filter select')?.value) n++;
       return n;
     };
 
@@ -3614,6 +3679,21 @@ async function init() {
       if (b) b.addEventListener('click', toggleOpen);
     });
     syncOpenBtns();
+
+    /* Maximum model size, shared across all three views. */
+    const SIZE_SELECTS = ['size-wer', 'size-analysis', 'size-time'];
+    SIZE_SELECTS.forEach(id => {
+      document.getElementById(id).addEventListener('change', e => {
+        maxSizeB = e.target.value ? Number(e.target.value) : null;
+        SIZE_SELECTS.forEach(otherId => {
+          const other = document.getElementById(otherId);
+          other.value = e.target.value;
+          other.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        applyWer();
+        applyCer();
+      });
+    });
 
     /* Last updated */
     if (data.updated) {
