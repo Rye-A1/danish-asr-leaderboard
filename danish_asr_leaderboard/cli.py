@@ -19,7 +19,7 @@ from danish_asr_leaderboard.results import (
 )
 from danish_asr_leaderboard.scoring import transcribe_dataset
 
-API_BACKENDS = {"elevenlabs", "azure-openai", "google-chirp", "soniox", "ordbogen"}
+API_BACKENDS = {"elevenlabs", "azure-openai", "google-chirp", "soniox", "ordbogen", "syv"}
 
 
 def _notify(msg: str) -> None:
@@ -102,6 +102,11 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--ordbogen-rpm", type=int, default=110,
                     help="Client-side request pacing (Tier 0 allows 120/min, Tier 1 240/min)")
     ap.add_argument("--ordbogen-concurrency", type=int, default=8)
+    # syv.ai
+    ap.add_argument("--syv-api-key", default=None)
+    ap.add_argument("--syv-concurrency", type=int, default=8)
+    ap.add_argument("--syv-cache", default=None,
+                    help="JSONL of transcripts received; a rerun only requests clips missing from it")
     return ap.parse_args()
 
 
@@ -136,6 +141,10 @@ def _options_from_args(args: argparse.Namespace) -> LoadOptions:
         ordbogen_base_url=args.ordbogen_base_url,
         ordbogen_rpm=args.ordbogen_rpm,
         ordbogen_concurrency=args.ordbogen_concurrency,
+        # syv.ai
+        syv_api_key=args.syv_api_key,
+        syv_concurrency=args.syv_concurrency,
+        syv_cache=args.syv_cache,
     )
 
 

@@ -33,6 +33,7 @@ from danish_asr_leaderboard.backends.api import (  # noqa: F401,E402
     google_chirp,
     ordbogen,
     soniox,
+    syv,
 )
 
 __all__ = [

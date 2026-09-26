@@ -572,7 +572,7 @@
       font-size: 11px;
       font-weight: 600;
     }
-    .badge-open { background: rgba(34,197,94,.15); color: #4ade80; }
+    .badge-open { background: transparent; border: 1px solid var(--border); color: #4ade80; }
     .badge-prop { background: rgba(148,163,184,.12); color: #94a3b8; }
 
     /* ── Custom tooltip ─────────────────────────────────────────────── */
@@ -700,6 +700,29 @@
     }
     .tog-btn.active { background: var(--surf2); color: var(--text); }
     .tog-btn:hover:not(.active) { color: var(--text); }
+    .size-filter {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 34px;
+      padding: 0 9px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surf);
+      color: var(--muted);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .size-filter select {
+      max-width: 140px;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .size-filter select:focus-visible { outline: 2px solid var(--link); }
 
     /* ── Rank delta cell ────────────────────────────────────────────── */
     .delta-up { color: #4ade80; font-weight: 700; }
@@ -786,7 +809,7 @@
     }
     .chart-legend span { display: inline-flex; align-items: center; gap: 6px; }
     .legend-dot { width: 9px; height: 9px; border-radius: 50%; }
-    .legend-line { width: 16px; height: 0; border-top: 2px solid var(--accent); }
+    .legend-line { width: 16px; height: 0; border-top: 2px solid var(--link); }
     .chart-with-panel {
       display: flex;
       gap: 12px;
@@ -1291,7 +1314,7 @@
         .banner-chips-track.scrolls { animation: none; }
       }
 
-      /* Sort control, beside Filters. Sorting otherwise lives on the table
+      /* Sort control, beside Settings. Sorting otherwise lives on the table
          header, which the card layout hides. */
       .sort-wrap {
         display: inline-flex;
@@ -1441,6 +1464,18 @@
       </div>
       <button class="ci-btn" id="tog-ci-wer" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
       <button class="ci-btn" id="tog-open-wer" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. Ranks renumber within the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <label class="size-filter" title="Models without a published parameter count are hidden when a size limit is selected.">Max size
+        <select id="size-wer" aria-label="Maximum model size">
+          <option value="">All sizes</option>
+          <option value="0.1">≤ 0.1B</option>
+          <option value="0.5">≤ 0.5B</option>
+          <option value="1">≤ 1B</option>
+          <option value="2">≤ 2B</option>
+          <option value="3">≤ 3B</option>
+          <option value="5">≤ 5B</option>
+          <option value="10">≤ 10B</option>
+        </select>
+      </label>
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
@@ -1464,6 +1499,18 @@
       </div>
       <button class="ci-btn" id="tog-ci-analysis" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
       <button class="ci-btn" id="tog-open-analysis" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. The frontier is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <label class="size-filter" title="Models without a published parameter count are hidden when a size limit is selected.">Max size
+        <select id="size-analysis" aria-label="Maximum model size">
+          <option value="">All sizes</option>
+          <option value="0.1">≤ 0.1B</option>
+          <option value="0.5">≤ 0.5B</option>
+          <option value="1">≤ 1B</option>
+          <option value="2">≤ 2B</option>
+          <option value="3">≤ 3B</option>
+          <option value="5">≤ 5B</option>
+          <option value="10">≤ 10B</option>
+        </select>
+      </label>
     </div>
     <div class="chart-section" style="margin-top:0">
       <h3 id="analysis-chart-title">Performance vs. Model Size</h3>
@@ -1492,13 +1539,26 @@
       </div>
       <button class="ci-btn" id="tog-ci-time" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
       <button class="ci-btn" id="tog-open-time" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. The best-so-far line is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <label class="size-filter" title="Models without a published parameter count are hidden when a size limit is selected.">Max size
+        <select id="size-time" aria-label="Maximum model size">
+          <option value="">All sizes</option>
+          <option value="0.1">≤ 0.1B</option>
+          <option value="0.5">≤ 0.5B</option>
+          <option value="1">≤ 1B</option>
+          <option value="2">≤ 2B</option>
+          <option value="3">≤ 3B</option>
+          <option value="5">≤ 5B</option>
+          <option value="10">≤ 10B</option>
+        </select>
+      </label>
     </div>
     <div class="chart-section" style="margin-top:0">
       <h3 id="time-chart-title">Performance Over Time</h3>
       <div class="chart-legend">
-        <span><i class="legend-dot" style="background:var(--accent)"></i>Open weights</span>
+        <span><i class="legend-dot" style="background:var(--link)"></i>Open weights</span>
         <span><i class="legend-dot" style="background:#94a3b8"></i>Proprietary API</span>
         <span><i class="legend-line"></i>Best at date</span>
+        <span>Models with mean WER &gt; 50% are excluded.</span>
       </div>
       <div class="chart-with-panel">
         <div id="time-chart-wrap-time" class="chart-plot-wrap">
@@ -1872,12 +1932,17 @@
 const MEDALS = ['🥇','🥈','🥉'];
 let showCI = false;
 let openOnly = false;   // hide hosted/API (proprietary) models — opt-in
+let maxSizeB = null;    // billions of parameters; null includes unknown sizes
 
-// Rows for a tab, honouring the open-weights filter. Filtering happens before
-// ranks are assigned in applyWer/applyCer, so ranks renumber 1..N within the
-// visible set rather than leaving gaps.
+// Rows for a tab, honouring the shared access and size filters. A size limit
+// excludes unknown sizes because their position relative to the limit is unknown.
 function visible(rows) {
-  return openOnly ? rows.filter(r => r.access !== 'proprietary') : [...rows];
+  return rows.filter(r => {
+    if (openOnly && r.access === 'proprietary') return false;
+    if (maxSizeB == null) return true;
+    const size = parseFloat(r.size);
+    return Number.isFinite(size) && size <= maxSizeB;
+  });
 }
 
 const ANALYSIS_PANEL_HEIGHT = 430;
@@ -2275,7 +2340,7 @@ function initFilterToggles() {
     const caret = document.createElement('span');
     const count = document.createElement('span');
     count.className = 'filters-count';
-    btn.append(ICON_FILTER(), 'Filters ', caret, count);
+    btn.append(ICON_FILTER(), 'Settings ', caret, count);
 
     /* Counts the controls that are not at their default, so a collapsed
        toolbar still says whether anything is filtering the table. Within
@@ -2294,6 +2359,7 @@ function initFilterToggles() {
         const active = togs.find(b => b.classList.contains('active'));
         if (active && togs.indexOf(active) > 0) n++;
       });
+      if (bar.querySelector('.size-filter select')?.value) n++;
       return n;
     };
 
@@ -2305,7 +2371,7 @@ function initFilterToggles() {
       count.textContent = n ? String(n) : '';
       btn.classList.toggle('has-filters', n > 0);
       btn.setAttribute('aria-label',
-        n ? 'Filters, ' + n + ' active' : 'Filters');
+        n ? 'Settings, ' + n + ' active' : 'Settings');
     };
 
     btn.addEventListener('click', () => {
@@ -2904,12 +2970,12 @@ function positionChartTip(x, y) {
 
 /* Attach a point on the plot to its row in the side panel: hovering either one
    highlights the point and shows its tooltip, clicking pins it until the next
-   click elsewhere. `points` maps model name → {circ, tipHTML}. */
+   click elsewhere. `points` maps point key → {circ, tipHTML}. */
 function wireChartPanel(panel, points) {
   if (!panel) return;
   const CTIP = document.getElementById('chart-tip');
   panel.querySelectorAll('.pareto-item').forEach(item => {
-    const point = points.get(item.dataset.modelName || '');
+    const point = points.get(item.dataset.pointKey || item.dataset.modelName || '');
     if (!point) return;
 
     const activate = () => {
@@ -2963,7 +3029,7 @@ function updateParetoPanel(pareto, tab, yLbl, method) {
     const item = document.createElement('div');
     item.className = 'pareto-item';
     item.dataset.modelName = p.r.name;
-    const col = p.r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+    const col = p.r.access === 'open' ? 'var(--link)' : '#94a3b8';
     item.innerHTML =
       `<span class="pareto-dot" style="background:${col}"></span>` +
       `<span class="pareto-meta">${p.r.size}B · ${fmt(p.yv)}</span>` +
@@ -3077,7 +3143,7 @@ function _drawChart(rows, method, tab) {
     for (let i = 1; i < pareto.length; i++)
       d += ` V ${sy(pareto[i].yv).toFixed(1)} H ${sx(pareto[i].sz).toFixed(1)}`;
     d += ` H ${ML + cW}`;
-    mk('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': '1.5', opacity: '0.5' }, svgEl);
+    mk('path', { d, fill: 'none', stroke: 'var(--link)', 'stroke-width': '1.5', opacity: '0.5' }, svgEl);
   }
   updateParetoPanel(pareto, tab, yLbl, method);
 
@@ -3096,7 +3162,7 @@ function _drawChart(rows, method, tab) {
         const yt = Math.max(MT, rawYt);
         const yb = Math.min(MT + cH, rawYb);
         if (yb > yt) {
-          const ecol = r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+          const ecol = r.access === 'open' ? 'var(--link)' : '#94a3b8';
           mk('line', { x1: xc, y1: yt, x2: xc, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
           if (rawYt >= MT)    mk('line', { x1: xc-4, y1: yt, x2: xc+4, y2: yt, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
           if (rawYb <= MT+cH) mk('line', { x1: xc-4, y1: yb, x2: xc+4, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
@@ -3110,7 +3176,7 @@ function _drawChart(rows, method, tab) {
 
     const circ = mk('circle', {
       cx: xc, cy: yc, r: '6',
-      fill: r.access === 'open' ? 'var(--accent)' : '#94a3b8',
+      fill: r.access === 'open' ? 'var(--link)' : '#94a3b8',
       stroke: 'var(--bg)', 'stroke-width': '1.5',
       style: 'cursor:pointer',
     }, svgEl);
@@ -3141,13 +3207,9 @@ function renderSizeChart(rows, method, tab = 'wer') {
 }
 
 /* ── Performance-over-time chart ────────────────────────────────
-   Every model plotted at its release date, with a step line through the running
-   best: the Danish ASR state of the art as it actually moved. Release dates
-   come from leaderboard.json (`released`) — HF repo creation for open weights,
-   a curated map for the hosted APIs, both resolved at deploy time in
-   scripts/update_space.py. A model with no published release date carries an
-   empty string and is left off the chart rather than guessed at; the record
-   panel says how many. */
+   Models are plotted at their release date, or at the evaluation date for a
+   changing API. Older evaluated scores come from `history` on a result JSON.
+   A model with no date is left off the chart; the record panel says how many. */
 const DAY_MS = 86400000;
 const MONTHS_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -3205,7 +3267,7 @@ function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
   const yUp = method === 'bt';
   const panel = document.getElementById('record-panel-time');
   if (!panel) return;
-  panel.innerHTML = `<div class="pareto-panel-title" data-tip="Every model that was the best score on this board when it was released, newest first. Each one is a step down in the line on the left.">Record holders <span class="i-icon" aria-hidden="true">i</span></div>`;
+  panel.innerHTML = `<div class="pareto-panel-title" data-tip="Every model that was the best score on this board at its plotted date, newest first. A changing API may use the date of its current score snapshot. Each one is a step down in the line on the left.">Record holders <span class="i-icon" aria-hidden="true">i</span></div>`;
   const footnote = (txt) => {
     const el = document.createElement('p');
     el.style.cssText = 'color:var(--muted);font-size:11px;margin-top:10px;line-height:1.5';
@@ -3219,8 +3281,8 @@ function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
   for (const p of [...records].reverse()) {
     const item = document.createElement('div');
     item.className = 'pareto-item';
-    item.dataset.modelName = p.r.name;
-    const col = p.r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+    item.dataset.pointKey = `${p.r.name}@${p.r.released}`;
+    const col = p.r.access === 'open' ? 'var(--link)' : '#94a3b8';
     item.innerHTML =
       `<span class="pareto-dot" style="background:${col}"></span>` +
       `<span class="pareto-meta">${fmtDate(p.t)} · ${fmt(p.yv)}</span>` +
@@ -3243,6 +3305,8 @@ function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
   if (undated)
     footnote(`${undated} model${undated > 1 ? 's have' : ' has'} no published `
       + `release date and ${undated > 1 ? 'are' : 'is'} not plotted.`);
+  if (method !== 'mean')
+    footnote('Earlier evaluation snapshots are shown with mean WER/CER only.');
 }
 
 function _drawTimeChart(rows, metric, method) {
@@ -3333,19 +3397,20 @@ function _drawTimeChart(rows, metric, method) {
 
   /* ── best-so-far step line ── */
   const records = computeRecords(pts, yUp);
-  const recordSet = new Set(records.map(p => p.r.name));
+  const recordSet = new Set(records);
   if (records.length) {
     let d = `M ${sx(records[0].t).toFixed(1)} ${sy(records[0].yv).toFixed(1)}`;
     for (let i = 1; i < records.length; i++)
       d += ` H ${sx(records[i].t).toFixed(1)} V ${sy(records[i].yv).toFixed(1)}`;
     d += ` H ${(ML + cW).toFixed(1)}`;
-    mk('path', { d, fill: 'none', stroke: 'var(--accent)', 'stroke-width': '2', opacity: '0.75' }, svgEl);
+    mk('path', { d, fill: 'none', stroke: 'var(--link)', 'stroke-width': '2', opacity: '0.75' }, svgEl);
   }
   updateRecordPanel(records, metricLbl, fmt, method, undated);
 
   /* ── data points ── */
   const CTIP = document.getElementById('chart-tip');
-  for (const { r, t, yv } of pts) {
+  for (const p of pts) {
+    const { r, t, yv } = p;
     const xc = sx(t), yc = sy(yv);
 
     /* error bars — clamped to plot area */
@@ -3355,7 +3420,7 @@ function _drawTimeChart(rows, metric, method) {
         const yt = Math.max(MT, Math.min(sy(ci.lo), sy(ci.hi)));
         const yb = Math.min(MT + cH, Math.max(sy(ci.lo), sy(ci.hi)));
         if (yb > yt) {
-          const ecol = r.access === 'open' ? 'var(--accent)' : '#94a3b8';
+          const ecol = r.access === 'open' ? 'var(--link)' : '#94a3b8';
           mk('line', { x1: xc, y1: yt, x2: xc, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
           if (Math.min(sy(ci.lo), sy(ci.hi)) >= MT)
             mk('line', { x1: xc-4, y1: yt, x2: xc+4, y2: yt, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
@@ -3366,18 +3431,18 @@ function _drawTimeChart(rows, metric, method) {
     }
 
     let tipHTML = `<strong>${r.name}</strong>`
-      + tipRow('Released', fmtDate(t))
+      + tipRow(r.date_basis === 'score' ? 'Score dated' : 'Released', fmtDate(t))
       + tipMetricRows(r, meanKey, meanLbl);
-    if (recordSet.has(r.name))
-      tipHTML += tipRow('Record', 'best at date', 'var(--accent)');
+    if (recordSet.has(p))
+      tipHTML += tipRow('Record', 'best at date', 'var(--link)');
 
     const circ = mk('circle', {
       cx: xc, cy: yc, r: '6',
-      fill: r.access === 'open' ? 'var(--accent)' : '#94a3b8',
+      fill: r.access === 'open' ? 'var(--link)' : '#94a3b8',
       stroke: 'var(--bg)', 'stroke-width': '1.5',
       style: 'cursor:pointer',
     }, svgEl);
-    chartPointByName.set(r.name, { circ, tipHTML });
+    chartPointByName.set(`${r.name}@${r.released}`, { circ, tipHTML });
     circ.addEventListener('mouseenter', () => { CTIP.innerHTML = tipHTML; CTIP.classList.add('show'); });
     circ.addEventListener('mousemove', e => positionChartTip(e.clientX, e.clientY));
     circ.addEventListener('mouseleave', () => CTIP.classList.remove('show'));
@@ -3388,7 +3453,7 @@ function _drawTimeChart(rows, metric, method) {
   /* ── axis labels ── */
   tx(yLbl, { 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '12',
     transform: `translate(${ML - 46} ${MT + cH / 2}) rotate(-90)` }, svgEl);
-  tx('Model release date', { x: ML + cW / 2, y: H - 8,
+  tx('Model release / score date', { x: ML + cW / 2, y: H - 8,
     'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '12' }, svgEl);
   tx('Better ↑', { x: ML - 6, y: MT - 6, 'text-anchor': 'end',
     fill: 'var(--muted)', 'font-size': '10' }, svgEl);
@@ -3460,7 +3525,14 @@ async function init() {
     function applyTime(metric = timeMetric) {
       timeMetric = metric;
       const isWer = metric === 'wer';
-      const rows = isWer ? visible(data.wer) : visible(data.cer);
+      const rows = (isWer ? visible(data.wer) : visible(data.cer))
+        .flatMap(r => methodFor(metric) === 'mean'
+          ? [...(r.history || []).map(h => ({
+              ...r, ...h, released: h.submitted, date_basis: 'score',
+              mean_wer_ci: null, mean_cer_ci: null,
+            })), r]
+          : [r])
+        .filter(r => r.mean_wer == null || r.mean_wer <= 50);
       document.getElementById('tog-time-wer').classList.toggle('active', isWer);
       document.getElementById('tog-time-cer').classList.toggle('active', !isWer);
       document.getElementById('time-chart-title').textContent =
@@ -3607,6 +3679,21 @@ async function init() {
       if (b) b.addEventListener('click', toggleOpen);
     });
     syncOpenBtns();
+
+    /* Maximum model size, shared across all three views. */
+    const SIZE_SELECTS = ['size-wer', 'size-analysis', 'size-time'];
+    SIZE_SELECTS.forEach(id => {
+      document.getElementById(id).addEventListener('change', e => {
+        maxSizeB = e.target.value ? Number(e.target.value) : null;
+        SIZE_SELECTS.forEach(otherId => {
+          const other = document.getElementById(otherId);
+          other.value = e.target.value;
+          other.dispatchEvent(new Event('input', { bubbles: true }));
+        });
+        applyWer();
+        applyCer();
+      });
+    });
 
     /* Last updated */
     if (data.updated) {
