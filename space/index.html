@@ -2905,12 +2905,12 @@ function positionChartTip(x, y) {
 
 /* Attach a point on the plot to its row in the side panel: hovering either one
    highlights the point and shows its tooltip, clicking pins it until the next
-   click elsewhere. `points` maps model name → {circ, tipHTML}. */
+   click elsewhere. `points` maps point key → {circ, tipHTML}. */
 function wireChartPanel(panel, points) {
   if (!panel) return;
   const CTIP = document.getElementById('chart-tip');
   panel.querySelectorAll('.pareto-item').forEach(item => {
-    const point = points.get(item.dataset.modelName || '');
+    const point = points.get(item.dataset.pointKey || item.dataset.modelName || '');
     if (!point) return;
 
     const activate = () => {
@@ -3142,13 +3142,9 @@ function renderSizeChart(rows, method, tab = 'wer') {
 }
 
 /* ── Performance-over-time chart ────────────────────────────────
-   Every model plotted at its release date, with a step line through the running
-   best: the Danish ASR state of the art as it actually moved. Release dates
-   come from leaderboard.json (`released`) — HF repo creation for open weights,
-   a curated map for the hosted APIs, both resolved at deploy time in
-   scripts/update_space.py. A model with no published release date carries an
-   empty string and is left off the chart rather than guessed at; the record
-   panel says how many. */
+   Models are plotted at their release date, or at the evaluation date for a
+   changing API. Older evaluated scores come from `history` on a result JSON.
+   A model with no date is left off the chart; the record panel says how many. */
 const DAY_MS = 86400000;
 const MONTHS_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -3220,7 +3216,7 @@ function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
   for (const p of [...records].reverse()) {
     const item = document.createElement('div');
     item.className = 'pareto-item';
-    item.dataset.modelName = p.r.name;
+    item.dataset.pointKey = `${p.r.name}@${p.r.released}`;
     const col = p.r.access === 'open' ? 'var(--link)' : '#94a3b8';
     item.innerHTML =
       `<span class="pareto-dot" style="background:${col}"></span>` +
@@ -3244,6 +3240,8 @@ function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
   if (undated)
     footnote(`${undated} model${undated > 1 ? 's have' : ' has'} no published `
       + `release date and ${undated > 1 ? 'are' : 'is'} not plotted.`);
+  if (method !== 'mean')
+    footnote('Earlier evaluation snapshots are shown with mean WER/CER only.');
 }
 
 function _drawTimeChart(rows, metric, method) {
@@ -3334,7 +3332,7 @@ function _drawTimeChart(rows, metric, method) {
 
   /* ── best-so-far step line ── */
   const records = computeRecords(pts, yUp);
-  const recordSet = new Set(records.map(p => p.r.name));
+  const recordSet = new Set(records);
   if (records.length) {
     let d = `M ${sx(records[0].t).toFixed(1)} ${sy(records[0].yv).toFixed(1)}`;
     for (let i = 1; i < records.length; i++)
@@ -3346,7 +3344,8 @@ function _drawTimeChart(rows, metric, method) {
 
   /* ── data points ── */
   const CTIP = document.getElementById('chart-tip');
-  for (const { r, t, yv } of pts) {
+  for (const p of pts) {
+    const { r, t, yv } = p;
     const xc = sx(t), yc = sy(yv);
 
     /* error bars — clamped to plot area */
@@ -3369,7 +3368,7 @@ function _drawTimeChart(rows, metric, method) {
     let tipHTML = `<strong>${r.name}</strong>`
       + tipRow(r.date_basis === 'score' ? 'Score dated' : 'Released', fmtDate(t))
       + tipMetricRows(r, meanKey, meanLbl);
-    if (recordSet.has(r.name))
+    if (recordSet.has(p))
       tipHTML += tipRow('Record', 'best at date', 'var(--link)');
 
     const circ = mk('circle', {
@@ -3378,7 +3377,7 @@ function _drawTimeChart(rows, metric, method) {
       stroke: 'var(--bg)', 'stroke-width': '1.5',
       style: 'cursor:pointer',
     }, svgEl);
-    chartPointByName.set(r.name, { circ, tipHTML });
+    chartPointByName.set(`${r.name}@${r.released}`, { circ, tipHTML });
     circ.addEventListener('mouseenter', () => { CTIP.innerHTML = tipHTML; CTIP.classList.add('show'); });
     circ.addEventListener('mousemove', e => positionChartTip(e.clientX, e.clientY));
     circ.addEventListener('mouseleave', () => CTIP.classList.remove('show'));
@@ -3462,6 +3461,12 @@ async function init() {
       timeMetric = metric;
       const isWer = metric === 'wer';
       const rows = (isWer ? visible(data.wer) : visible(data.cer))
+        .flatMap(r => methodFor(metric) === 'mean'
+          ? [...(r.history || []).map(h => ({
+              ...r, ...h, released: h.submitted, date_basis: 'score',
+              mean_wer_ci: null, mean_cer_ci: null,
+            })), r]
+          : [r])
         .filter(r => r.mean_wer == null || r.mean_wer <= 50);
       document.getElementById('tog-time-wer').classList.toggle('active', isWer);
       document.getElementById('tog-time-cer').classList.toggle('active', !isWer);

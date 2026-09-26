@@ -135,9 +135,10 @@
     "note": "https://elevenlabs.io/blog/introducing-scribe-v2"
   },
   "syv-transcribe": {
-    "released": "2026-09-25",
-    "source": "score snapshot",
-    "note": "The service was released on 2026-06-24. This plotted date represents the current API score from the 2026-09-25 benchmark rerun."
+    "released": "2026-06-24",
+    "source": "confirmed",
+    "plot_by": "submitted",
+    "note": "The service launched on 2026-06-24. The Over Time chart plots each evaluated score on its submission date."
   },
   "syvai/hviske-v3-conversation": {
     "released": "2025-07-01",

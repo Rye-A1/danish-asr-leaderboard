@@ -33,9 +33,14 @@ id, backend, and where to find it. We'll run it through the harness and add it.
    For a hosted API use `"source": "published"` with the announcement link in a
    `"note"`, or `"source": "best guess"` when no date is published anywhere —
    say in the `"note"` what the guess is based on. A model with no entry is
-   simply left off that chart. For an API that changes after launch, use
-   `"source": "score snapshot"` when the plotted date represents the current
-   evaluated score, and explain the original launch and benchmark dates in the note.
+   simply left off that chart. For an API that changes after launch, keep its
+   actual release date and add `"plot_by": "submitted"`; its latest result's
+   `"submitted"` date then becomes the current score's plotted date.
+   To retain an older evaluation of the same model, add a `"history"` array to
+   its `results/<model-slug>.json`. Each entry needs `"submitted"`, `"mean_wer"`,
+   `"mean_cer"`, and the per-dataset WER/CER scores from that evaluation. The
+   top-level fields remain the latest leaderboard result. Older evaluations
+   appear in the Over Time mean WER/CER plots, not as extra leaderboard rows.
 4. Commit **all of it** and open a pull request. On merge, CI publishes the
    results to the Hugging Face dataset and redeploys the leaderboard
    automatically — no manual `push_results.py` / `push_outputs.py` step needed.
