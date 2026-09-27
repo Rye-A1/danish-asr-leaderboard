@@ -602,12 +602,12 @@
     .profile-score-total { color: var(--muted); font-weight: 500; }
     .profile-meter {
       position: absolute; inset: 0;
-      border-bottom: 1px solid color-mix(in srgb, var(--link) 16%, var(--border));
+      border-right: 1px solid color-mix(in srgb, var(--link) 16%, var(--border));
     }
     .profile-meter-fill {
-      position: absolute; bottom: 0; left: 0; width: 100%; height: var(--score-share);
-      border-top: 2px solid var(--link);
-      background: linear-gradient(to bottom, color-mix(in srgb, var(--link) 34%, transparent),
+      position: absolute; top: 0; left: 0; width: var(--score-share); height: 100%;
+      border-right: 2px solid var(--link);
+      background: linear-gradient(to left, color-mix(in srgb, var(--link) 34%, transparent),
         color-mix(in srgb, var(--link) 5%, transparent));
     }
     .profile-visual.empty .profile-meter-fill { display: none; }
@@ -1562,7 +1562,7 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
-      Openness is scored out of five and Features out of four. The blue line and fill show the confirmed share. Hover, focus, or tap a score for the field breakdown; select a field name to open its source.
+      Openness is scored out of five and Features out of four. The blue fill grows left to right with the confirmed share. Hover, focus, or tap a score for the field breakdown; select a field name to open its source.
     </p>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
