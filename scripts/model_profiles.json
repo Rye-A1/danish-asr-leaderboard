@@ -1018,8 +1018,8 @@
   "ordbogen/whisper": {
     "openness": {
       "model_card": {
-        "state": "unknown",
-        "detail": "No accessible checkpoint card: the Hugging Face slug returns 401, and the provider docs page has no readable model details.",
+        "state": "no",
+        "detail": "The rendered provider page gives only a generic Whisper description, endpoint list and pricing; it has no checkpoint-specific training, evaluation or limitations.",
         "url": "https://odincore.ai/docs/models/ordbogen-whisper"
       },
       "license": {
@@ -1035,6 +1035,16 @@
         "state": "yes",
         "detail": "Saved raw benchmark output contains both casing and punctuation in 23,816 of 26,632 transcriptions; the scored path emits formatted Danish.",
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/ordbogen__whisper.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "The model page lists the transcription endpoint; its API reference offers verbose_json with segment or word timestamp_granularities.",
+        "url": "https://odincore.ai/api-reference#tag/audio/POST/audio/transcriptions"
+      },
+      "streaming": {
+        "state": "partial",
+        "detail": "The model page says Streaming supported, and the API documents server-sent transcription deltas after an audio file is uploaded. Live microphone audio input is not documented.",
+        "url": "https://odincore.ai/api-reference#tag/audio/POST/audio/transcriptions"
       }
     }
   },
@@ -1345,6 +1355,11 @@
         "state": "yes",
         "detail": "Saved raw benchmark output contains both casing and punctuation in 952 of 26,780 transcriptions; the scored path emits formatted Danish.",
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v5__3.parquet"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Publisher's Hviske v5.3 live demo streams microphone audio over WebSocket and receives incremental commit/tail transcription messages while recording.",
+        "url": "https://hviske.syv.ai/"
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v5.3",
