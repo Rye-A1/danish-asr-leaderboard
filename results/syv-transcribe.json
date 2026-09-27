@@ -15,5 +15,23 @@
   "mean_cer": 4.68,
   "speed_x": 15.7,
   "submitted": "2026-09-25",
-  "access": "proprietary"
+  "access": "proprietary",
+  "history": [
+    {
+      "submitted": "2026-06-23",
+      "mean_wer": 10.97,
+      "mean_cer": 5.16,
+      "coral_conversation_wer": 19.99,
+      "coral_read_aloud_wer": 9.97,
+      "cv17_da_wer": 7.95,
+      "fleurs_da_wer": 9.02,
+      "ftspeech_wer": 7.91,
+      "coral_conversation_cer": 11.56,
+      "coral_read_aloud_cer": 3.88,
+      "cv17_da_cer": 2.54,
+      "fleurs_da_cer": 3.57,
+      "ftspeech_cer": 4.26,
+      "source_commit": "6abc6fd72c4bfdd399abfd7276123b47a90a837f"
+    }
+  ]
 }

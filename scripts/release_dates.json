@@ -31,6 +31,10 @@
     "released": "2026-01-11",
     "source": "huggingface"
   },
+  "danish-foundation-models/edda-v0.1": {
+    "released": "2026-09-24",
+    "source": "huggingface"
+  },
   "facebook/mms-1b-all": {
     "released": "2023-05-27",
     "source": "huggingface"
@@ -137,7 +141,8 @@
   "syv-transcribe": {
     "released": "2026-06-24",
     "source": "confirmed",
-    "note": "syv.ai publishes no release date and there is no HF repo; this date is confirmed rather than inferred."
+    "plot_by": "submitted",
+    "note": "The service launched on 2026-06-24. The Over Time chart plots each evaluated score on its submission date."
   },
   "syvai/hviske-v3-conversation": {
     "released": "2025-07-01",
@@ -169,6 +174,10 @@
   },
   "thorhojhus/whisper-small-danish": {
     "released": "2026-09-14",
+    "source": "huggingface"
+  },
+  "nvidia/nemotron-3.5-asr-streaming-0.6b": {
+    "released": "2026-05-15",
     "source": "huggingface"
   }
 }

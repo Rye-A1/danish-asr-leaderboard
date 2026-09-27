@@ -47,6 +47,7 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/) if you hav
 ```bash
 uv pip install -e ".[transformers]"    # Whisper, Røst, hviske, …
 uv pip install -e ".[nemo]"            # Canary / Parakeet / SALM
+uv pip install -e ".[nemotron-asr]"    # Nemotron 3.5 ASR (transformers, no NeMo)
 uv pip install -e ".[faster-whisper]"
 uv pip install -e ".[qwen-asr]"
 uv pip install -e ".[saga2]"           # capacit-ai/saga-2-*
@@ -58,7 +59,7 @@ uv pip install -e ".[soniox]"
 ```
 
 Available extras match the `--backend` names: `transformers`, `wav2vec2`,
-`faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `voxtral`, `danstral`, `seamless`, `cohere-asr`,
+`faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemotron-asr`, `voxtral`, `danstral`, `seamless`, `cohere-asr`,
 `vibevoice`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`, `syv`.
 
 > **NeMo note:** install `nemo_toolkit[asr]` *first* to avoid
@@ -110,6 +111,9 @@ danish-asr-eval --model /path/to/best.nemo --model-id RyeAI/canary-1b-v2-da \
 # NeMo Parakeet
 danish-asr-eval --model nvidia/parakeet-tdt-0.6b-v3 --backend nemo --nemo-model-type parakeet
 
+# Nemotron 3.5 ASR (Danish language prompt, native transformers)
+danish-asr-eval --model nvidia/nemotron-3.5-asr-streaming-0.6b --backend nemotron-asr
+
 # Qwen3-ASR / fine-tunes
 danish-asr-eval --model Qwen/Qwen3-ASR-1.7B --backend qwen-asr
 
@@ -149,7 +153,7 @@ no-op when unconfigured.
 Run `danish-asr-eval --help` for all options (device, batch size, beam/KenLM,
 per-API credentials, `--access open|proprietary`, …). Available backends:
 
-`transformers`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`,
+`transformers`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`, `nemotron-asr`,
 `voxtral`, `danstral`, `seamless`, `cohere-asr`, `vibevoice`, `elevenlabs`, `azure-openai`,
 `google-chirp`, `soniox`, `syv`.
 
