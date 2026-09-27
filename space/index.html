@@ -588,8 +588,22 @@
     .profile-trigger:hover, .profile-trigger:focus-visible,
     .profile-trigger[aria-expanded="true"] { background: var(--surf2); border-color: var(--border); outline: none; }
     .profile-compact-label { display: none; }
-    .profile-score { color: var(--link); font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+    .profile-visual { position: relative; width: 60px; height: 29px; flex: none; }
+    .profile-score {
+      position: absolute; inset: 1px 0 auto; z-index: 1;
+      color: var(--text); font-size: 15px; font-weight: 700;
+      font-variant-numeric: tabular-nums; line-height: 1; text-align: center;
+    }
     .profile-score-total { color: var(--muted); font-weight: 500; }
+    .profile-meter {
+      position: absolute; inset: auto 2px 1px; height: 8px;
+      border-top: 1px solid color-mix(in srgb, var(--link) 22%, var(--border));
+    }
+    .profile-meter-fill {
+      display: block; width: var(--score-share); height: 100%;
+      margin-top: -1px; border-top: 2px solid var(--link);
+      background: linear-gradient(to bottom, color-mix(in srgb, var(--link) 42%, transparent), transparent);
+    }
     .profile-segments { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 3px; }
     .profile-segment {
       width: min(100%, 22px); aspect-ratio: 1; justify-self: center;
@@ -1186,6 +1200,7 @@
       }
       .profile-trigger { align-items: center; gap: 4px; padding: 5px 4px; background: var(--surf2); }
       .profile-compact-label { display: inline; color: var(--muted); font-size: 11px; }
+      .profile-visual { width: 72px; height: 32px; }
       .profile-score { font-size: 16px; }
 
       /* 3 -- zero-height full-width item, so the tiles always start a new line
@@ -1540,7 +1555,7 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
-      Openness is scored out of five and Features out of four. Hover, focus, or tap a score for the field breakdown; select a field name to open its source.
+      Openness is scored out of five and Features out of four. The blue line and fill show the confirmed share. Hover, focus, or tap a score for the field breakdown; select a field name to open its source.
     </p>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
@@ -2154,7 +2169,17 @@ function profileCell(td, row, group) {
   total.className = 'profile-score-total';
   total.textContent = `/${group.fields.length}`;
   tally.appendChild(total);
-  button.append(label, tally);
+  const visual = document.createElement('span');
+  visual.className = 'profile-visual';
+  visual.style.setProperty('--score-share', `${Math.max(0, Math.min(100, 100 * score / group.fields.length))}%`);
+  const meter = document.createElement('span');
+  meter.className = 'profile-meter';
+  meter.setAttribute('aria-hidden', 'true');
+  const fill = document.createElement('span');
+  fill.className = 'profile-meter-fill';
+  meter.appendChild(fill);
+  visual.append(tally, meter);
+  button.append(label, visual);
   button.addEventListener('mouseenter', () => showProfilePopover(button, row, group));
   button.addEventListener('focus', () => {
     if (!suppressProfileFocus) showProfilePopover(button, row, group);
