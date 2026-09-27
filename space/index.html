@@ -199,6 +199,31 @@
       color: #fff;
     }
     .sticky-act svg { width: 16px; height: 16px; display: block; }
+    .back-to-top {
+      position: fixed;
+      right: 20px;
+      bottom: calc(20px + env(safe-area-inset-bottom));
+      z-index: 60;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surf);
+      color: var(--text);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, .18);
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .back-to-top[hidden] { display: none; }
+    .back-to-top:hover { border-color: var(--link); color: var(--link); }
+    .back-to-top:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .back-to-top svg { width: 15px; height: 15px; }
+    @media (max-width: 700px) {
+      .back-to-top { right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); }
+    }
     @media (prefers-reduced-motion: reduce) {
       .sticky-header { transition: none; }
     }
@@ -241,6 +266,7 @@
       max-width: 100%;
       margin-bottom: 18px;
     }
+    .tab-nav-scroll { display: flex; align-items: stretch; width: 100%; min-width: 0; }
     .sticky-header.show ~ .app .tab-nav { top: 46px; }
     .tab-btn {
       position: relative;
@@ -291,6 +317,107 @@
     .tab-btn:focus-visible { outline: 2px solid var(--link); outline-offset: -2px; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
+
+    /* ── Model comparison ───────────────────────────────────────────── */
+    .compare-intro { color: var(--muted); margin-bottom: 18px; }
+    .page-hero.compare-hero { z-index: 2; overflow: visible; }
+    .compare-hero::after { border-radius: inherit; }
+    .compare-hero .compare-pickers { margin-bottom: 14px; }
+    .compare-hero .compare-actions { margin-bottom: 0; }
+    .compare-hero .compare-count { font-weight: 700; }
+    .compare-pickers { display: flex; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .compare-chip { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 7px 9px; border: 2px solid var(--model-color); border-radius: 8px; background: var(--surf); font-size: 13px; }
+    .compare-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 700; }
+    .compare-rank { flex: none; padding: 2px 5px; border-radius: 4px; background: color-mix(in srgb, var(--model-color) 13%, var(--surf)); color: var(--text); font-size: 10px; font-weight: 400; white-space: nowrap; }
+    .compare-chip button { flex: none; border: 0; background: transparent; color: var(--muted); font: inherit; font-size: 18px; line-height: 1; cursor: pointer; }
+    .compare-chip button:hover { color: var(--text); }
+    .compare-picker { position: relative; }
+    .compare-picker[hidden] { display: none; }
+    .compare-add { min-height: 38px; padding: 7px 12px; border: 1px dashed var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; cursor: pointer; }
+    .compare-add:hover { border-color: var(--link); }
+    .compare-add:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .compare-options { position: absolute; z-index: 50; top: 100%; left: 0; width: min(300px, calc(100vw - 32px)); max-height: 300px; overflow-y: auto; margin-top: 4px; padding: 4px; background: var(--surf); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 12px 30px rgba(0,0,0,.25); }
+    .compare-options[hidden] { display: none; }
+    .compare-option { display: block; width: 100%; padding: 8px 10px; border: 0; border-radius: 5px; background: none; color: var(--text); text-align: left; font: inherit; cursor: pointer; overflow-wrap: anywhere; }
+    .compare-option-rank { font-weight: 400; }
+    .compare-option-name { font-weight: 700; }
+    .compare-option:hover, .compare-option:focus-visible { background: var(--surf2); outline: none; }
+    .compare-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 22px; }
+    .compare-count { color: var(--muted); font-size: 12px; }
+    .compare-clear-all, .compare-copy { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; cursor: pointer; }
+    .compare-clear-all[hidden] { display: none; }
+    .compare-action-icon { width: 14px; height: 14px; flex: none; }
+    .compare-clear-all:hover, .compare-copy:hover { border-color: var(--link); }
+    .compare-copy:disabled { opacity: .45; cursor: not-allowed; }
+    .compare-note { color: var(--muted); font-size: 12px; }
+    .compare-empty { padding: 48px 18px; border: 1px dashed var(--border); border-radius: var(--r); color: var(--muted); text-align: center; }
+    #compare-results { counter-reset: compare-section; }
+    .compare-section {
+      counter-increment: compare-section;
+      margin: 15px 0;
+      padding: 20px 24px;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      background: var(--surf);
+    }
+    .compare-section > h3 { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; font-size: 17px; font-weight: 750; }
+    .compare-section > h3::before {
+      content: "0" counter(compare-section);
+      flex: none;
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 1px solid color-mix(in srgb, var(--red) 25%, var(--border));
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--red) 8%, var(--surf));
+      color: var(--page-accent);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+    .compare-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r); }
+    .compare-scroll-hint { display: none; margin: -5px 0 9px; color: var(--muted); font-size: 12px; }
+    @media (max-width: 1100px) { .compare-scroll-hint { display: block; } }
+    .compare-summary { width: 100%; table-layout: fixed; white-space: normal; border-collapse: separate; border-spacing: 0; }
+    .compare-summary th, .compare-summary td { padding: 11px 14px; border-bottom: 1px solid var(--border); text-align: left; }
+    .compare-summary tr:last-child td { border-bottom: 0; }
+    .compare-summary th:first-child, .compare-summary td:first-child { width: 160px; color: var(--muted); }
+    .compare-summary th:not(:first-child) { border-top: 3px solid var(--model-color); }
+    .compare-summary th[data-model-col], .compare-summary td[data-model-col] { background-color: color-mix(in srgb, var(--model-color) 10%, var(--surf)); }
+    .compare-summary tbody tr:hover td[data-model-col] { background-color: color-mix(in srgb, var(--model-color) 15%, var(--surf)); }
+    .compare-summary th a { color: var(--text); text-decoration: none; text-transform: none; overflow-wrap: anywhere; }
+    .compare-summary th a:hover { color: var(--link); text-decoration: underline; }
+    .compare-head-rank { display: block; margin-bottom: 2px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+    .compare-summary td:nth-child(n+2) { font-variant-numeric: tabular-nums; font-weight: 600; }
+    .compare-subheading { margin: 20px 0 10px; font-size: 14px; }
+    .compare-metric { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 13px; }
+    .compare-metric button { padding: 6px 14px; border: 0; background: var(--surf); color: var(--muted); font: inherit; cursor: pointer; }
+    .compare-metric button.active { background: var(--surf2); color: var(--text); font-weight: 700; }
+    .compare-legend { display: flex; flex-wrap: wrap; gap: 5px 18px; margin-bottom: 14px; color: var(--muted); font-size: 12px; }
+    .compare-legend span { display: inline-flex; align-items: center; gap: 6px; min-width: 0; overflow-wrap: anywhere; }
+    .compare-legend i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+    .compare-dataset { display: grid; grid-template-columns: minmax(125px, 190px) minmax(0, 1fr) minmax(120px, 170px); gap: 14px; align-items: center; padding: 13px 15px; border: 1px solid var(--border); border-bottom: 0; background: var(--surf); }
+    .compare-dataset.single-model { grid-template-columns: minmax(125px, 190px) minmax(0, 1fr); }
+    .compare-dataset:first-child { border-radius: var(--r) var(--r) 0 0; }
+    .compare-dataset:last-child { border-bottom: 1px solid var(--border); border-radius: 0 0 var(--r) var(--r); }
+    .compare-dataset-name { font-weight: 700; }
+    .compare-bars { display: grid; gap: 5px; }
+    .compare-bar { display: grid; grid-template-columns: 25px minmax(0, 1fr) 58px; gap: 8px; align-items: center; font-variant-numeric: tabular-nums; }
+    .compare-bar-tag { font-size: 11px; font-weight: 800; }
+    .compare-track { height: 9px; background: var(--surf2); border-radius: 99px; overflow: hidden; }
+    .compare-fill { height: 100%; border-radius: 99px; }
+    .compare-bar-value { text-align: right; font-size: 12px; }
+    .compare-difference { color: var(--muted); font-size: 12px; text-align: right; }
+    @media (max-width: 720px) {
+      .compare-hero { padding: 20px; }
+      .compare-section { padding: 17px 14px; }
+      .compare-section > h3 { font-size: 16px; }
+      .compare-summary th, .compare-summary td { padding: 9px 7px; font-size: 12px; }
+      .compare-dataset { grid-template-columns: 1fr; gap: 8px; }
+      .compare-dataset.single-model { grid-template-columns: 1fr; }
+      .compare-difference { text-align: left; }
+    }
 
     /* ── Toolbar ───────────────────────────────────────────────────── */
     /* One control height (34px) and one radius (8px) across the whole toolbar:
@@ -733,6 +860,104 @@
     .about thead th { cursor: default; text-transform: none; letter-spacing: 0; font-size: 13px; }
     .about tbody td { color: var(--muted); }
 
+    /* ── Methodology ─────────────────────────────────────────────────── */
+    .methodology, #tab-compare, .about-page { --page-accent: #f47a91; }
+    @media (prefers-color-scheme: light) { .methodology, #tab-compare, .about-page { --page-accent: #aa2140; } }
+    .methodology { max-width: 1040px; counter-reset: method-section; }
+    .page-hero {
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      padding: 28px 30px;
+      border: 1px solid color-mix(in srgb, var(--red) 28%, var(--border));
+      border-radius: 14px;
+      background:
+        radial-gradient(95% 190% at -6% 118%, rgba(198, 12, 48, .18), transparent 62%),
+        radial-gradient(75% 170% at 100% -40%, rgba(92, 26, 104, .16), transparent 72%),
+        var(--surf);
+    }
+    .page-hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .13;
+      background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27180%27%20height%3D%27180%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.85%27%20numOctaves%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27180%27%20height%3D%27180%27%20filter%3D%27url%28%23n%29%27%20opacity%3D%270.55%27%2F%3E%3C%2Fsvg%3E");
+    }
+    .page-hero > * { position: relative; }
+    .page-hero .page-eyebrow {
+      margin: 0 0 7px;
+      color: var(--page-accent);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .page-hero h2 {
+      margin: 0 0 8px;
+      padding: 0;
+      border: 0;
+      font-size: clamp(23px, 2.5vw, 30px);
+      line-height: 1.2;
+    }
+    .page-hero .page-intro { max-width: 64ch; margin-bottom: 17px; color: var(--text); }
+    .page-hero .page-intro:last-child { margin-bottom: 0; }
+    .about-page .page-hero { margin-bottom: 18px; }
+    .method-card {
+      counter-increment: method-section;
+      margin-top: 15px;
+      padding: 22px 26px;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      background: var(--surf);
+    }
+    .methodology .method-card > h3 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 16px;
+      font-size: 17px;
+      font-weight: 750;
+    }
+    .method-card > h3::before {
+      content: "0" counter(method-section);
+      flex: none;
+      display: inline-grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border: 1px solid color-mix(in srgb, var(--red) 25%, var(--border));
+      border-radius: 8px;
+      background: color-mix(in srgb, var(--red) 8%, var(--surf));
+      color: var(--page-accent);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+    .method-card p, .method-card ol, .method-card ul { color: var(--text); line-height: 1.65; }
+    .method-card li { margin-bottom: 7px; padding-left: 4px; }
+    .method-card li::marker { color: var(--page-accent); font-weight: 700; }
+    .method-card code { overflow-wrap: anywhere; }
+    .method-card blockquote {
+      border-left-color: var(--red);
+      background: color-mix(in srgb, var(--red) 6%, var(--surf2));
+      color: var(--text);
+    }
+    .methodology .method-card h4 { margin-top: 16px; font-size: 14px; }
+    .method-history { margin-top: 20px; }
+    .methodology .changelog { overflow: hidden; background: var(--surf); }
+    .methodology .changelog > summary {
+      padding: 17px 22px;
+      background: radial-gradient(90% 250% at 0% 100%, rgba(198, 12, 48, .09), transparent 65%);
+    }
+    .methodology .changelog-body { padding: 5px 22px 12px; }
+    @media (max-width: 700px) {
+      .page-hero { padding: 22px 20px; }
+      .method-card { padding: 18px 19px; }
+      .methodology .method-card > h3 { font-size: 16px; }
+    }
+
     /* ── Changelog (expandable) ─────────────────────────────────────── */
     .changelog {
       border: 1px solid var(--border);
@@ -1011,9 +1236,9 @@
          there is more than fits -- without them the last tab is simply
          invisible and unguessable. JS sets the two widths from scroll
          position, so an edge only fades when something is actually past it. */
-      .tab-nav {
-        width: 100%;
+      .tab-nav-scroll {
         overflow-x: auto;
+        overflow-y: hidden;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         --fade-l: 0px;
@@ -1026,7 +1251,7 @@
           #000 calc(100% - var(--fade-r)), transparent 100%);
         transition: --fade-l .15s linear, --fade-r .15s linear;
       }
-      .tab-nav::-webkit-scrollbar { display: none; }
+      .tab-nav-scroll::-webkit-scrollbar { display: none; }
       .tab-btn { flex: 0 0 auto; padding: 11px 14px 10px; font-size: 13px; }
       
       /* Toolbar stacks and wraps */
@@ -1482,6 +1707,18 @@
       tbody td[data-tip]::after { display: none; }
     }
 
+    /* The leaderboard becomes cards on phones; keep the comparison a table. */
+    @media (max-width: 700px) {
+      #tab-compare .compare-summary { display: table; width: 100%; min-width: 0; }
+      #tab-compare .compare-summary thead { display: table-header-group; }
+      #tab-compare .compare-summary tbody { display: table-row-group; }
+      #tab-compare .compare-summary tr { display: table-row; padding: 0; border: 0; background: transparent; }
+      #tab-compare .compare-summary tr::before { content: none; }
+      #tab-compare .compare-summary tr::after { content: none; }
+      #tab-compare .compare-summary td { display: table-cell; padding: 9px 7px; border-bottom: 1px solid var(--border); }
+      #tab-compare .compare-summary th { display: table-cell; padding: 9px 7px; }
+    }
+
   </style>
 </head>
 <body>
@@ -1500,6 +1737,11 @@
     </a>
   </div>
 </div>
+
+<button class="back-to-top" id="back-to-top" type="button" aria-label="Back to top" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 12 6-6 6 6M12 6v12"/></svg>
+  Top
+</button>
 
 <div class="app">
 
@@ -1531,11 +1773,14 @@
 
   <!-- Tabs -->
   <nav class="tab-nav" aria-label="Leaderboard views">
+   <div class="tab-nav-scroll">
     <button class="tab-btn active" data-tab="wer"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M5 6H3v2a4 4 0 0 0 4 4M19 6h2v2a4 4 0 0 1-4 4"/></svg>Leaderboard</button>
     <button class="tab-btn" data-tab="analysis"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg>Pareto</button>
     <button class="tab-btn" data-tab="time"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Over Time</button>
+    <button class="tab-btn" data-tab="compare"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16M9 4v16M15 4v16"/></svg>Compare</button>
     <button class="tab-btn" data-tab="methodology"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Methodology</button>
     <button class="tab-btn" data-tab="about"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>About</button>
+   </div>
   </nav>
 
   <!-- Leaderboard tab -->
@@ -1667,16 +1912,53 @@
     </div>
   </div>
 
-  <!-- About tab -->
-  <div id="tab-about" class="tab-pane about">
+  <!-- Model comparison tab -->
+  <div id="tab-compare" class="tab-pane">
+    <section class="page-hero compare-hero" aria-labelledby="compare-title">
+      <p class="page-eyebrow">Side by side</p>
+      <h2 id="compare-title">Compare models</h2>
+      <p class="page-intro compare-intro">Compare up to four models on the same Danish test sets, ordered by Mean WER leaderboard rank. Lower WER and CER are better.</p>
+      <div class="compare-pickers" id="compare-pickers">
+        <div class="compare-picker" id="compare-picker">
+          <button id="compare-add" class="compare-add" type="button" aria-haspopup="listbox" aria-controls="compare-options" aria-expanded="false">+ Add model</button>
+          <div id="compare-options" class="compare-options" role="listbox" hidden></div>
+        </div>
+      </div>
+      <div class="compare-actions"><span id="compare-count" class="compare-count">0 / 4 models</span><button class="compare-clear-all" id="compare-clear-all" type="button" hidden><svg class="compare-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M5 6l1 14h12l1-14M10 10v6M14 10v6"/></svg>Clear all</button><button class="compare-copy" id="compare-copy" type="button"><svg class="compare-action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg>Copy comparison link</button><span class="compare-note" id="compare-status" role="status"></span></div>
+    </section>
+    <div id="compare-empty" class="compare-empty">Add a model to see its results.</div>
+    <div id="compare-results" hidden>
+      <section class="compare-section">
+        <h3>Model attributes</h3>
+        <p class="compare-scroll-hint">Swipe sideways to see the full table, if needed.</p>
+        <div class="compare-scroll"><table class="compare-summary" id="compare-summary"><thead><tr id="compare-head"><th scope="col">Measure</th></tr></thead><tbody id="compare-summary-body"></tbody></table></div>
+      </section>
+      <section class="compare-section">
+        <h3>Results</h3>
+        <p class="compare-scroll-hint">Swipe sideways to see the full table, if needed.</p>
+        <div class="compare-scroll"><table class="compare-summary" id="compare-overall-summary"><thead><tr id="compare-overall-head"><th scope="col">Measure</th></tr></thead><tbody id="compare-overall-body"></tbody></table></div>
+        <h4 class="compare-subheading">By test set</h4>
+        <div id="compare-legend" class="compare-legend"></div>
+        <div class="compare-metric" aria-label="Comparison metric"><button id="compare-wer" class="active" type="button" aria-pressed="true">WER</button><button id="compare-cer" type="button" aria-pressed="false">CER</button></div>
+        <div id="compare-datasets"></div>
+      </section>
+      <p class="compare-note" id="compare-caveat"></p>
+    </div>
+  </div>
 
-    <p>
-      An open, reproducible benchmark for <strong>Danish speech-to-text</strong>.
-      Every model is transcribed and scored the same way on the same five public
-      Danish test sets, so the numbers compare directly: Word Error Rate (WER)
-      and Character Error Rate (CER) — lower is better — plus speed. Open-weight
-      models you can run yourself and hosted transcription APIs are both included.
-    </p>
+  <!-- About tab -->
+  <div id="tab-about" class="tab-pane about about-page">
+    <header class="page-hero">
+      <p class="page-eyebrow">The benchmark</p>
+      <h2>About</h2>
+      <p class="page-intro">
+        An open, reproducible benchmark for <strong>Danish speech-to-text</strong>.
+        Every model is transcribed and scored the same way on the same five public
+        Danish test sets, so the numbers compare directly: Word Error Rate (WER)
+        and Character Error Rate (CER) — lower is better — plus speed. Open-weight
+        models you can run yourself and hosted transcription APIs are both included.
+      </p>
+    </header>
     <p lang="da">
       <strong>Åben benchmark for dansk tale til tekst.</strong> Sammenlign hvor
       præcist forskellige modeller til dansk talegenkendelse omsætter tale til
@@ -1726,9 +2008,14 @@
   </div><!-- /about -->
 
   <!-- Methodology tab -->
-  <div id="tab-methodology" class="tab-pane about">
-    <h2>Methodology</h2>
+  <div id="tab-methodology" class="tab-pane about methodology">
+    <header class="page-hero">
+      <p class="page-eyebrow">How the leaderboard is scored</p>
+      <h2>Methodology</h2>
+      <p class="page-intro">The same scoring pipeline is applied to every model. These are the text rules, metrics, and evaluation conditions behind the results.</p>
+    </header>
 
+    <section class="method-card">
     <h3>Text normalisation</h3>
     <p>Applied identically to hypothesis and reference before scoring:</p>
     <ol>
@@ -1801,7 +2088,9 @@
       introduce errors. Different Unicode encodings of the <em>same</em> letter
       <em>are</em> unified by NFC.
     </blockquote>
+    </section>
 
+    <section class="method-card">
     <h3>Metric</h3>
     <p><strong>WER</strong> (Word Error Rate, %) and
     <strong>CER</strong> (Character Error Rate, %) — lower is better.</p>
@@ -1816,7 +2105,9 @@
       well above 100 %. This is mathematically correct and a real signal: scores
       above 100 % on a given dataset indicate the model is not usable for that domain.
     </blockquote>
+    </section>
 
+    <section class="method-card">
     <h3>Speed</h3>
     <p><strong>Speed (x)</strong> = total audio duration / total inference time.
     A value of 30x means 30 seconds of audio processed per wall-clock second.
@@ -1842,7 +2133,9 @@
       into the measurement. This slightly <em>understates</em> throughput, more so
       on smaller test sets where the fixed overhead is less amortised.
     </blockquote>
+    </section>
 
+    <section class="method-card">
     <h3>Code &amp; data</h3>
     <p>
       Results dataset:
@@ -1850,6 +2143,9 @@
       Eval code:
       <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">github.com/Rye-A1/danish-asr-leaderboard</a>
     </p>
+    </section>
+
+    <section class="method-card">
     <h3>Adding a model</h3>
     <p>There are two paths, depending on whether you've run the evaluation yourself:</p>
 
@@ -1884,9 +2180,10 @@
       re-evaluate it independently on our own hardware before publishing — to
       confirm the scores reproduce and catch any configuration differences.
     </blockquote>
+    </section>
 
     <!-- Methodology & data changes -->
-  <div style="max-width:800px;margin:32px 0 0">
+  <div class="method-history">
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
       <div class="changelog-body">
@@ -2724,9 +3021,21 @@ function initStickyHeader() {
   ).observe(banner);
 }
 
+function initBackToTop() {
+  const button = document.getElementById('back-to-top');
+  const update = () => { button.hidden = window.scrollY < 480; };
+  window.addEventListener('scroll', update, { passive: true });
+  button.addEventListener('click', () => {
+    const behavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+    window.scrollTo({ top: 0, behavior });
+  });
+  update();
+}
+initBackToTop();
+
 /* Fade an edge of the tab strip only when there is content beyond it. */
 function updateTabFades() {
-  const nav = document.querySelector('.tab-nav');
+  const nav = document.querySelector('.tab-nav-scroll');
   if (!nav) return;
   const max = nav.scrollWidth - nav.clientWidth;
   const left = nav.scrollLeft;
@@ -2734,7 +3043,7 @@ function updateTabFades() {
   nav.style.setProperty('--fade-r', left < max - 2 ? '22px' : '0px');
 }
 function initTabFades() {
-  const nav = document.querySelector('.tab-nav');
+  const nav = document.querySelector('.tab-nav-scroll');
   if (!nav) return;
   nav.addEventListener('scroll', updateTabFades, { passive: true });
   nav.addEventListener('click', () => setTimeout(updateTabFades, 250));
@@ -3792,6 +4101,327 @@ window.addEventListener('resize', () => {
   }, 150);
 });
 
+const COMPARE_DATASETS = [
+  ['coral_conversation', 'CoRal conversation'],
+  ['coral_read_aloud', 'CoRal read-aloud'],
+  ['cv17_da', 'CV (da)'],
+  ['fleurs_da', 'FLEURS (da)'],
+  ['ftspeech', 'FTSpeech'],
+];
+const COMPARE_MAX_MODELS = 4;
+
+function setupCompare(data) {
+  const werRanks = new Map(data.wer.map(row => [row.name, row.rank]));
+  const rankOf = name => werRanks.get(name) ?? Infinity;
+  const rankLabel = name => Number.isFinite(rankOf(name)) ? `WER #${rankOf(name)}` : 'Unranked';
+  const shortRank = name => Number.isFinite(rankOf(name)) ? `#${rankOf(name)}` : '—';
+  const compareNames = (a, b) => rankOf(a) === rankOf(b)
+    ? a.localeCompare(b) : rankOf(a) - rankOf(b);
+  const models = new Map();
+  for (const row of data.cer) models.set(row.name, { ...row });
+  for (const row of data.wer) models.set(row.name, { ...models.get(row.name), ...row });
+  const names = [...models.keys()].sort(compareNames);
+  const colors = ['#60a5fa', '#a78bfa', '#22d3ee', '#fbbf24'];
+  const selected = [];
+  const pickers = document.getElementById('compare-pickers');
+  const picker = document.getElementById('compare-picker');
+  const add = document.getElementById('compare-add');
+  const list = document.getElementById('compare-options');
+  const status = document.getElementById('compare-status');
+  const copy = document.getElementById('compare-copy');
+  const clearAll = document.getElementById('compare-clear-all');
+  let metric = new URL(window.location.href).searchParams.get('metric') === 'cer' ? 'cer' : 'wer';
+
+  const score = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : '—';
+  const count = (row, suffix) => COMPARE_DATASETS.filter(([key]) =>
+    Number.isFinite(row?.[`${key}_${suffix}`])).length;
+  const shortName = name => name.split('/').at(-1);
+
+  function shareURL() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('view', 'compare');
+    if (metric === 'cer') url.searchParams.set('metric', 'cer');
+    else url.searchParams.delete('metric');
+    url.searchParams.delete('model');
+    selected.forEach(name => url.searchParams.append('model', name));
+    return url;
+  }
+  function syncURL() {
+    window.history.replaceState(null, '', shareURL());
+    status.textContent = '';
+  }
+  function hideOptions() {
+    list.hidden = true;
+    add.setAttribute('aria-expanded', 'false');
+  }
+  function showOptions() {
+    list.replaceChildren();
+    const matches = names.filter(name => !selected.includes(name));
+    for (const name of matches) {
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.className = 'compare-option';
+      option.setAttribute('role', 'option');
+      const rank = document.createElement('span');
+      rank.className = 'compare-option-rank';
+      rank.textContent = rankLabel(name);
+      const label = document.createElement('span');
+      label.className = 'compare-option-name';
+      label.textContent = name;
+      option.append(rank, document.createTextNode(' · '), label);
+      option.addEventListener('click', () => choose(name));
+      option.addEventListener('keydown', event => {
+        if (event.key === 'Escape') { hideOptions(); add.focus(); }
+        if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+          event.preventDefault();
+          const options = [...list.querySelectorAll('button')];
+          const next = (options.indexOf(option) + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
+          options[next].focus();
+        }
+      });
+      list.appendChild(option);
+    }
+    const pickerLeft = picker.getBoundingClientRect().left;
+    const listWidth = Math.min(300, window.innerWidth - 32);
+    const listLeft = Math.max(16, Math.min(pickerLeft, window.innerWidth - 16 - listWidth));
+    list.style.left = `${listLeft - pickerLeft}px`;
+    list.scrollTop = 0;
+    list.hidden = false;
+    add.setAttribute('aria-expanded', 'true');
+  }
+  function choose(name) {
+    if (selected.length >= COMPARE_MAX_MODELS || selected.includes(name) || !models.has(name)) return;
+    selected.push(name);
+    selected.sort(compareNames);
+    hideOptions();
+    syncURL();
+    render();
+    if (!picker.hidden) add.focus();
+    else [...pickers.querySelectorAll('.compare-chip button')]
+      .find(button => button.getAttribute('aria-label') === `Remove ${name}`)?.focus();
+  }
+  function remove(name) {
+    const index = selected.indexOf(name);
+    if (index < 0) return;
+    selected.splice(index, 1);
+    syncURL();
+    render();
+    add.focus();
+  }
+  function renderChips() {
+    pickers.querySelectorAll('.compare-chip').forEach(chip => chip.remove());
+    selected.forEach((name, i) => {
+      const chip = document.createElement('div');
+      chip.className = 'compare-chip';
+      chip.style.setProperty('--model-color', colors[i]);
+      chip.title = `${name} · ${rankLabel(name)} on the Mean WER leaderboard`;
+      const rank = document.createElement('small');
+      rank.className = 'compare-rank';
+      rank.textContent = rankLabel(name);
+      const label = document.createElement('span');
+      label.textContent = shortName(name);
+      const close = document.createElement('button');
+      close.type = 'button';
+      close.setAttribute('aria-label', `Remove ${name}`);
+      close.textContent = '×';
+      close.addEventListener('click', () => remove(name));
+      chip.append(rank, label, close);
+      pickers.insertBefore(chip, picker);
+    });
+    picker.hidden = selected.length >= COMPARE_MAX_MODELS;
+    if (picker.hidden) hideOptions();
+    document.getElementById('compare-count').textContent = `${selected.length} / ${COMPARE_MAX_MODELS} models`;
+    clearAll.hidden = selected.length === 0;
+    copy.disabled = selected.length === 0;
+  }
+  function renderHeader(id, rows) {
+    const head = document.getElementById(id);
+    head.replaceChildren();
+    const measure = document.createElement('th');
+    measure.scope = 'col';
+    measure.textContent = 'Measure';
+    head.appendChild(measure);
+    rows.forEach((row, i) => {
+      const th = document.createElement('th');
+      th.scope = 'col';
+      th.dataset.modelCol = '';
+      th.style.setProperty('--model-color', colors[i]);
+      const rank = document.createElement('small');
+      rank.className = 'compare-head-rank';
+      rank.textContent = rankLabel(row.name);
+      const label = document.createElement(row.url ? 'a' : 'span');
+      label.textContent = shortName(row.name);
+      label.title = row.name;
+      if (row.url) {
+        label.href = row.url;
+        label.target = '_blank';
+        label.rel = 'noopener noreferrer';
+      }
+      th.append(rank, label);
+      head.appendChild(th);
+    });
+    const table = head.closest('table');
+    table.style.minWidth = `${160 + rows.length * 180}px`;
+  }
+  function addSummaryRow(bodyId, label, values, bestIndex = -1) {
+    const tr = document.createElement('tr');
+    [label, ...values].forEach((text, i) => {
+      const td = document.createElement('td');
+      td.textContent = text;
+      if (i > 0) {
+        td.dataset.modelCol = '';
+        td.style.setProperty('--model-color', colors[i - 1]);
+      }
+      if (i === bestIndex + 1) td.style.color = colors[bestIndex];
+      tr.appendChild(td);
+    });
+    document.getElementById(bodyId).appendChild(tr);
+  }
+  function render() {
+    selected.sort(compareNames);
+    renderChips();
+    const rows = selected.map(name => models.get(name));
+    const ready = rows.length >= 1;
+    document.getElementById('compare-empty').hidden = ready;
+    document.getElementById('compare-results').hidden = !ready;
+    if (!ready) {
+      document.getElementById('compare-empty').textContent = 'Add a model to see its results.';
+      return;
+    }
+
+    renderHeader('compare-head', rows);
+    document.getElementById('compare-summary-body').replaceChildren();
+    addSummaryRow('compare-summary-body', 'Parameters', rows.map(row =>
+      Number.isFinite(parseFloat(row.size)) ? `${row.size}B` : '—'));
+    addSummaryRow('compare-summary-body', 'Weights', rows.map(row =>
+      row.access === 'open' ? 'Open' : row.access === 'proprietary' ? 'Proprietary API' : '—'));
+    addSummaryRow('compare-summary-body', 'License', rows.map(row => row.license || '—'));
+    addSummaryRow('compare-summary-body', 'Submitted', rows.map(row => row.submitted || '—'));
+
+    renderHeader('compare-overall-head', rows);
+    document.getElementById('compare-overall-body').replaceChildren();
+    for (const key of ['wer', 'cer']) {
+      const complete = rows.every(row => count(row, key) === 5 && Number.isFinite(row[`mean_${key}`]));
+      const minimum = complete ? Math.min(...rows.map(row => row[`mean_${key}`])) : null;
+      const best = rows.length > 1 && complete && rows.filter(row => row[`mean_${key}`] === minimum).length === 1
+        ? rows.findIndex(row => row[`mean_${key}`] === minimum) : -1;
+      addSummaryRow('compare-overall-body', `Mean ${key.toUpperCase()}`, rows.map(row =>
+        `${score(row[`mean_${key}`])} (${count(row, key)}/5 sets)`), best);
+    }
+    addSummaryRow('compare-overall-body', 'Speed', rows.map(row =>
+      Number.isFinite(row.speed_x) ? `${row.speed_x.toFixed(1)}×` : '—'));
+
+    const legend = document.getElementById('compare-legend');
+    legend.replaceChildren();
+    rows.forEach((row, i) => {
+      const item = document.createElement('span');
+      const dot = document.createElement('i');
+      dot.style.background = colors[i];
+      item.append(dot, document.createTextNode(`${rankLabel(row.name)} · ${row.name}`));
+      legend.appendChild(item);
+    });
+    for (const key of ['wer', 'cer']) {
+      document.getElementById(`compare-${key}`).classList.toggle('active', metric === key);
+      document.getElementById(`compare-${key}`).setAttribute('aria-pressed', String(metric === key));
+    }
+    const values = COMPARE_DATASETS.flatMap(([key]) => rows.map(row => row[`${key}_${metric}`]))
+      .filter(Number.isFinite);
+    const max = Math.max(1, ...values);
+    const container = document.getElementById('compare-datasets');
+    container.replaceChildren();
+    for (const [key, label] of COMPARE_DATASETS) {
+      const scores = rows.map(row => row[`${key}_${metric}`]);
+      const finite = scores.filter(Number.isFinite);
+      const minimum = finite.length ? Math.min(...finite) : null;
+      const best = rows.length > 1 && finite.length && scores.filter(value => value === minimum).length === 1
+        ? scores.indexOf(minimum) : -1;
+      const row = document.createElement('div');
+      row.className = 'compare-dataset';
+      if (rows.length === 1) row.classList.add('single-model');
+      const name = document.createElement('div');
+      name.className = 'compare-dataset-name';
+      name.textContent = label;
+      const bars = document.createElement('div');
+      bars.className = 'compare-bars';
+      scores.forEach((value, i) => {
+        const line = document.createElement('div');
+        line.className = 'compare-bar';
+        line.title = `${rows[i].name} · ${rankLabel(rows[i].name)} on the Mean WER leaderboard`;
+        const tag = document.createElement('span');
+        tag.className = 'compare-bar-tag';
+        tag.style.color = colors[i];
+        tag.textContent = shortRank(rows[i].name);
+        const track = document.createElement('div');
+        track.className = 'compare-track';
+        if (Number.isFinite(value)) {
+          const fill = document.createElement('div');
+          fill.className = 'compare-fill';
+          fill.style.width = `${Math.max(0, Math.min(100, value / max * 100))}%`;
+          fill.style.background = colors[i];
+          track.appendChild(fill);
+        }
+        const number = document.createElement('span');
+        number.className = 'compare-bar-value';
+        number.textContent = score(value);
+        line.append(tag, track, number);
+        bars.appendChild(line);
+      });
+      row.append(name, bars);
+      if (rows.length > 1) {
+        const winner = document.createElement('div');
+        winner.className = 'compare-difference';
+        if (best >= 0) {
+          winner.textContent = `Best: ${shortName(rows[best].name)}`;
+          winner.style.color = colors[best];
+        } else winner.textContent = finite.length ? 'Tie for best' : 'No scores';
+        row.appendChild(winner);
+      }
+      container.appendChild(row);
+    }
+    document.getElementById('compare-caveat').textContent =
+      (rows.some(row => count(row, metric) < 5)
+        ? 'Mean scores with fewer than five test sets are not directly comparable. ' : '') +
+      'Speed reflects the measured hardware and serving stack; compare it with that context in mind.';
+  }
+
+  add.addEventListener('click', () => list.hidden ? showOptions() : hideOptions());
+  add.addEventListener('keydown', event => {
+    if (event.key === 'ArrowDown') {
+      if (list.hidden) showOptions();
+      const first = list.querySelector('button');
+      if (first) { event.preventDefault(); first.focus(); }
+    }
+    if (event.key === 'Escape') hideOptions();
+  });
+  document.addEventListener('click', event => {
+    if (!picker.contains(event.target)) hideOptions();
+  });
+  clearAll.addEventListener('click', () => {
+    selected.length = 0;
+    syncURL();
+    render();
+    add.focus();
+  });
+  ['wer', 'cer'].forEach(key => document.getElementById(`compare-${key}`)
+    .addEventListener('click', () => { metric = key; syncURL(); render(); }));
+  copy.addEventListener('click', async () => {
+    try {
+      await navigator.clipboard.writeText(shareURL().href);
+      status.textContent = 'Link copied';
+    } catch {
+      status.textContent = 'Copy the link from your browser address bar';
+    }
+  });
+
+  const url = new URL(window.location.href);
+  for (const name of url.searchParams.getAll('model').slice(0, COMPARE_MAX_MODELS)) {
+    if (models.has(name) && !selected.includes(name)) selected.push(name);
+  }
+  render();
+  if (url.searchParams.get('view') === 'compare')
+    document.querySelector('[data-tab="compare"]').click();
+}
+
 async function init() {
   try {
     const embedded = document.getElementById('embedded-leaderboard');
@@ -4015,6 +4645,8 @@ async function init() {
       });
     });
 
+    setupCompare(data);
+
     /* Last updated */
     if (data.updated) {
       const [y, mo, d] = data.updated.split('-');
@@ -4038,6 +4670,17 @@ document.querySelectorAll('.tab-btn').forEach(btn =>
     btn.classList.add('active');
     const tab = btn.dataset.tab;
     document.getElementById('tab-' + tab).classList.add('active');
+    const nav = btn.parentElement;
+    if (nav.scrollWidth > nav.clientWidth) {
+      const navRect = nav.getBoundingClientRect();
+      const btnRect = btn.getBoundingClientRect();
+      nav.scrollLeft += btnRect.left - navRect.left - (nav.clientWidth - btnRect.width) / 2;
+      updateTabFades();
+    }
+    const url = new URL(window.location.href);
+    if (tab === 'compare') url.searchParams.set('view', 'compare');
+    else if (url.searchParams.get('view') === 'compare') url.searchParams.delete('view');
+    window.history.replaceState(null, '', url);
     if (tab === 'analysis') {
       document.getElementById('tog-analysis-wer').classList.toggle('active', _chartState.analysis.sourceTab === 'wer');
       document.getElementById('tog-analysis-cer').classList.toggle('active', _chartState.analysis.sourceTab === 'cer');
