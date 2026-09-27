@@ -8,13 +8,18 @@
       },
       "model_card": {
         "state": "partial",
-        "detail": "Names nvidia/parakeet-rnnt-110m-da-dk as base, training sources, use and terms; no detailed training recipe or evaluation.",
+        "detail": "Names base, training sources, use, terms and benchmark scores; limitations and detailed training recipe are in the linked publisher repository rather than the card.",
         "url": "https://huggingface.co/3dio-ai/svale-110M"
       },
       "license": {
         "state": "partial",
         "detail": "NVIDIA terms permit commercial use; card also applies CoRal restrictions on synthesis and biometric identification.",
         "url": "https://huggingface.co/3dio-ai/svale-110M#licence"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Publisher publishes modal_finetune.py, data-preparation scripts and models/svale-110M/run.json for the released checkpoint.",
+        "url": "https://github.com/3dio-aps/svale/blob/main/modal_finetune.py"
       }
     },
     "features": {
@@ -25,7 +30,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/3dio-ai/svale-110M",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "3dio-ai/svale-600M": {
     "openness": {
@@ -36,13 +41,18 @@
       },
       "model_card": {
         "state": "partial",
-        "detail": "Names nvidia/parakeet-tdt-0.6b-v3 as base, training sources, use and terms; no detailed training recipe or evaluation.",
+        "detail": "Names base, training sources, use, terms and benchmark scores; limitations and detailed training recipe are in the linked publisher repository rather than the card.",
         "url": "https://huggingface.co/3dio-ai/svale-600M"
       },
       "license": {
         "state": "partial",
         "detail": "NVIDIA terms permit commercial use; card also applies CoRal restrictions on synthesis and biometric identification.",
         "url": "https://huggingface.co/3dio-ai/svale-600M#licence"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Publisher publishes modal_finetune.py, data-preparation scripts and models/svale-600M/run.json for the released checkpoint.",
+        "url": "https://github.com/3dio-aps/svale/blob/main/modal_finetune.py"
       }
     },
     "features": {
@@ -53,7 +63,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/3dio-ai/svale-600M",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "capacit-ai/saga": {
     "openness": {
@@ -86,7 +96,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/capacit-ai/saga",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "capacit-ai/saga-2-m": {
     "openness": {
@@ -134,7 +144,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/capacit-ai/saga-2-m",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "CoRal-project/roest-v2-wav2vec2-1B": {
     "openness": {
@@ -160,7 +170,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "no",
@@ -193,7 +203,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "no",
@@ -226,7 +236,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "no",
@@ -259,7 +269,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "yes",
@@ -267,6 +277,44 @@
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v3-whisper-1__5b.parquet"
       }
     }
+  },
+  "danish-foundation-models/edda-v0.1": {
+    "openness": {
+      "license": {
+        "state": "yes",
+        "detail": "Checkpoint card explicitly releases the weights under Apache 2.0; its Whisper Turbo base is MIT licensed.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#license-and-attribution"
+      },
+      "data": {
+        "state": "partial",
+        "detail": "Card lists exact fine-tuning corpora, splits, counts and preprocessing; CoRal v3 access is gated and training copies are not redistributed.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Card publishes detailed hyperparameters and data recipe, but links no executable training script for this checkpoint.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#training-recipe"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Checkpoint-specific lineage, data, recipe, evaluation, use, limitations and license are documented.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Card documents cased, punctuated output; 2,297 of 26,780 saved raw benchmark transcriptions contain both.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#usage"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Card describes offline consecutive 30-second windows for long recordings, not incremental transcription as audio arrives.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#usage"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/danish-foundation-models/edda-v0.1",
+    "reviewed_on": "2026-09-27"
   },
   "facebook/mms-1b-all": {
     "openness": {
@@ -297,7 +345,7 @@
       "url": "https://arxiv.org/abs/2305.13516"
     },
     "reviewed_source": "https://huggingface.co/facebook/mms-1b-all",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "no",
@@ -330,7 +378,7 @@
       "url": "https://arxiv.org/abs/2312.05187"
     },
     "reviewed_source": "https://huggingface.co/facebook/seamless-m4t-v2-large",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "yes",
@@ -370,7 +418,7 @@
       }
     },
     "reviewed_source": "https://developers.openai.com/api/docs/guides/speech-to-text",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "gpt-4o-transcribe": {
     "openness": {
@@ -403,7 +451,7 @@
       }
     },
     "reviewed_source": "https://developers.openai.com/api/docs/guides/speech-to-text",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "gpt-transcribe": {
     "openness": {
@@ -436,7 +484,7 @@
       }
     },
     "reviewed_source": "https://developers.openai.com/api/docs/guides/speech-to-text",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "hinge/danstral-v1": {
     "openness": {
@@ -462,7 +510,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/hinge/danstral-v1",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "no",
@@ -495,7 +543,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "no",
@@ -528,7 +576,7 @@
       "url": "https://arxiv.org/abs/2507.13264"
     },
     "reviewed_source": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "yes",
@@ -561,7 +609,7 @@
       "url": "https://arxiv.org/abs/2507.13264"
     },
     "reviewed_source": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "yes",
@@ -611,7 +659,45 @@
       "url": "https://arxiv.org/abs/2509.14128"
     },
     "reviewed_source": "https://huggingface.co/nvidia/canary-1b-v2",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
+  },
+  "nvidia/nemotron-3.5-asr-streaming-0.6b": {
+    "openness": {
+      "license": {
+        "state": "yes",
+        "detail": "OpenMDW 1.1 permits use and redistribution, including commercial use, subject to retaining notices.",
+        "url": "https://openmdw.ai/license/1-1/"
+      },
+      "data": {
+        "state": "partial",
+        "detail": "Card lists public source families but says the training blend also contains proprietary internal datasets.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b#training-and-evaluation-datasets"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "NeMo toolkit and inference examples are public; this released checkpoint’s training recipe and run configuration are not linked.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b#nvidia-nemo"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed architecture, data sources, supported locales, usage, evaluation, limitations and license.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Card documents native punctuation and capitalization; 22,547 of 26,780 saved raw benchmark transcriptions contain both.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b#why-choose-nemotron-35-asr"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Cache-aware incremental streaming with configurable 80–1120 ms chunks and documented NeMo and Transformers examples.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b#streaming-inference"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b",
+    "reviewed_on": "2026-09-27"
   },
   "nvidia/parakeet-rnnt-110m-da-dk": {
     "openness": {
@@ -649,7 +735,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "nvidia/parakeet-tdt-0.6b-v3": {
     "openness": {
@@ -697,7 +783,7 @@
       "url": "https://arxiv.org/abs/2509.14128"
     },
     "reviewed_source": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "openai/whisper-base": {
     "openness": {
@@ -707,8 +793,8 @@
         "url": "https://huggingface.co/openai/whisper-base#training-data"
       },
       "code": {
-        "state": "partial",
-        "detail": "Model and inference source are public; the exact training pipeline is not linked.",
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
         "url": "https://github.com/openai/whisper"
       },
       "model_card": {
@@ -732,6 +818,11 @@
         "state": "yes",
         "detail": "Whisper timestamp tokens and long-form timestamp decoding are documented.",
         "url": "https://huggingface.co/openai/whisper-base#model-details"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-base"
       }
     },
     "report": {
@@ -740,7 +831,7 @@
       "url": "https://arxiv.org/abs/2212.04356"
     },
     "reviewed_source": "https://huggingface.co/openai/whisper-base",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "openai/whisper-large-v3": {
     "openness": {
@@ -750,8 +841,8 @@
         "url": "https://huggingface.co/openai/whisper-large-v3#training-data"
       },
       "code": {
-        "state": "partial",
-        "detail": "Model and inference source are public; exact checkpoint training pipeline is not linked.",
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
         "url": "https://github.com/openai/whisper"
       },
       "model_card": {
@@ -775,10 +866,15 @@
         "state": "yes",
         "detail": "Card documents sentence and word timestamps in official pipeline.",
         "url": "https://huggingface.co/openai/whisper-large-v3#usage"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-large-v3"
       }
     },
     "reviewed_source": "https://huggingface.co/openai/whisper-large-v3",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "openai/whisper-large-v3-turbo": {
     "openness": {
@@ -788,8 +884,8 @@
         "url": "https://huggingface.co/openai/whisper-large-v3-turbo#training-data"
       },
       "code": {
-        "state": "partial",
-        "detail": "Model and inference source are public; exact checkpoint training pipeline is not linked.",
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
         "url": "https://github.com/openai/whisper"
       },
       "model_card": {
@@ -813,10 +909,15 @@
         "state": "yes",
         "detail": "Card documents sentence and word timestamps in official pipeline.",
         "url": "https://huggingface.co/openai/whisper-large-v3-turbo#usage"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo"
       }
     },
     "reviewed_source": "https://huggingface.co/openai/whisper-large-v3-turbo",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "openai/whisper-small": {
     "openness": {
@@ -826,8 +927,8 @@
         "url": "https://huggingface.co/openai/whisper-small#training-data"
       },
       "code": {
-        "state": "partial",
-        "detail": "Model and inference source are public; the exact training pipeline is not linked.",
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
         "url": "https://github.com/openai/whisper"
       },
       "model_card": {
@@ -851,6 +952,11 @@
         "state": "yes",
         "detail": "Whisper timestamp tokens and long-form timestamp decoding are documented.",
         "url": "https://huggingface.co/openai/whisper-small#model-details"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-small"
       }
     },
     "report": {
@@ -859,7 +965,7 @@
       "url": "https://arxiv.org/abs/2212.04356"
     },
     "reviewed_source": "https://huggingface.co/openai/whisper-small",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "openai/whisper-tiny": {
     "openness": {
@@ -869,8 +975,8 @@
         "url": "https://huggingface.co/openai/whisper-tiny#training-data"
       },
       "code": {
-        "state": "partial",
-        "detail": "Model and inference source are public; the exact training pipeline is not linked.",
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
         "url": "https://github.com/openai/whisper"
       },
       "model_card": {
@@ -894,6 +1000,11 @@
         "state": "yes",
         "detail": "Whisper timestamp tokens and long-form timestamp decoding are documented.",
         "url": "https://huggingface.co/openai/whisper-tiny#model-details"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-tiny"
       }
     },
     "report": {
@@ -902,7 +1013,7 @@
       "url": "https://arxiv.org/abs/2212.04356"
     },
     "reviewed_source": "https://huggingface.co/openai/whisper-tiny",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "ordbogen/whisper": {
     "openness": {
@@ -918,7 +1029,7 @@
       }
     },
     "reviewed_source": "https://odincore.ai/docs/models/ordbogen-whisper",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "yes",
@@ -943,6 +1054,11 @@
         "state": "unknown",
         "detail": "Hub says OpenRAIL, but card does not spell out effective commercial and redistribution terms.",
         "url": "https://huggingface.co/pluttodk/milo-asr"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Card gives two-stage fine-tuning settings; the linked Qwen project offers generic SFT code, not this checkpoint’s training run.",
+        "url": "https://huggingface.co/pluttodk/milo-asr"
       }
     },
     "features": {
@@ -963,7 +1079,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/pluttodk/milo-asr",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "Qwen/Qwen3-ASR-1.7B": {
     "openness": {
@@ -973,9 +1089,9 @@
         "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"
       },
       "code": {
-        "state": "unknown",
-        "detail": "Public repository documents inference and serving; checkpoint training scripts need review.",
-        "url": "https://github.com/QwenLM/Qwen3-ASR"
+        "state": "partial",
+        "detail": "Publisher publishes a Qwen3-ASR fine-tuning script, but not the pretraining code or run configuration for the released 1.7B checkpoint.",
+        "url": "https://github.com/QwenLM/Qwen3-ASR/tree/main/finetuning"
       },
       "model_card": {
         "state": "partial",
@@ -1011,7 +1127,7 @@
       "url": "https://arxiv.org/abs/2601.21337"
     },
     "reviewed_source": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "scribe_v2": {
     "openness": {
@@ -1044,7 +1160,7 @@
       }
     },
     "reviewed_source": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "syv-transcribe": {
     "openness": {
@@ -1055,7 +1171,7 @@
       }
     },
     "reviewed_source": "https://syv.ai/",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "yes",
@@ -1077,13 +1193,13 @@
         "url": "https://huggingface.co/syvai/hviske-v3-conversation"
       },
       "license": {
-        "state": "unknown",
-        "detail": "Card refers to a stated license, but no Hub license tag or effective checkpoint terms were found.",
-        "url": "https://huggingface.co/syvai/hviske-v3-conversation"
+        "state": "no",
+        "detail": "The repository LICENSE permits non-commercial use under OpenRAIL terms and directs commercial users to contact Syv for permission.",
+        "url": "https://huggingface.co/syvai/hviske-v3-conversation/blob/main/LICENSE"
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v3-conversation",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "yes",
@@ -1108,6 +1224,11 @@
         "state": "no",
         "detail": "CC BY-NC 4.0; card explicitly excludes use by or for a commercial entity without separate license.",
         "url": "https://huggingface.co/syvai/hviske-v5#license"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Publisher GitHub repository has a reusable ASR fine-tuning entry point and model presets, but no run files tying it to this released checkpoint.",
+        "url": "https://github.com/syv-ai/hviske/blob/main/src/scripts/finetune_asr_model.py"
       }
     },
     "features": {
@@ -1118,7 +1239,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v5",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "syvai/hviske-v5-tiny": {
     "openness": {
@@ -1161,7 +1282,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v5-tiny",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "syvai/hviske-v5.1": {
     "openness": {
@@ -1179,10 +1300,15 @@
         "state": "no",
         "detail": "CC BY-NC 4.0; commercial use requires separate license.",
         "url": "https://huggingface.co/syvai/hviske-v5.1#license"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Publisher GitHub repository has a reusable ASR fine-tuning entry point and model presets, but no run files tying it to this released checkpoint.",
+        "url": "https://github.com/syv-ai/hviske/blob/main/src/scripts/finetune_asr_model.py"
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v5.1",
-    "reviewed_on": "2026-09-25",
+    "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
         "state": "yes",
@@ -1207,6 +1333,11 @@
         "state": "no",
         "detail": "CC BY-NC 4.0; card explicitly excludes commercial use without separate license.",
         "url": "https://huggingface.co/syvai/hviske-v5.3#license"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Publisher GitHub repository has a reusable ASR fine-tuning entry point and model presets, but no run files tying it to this released checkpoint.",
+        "url": "https://github.com/syv-ai/hviske/blob/main/src/scripts/finetune_asr_model.py"
       }
     },
     "features": {
@@ -1217,7 +1348,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v5.3",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "syvai/hviske-v6": {
     "openness": {
@@ -1265,7 +1396,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/syvai/hviske-v6",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "thorhojhus/whisper-large-v3-turbo-danish": {
     "openness": {
@@ -1303,7 +1434,7 @@
       }
     },
     "reviewed_source": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   },
   "thorhojhus/whisper-small-danish": {
     "openness": {
@@ -1341,6 +1472,6 @@
       }
     },
     "reviewed_source": "https://huggingface.co/thorhojhus/whisper-small-danish",
-    "reviewed_on": "2026-09-25"
+    "reviewed_on": "2026-09-27"
   }
 }

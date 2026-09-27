@@ -1,5 +1,6 @@
 """Model profile decisions must distinguish evidence from Hub hints."""
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -46,14 +47,14 @@ def test_review_overrides_hub_license_and_adds_linked_capabilities():
         },
         "features": {"timestamps": {"state": "yes", "url": "https://example.org/docs"}},
     }}
-    profile = build_profile("example/asr", REPO, {"tags": ["license:mit"]}, reviews)
+    profile = build_profile("example/asr", REPO, {"tags": ["license:cc-by-4.0"]}, reviews)
     assert profile["openness_score"] == 1
     assert profile["openness"]["license"]["state"] == "no"
     assert profile["feature_count"] == 1
     assert profile["features"]["timestamps"]["reviewed"] is True
 
 
-def test_model_specific_report_adds_paper_point():
+def test_model_specific_report_is_unscored_without_model_card():
     reviews = {"example/asr": {
         "report": {"state": "yes", "url": "https://example.org/report"},
         "openness": {"license": {"state": "partial", "url": REPO,
@@ -62,8 +63,19 @@ def test_model_specific_report_adds_paper_point():
     profile = build_profile("example/asr", REPO, {"tags": ["license:mit"]}, reviews)
     assert profile["report"]["state"] == "yes"
     assert profile["openness"]["paper"]["state"] == "yes"
-    assert profile["openness_score"] == 1
+    assert profile["openness_score"] == 0
     assert profile["openness"]["license"]["state"] == "partial"
+
+
+def test_substantive_model_card_and_training_code_are_scored():
+    reviews = {"example/asr": {"openness": {
+        "model_card": {"state": "yes", "url": REPO,
+                       "detail": "Checkpoint-specific training and use documented"},
+        "code": {"state": "yes", "url": "https://example.org/train.py",
+                 "detail": "Checkpoint-specific training script"},
+    }}}
+    profile = build_profile("example/asr", REPO, {}, reviews)
+    assert profile["openness_score"] == 2
 
 
 def test_downloadable_weights_count_separately_from_license():
@@ -102,3 +114,14 @@ def test_reviewed_source_marks_missing_signals_unknown_without_scoring_them(tmp_
     assert profile["features"]["diarization"]["reviewed"] is True
     assert profile["features"]["diarization"]["url"] == REPO
     assert profile["features"]["timestamps"]["state"] == "yes"
+
+
+def test_every_leaderboard_model_has_a_reviewed_profile():
+    results = Path(__file__).resolve().parent.parent / "results"
+    names = set()
+    for path in results.glob("*.json"):
+        model = json.loads(path.read_text())["model"]
+        match = re.match(r"\[([^]]+)\]", model)
+        if match:
+            names.add(match.group(1))
+    assert names <= load_reviews().keys()

@@ -577,7 +577,7 @@
 
     /* Compact profile signals live in the leaderboard; the status card floats
        outside the scrolling table so it stays readable on narrow screens. */
-    .c-profile { width: 116px; min-width: 116px; }
+    .c-profile { width: 120px; min-width: 120px; }
     .profile-trigger {
       --tile-size: 18px;
       display: flex; flex-direction: column; justify-content: center; width: 100%;
@@ -1188,9 +1188,9 @@
         flex: 1 1 calc(50% - 3px);
         min-width: 0;
       }
-      .profile-trigger { flex-direction: row; align-items: center; gap: 4px; padding-inline: 4px; background: var(--surf2); }
+      .profile-trigger { align-items: center; gap: 4px; padding: 5px 4px; background: var(--surf2); }
       .profile-compact-label { display: inline; color: var(--muted); font-size: 11px; }
-      .profile-trigger .profile-segments { flex: 1; min-width: 25px; }
+      .profile-trigger .profile-segments { width: auto; }
 
       /* 3 -- zero-height full-width item, so the tiles always start a new line
          regardless of how wide the meta line happens to be. */
@@ -1544,7 +1544,7 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
-      Openness and Features show individual signals. Blue means confirmed; muted tiles mean not confirmed, including unreviewed signals. Hover, focus, or tap a cell for a status map; select a field name to open its source.
+      Openness has five signals; Features has four. Blue means confirmed; muted tiles mean not confirmed, including unreviewed signals. Hover, focus, or tap a cell for a status map; select a field name to open its source.
     </p>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
@@ -2017,7 +2017,8 @@ function visible(rows) {
 const PROFILE_GROUPS = [
   {key: 'openness', title: 'Openness', count: 'openness_score',
    fields: [['weights', 'Open weights'], ['license', 'Open license'],
-            ['data', 'Training data'], ['paper', 'Paper']]},
+            ['data', 'Training data'], ['code', 'Training code'],
+            ['model_card', 'Model card']]},
   {key: 'features', title: 'Features', count: 'feature_count',
    fields: [['punctuation_case', 'Formatting'], ['timestamps', 'Timestamps'],
             ['diarization', 'Speakers'], ['streaming', 'Streaming']]},
@@ -2209,7 +2210,7 @@ const WER_COLS = [
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'openness_score',          label:'Openness',      cls:'c-profile',
-    tip:'Downloadable weights, effective license terms, complete training data, and a model-specific paper or report. Hover or tap for evidence.' },
+    tip:'Downloadable weights, effective license terms, training data, checkpoint-specific training code, and a substantive model card. Hover or tap for evidence.' },
   { key:'feature_count',           label:'Features',      cls:'c-profile',
     tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
@@ -2242,7 +2243,7 @@ const CER_COLS = [
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'openness_score',          label:'Openness',       cls:'c-profile',
-    tip:'Downloadable weights, effective license terms, complete training data, and a model-specific paper or report. Hover or tap for evidence.' },
+    tip:'Downloadable weights, effective license terms, training data, checkpoint-specific training code, and a substantive model card. Hover or tap for evidence.' },
   { key:'feature_count',           label:'Features',       cls:'c-profile',
     tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',

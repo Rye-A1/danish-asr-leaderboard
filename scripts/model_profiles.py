@@ -7,8 +7,8 @@ from datetime import date
 from pathlib import Path
 
 PROFILE_FILE = Path(__file__).with_name("model_profiles.json")
-OPENNESS = ("weights", "license", "data", "paper")
-ADDITIONAL = ("code", "model_card")
+OPENNESS = ("weights", "license", "data", "code", "model_card")
+ADDITIONAL = ("paper",)
 FEATURES = ("punctuation_case", "timestamps", "diarization", "streaming")
 STATES = {"yes", "no", "partial", "unknown"}
 UNCONFIRMED = {
