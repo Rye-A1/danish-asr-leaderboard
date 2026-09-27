@@ -593,7 +593,7 @@
       overflow: hidden; border-radius: 5px;
     }
     .profile-score {
-      position: absolute; inset: 50% 0 auto; z-index: 1;
+      position: absolute; inset: 50% 0 auto; z-index: 2;
       transform: translateY(-50%);
       color: var(--text); font-size: 15px; font-weight: 700;
       font-variant-numeric: tabular-nums; line-height: 1; text-align: center;
@@ -602,15 +602,27 @@
     .profile-score-total { color: var(--muted); font-weight: 500; }
     .profile-meter {
       position: absolute; inset: 0;
-      border-right: 1px solid color-mix(in srgb, var(--link) 16%, var(--border));
+      background: color-mix(in srgb, var(--link) 6%, transparent);
     }
     .profile-meter-fill {
       position: absolute; top: 0; left: 0; width: var(--score-share); height: 100%;
-      border-right: 2px solid var(--link);
       background: linear-gradient(to left, color-mix(in srgb, var(--link) 34%, transparent),
         color-mix(in srgb, var(--link) 5%, transparent));
     }
     .profile-visual.empty .profile-meter-fill { display: none; }
+    .profile-meter-tiles {
+      position: absolute; inset: 0; display: grid;
+      grid-template-columns: repeat(var(--segment-count), minmax(0, 1fr));
+    }
+    .profile-meter-tiles span:not(:last-child) {
+      border-right: 2px solid var(--surf2);
+    }
+    .profile-meter::after {
+      content: ""; position: absolute; z-index: 1;
+      top: 0; left: var(--score-share); width: 2px; height: 100%;
+      transform: translateX(-2px); background: var(--link);
+    }
+    .profile-visual.empty .profile-meter::after { display: none; }
     .profile-segments { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 3px; }
     .profile-segment {
       width: min(100%, 22px); aspect-ratio: 1; justify-self: center;
@@ -1562,7 +1574,7 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
-      Openness is scored out of five and Features out of four. The blue fill grows left to right with the confirmed share. Hover, focus, or tap a score for the field breakdown; select a field name to open its source.
+      Openness is scored out of five and Features out of four. Each segment represents one field; the blue fill shows the confirmed share. Hover, focus, or tap a score for the field breakdown; select a field name to open its source.
     </p>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
@@ -2183,9 +2195,13 @@ function profileCell(td, row, group) {
   const meter = document.createElement('span');
   meter.className = 'profile-meter';
   meter.setAttribute('aria-hidden', 'true');
+  meter.style.setProperty('--segment-count', group.fields.length);
   const fill = document.createElement('span');
   fill.className = 'profile-meter-fill';
-  meter.appendChild(fill);
+  const tiles = document.createElement('span');
+  tiles.className = 'profile-meter-tiles';
+  for (const _ of group.fields) tiles.appendChild(document.createElement('span'));
+  meter.append(fill, tiles);
   visual.append(tally, meter);
   button.append(label, visual);
   button.addEventListener('mouseenter', () => showProfilePopover(button, row, group));
