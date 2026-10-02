@@ -1,0 +1,19 @@
+{
+  "model": "[danish-foundation-models/edda-v0.2](https://huggingface.co/danish-foundation-models/edda-v0.2)",
+  "params_b": 0.809,
+  "coral_conversation_wer": 15.54,
+  "coral_read_aloud_wer": 9.59,
+  "cv17_da_wer": 5.71,
+  "fleurs_da_wer": 7.34,
+  "ftspeech_wer": 5.77,
+  "mean_wer": 8.79,
+  "coral_conversation_cer": 8.93,
+  "coral_read_aloud_cer": 3.64,
+  "cv17_da_cer": 1.85,
+  "fleurs_da_cer": 2.84,
+  "ftspeech_cer": 3.22,
+  "mean_cer": 4.1,
+  "speed_x": 18.6,
+  "submitted": "2026-10-02",
+  "access": "open"
+}
