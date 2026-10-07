@@ -1,7 +1,7 @@
 {
   "model": "Harmonium/brage-v1",
   "model_link": "[Harmonium/brage-v1](https://huggingface.co/Harmonium/brage-v1)",
-  "params_b": 1.543,
+  "params_b": 8.785,
   "access": "open",
   "submitted": "2026-10-06",
   "unicode_form": "NFKC",

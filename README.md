@@ -128,8 +128,9 @@ danish-asr-eval --model capacit-ai/saga-2-m --backend saga2
 # and run `hf auth login` first; the 14.5 GB neural LM it rescores with is downloaded on
 # first use). Needs about 15 GiB of free GPU memory and 22 GB of RAM: if its "brage
 # settings" line lists batch size 1, the run fell back to one clip at a time and is not the
-# reference decode.
-danish-asr-eval --model Harmonium/brage-v1 --backend brage
+# reference decode. The full inference system is 8.785B neural parameters:
+# 1.543B in Brage plus 7.242B in the Munin rescoring model.
+danish-asr-eval --model Harmonium/brage-v1 --backend brage --params-b 8.785
 
 # API backends (params not applicable → defaults to 0.0)
 danish-asr-eval --model chirp_3 --backend google-chirp --google-cloud-project my-gcp-project

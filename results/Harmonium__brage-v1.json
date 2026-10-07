@@ -1,6 +1,6 @@
 {
   "model": "[Harmonium/brage-v1](https://huggingface.co/Harmonium/brage-v1)",
-  "params_b": 1.543,
+  "params_b": 8.785,
   "coral_conversation_wer": 16.2,
   "coral_read_aloud_wer": 8.3,
   "cv17_da_wer": 5.56,
