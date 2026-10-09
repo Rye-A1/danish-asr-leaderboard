@@ -205,6 +205,17 @@ def test_fabricated_quotes_and_missing_fields_cannot_pass_validation():
     assert fields["data"]["state"] == "unknown"
 
 
+def test_whitespace_only_quote_variation_resolves_to_exact_source_span():
+    sources = [{"id": "S1", "kind": "model_card", "url": "https://example.org/card",
+                "text": "Weights are released under\n  Apache License 2.0."}]
+    raw = {"fields": {"license": {"state": "yes", "evidence": [
+        {"source_id": "S1", "quote": "Weights are released under Apache License 2.0."}],
+        "explanation": "Checkpoint terms."}}}
+    field = validate_suggestions(raw, sources)["license"]
+    assert field["state"] == "yes"
+    assert field["evidence"][0]["quote"] == sources[0]["text"]
+
+
 def test_training_format_does_not_prove_timestamps_are_unsupported():
     sources = [{"id": "S1", "kind": "model_card", "url": "https://example.org/card",
                 "text": "Trained on <|notimestamps|> text."}]
@@ -212,6 +223,19 @@ def test_training_format_does_not_prove_timestamps_are_unsupported():
         {"source_id": "S1", "quote": "Trained on <|notimestamps|> text."}],
         "explanation": "The format has no timestamp token."}}}
     assert validate_suggestions(raw, sources)["timestamps"]["state"] == "unknown"
+
+
+def test_unevaluated_overlapping_speech_does_not_prove_no_diarization():
+    sources = [{"id": "S1", "kind": "model_card", "url": "https://example.org/card",
+                "text": "Noisy audio and overlapping speakers were not evaluated separately.\nNo speaker diarization."}]
+    speculative = {"fields": {"diarization": {"state": "no", "evidence": [
+        {"source_id": "S1", "quote": "Noisy audio and overlapping speakers were not evaluated separately."}],
+        "explanation": "Not evaluated."}}}
+    explicit = {"fields": {"diarization": {"state": "no", "evidence": [
+        {"source_id": "S1", "quote": "No speaker diarization."}],
+        "explanation": "Explicitly absent."}}}
+    assert validate_suggestions(speculative, sources)["diarization"]["state"] == "unknown"
+    assert validate_suggestions(explicit, sources)["diarization"]["state"] == "no"
 
 
 def test_agent_request_uses_structured_output_and_source_bundle():
