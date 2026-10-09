@@ -169,7 +169,8 @@ def test_license_lookup_is_a_lead_not_a_positive_score():
 def test_candidate_collector_does_not_turn_tags_into_scores():
     info = {
         "tags": ["license:mit", "dataset:example/speech", "arxiv:2401.12345"],
-        "cardData": {"license": "mit", "datasets": ["example/speech"]},
+        "cardData": {"license": "mit", "license_link": "https://www.nvidia.com/terms",
+                     "datasets": ["example/speech"]},
         "siblings": [{"rfilename": "model.safetensors"},
                      {"rfilename": "train.py"},
                      {"rfilename": "preprocessor_config.json"}],
@@ -179,6 +180,7 @@ def test_candidate_collector_does_not_turn_tags_into_scores():
                                "# Model\n## Limitations\nhttps://github.com/example/asr/blob/main/train.py\n"
                                "https://huggingface.co/datasets/other/public")
     assert candidate["license_tag_class"] == "open_candidate"
+    assert candidate["license_link"] == "https://www.nvidia.com/terms"
     assert candidate["dataset_links"] == ["https://huggingface.co/datasets/example/speech",
                                           "https://huggingface.co/datasets/other/public"]
     assert candidate["unverified_paper_links"] == ["https://arxiv.org/abs/2401.12345"]

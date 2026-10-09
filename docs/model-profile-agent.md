@@ -11,10 +11,16 @@ model and provider can be changed with `OPENROUTER_MODEL` and
 `OPENROUTER_PROVIDER` together.
 
 For open models the agent reads the exact revision of a Hugging Face model card,
-checkpoint license files, linked dataset cards and training files, and the
+checkpoint license files (including `MODEL_LICENSE.md`), a card's trusted
+external license link, linked dataset cards and training files, and the
 base-model card and license when `base_model` metadata identifies one. For API
 models it reads the official pages in `scripts/provider_profile_sources.json`;
 generic provider capabilities do not establish support for the scored model.
+Long Hub YAML front matter is removed before the card is excerpted, so the
+checkpoint description remains in the source bundle. A deterministic positive
+formatting count from committed raw benchmark output is also included when
+available; a missing count never proves that formatting is unsupported. Rubric
+changes invalidate cached agent suggestions.
 It checks these questions:
 
 | Field | Evidence needed for a suggested Yes |
@@ -37,6 +43,9 @@ hashes so reviewers can recheck what the agent saw. Gated or missing sources
 remain for manual review. Hosted API openness factors are `no` by leaderboard
 policy; only their model-specific features are reviewed from official API docs.
 Only public source text is sent to OpenRouter.
+`scripts/compare_model_profile_agent.py` compares each draft field with the
+human-reviewed profile and lists differences. Exact agreement is not proof
+that a claim is correct; the reviewer still checks its source and scope.
 
 The first live pilot on Edda v0.1 yielded source-validated license and data
 suggestions from Nemotron Super. That pilot used the former, stricter data
@@ -57,12 +66,14 @@ cases. Free model availability and rate limits may change.
 The [pre-merge PR check](../.github/workflows/review-model-profile-pr.yml)
 collects public leads for changed result files without the OpenRouter secret.
 Running PR-controlled code with that secret is intentionally excluded. The
-weekly agent runs from trusted main-branch code. Its review PR also requires the repository Actions setting **Allow
-GitHub Actions to create and approve pull requests**. Without the key, source
+secret-backed agent step runs only from trusted `main` branch code. Creating
+its review PR also requires the repository Actions setting **Allow GitHub
+Actions to create and approve pull requests**. Without the key, source
 collection still runs and the agent step is skipped.
 
-For a live one-model check, dispatch the workflow on the PR branch with the
-exact model ID and `pilot_only=true`. Optionally choose a different
+For a live one-model check after this code reaches `main`, dispatch the workflow
+on `main` with the exact model ID and `pilot_only=true`. Optionally choose a different
 `reviewer_model` and `reviewer_provider` to compare endpoints on the same
-sources. The draft is retained as a workflow artifact; the pilot does not
-create a review PR or change scores.
+sources. The draft and comparison are retained as workflow artifacts; the pilot
+does not create a review PR or change scores. On an unmerged branch the
+public-source collector can run without exposing the secret.

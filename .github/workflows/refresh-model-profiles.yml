@@ -53,6 +53,7 @@ jobs:
           else
             python scripts/refresh_model_profile_candidates.py
       - name: Check optional reviewer key
+        if: github.ref == 'refs/heads/main'
         id: reviewer_key
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
@@ -61,13 +62,16 @@ jobs:
             echo 'available=true' >> "$GITHUB_OUTPUT"
           fi
       - name: Draft source-quoted profile reviews
-        if: steps.reviewer_key.outputs.available == 'true'
+        if: github.ref == 'refs/heads/main' && steps.reviewer_key.outputs.available == 'true'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           OPENROUTER_MODEL: ${{ inputs.reviewer_model }}
           OPENROUTER_PROVIDER: ${{ inputs.reviewer_provider }}
           PROFILE_AGENT_MODEL_ID: ${{ inputs.model }}
         run: python scripts/model_profile_agent.py
+      - name: Compare draft with reviewed profiles
+        if: github.ref == 'refs/heads/main' && steps.reviewer_key.outputs.available == 'true'
+        run: python scripts/compare_model_profile_agent.py > model-profile-agent-comparison.md
       - name: Preserve review draft
         if: always()
         uses: actions/upload-artifact@v4
@@ -76,6 +80,7 @@ jobs:
           path: |
             scripts/model_profile_candidates.json
             scripts/model_profile_agent_suggestions.json
+            model-profile-agent-comparison.md
           if-no-files-found: ignore
       - name: Summarize source review
         if: always()
@@ -89,6 +94,9 @@ jobs:
           print(f'### Model profile evidence: {len(leads)} source check(s), {len(drafts)} review draft(s)')
           for name in leads:
               print(f'- `{name}`: {"draft available" if name in drafts else "manual review needed"}')
+          comparison = Path('model-profile-agent-comparison.md')
+          if comparison.exists():
+              print('\n' + comparison.read_text())
           print('\nReview drafts never change leaderboard metadata automatically.')
           PY
       - name: Propose review of new or changed sources

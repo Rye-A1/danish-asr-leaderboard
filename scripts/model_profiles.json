@@ -65,6 +65,54 @@
     "reviewed_source": "https://huggingface.co/3dio-ai/svale-600M",
     "reviewed_on": "2026-09-27"
   },
+  "Harmonium/brage-v1": {
+    "openness": {
+      "license": {
+        "state": "yes",
+        "detail": "The checkpoint license permits commercial use and redistribution under Apache 2.0 with published Attachment A use restrictions and redistribution notices.",
+        "url": "https://huggingface.co/Harmonium/brage-v1/blob/main/LICENSE"
+      },
+      "data": {
+        "state": "yes",
+        "detail": "The card names the complete six-corpus fine-tuning mix, all publicly obtainable, and states that only gold transcripts were used.",
+        "url": "https://huggingface.co/Harmonium/brage-v1#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "The card publishes a checkpoint-specific training recipe and inference code, but no executable training and preprocessing scripts for this run.",
+        "url": "https://huggingface.co/Harmonium/brage-v1#training-recipe"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "The checkpoint card documents lineage, training data and recipe, evaluation, limitations, usage, and terms.",
+        "url": "https://huggingface.co/Harmonium/brage-v1"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 2,634 of 26,780 transcriptions.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/Harmonium__brage-v1.parquet"
+      },
+      "timestamps": {
+        "state": "unknown",
+        "detail": "The documented decoder does not establish a Danish word or segment timestamp output mode for this checkpoint.",
+        "url": "https://huggingface.co/Harmonium/brage-v1"
+      },
+      "diarization": {
+        "state": "unknown",
+        "detail": "Speaker-labeled transcripts are not established for this checkpoint.",
+        "url": "https://huggingface.co/Harmonium/brage-v1"
+      },
+      "streaming": {
+        "state": "unknown",
+        "detail": "The documented decoding of recordings in windows does not establish transcription while live audio arrives.",
+        "url": "https://huggingface.co/Harmonium/brage-v1"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/Harmonium/brage-v1",
+    "reviewed_on": "2026-10-10"
+  },
   "capacit-ai/saga": {
     "openness": {
       "data": {
@@ -315,6 +363,44 @@
     },
     "reviewed_source": "https://huggingface.co/danish-foundation-models/edda-v0.1",
     "reviewed_on": "2026-09-27"
+  },
+  "danish-foundation-models/edda-v0.2": {
+    "openness": {
+      "license": {
+        "state": "yes",
+        "detail": "The released checkpoint is Apache 2.0 and its Whisper Large v3 Turbo base is MIT-licensed.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.2#license-and-attribution"
+      },
+      "data": {
+        "state": "yes",
+        "detail": "The card gives the complete six-corpus fine-tuning mix with public sources, splits, counts, and hours; it states no pseudo-labels were used.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.2#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "A detailed checkpoint-specific training recipe is published, but executable training and preprocessing code for this run is not linked.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.2#training-recipe"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents lineage, data and prompt conditioning, training recipe, use, evaluation, limitations, and terms.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.2"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "The card documents cased and punctuated Danish output, and saved benchmark transcripts confirm both.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.2#usage"
+      },
+      "timestamps": {
+        "state": "unknown",
+        "detail": "The card's training target uses a no-timestamps token; a timestamp output mode for this fine-tune is not established.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.2#training-recipe"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/danish-foundation-models/edda-v0.2",
+    "reviewed_on": "2026-10-10"
   },
   "facebook/mms-1b-all": {
     "openness": {
@@ -1185,6 +1271,32 @@
       }
     },
     "reviewed_source": "https://huggingface.co/RyeAI/ekko-v1-tiny",
+    "reviewed_on": "2026-10-10"
+  },
+  "saga-2-l": {
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 2,996 of 26,780 transcriptions.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/saga-2-l.parquet"
+      },
+      "timestamps": {
+        "state": "unknown",
+        "detail": "No model-specific timestamp request or response is documented in the available official source.",
+        "url": "https://capacit.com/"
+      },
+      "diarization": {
+        "state": "unknown",
+        "detail": "No model-specific speaker-labeled output is documented in the available official source.",
+        "url": "https://capacit.com/"
+      },
+      "streaming": {
+        "state": "unknown",
+        "detail": "No model-specific live-audio input and interim transcript path is documented in the available official source.",
+        "url": "https://capacit.com/"
+      }
+    },
+    "reviewed_source": "https://capacit.com/",
     "reviewed_on": "2026-10-10"
   },
   "scribe_v2": {

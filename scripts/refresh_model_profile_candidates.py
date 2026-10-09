@@ -89,6 +89,7 @@ def evidence_leads(name: str, source: str, info: dict | None, readme: str = "") 
         "weight_files": weight_files[:12],
         "license_tag": license_tag,
         "license_tag_class": license_tag_class(license_tag),
+        "license_link": card.get("license_link") if isinstance(card.get("license_link"), str) else "",
         "dataset_links": dataset_urls,
         "unverified_paper_links": paper_urls,
         "training_code_leads": code_links[:12] + [f"{source}/blob/main/{quote(f)}" for f in training_files[:12]],

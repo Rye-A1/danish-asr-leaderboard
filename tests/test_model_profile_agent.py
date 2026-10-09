@@ -4,7 +4,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-from model_profile_agent import (FIELDS, RUBRIC, ask_agent, collect_sources, response_schema,
+from model_profile_agent import (FIELDS, RUBRIC, _add_saved_output_source, _card_excerpt,
+                                 ask_agent, collect_sources, response_schema,
                                  validate_suggestions)
 
 
@@ -61,6 +62,96 @@ def test_source_bundle_fetches_pinned_card_dataset_code_and_base_terms():
         "base_model_card", "base_license"]
     assert sources[0]["url"].endswith(f"/{revision}/README.md")
     assert [item["id"] for item in sources] == [f"S{i}" for i in range(1, 7)]
+
+
+def test_long_hub_front_matter_does_not_hide_checkpoint_evidence():
+    card = "---\n" + "dataset: example/speech\n" * 6000 + "---\n"
+    card += "# Released checkpoint\nThe training mix uses only public gold transcripts.\n"
+    excerpt = _card_excerpt(card)
+    assert "Released checkpoint" in excerpt
+    assert "only public gold transcripts" in excerpt
+    assert "dataset: example/speech" not in excerpt
+
+
+def test_source_bundle_reads_effective_license_file_and_trusted_link():
+    revision = "b" * 40
+    source = "https://huggingface.co/example/asr"
+
+    class Response:
+        def __init__(self, text="", status=200, data=None):
+            self.text, self.status_code, self._data = text, status, data
+            self.ok = status == 200
+
+        def raise_for_status(self):
+            assert self.ok
+
+        def json(self):
+            return self._data
+
+    responses = {
+        f"{source}/resolve/{revision}/README.md": Response("# Checkpoint"),
+        f"{source}/resolve/{revision}/MODEL_LICENSE.md": Response("Effective checkpoint terms"),
+        f"https://huggingface.co/api/models/example/asr/revision/{revision}": Response(
+            data={"cardData": {"license_link": "https://www.nvidia.com/en-us/ai/"}}),
+        "https://www.nvidia.com/en-us/ai/": Response("Published model terms"),
+    }
+
+    class Session:
+        def get(self, url, **kwargs):
+            return responses.get(url, Response(status=404))
+
+    sources = collect_sources(Session(), {"source": source, "revision": revision})
+    assert [(item["kind"], item["text"]) for item in sources] == [
+        ("model_card", "# Checkpoint"),
+        ("checkpoint_license", "Effective checkpoint terms"),
+        ("linked_license", "Published model terms"),
+    ]
+
+
+def test_untrusted_license_link_is_never_fetched():
+    revision = "c" * 40
+    source = "https://huggingface.co/example/asr"
+
+    class Response:
+        status_code = 200
+        ok = True
+        text = "# Checkpoint"
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"cardData": {"license_link": "https://untrusted.example/terms"}}
+
+    class Session:
+        def get(self, url, **kwargs):
+            assert not url.startswith("https://untrusted.example")
+            if url.endswith("README.md") or "/api/models/" in url:
+                return Response()
+            return type("Missing", (), {"status_code": 404})()
+
+    sources = collect_sources(Session(), {"source": source, "revision": revision})
+    assert [item["kind"] for item in sources] == ["model_card"]
+
+
+def test_public_saved_transcripts_supply_only_positive_formatting_evidence(tmp_path):
+    model_dir = tmp_path / "example__asr"
+    model_dir.mkdir()
+    (model_dir / "test.jsonl").write_text(
+        ('{"hypothesis": "Hej, verden."}\n' * 1000), encoding="utf-8")
+    sources = []
+    _add_saved_output_source(sources, "example/asr", tmp_path)
+    assert len(sources) == 1
+    assert sources[0]["kind"] == "saved_outputs"
+    assert "1,000 of 1,000" in sources[0]["text"]
+    assert sources[0]["url"].endswith("example__asr.parquet")
+    (model_dir / "test.jsonl").write_text(
+        ('{"hypothesis": "hej verden"}\n' * 1000), encoding="utf-8")
+    from model_profiles import formatting_from_outputs
+    formatting_from_outputs.cache_clear()
+    sources = []
+    _add_saved_output_source(sources, "example/asr", tmp_path)
+    assert sources == []
 
 
 def test_provider_review_uses_only_official_api_docs_and_visible_main_text():
