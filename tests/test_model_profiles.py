@@ -7,7 +7,8 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-from model_profiles import build_profile, load_reviews, license_tag_class, OPENNESS, FEATURES
+from model_profiles import (build_profile, formatting_from_outputs, load_reviews,
+                            license_tag_class, OPENNESS, FEATURES)
 from refresh_model_profile_candidates import collect, evidence_leads, needs_review
 
 
@@ -195,3 +196,22 @@ def test_collector_queues_new_models_and_changed_sources(tmp_path):
     assert set(candidates) == {"example/new", "hosted-api"}
     assert candidates["example/new"]["license_tag_class"] == "open_candidate"
     assert candidates["hosted-api"]["status"] == "new"
+
+
+def test_saved_outputs_confirm_formatting_without_overriding_review(tmp_path):
+    model_dir = tmp_path / "example__asr"
+    model_dir.mkdir()
+    rows = [json.dumps({"hypothesis": "Hej, verden." if i < 80 else "hej verden"})
+            for i in range(1000)]
+    (model_dir / "sample.jsonl").write_text("\n".join(rows) + "\n")
+    evidence = formatting_from_outputs("example/asr", tmp_path)
+    assert evidence["state"] == "yes"
+    assert "80 of 1,000" in evidence["detail"]
+    profile = build_profile("example/asr", REPO, {}, {}, formatting_evidence=evidence)
+    assert profile["feature_count"] == 1
+    reviewed = {"example/asr": {"features": {"punctuation_case": {
+        "state": "no", "url": REPO, "detail": "Publisher documents no formatted mode"}}}}
+    profile = build_profile("example/asr", REPO, {}, reviewed,
+                            formatting_evidence=evidence)
+    assert profile["feature_count"] == 0
+    assert profile["features"]["punctuation_case"]["state"] == "no"

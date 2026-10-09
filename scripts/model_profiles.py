@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import json
+import functools
+import math
 import re
 from datetime import date
 from pathlib import Path
@@ -67,6 +69,45 @@ def _candidate(state: str = "unknown", *, detail: str = "", url: str = "", sugge
     return {"state": state, "detail": detail, "url": url, "suggestion": suggestion, "reviewed": False}
 
 
+@functools.lru_cache(maxsize=256)
+def formatting_from_outputs(model: str, outputs_dir: Path) -> dict | None:
+    """Confirm cased, punctuated text on the scored path from saved raw output.
+
+    A lack of examples is not proof that the model cannot format text, so only
+    positive evidence is returned. Other feature fields need endpoint-specific
+    documentation or a structured API probe.
+    """
+    slug = re.sub(r"[^a-zA-Z0-9_-]", "__", model.strip("/"))
+    model_dir = outputs_dir / slug
+    paths = sorted(model_dir.glob("*.jsonl")) if model_dir.is_dir() else []
+    combined = outputs_dir / f"{slug}.jsonl"
+    if not paths and combined.is_file():
+        paths = [combined]
+    if not paths:
+        return None
+    total = formatted = 0
+    for path in paths:
+        with path.open(encoding="utf-8") as source:
+            for line in source:
+                if not line.strip():
+                    continue
+                hypothesis = json.loads(line).get("hypothesis") or ""
+                if not isinstance(hypothesis, str):
+                    continue
+                total += 1
+                if any(char.isupper() for char in hypothesis) and re.search(r"[.!?,;:]", hypothesis):
+                    formatted += 1
+    if total < 1000 or formatted < max(50, math.ceil(total * 0.01)):
+        return None
+    evidence = _candidate(
+        "yes",
+        detail=f"{formatted:,} of {total:,} saved benchmark transcriptions contain both casing and punctuation.",
+        url=f"https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/{slug}.parquet",
+    )
+    evidence["reviewed"] = True
+    return evidence
+
+
 def license_tag_class(tag: str) -> str:
     """Classify an advertised license tag as a lead, never as final terms."""
     tag = tag.strip().lower()
@@ -78,7 +119,7 @@ def license_tag_class(tag: str) -> str:
 
 
 def build_profile(model: str, model_url: str, metadata: dict, reviews: dict,
-                  *, access: str = "unknown") -> dict:
+                  *, access: str = "unknown", formatting_evidence: dict | None = None) -> dict:
     """Build a display profile; Hub tags are review leads, not positive proof."""
     tags = metadata.get("tags") or []
     if not isinstance(tags, list):
@@ -137,6 +178,8 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict,
         "model_card": _candidate(detail="Card completeness not reviewed", url=repo_url),
     }
     features = {key: _candidate(detail="Capability not reviewed") for key in FEATURES}
+    if formatting_evidence:
+        features["punctuation_case"] = formatting_evidence
     reviewed = reviews.get(model, {})
     if source := reviewed.get("reviewed_source", ""):
         for entries in (openness, features):

@@ -84,11 +84,21 @@ Mark `no` when the scored output contains no cased, punctuated text and no
 formatting option is documented; use `unknown` if neither output nor documentation
 is available. Saved raw hypotheses are evidence for what the released inference
 path actually returns.
+For models without a reviewed formatting decision, the Space automatically
+confirms this field when at least 1,000 saved outputs exist and at least 1% (and
+50 clips) contain both casing and punctuation. Missing examples leave the field
+unknown; they do not prove the feature absent. A reviewed decision takes
+precedence over this signal.
 Link documentation or a reproducible example for the released checkpoint or
 its official inference package. An external aligner or chunking demo is not
 automatically a native model feature. `partial` means only part of the claim is
 supported, `no` means documented absence or restrictive terms, and `unknown`
 means the available sources do not decide it.
+
+Timestamps, speaker labels, and streaming require evidence from the exact model
+and API path. A provider's general capability or a separate model does not
+establish support. For hosted models, a structured response or live-audio probe
+can confirm these fields; the text-only benchmark outputs cannot.
 
 For streaming, a completed-file API that sends partial text is `partial`; a
 documented path that accepts ongoing audio and emits interim results is `yes`.
