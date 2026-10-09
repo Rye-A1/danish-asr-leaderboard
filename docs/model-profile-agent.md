@@ -47,3 +47,9 @@ cases. Free model availability and rate limits may change.
 The workflow's review PR also requires the repository Actions setting **Allow
 GitHub Actions to create and approve pull requests**. Without the key, source
 collection still runs and the agent step is skipped.
+
+For a live one-model check, dispatch the workflow on the PR branch with the
+exact model ID and `pilot_only=true`. Optionally choose a different
+`reviewer_model` and `reviewer_provider` to compare endpoints on the same
+sources. The draft is retained as a workflow artifact; the pilot does not
+create a review PR or change scores.

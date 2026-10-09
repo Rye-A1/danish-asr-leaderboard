@@ -22,8 +22,8 @@ import requests
 ROOT = Path(__file__).resolve().parent
 CANDIDATES = ROOT / "model_profile_candidates.json"
 OUTPUT = ROOT / "model_profile_agent_suggestions.json"
-MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemma-4-26b-a4b-it:free")
-PROVIDER = os.environ.get("OPENROUTER_PROVIDER", "google-ai-studio")
+MODEL = os.environ.get("OPENROUTER_MODEL") or "google/gemma-4-26b-a4b-it:free"
+PROVIDER = os.environ.get("OPENROUTER_PROVIDER") or "google-ai-studio"
 SCHEMA_VERSION = 2
 FIELDS = ("license", "data", "code", "model_card", "punctuation_case",
           "timestamps", "diarization", "streaming")
@@ -254,11 +254,16 @@ def main() -> None:
     key = os.environ.get("OPENROUTER_API_KEY")
     if not key:
         raise SystemExit("Set OPENROUTER_API_KEY to generate optional review suggestions")
+    model_filter = os.environ.get("PROFILE_AGENT_MODEL_ID", "").strip()
     candidates = json.loads(CANDIDATES.read_text(encoding="utf-8"))
+    if model_filter and model_filter not in candidates:
+        raise SystemExit(f"Model is not in the current review queue: {model_filter}")
     previous = json.loads(OUTPUT.read_text(encoding="utf-8")) if OUTPUT.exists() else {}
     output = {}
     with requests.Session() as session:
         for name, candidate in candidates.items():
+            if model_filter and name != model_filter:
+                continue
             if not HF_MODEL.fullmatch(candidate.get("source", "")):
                 continue  # Hosted providers need endpoint-specific source collection.
             prior = previous.get(name, {})

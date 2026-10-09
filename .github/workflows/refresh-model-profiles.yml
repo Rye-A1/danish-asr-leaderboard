@@ -9,6 +9,24 @@ on:
   schedule:
     - cron: '17 6 * * 1'
   workflow_dispatch:
+    inputs:
+      model:
+        description: 'Optional exact model ID for a one-model pilot'
+        required: false
+        type: string
+      reviewer_model:
+        description: 'Optional OpenRouter model for the pilot'
+        required: false
+        type: string
+      reviewer_provider:
+        description: 'Optional OpenRouter provider slug for the pilot'
+        required: false
+        type: string
+      pilot_only:
+        description: 'Upload draft as an artifact without opening a review PR'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: write
@@ -37,8 +55,19 @@ jobs:
         if: steps.reviewer_key.outputs.available == 'true'
         env:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ inputs.reviewer_model }}
+          OPENROUTER_PROVIDER: ${{ inputs.reviewer_provider }}
+          PROFILE_AGENT_MODEL_ID: ${{ inputs.model }}
         run: python scripts/model_profile_agent.py
+      - name: Preserve review draft
+        if: steps.reviewer_key.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-profile-review-draft
+          path: scripts/model_profile_agent_suggestions.json
+          if-no-files-found: ignore
       - name: Propose review of new or changed sources
+        if: inputs.pilot_only != true
         uses: peter-evans/create-pull-request@v7
         with:
           branch: codex/refresh-model-profile-candidates
@@ -47,7 +76,7 @@ jobs:
           title: 'Review new or changed model profile evidence'
           body: |
             Automated source discovery for the Openness and Features columns.
-            Candidate evidence and optional Nemotron suggestions are not used to award points. Confirm checkpoint-specific evidence and source terms before updating `scripts/model_profiles.json`.
+            Candidate evidence and optional agent suggestions are not used to award points. Confirm checkpoint-specific evidence and source terms before updating `scripts/model_profiles.json`.
           add-paths: |
             scripts/model_profile_candidates.json
             scripts/model_profile_agent_suggestions.json
