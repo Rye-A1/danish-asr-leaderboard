@@ -28,37 +28,57 @@ def run(models: set[str], key: str, *, output_dir: Path = DEFAULT_OUTPUT) -> dic
     if missing:
         raise ValueError(f"Unknown result model(s): {', '.join(sorted(missing))}")
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    def status(message: str) -> None:
+        print(message, file=sys.stderr, flush=True)
+        (output_dir / "status.txt").write_text(message + "\n", encoding="utf-8")
+
+    def safe_error(exc: Exception) -> str:
+        return f"{type(exc).__name__}: {str(exc).replace(key, '[redacted]')[:500]}"
+
     drafts = {}
     with requests.Session() as session:
-        candidates = collect(session, only_models=models)
+        status(f"Collecting public sources for {len(models)} model(s)...")
+        try:
+            candidates = collect(session, only_models=models)
+        except Exception as exc:
+            status(f"Source collection failed: {safe_error(exc)}")
+            raise
         for name in sorted(models):
-            candidate = candidates[name]
-            sources = collect_sources(session, candidate)
-            _add_saved_output_source(sources, name)
-            if not any(s["kind"] in {"model_card", "provider_api"} for s in sources):
-                print(f"{name}: no public model card or official API source; manual review only",
-                      file=sys.stderr)
-                continue
-            fields = validate_suggestions(
-                ask_agent(session, key, name, candidate, sources), sources)
-            if candidate.get("source_kind") == "provider_api":
-                for field in ("license", "data", "code", "model_card"):
-                    fields[field] = {"state": "no", "evidence": [],
-                                     "explanation": "Hosted/API openness policy."}
-            drafts[name] = {
-                "agent_model": MODEL,
-                "generated_at": datetime.now(timezone.utc).isoformat(),
-                "sources": [{"id": s["id"], "kind": s["kind"], "url": s["url"]}
-                            for s in sources],
-                "fields": fields,
-            }
-            print(f"Reviewed {name}", file=sys.stderr)
+            try:
+                status(f"Collecting evidence for {name}...")
+                candidate = candidates[name]
+                sources = collect_sources(session, candidate)
+                _add_saved_output_source(sources, name)
+                if not any(s["kind"] in {"model_card", "provider_api"} for s in sources):
+                    status(f"{name}: no public model card or official API source; manual review only")
+                    continue
+                status(f"Requesting {MODEL} review for {name}...")
+                fields = validate_suggestions(
+                    ask_agent(session, key, name, candidate, sources), sources)
+                if candidate.get("source_kind") == "provider_api":
+                    for field in ("license", "data", "code", "model_card"):
+                        fields[field] = {"state": "no", "evidence": [],
+                                         "explanation": "Hosted/API openness policy."}
+                drafts[name] = {
+                    "agent_model": MODEL,
+                    "generated_at": datetime.now(timezone.utc).isoformat(),
+                    "sources": [{"id": s["id"], "kind": s["kind"], "url": s["url"]}
+                                for s in sources],
+                    "fields": fields,
+                }
+                status(f"Reviewed {name}")
+            except Exception as exc:
+                status(f"{name} failed: {safe_error(exc)}")
+                raise
     if not drafts:
         raise ValueError("No model received an agent draft")
     report = compare(drafts, load_reviews(), records)
     (output_dir / "suggestions.json").write_text(
         json.dumps(drafts, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (output_dir / "comparison.md").write_text(markdown(report), encoding="utf-8")
+    status(f"Finished {report['models_compared']} model(s); "
+           f"{report['exact_matches']}/{report['fields_compared']} fields match")
     return report
 
 
