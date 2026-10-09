@@ -186,10 +186,10 @@ def ask_agent(session: requests.Session, key: str, name: str,
         ],
     }
     if MODEL.startswith("nvidia/nemotron-3-super-"):
-        # This endpoint spent the entire 3,500-token completion budget on
-        # hidden reasoning during the pilot, leaving no review tool call.
-        payload["max_tokens"] = 8000
-        payload["reasoning"] = {"effort": "low"}
+        # OpenRouter reports that reasoning is optional for this endpoint.
+        # Pilot runs exhausted even an 8,000-token budget on reasoning alone.
+        payload["max_tokens"] = 4500
+        payload["reasoning"] = {"enabled": False}
     for attempt in range(3):
         response = session.post("https://openrouter.ai/api/v1/chat/completions",
                                 headers={"Authorization": f"Bearer {key}"},
