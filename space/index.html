@@ -2889,7 +2889,7 @@ function showProfilePopover(trigger, row, group, pin = false) {
   note.textContent = 'Unknown means we have not verified the claim; it does not mean the model lacks the feature.';
   const correction = document.createElement('a');
   correction.className = 'profile-correction';
-  correction.textContent = 'Have evidence? Suggest a correction';
+  correction.textContent = 'Did we miss something? Open an issue on GitHub :)';
   const issueTitle = `Model profile correction: ${row.name}`;
   const issueBody = `Model: ${row.name}\nField and proposed status:\nEvidence URL:\nWhy this applies to this exact model:`;
   correction.href = `https://github.com/Rye-A1/danish-asr-leaderboard/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`;
