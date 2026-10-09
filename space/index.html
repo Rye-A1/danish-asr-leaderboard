@@ -834,12 +834,6 @@
       position: absolute; inset: 0;
       background: color-mix(in srgb, var(--link) 6%, transparent);
     }
-    .profile-meter-fill {
-      position: absolute; top: 0; left: 0; width: var(--score-share); height: 100%;
-      background: linear-gradient(to left, color-mix(in srgb, var(--link) 34%, transparent),
-        color-mix(in srgb, var(--link) 5%, transparent));
-    }
-    .profile-visual.empty .profile-meter-fill { display: none; }
     .profile-meter-tiles {
       position: absolute; inset: 0; display: grid;
       grid-template-columns: repeat(var(--segment-count), minmax(0, 1fr));
@@ -847,16 +841,11 @@
     .profile-meter-tiles span:not(:last-child) {
       border-right: 2px solid var(--surf2);
     }
-    .profile-meter-tiles span.yes { box-shadow: inset 0 -3px var(--link); }
-    .profile-meter-tiles span.partial { box-shadow: inset 0 -3px var(--profile-partial); }
-    .profile-meter-tiles span.no { box-shadow: inset 0 -3px var(--profile-no); }
-    .profile-meter-tiles span.unknown { box-shadow: inset 0 -1px var(--muted); }
-    .profile-meter::after {
-      content: ""; position: absolute; z-index: 1;
-      top: 0; left: var(--score-share); width: 2px; height: 100%;
-      transform: translateX(-2px); background: var(--link);
+    .profile-meter-tiles span.yes { background: color-mix(in srgb, var(--link) 30%, transparent); }
+    .profile-meter-tiles span.partial {
+      background: linear-gradient(to right,
+        color-mix(in srgb, var(--link) 30%, transparent) 50%, transparent 50%);
     }
-    .profile-visual.empty .profile-meter::after { display: none; }
     .profile-segments { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 3px; }
     .profile-segment {
       width: min(100%, 22px); aspect-ratio: 1; justify-self: center;
@@ -2186,7 +2175,7 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
-      Openness is scored out of five and Features out of four. Blue means confirmed, amber partial, rose documented no, and an outline means unknown. Unknown is not a no. Hover, focus, or tap a score for evidence.
+      Openness is scored out of five and Features out of four. Each tile is one field: blue means confirmed, half-blue means partial, and empty means documented no or unknown. Hover, focus, or tap a score to see which and view the evidence.
     </p>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
@@ -2941,14 +2930,10 @@ function profileCell(td, row, group) {
   tally.appendChild(total);
   const visual = document.createElement('span');
   visual.className = 'profile-visual';
-  if (!score) visual.classList.add('empty');
-  visual.style.setProperty('--score-share', `${Math.max(0, Math.min(100, 100 * score / group.fields.length))}%`);
   const meter = document.createElement('span');
   meter.className = 'profile-meter';
   meter.setAttribute('aria-hidden', 'true');
   meter.style.setProperty('--segment-count', group.fields.length);
-  const fill = document.createElement('span');
-  fill.className = 'profile-meter-fill';
   const tiles = document.createElement('span');
   tiles.className = 'profile-meter-tiles';
   for (const [key] of group.fields) {
@@ -2956,7 +2941,7 @@ function profileCell(td, row, group) {
     tile.className = PROFILE_STATUS[items[key]?.state] ? items[key].state : 'unknown';
     tiles.appendChild(tile);
   }
-  meter.append(fill, tiles);
+  meter.appendChild(tiles);
   visual.append(tally, meter);
   button.append(label, visual);
   button.addEventListener('mouseenter', () => showProfilePopover(button, row, group));
