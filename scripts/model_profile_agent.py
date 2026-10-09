@@ -121,7 +121,8 @@ evaluated; that is an evaluation gap, not a statement about output support.
 For every non-unknown suggestion give short EXACT contiguous source excerpts
 (under 300 characters each),
 each with its source ID. Preserve the words and punctuation verbatim; do not
-combine separate passages into one quote. Use multiple sources when a claim
+combine separate passages or bullet lines into one quote. Quote each bullet
+separately if needed. Use multiple sources when a claim
 depends on both checkpoint and base
 terms or multiple datasets. Never invent a quote or URL. Explain the checkpoint
 connection and any uncertainty. If evidence is missing, choose unknown with an

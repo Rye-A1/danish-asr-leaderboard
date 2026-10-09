@@ -48,12 +48,18 @@ human-reviewed profile and lists differences. Exact agreement is not proof
 that a claim is correct; the reviewer still checks its source and scope.
 
 The first live pilot on Edda v0.1 yielded source-validated license and data
-suggestions from Nemotron Super. That pilot used the former, stricter data
-criterion; the updated public-dataset rule has not yet had a live pilot.
-A speculative negative timestamp claim is now rejected, and other claims
-without verbatim quotes stay `unknown`. The Gemma 4 free
-endpoint returned provider rate limits in the same pilot. These observations
-do not establish general model accuracy; human review remains required.
+suggestions from Nemotron Super under the former data rule; Gemma 4's free
+endpoint returned provider rate limits. A 10 October local pilot with the
+revised rule compared Edda v0.2 and Ekko Tiny with human reviews. In the third
+iteration, validated suggestions matched **15 of 16 field states**. The one
+remaining strict mismatch was Ekko's model-card field: the agent said `yes`
+but combined separate bullet lines into one purported quote, which validation
+rejected. It also inferred `no` timestamps for Edda from a no-timestamps
+training token; validation rejected that speculation and retained `unknown`.
+Two models are too few to establish general accuracy. Human review remains
+required, especially for licenses and negative capability claims. The
+[pilot field comparison](model-profile-agent-pilot-2026-10-10.md) records all
+16 decisions and the two validation limits.
 
 You can pilot the current branch locally before merge with
 `python scripts/run_model_profile_pilot.py`. By default it reviews Edda v0.2
@@ -63,7 +69,9 @@ endpoint's capacity. It reads `OPENROUTER_API_KEY` from the local environment
 or prompts for it with hidden input in an interactive terminal. The key is
 never saved; drafts and the comparison are written under ignored
 `eval_audio_cache/model-profile-pilot/`. A GitHub Actions secret is not
-readable from a local script, so a local key is required for this route.
+readable from a local script, so a local key is required for this route. The
+local draft also retains the model's raw, **unverified** response to help
+diagnose rejected quotes; only validated fields enter the comparison.
 
 **Suggestions never alter leaderboard scores.** A reviewer must confirm the
 claim applies to the evaluated checkpoint, inspect effective and inherited

@@ -54,8 +54,8 @@ def run(models: set[str], key: str, *, output_dir: Path = DEFAULT_OUTPUT) -> dic
                     status(f"{name}: no public model card or official API source; manual review only")
                     continue
                 status(f"Requesting {MODEL} review for {name}...")
-                fields = validate_suggestions(
-                    ask_agent(session, key, name, candidate, sources), sources)
+                raw = ask_agent(session, key, name, candidate, sources)
+                fields = validate_suggestions(raw, sources)
                 if candidate.get("source_kind") == "provider_api":
                     for field in ("license", "data", "code", "model_card"):
                         fields[field] = {"state": "no", "evidence": [],
@@ -66,6 +66,7 @@ def run(models: set[str], key: str, *, output_dir: Path = DEFAULT_OUTPUT) -> dic
                     "sources": [{"id": s["id"], "kind": s["kind"], "url": s["url"]}
                                 for s in sources],
                     "fields": fields,
+                    "unverified_raw_response": raw,
                 }
                 status(f"Reviewed {name}")
             except Exception as exc:
