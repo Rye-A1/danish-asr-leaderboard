@@ -1977,6 +1977,7 @@
     .settings-sheet .toolbar > :not(.ci-btn) { grid-column: 1 / -1; }
     .settings-sheet .tog-wrap,
     .settings-sheet .size-filter,
+    .settings-sheet .profile-filter,
     .settings-sheet .ci-btn {
       min-height: 74px;
       height: auto;
@@ -2002,7 +2003,8 @@
       color: var(--text);
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--link) 35%, var(--border));
     }
-    .settings-sheet .size-filter {
+    .settings-sheet .size-filter,
+    .settings-sheet .profile-filter {
       display: flex;
       flex-direction: column;
       align-items: stretch;
@@ -2019,6 +2021,33 @@
       border-radius: 6px;
       background: var(--surf);
     }
+    .profile-filter details { width: 100%; }
+    .profile-filter summary {
+      display: flex; align-items: center; gap: 8px;
+      min-height: 32px; padding: 6px 8px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surf); color: var(--text);
+      font-size: 13px; cursor: pointer; list-style: none;
+    }
+    .profile-filter summary::-webkit-details-marker { display: none; }
+    .profile-filter summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .profile-filter-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .profile-filter summary svg { width: 15px; height: 15px; flex: none; transition: transform .15s; }
+    .profile-filter details[open] summary svg { transform: rotate(180deg); }
+    .profile-filter-options {
+      display: grid; gap: 2px; max-height: 215px; overflow-y: auto;
+      margin-top: 6px; padding: 5px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surf);
+    }
+    .profile-filter-option {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 6px; border-radius: 5px;
+      color: var(--text); font-size: 13px; cursor: pointer;
+    }
+    .profile-filter-option:hover { background: var(--surf2); }
+    .profile-filter-option input { width: 16px; height: 16px; flex: none; accent-color: var(--link); }
+    .profile-filter-help { color: var(--muted); font-size: 11px; line-height: 1.4; }
     .settings-sheet .ci-btn {
       display: grid;
       grid-template-columns: 18px minmax(0, 1fr);
@@ -2761,15 +2790,24 @@ const MEDALS = ['🥇','🥈','🥉'];
 let showCI = false;
 let openOnly = false;   // hide hosted/API (proprietary) models — opt-in
 let maxSizeB = null;    // billions of parameters; null includes unknown sizes
+const profileSelections = { openness: new Set(), features: new Set() };
+let onProfileFiltersChanged = null;
 
-// Rows for a tab, honouring the shared access and size filters. A size limit
-// excludes unknown sizes because their position relative to the limit is unknown.
+// Rows for a tab, honouring shared access, size and profile filters. Selected
+// profile factors require confirmed "yes"; partial and unknown do not qualify.
 function visible(rows) {
   return rows.filter(r => {
     if (openOnly && r.access === 'proprietary') return false;
-    if (maxSizeB == null) return true;
-    const size = parseFloat(r.size);
-    return Number.isFinite(size) && size <= maxSizeB;
+    if (maxSizeB != null) {
+      const size = parseFloat(r.size);
+      if (!Number.isFinite(size) || size > maxSizeB) return false;
+    }
+    for (const [group, selected] of Object.entries(profileSelections)) {
+      for (const key of selected) {
+        if (r.profile?.[group]?.[key]?.state !== 'yes') return false;
+      }
+    }
+    return true;
   });
 }
 
@@ -3537,6 +3575,7 @@ function decorateSettings(bar) {
     rank: ['M8 21h8', 'M12 17v4', 'M7 4h10v5a5 5 0 0 1-10 0V4Z', 'M5 6H3v2a4 4 0 0 0 4 4', 'M19 6h2v2a4 4 0 0 1-4 4'],
     confidence: ['M5 5v14', 'M2 5h6', 'M2 19h6', 'M19 5v14', 'M16 5h6', 'M16 19h6', 'M8 12h8'],
     open: ['M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z', 'M8 11V7a4 4 0 0 1 8 0'],
+    features: ['M12 2l2.2 7.8L22 12l-7.8 2.2L12 22l-2.2-7.8L2 12l7.8-2.2L12 2z'],
     size: ['M12 3 3 7.5 12 12l9-4.5L12 3z', 'M3 12l9 4.5 9-4.5', 'M3 16.5 12 21l9-4.5'],
     limit: ['M4 5h16', 'M7 11h10', 'M10 17h4', 'M12 17v4'],
   };
@@ -3555,6 +3594,62 @@ function decorateSettings(bar) {
     title.className = 'settings-field-title';
     title.append(icon(field.querySelector('select')?.id.startsWith('wer-limit-') ? 'limit' : 'size'), textNode.textContent.trim());
     textNode.replaceWith(title);
+  });
+  const before = bar.querySelector('.download-csv');
+  for (const group of PROFILE_GROUPS) {
+    const field = document.createElement('div');
+    field.className = 'profile-filter';
+    field.dataset.profileGroup = group.key;
+    const title = document.createElement('span');
+    title.className = 'settings-field-title';
+    title.append(icon(group.key === 'openness' ? 'open' : 'features'),
+      group.key === 'openness' ? 'Openness factors' : 'Features');
+    const details = document.createElement('details');
+    const summary = document.createElement('summary');
+    const value = document.createElement('span');
+    value.className = 'profile-filter-value';
+    summary.append(value, _icon(['m6 9 6 6 6-6'], ''));
+    const options = document.createElement('div');
+    options.className = 'profile-filter-options';
+    options.setAttribute('role', 'group');
+    options.setAttribute('aria-label', `${group.title} required fields`);
+    for (const [key, label] of group.fields) {
+      const option = document.createElement('label');
+      option.className = 'profile-filter-option';
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.value = key;
+      checkbox.addEventListener('change', () => {
+        if (checkbox.checked) profileSelections[group.key].add(key);
+        else profileSelections[group.key].delete(key);
+        syncProfileFilterControls();
+        refreshSettingsButtons();
+        onProfileFiltersChanged?.();
+      });
+      option.append(checkbox, label);
+      options.appendChild(option);
+    }
+    details.append(summary, options);
+    const help = document.createElement('span');
+    help.className = 'profile-filter-help';
+    help.textContent = 'Require confirmed Yes for every selected field.';
+    field.append(title, details, help);
+    bar.insertBefore(field, before);
+  }
+  syncProfileFilterControls();
+}
+
+function syncProfileFilterControls() {
+  document.querySelectorAll('.profile-filter').forEach(field => {
+    const group = PROFILE_GROUPS.find(item => item.key === field.dataset.profileGroup);
+    const selected = profileSelections[group.key];
+    field.querySelectorAll('input[type="checkbox"]').forEach(input => {
+      input.checked = selected.has(input.value);
+    });
+    const labels = group.fields.filter(([key]) => selected.has(key)).map(([, label]) => label);
+    const value = labels.length === 0 ? 'All models' : labels.length <= 2 ? labels.join(', ') : `${labels.length} selected`;
+    field.querySelector('.profile-filter-value').textContent = value;
+    field.querySelector('summary').setAttribute('aria-label', `${group.title} filter: ${value}`);
   });
 }
 
@@ -3633,6 +3728,8 @@ function initFilterToggles() {
       bar.querySelectorAll('.size-filter select').forEach(select => {
         if (select.value !== (select.dataset.default ?? '')) n++;
       });
+      if (profileSelections.openness.size) n++;
+      if (profileSelections.features.size) n++;
       return n;
     };
 
@@ -3681,10 +3778,16 @@ function initFilterToggles() {
         select.value = defaultValue;
         select.dispatchEvent(new Event('change', { bubbles: true }));
       });
+      const hadProfileFilters = profileSelections.openness.size || profileSelections.features.size;
+      profileSelections.openness.clear();
+      profileSelections.features.clear();
+      syncProfileFilterControls();
+      if (hadProfileFilters) onProfileFiltersChanged?.();
       refreshSettingsButtons();
     });
     sheet.addEventListener('click', event => { if (event.target === sheet) sheet.close(); });
     sheet.addEventListener('close', () => {
+      sheet.querySelectorAll('.profile-filter details[open]').forEach(details => { details.open = false; });
       TIP.classList.remove('show');
       tipActive = false;
       document.body.append(TIP);
@@ -5592,6 +5695,10 @@ async function init() {
       if (analysisMetric === 'cer') applyAnalysis('cer');
       if (timeMetric === 'cer') applyTime('cer');
     }
+    onProfileFiltersChanged = () => {
+      applyWer();
+      applyCer();
+    };
 
     /* Rank by: one group per tab, each acting on the metric that tab shows. The
        method is stored per metric, so a choice made on Pareto while it displays
