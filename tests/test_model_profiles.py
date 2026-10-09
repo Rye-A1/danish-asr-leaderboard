@@ -176,9 +176,11 @@ def test_candidate_collector_does_not_turn_tags_into_scores():
         "lastModified": "2026-10-09T00:00:00Z", "sha": "abc", "gated": False,
     }
     candidate = evidence_leads("example/asr", REPO, info,
-                               "# Model\n## Limitations\nhttps://github.com/example/asr/blob/main/train.py")
+                               "# Model\n## Limitations\nhttps://github.com/example/asr/blob/main/train.py\n"
+                               "https://huggingface.co/datasets/other/public")
     assert candidate["license_tag_class"] == "open_candidate"
-    assert candidate["dataset_links"] == ["https://huggingface.co/datasets/example/speech"]
+    assert candidate["dataset_links"] == ["https://huggingface.co/datasets/example/speech",
+                                          "https://huggingface.co/datasets/other/public"]
     assert candidate["unverified_paper_links"] == ["https://arxiv.org/abs/2401.12345"]
     assert candidate["weight_files"] == ["model.safetensors"]
     assert len(candidate["training_code_leads"]) == 2
@@ -193,7 +195,8 @@ def test_collector_queues_new_models_and_changed_sources(tmp_path):
     (results / "new.json").write_text(json.dumps({
         "model": "[example/new](https://huggingface.co/example/new)"}))
     (results / "api.json").write_text(json.dumps({
-        "model": "[hosted-api](https://example.org/docs)"}))
+        "model": "[hosted-api](https://huggingface.co/hosted-api)",
+        "access": "proprietary"}))
     reviews = tmp_path / "reviews.json"
     reviews.write_text("{}")
 
@@ -216,6 +219,11 @@ def test_collector_queues_new_models_and_changed_sources(tmp_path):
     assert set(candidates) == {"example/new", "hosted-api"}
     assert candidates["example/new"]["license_tag_class"] == "open_candidate"
     assert candidates["hosted-api"]["status"] == "new"
+    assert candidates["hosted-api"]["source_kind"] == "provider_api"
+
+    all_candidates = collect(Session(), results=results, reviews_path=reviews,
+                             include_all=True, only_models={"hosted-api"})
+    assert list(all_candidates) == ["hosted-api"]
 
 
 def test_saved_outputs_confirm_formatting_without_overriding_review(tmp_path):

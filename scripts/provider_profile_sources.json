@@ -1,0 +1,24 @@
+{
+  "gpt-transcribe": [
+    "https://developers.openai.com/api/docs/guides/speech-to-text"
+  ],
+  "gpt-4o-transcribe": [
+    "https://developers.openai.com/api/docs/guides/speech-to-text"
+  ],
+  "gpt-4o-mini-transcribe": [
+    "https://developers.openai.com/api/docs/guides/speech-to-text"
+  ],
+  "scribe_v2": [
+    "https://elevenlabs.io/docs/overview/capabilities/speech-to-text"
+  ],
+  "ordbogen/whisper": [
+    "https://odincore.ai/docs/models/ordbogen-whisper",
+    "https://odincore.ai/api-reference"
+  ],
+  "syv-transcribe": [
+    "https://syv.ai/"
+  ],
+  "saga-2-l": [
+    "https://capacit.com/"
+  ]
+}

@@ -83,7 +83,7 @@ still use model-specific evidence. The five scored openness fields are:
 |---|---|
 | `weights` | The current model weights can be downloaded. This is filled from the benchmark's reviewed `access=open` flag and the model repository link. |
 | `license` | The checkpoint and its base permit commercial reuse and redistribution without model-specific field-of-use restrictions. |
-| `data` | The exact fine-tuning data, splits, and filtering are disclosed and accessible under published terms. For a base model, assess its full training corpus. |
+| `data` | The full training mix for this checkpoint is identified and consists of publicly obtainable datasets. A standard sign-in or acceptance of published access terms, as for CoRal, does not prevent `yes`; authors need not redistribute their filtered copy. For a fine-tune, assess the data newly used for that checkpoint. Private or unnamed components make the answer `partial` or `unknown`. |
 | `code` | Public training and preprocessing scripts, configuration, and settings reproduce the released checkpoint, not merely generic fine-tuning or inference. |
 | `model_card` | The checkpoint card substantively covers lineage, intended use, training data and method, evaluation, and limitations. |
 
@@ -116,7 +116,18 @@ above is the exception to the usual meaning of `no`.
 Timestamps, speaker labels, and streaming require evidence from the exact model
 and API path. A provider's general capability or a separate model does not
 establish support. For hosted models, a structured response or live-audio probe
-can confirm these fields; the text-only benchmark outputs cannot.
+can confirm these fields; the text-only benchmark outputs cannot. For an API
+model, link its official model-specific API specification in
+`scripts/provider_profile_sources.json` so the weekly source review can read it.
+For a new provider domain, a maintainer must also add that official host to
+the agent's source allowlist.
+
+| Feature | Where to verify it |
+|---|---|
+| `punctuation_case` | Exact checkpoint card or official output examples; saved raw transcripts can positively confirm cased, punctuated output. |
+| `timestamps` | Model-specific request option and word/segment timestamp fields in the response; verify Danish and the scored model are supported. |
+| `diarization` | Speaker IDs in this model's response schema or a checkpoint-specific example. A separate diarization model does not count. |
+| `streaming` | A documented path that accepts live audio incrementally and emits interim text from this model. Streaming text after a completed file upload is only `partial`. |
 
 For streaming, a completed-file API that sends partial text is `partial`; a
 documented path that accepts ongoing audio and emits interim results is `yes`.
@@ -155,8 +166,12 @@ is open or the paper covers this checkpoint. Manual decisions in
 
 `scripts/refresh_model_profile_candidates.py` gathers Hugging Face model
 metadata and card links for newly submitted models and sources changed since
-their last review. A scheduled workflow opens a PR with the resulting
-`scripts/model_profile_candidates.json`. This is a review queue, not a scoring
+their last review. The pre-merge PR check gathers leads for changed result
+files without a credential; it does not run PR code with the OpenRouter key.
+The weekly main-branch workflow checks all current models and drafts quoted
+suggestions from public model cards or the official provider documentation in
+`scripts/provider_profile_sources.json`. A scheduled workflow opens a PR with
+the review queue when repository Actions are allowed to create PRs. This is not a scoring
 input: apparent open licenses, dataset tags, card headings, paper links, and
 training-script links still need checkpoint-specific confirmation. The deployed leaderboard
 shows safe automatic facts and unknowns immediately; the review file supplies

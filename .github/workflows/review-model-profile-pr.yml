@@ -1,0 +1,42 @@
+name: Review model sources in PR
+
+on:
+  pull_request:
+    paths:
+      - 'results/**'
+      - 'scripts/provider_profile_sources.json'
+
+permissions:
+  contents: read
+
+jobs:
+  evidence:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Collect source leads for changed model results
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: python scripts/refresh_model_profile_candidates.py --changed-from "$PR_BASE_SHA"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-profile-source-leads
+          path: scripts/model_profile_candidates.json
+      - name: Summarize sources needing review
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          candidates = json.loads(Path('scripts/model_profile_candidates.json').read_text())
+          print(f'### Profile source review: {len(candidates)} changed model(s)')
+          for name, candidate in candidates.items():
+              kind = candidate.get('source_kind', 'unknown')
+              print(f'- `{name}` ({kind}): {candidate.get("source", "")}')
+          print('\nThis check gathers public sources without using the OpenRouter secret. Review traits before merge.')
+          PY
