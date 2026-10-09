@@ -20,7 +20,7 @@ It checks these questions:
 | Field | Evidence needed for a suggested Yes |
 |---|---|
 | License | Effective checkpoint and inherited terms allow commercial use and redistribution without separate permission. |
-| Training data | The full checkpoint training or fine-tuning mix is named and consists of publicly obtainable datasets. Published access conditions such as CoRal's are acceptable; an exact filtered copy need not be redistributed. |
+| Training data | The full checkpoint training or fine-tuning mix is named and consists of publicly obtainable datasets. Published access conditions such as CoRal's are acceptable; an ordinary filtered copy need not be redistributed. A newly generated pseudo-labeled, synthetic, or teacher-labeled corpus needs its own direct access link. A source-audio or teacher-model link alone is insufficient. |
 | Training code | Public executable training and preprocessing code plus the released checkpoint's run configuration. |
 | Model card | Substantive documentation for this checkpoint, including provenance, evaluation, and limitations. |
 | Formatting | Exact checkpoint card, official examples, or saved raw outputs show cased and punctuated transcripts. |

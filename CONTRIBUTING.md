@@ -83,7 +83,7 @@ still use model-specific evidence. The five scored openness fields are:
 |---|---|
 | `weights` | The current model weights can be downloaded. This is filled from the benchmark's reviewed `access=open` flag and the model repository link. |
 | `license` | The checkpoint and its base permit commercial reuse and redistribution without model-specific field-of-use restrictions. |
-| `data` | The full training mix for this checkpoint is identified and consists of publicly obtainable datasets. A standard sign-in or acceptance of published access terms, as for CoRal, does not prevent `yes`; authors need not redistribute their filtered copy. For a fine-tune, assess the data newly used for that checkpoint. Private or unnamed components make the answer `partial` or `unknown`. |
+| `data` | The full training mix for this checkpoint is identified and consists of publicly obtainable datasets. A standard sign-in or acceptance of published access terms, as for CoRal, does not prevent `yes`; authors need not redistribute an ordinary filtered copy. A generated pseudo-labeled, synthetic, or teacher-labeled corpus needs a direct link to that resulting corpus for `yes`; linking only its source audio or teacher model is insufficient. An unlinked component makes the answer at most `partial`, or `no` if no training component is obtainable. For a fine-tune, assess the data newly used for that checkpoint. |
 | `code` | Public training and preprocessing scripts, configuration, and settings reproduce the released checkpoint, not merely generic fine-tuning or inference. |
 | `model_card` | The checkpoint card substantively covers lineage, intended use, training data and method, evaluation, and limitations. |
 

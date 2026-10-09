@@ -5,7 +5,10 @@ Scope: the 40 distinct models in `results/*.json` at `origin/main` commit `05cfd
 **Policy update (10 October 2026):** The current training-data factor counts a
 complete mix of named, publicly obtainable datasets as `yes`, including CoRal
 under its published access conditions. Exact filtered copies need not be
-redistributed. The historical data decisions below used a stricter criterion;
+redistributed when filtering is ordinary selection/preprocessing. A generated
+pseudo-labeled or synthetic corpus must itself be directly linked and obtainable
+for `yes`; links to its source audio or labeling model are insufficient. The
+historical data decisions below used a stricter criterion;
 the current decisions are in `scripts/model_profiles.json`.
 
 ## Decision rules

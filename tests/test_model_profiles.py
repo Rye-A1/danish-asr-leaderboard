@@ -258,3 +258,13 @@ def test_absence_of_observed_output_is_not_documented_no():
     assert reviews["Qwen/Qwen3-ASR-1.7B"]["features"]["timestamps"]["state"] == "unknown"
     assert reviews["danish-foundation-models/edda-v0.1"]["features"]["streaming"]["state"] == "unknown"
     assert reviews["3dio-ai/svale-110M"]["features"]["punctuation_case"]["state"] == "no"
+
+
+def test_unlinked_pseudo_labeled_training_data_is_not_fully_open():
+    reviews = load_reviews()
+    for model in ("thorhojhus/whisper-large-v3-turbo-danish",
+                  "thorhojhus/whisper-small-danish",
+                  "syvai/hviske-v5-tiny"):
+        data = reviews[model]["openness"]["data"]
+        assert data["state"] == "partial"
+        assert "no direct access link" in data["detail"]

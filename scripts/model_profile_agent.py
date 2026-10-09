@@ -50,10 +50,15 @@ Openness:
   mix and every named dataset is publicly obtainable. Named public sources such
   as NST, FTSpeech, CoRal and FLEURS count even if access requires accepting
   standard published conditions. The author need not redistribute their exact
-  filtered copy or grant unrestricted reuse. A private or unnamed component
-  makes this partial; a vague dataset-family name without versions/splits may
-  also be partial. Judge a fine-tune's own data, not its base model's pretraining
-  corpus. A dataset tag or example list alone does not prove completeness.
+  deterministically filtered copy or grant unrestricted reuse. A newly created
+  pseudo-labeled, synthetic, or teacher-labeled training corpus is a distinct
+  source: its generating model or underlying audio links are NOT a direct link
+  to that corpus. Without a direct link to obtain the resulting corpus, data is
+  at most partial (or no if no training component is obtainable). Private or
+  unnamed components are likewise at most partial; a vague dataset-family name
+  without versions/splits may also be partial. Judge a fine-tune's own data,
+  not its base model's pretraining corpus. A dataset tag or example list alone
+  does not prove completeness.
 - code: yes only for public executable training AND preprocessing code tied to
   this released checkpoint, with its run configuration. A generic fine-tuning
   script, recipe, or inference code is at most partial.

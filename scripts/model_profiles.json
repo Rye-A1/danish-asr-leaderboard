@@ -1254,8 +1254,8 @@
   "syvai/hviske-v5-tiny": {
     "openness": {
       "data": {
-        "state": "unknown",
-        "detail": "Distilled from teacher pseudo-labels; exact distillation corpus is not linked.",
+        "state": "partial",
+        "detail": "Teacher pseudo-labels are documented, but the resulting distillation corpus has no direct access link.",
         "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
       },
       "model_card": {
@@ -1416,8 +1416,8 @@
   "thorhojhus/whisper-large-v3-turbo-danish": {
     "openness": {
       "data": {
-        "state": "yes",
-        "detail": "Five public training corpora are named; the filtered pseudo-labeled copy need not be redistributed for this factor.",
+        "state": "partial",
+        "detail": "Five public corpora are named, but the generated pseudo-labeled training corpus has no direct access link.",
         "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#02--training"
       },
       "code": {
@@ -1454,8 +1454,8 @@
   "thorhojhus/whisper-small-danish": {
     "openness": {
       "data": {
-        "state": "yes",
-        "detail": "Five public training corpora are named; the filtered pseudo-labeled copy need not be redistributed for this factor.",
+        "state": "partial",
+        "detail": "Five public corpora are named, but the generated pseudo-labeled training corpus has no direct access link.",
         "url": "https://huggingface.co/thorhojhus/whisper-small-danish#02--training"
       },
       "code": {

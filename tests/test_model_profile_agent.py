@@ -11,7 +11,8 @@ from model_profile_agent import (FIELDS, RUBRIC, ask_agent, collect_sources, res
 def test_agent_rubric_covers_checkpoint_data_and_all_scored_capabilities():
     assert set(response_schema()["properties"]["fields"]["required"]) == set(FIELDS)
     for text in ("exact named checkpoint", "inherited base terms", "COMPLETE training or fine-tuning",
-                 "publicly obtainable", "preprocessing code", "Danish word or segment timestamps",
+                 "publicly obtainable", "pseudo-labeled", "direct link", "preprocessing code",
+                 "Danish word or segment timestamps",
                  "response schema", "model compatibility list", "WHILE live audio arrives"):
         assert text in RUBRIC
 
