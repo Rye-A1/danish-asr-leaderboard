@@ -3,10 +3,13 @@
 The weekly [profile refresh workflow](../.github/workflows/refresh-model-profiles.yml)
 first identifies new or changed public model sources. If the repository has an
 `OPENROUTER_API_KEY` Actions secret, it also asks
-`nvidia/nemotron-3.5-lightning:free` for field-by-field **review
-suggestions**. It requests a structured tool call and validates the returned
-quotes locally. The default model can be changed with `OPENROUTER_MODEL` to
-another tool-capable OpenRouter model.
+`google/gemma-4-26b-a4b-it:free` for field-by-field **review suggestions**.
+It requests a structured tool call and validates the returned quotes locally.
+Requests are pinned to the Google AI Studio provider with fallback disabled;
+OpenRouter currently lists that provider as not using prompts for training, but
+as retaining prompts for up to 55 days. Only public documents are sent. The
+model and provider can be changed with `OPENROUTER_MODEL` and
+`OPENROUTER_PROVIDER` together.
 
 The agent reads the exact revision of a Hugging Face model card, checkpoint
 license files, linked dataset cards and training files, and base-model card and

@@ -105,6 +105,9 @@ def test_agent_request_uses_structured_output_and_source_bundle():
             assert headers == {"Authorization": "Bearer example-key"}
             assert json["tools"][0]["function"]["name"] == "submit_profile_review"
             assert json["tool_choice"]["function"]["name"] == "submit_profile_review"
+            assert json["provider"] == {"only": ["google-ai-studio"],
+                                         "allow_fallbacks": False,
+                                         "require_parameters": True}
             assert "Exact checkpoint card" in json["messages"][1]["content"]
             assert timeout == 120
             return Response()

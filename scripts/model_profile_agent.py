@@ -22,7 +22,8 @@ import requests
 ROOT = Path(__file__).resolve().parent
 CANDIDATES = ROOT / "model_profile_candidates.json"
 OUTPUT = ROOT / "model_profile_agent_suggestions.json"
-MODEL = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3.5-lightning:free")
+MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemma-4-26b-a4b-it:free")
+PROVIDER = os.environ.get("OPENROUTER_PROVIDER", "google-ai-studio")
 SCHEMA_VERSION = 2
 FIELDS = ("license", "data", "code", "model_card", "punctuation_case",
           "timestamps", "diarization", "streaming")
@@ -168,6 +169,8 @@ def ask_agent(session: requests.Session, key: str, name: str,
         "model": MODEL,
         "temperature": 0,
         "max_tokens": 3500,
+        "provider": {"only": [PROVIDER], "allow_fallbacks": False,
+                     "require_parameters": True},
         "tools": [{"type": "function", "function": {
             "name": "submit_profile_review",
             "description": "Submit source-quoted field review suggestions",
