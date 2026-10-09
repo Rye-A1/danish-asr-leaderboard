@@ -1589,7 +1589,12 @@
       }
       tbody tr:last-child { border-bottom: none; }
       tbody tr:nth-child(even) td { background-color: transparent; }
-      :root[data-theme="light"] tbody tr:nth-child(even) td:is([data-key="#"], [data-key="model"]) {
+      /* The desktop stripe has higher specificity in light mode. Clear it
+         behind profile buttons too, or it shows as a square tile on even rows. */
+      :root[data-theme="light"] tbody tr:nth-child(even) td:is(
+        [data-key="#"], [data-key="model"],
+        [data-key="openness_score"], [data-key="feature_count"]
+      ) {
         background-color: transparent;
       }
       tbody tr:hover td { background-image: none; }
