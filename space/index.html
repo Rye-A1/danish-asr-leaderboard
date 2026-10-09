@@ -1964,6 +1964,8 @@
     .chart-page .page-hero .settings-sheet .toolbar {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: max-content;
+      align-items: stretch;
       align-content: start;
       gap: 10px;
       flex: 1 1 auto;
@@ -2003,8 +2005,7 @@
       color: var(--text);
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--link) 35%, var(--border));
     }
-    .settings-sheet .size-filter,
-    .settings-sheet .profile-filter {
+    .settings-sheet .size-filter {
       display: flex;
       flex-direction: column;
       align-items: stretch;
@@ -2012,6 +2013,8 @@
       gap: 8px;
       white-space: normal;
     }
+    .settings-sheet .profile-filter { display: block; height: max-content; white-space: normal; }
+    .profile-filter > .settings-field-title { display: flex; margin-bottom: 8px; }
     .settings-field-title { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font-weight: 650; }
     .settings-sheet .size-filter select {
       width: 100%;
@@ -2021,7 +2024,7 @@
       border-radius: 6px;
       background: var(--surf);
     }
-    .profile-filter details { width: 100%; }
+    .profile-filter details { display: block; width: 100%; }
     .profile-filter summary {
       display: flex; align-items: center; gap: 8px;
       min-height: 32px; padding: 6px 8px;
@@ -2047,7 +2050,7 @@
     }
     .profile-filter-option:hover { background: var(--surf2); }
     .profile-filter-option input { width: 16px; height: 16px; flex: none; accent-color: var(--link); }
-    .profile-filter-help { color: var(--muted); font-size: 11px; line-height: 1.4; }
+    .profile-filter-help { display: block; margin-top: 8px; color: var(--muted); font-size: 11px; line-height: 1.4; }
     .settings-sheet .ci-btn {
       display: grid;
       grid-template-columns: 18px minmax(0, 1fr);
