@@ -225,6 +225,13 @@ def test_collector_queues_new_models_and_changed_sources(tmp_path):
                              include_all=True, only_models={"hosted-api"})
     assert list(all_candidates) == ["hosted-api"]
 
+    reviews.write_text(json.dumps({"example/new": {
+        "reviewed_source": "https://huggingface.co/example/new",
+        "reviewed_on": "2026-10-09"}}))
+    assert "example/new" not in collect(Session(), results=results, reviews_path=reviews)
+    assert "example/new" in collect(Session(), results=results,
+                                    reviews_path=reviews, include_all=True)
+
 
 def test_saved_outputs_confirm_formatting_without_overriding_review(tmp_path):
     model_dir = tmp_path / "example__asr"
