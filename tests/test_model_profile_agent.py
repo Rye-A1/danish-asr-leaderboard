@@ -1,9 +1,10 @@
 """The optional agent must produce auditable suggestions, never score claims."""
+import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-from model_profile_agent import (FIELDS, RUBRIC, collect_sources, response_schema,
+from model_profile_agent import (FIELDS, RUBRIC, ask_agent, collect_sources, response_schema,
                                  validate_suggestions)
 
 
@@ -62,17 +63,49 @@ def test_source_bundle_fetches_pinned_card_dataset_code_and_base_terms():
 
 def test_fabricated_quotes_and_missing_fields_cannot_pass_validation():
     sources = [{"id": "S1", "kind": "model_card", "url": "https://example.org/card",
-                "text": "Supports Danish word timestamps."}]
+                "text": "Supports Danish word timestamps."},
+               {"id": "S2", "kind": "base_license", "url": "https://example.org/license",
+                "text": "Commercial use is permitted."}]
     raw = {"fields": {
-        "timestamps": {"state": "yes", "source_id": "S1",
-                       "quote": "Supports Danish word timestamps.", "explanation": "Exact model."},
-        "license": {"state": "yes", "source_id": "S1",
-                    "quote": "Apache 2.0 commercial license", "explanation": "Invented."},
-        "streaming": {"state": "no", "source_id": "S2",
-                      "quote": "No streaming", "explanation": "Wrong source."},
+        "timestamps": {"state": "yes", "evidence": [
+            {"source_id": "S1", "quote": "Supports Danish word timestamps."}],
+                       "explanation": "Exact model."},
+        "license": {"state": "yes", "evidence": [
+            {"source_id": "S2", "quote": "Commercial use is permitted."},
+            {"source_id": "S1", "quote": "Apache 2.0 commercial license"}],
+                    "explanation": "One quote was invented."},
+        "streaming": {"state": "no", "evidence": [
+            {"source_id": "S9", "quote": "No streaming"}],
+                      "explanation": "Wrong source."},
     }}
     fields = validate_suggestions(raw, sources)
     assert fields["timestamps"]["state"] == "yes"
+    assert fields["timestamps"]["evidence"][0]["source_id"] == "S1"
     assert fields["license"]["state"] == "unknown"
     assert fields["streaming"]["state"] == "unknown"
     assert fields["data"]["state"] == "unknown"
+
+
+def test_agent_request_uses_structured_output_and_source_bundle():
+    class Response:
+        status_code = 200
+
+        def raise_for_status(self):
+            pass
+
+        def json(self):
+            return {"choices": [{"message": {"content": json.dumps({"fields": {}})}}]}
+
+    class Session:
+        def post(self, url, *, headers, json, timeout):
+            assert url == "https://openrouter.ai/api/v1/chat/completions"
+            assert headers == {"Authorization": "Bearer example-key"}
+            assert json["response_format"]["type"] == "json_schema"
+            assert "Exact checkpoint card" in json["messages"][1]["content"]
+            assert timeout == 120
+            return Response()
+
+    result = ask_agent(Session(), "example-key", "example/asr", {"revision": "a" * 40},
+                       [{"id": "S1", "kind": "model_card", "url": "https://example.org/card",
+                         "text": "Exact checkpoint card"}])
+    assert result == {"fields": {}}

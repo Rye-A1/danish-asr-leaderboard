@@ -21,8 +21,9 @@ license when `base_model` metadata identifies one. It checks these questions:
 | Speakers | Speaker-labeled transcription. |
 | Streaming | Incremental transcription while live audio arrives. |
 
-For each proposed `yes`, `partial`, or `no`, it must provide an exact quote from
-one fetched source. The script checks that quote and source ID before writing
+For each proposed `yes`, `partial`, or `no`, it must provide exact source quotes,
+including multiple quotes when a decision depends on checkpoint and base terms.
+The script checks every quote and source ID before writing
 `scripts/model_profile_agent_suggestions.json`.
 Unsupported claims become `unknown`. The output records source URLs and text
 hashes so reviewers can recheck what the agent saw. Gated or missing sources
