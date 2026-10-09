@@ -608,6 +608,93 @@
     }
     .c-model .m-name { overflow: hidden; text-overflow: ellipsis; }
 
+    /* Model links preview their own saved leaderboard result. The card lives
+       outside the scrolling table so it never gets clipped by its edges. */
+    .model-preview {
+      position: fixed;
+      z-index: 120;
+      width: min(300px, calc(100vw - 24px));
+      overflow: hidden;
+      border: 1px solid color-mix(in srgb, var(--link) 30%, var(--border));
+      border-radius: 12px;
+      background: var(--surf);
+      box-shadow: 0 18px 44px rgba(0, 0, 0, .32);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .14s ease, transform .14s ease;
+    }
+    .model-preview[hidden] { display: none; }
+    .model-preview.show { opacity: 1; transform: translateY(0); }
+    .model-preview-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      padding: 12px 14px;
+      background: var(--brand-mesh), #09080d;
+      color: #fff;
+    }
+    .model-preview-logo, .model-preview-mark {
+      display: grid;
+      flex: 0 0 34px;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .14);
+      object-fit: cover;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .model-preview-identity { min-width: 0; }
+    .model-preview-name {
+      display: block;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .model-preview-context { color: rgba(255,255,255,.72); font-size: 11px; }
+    .model-preview-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+      padding: 12px 14px 9px;
+    }
+    .model-preview-stat { min-width: 0; }
+    .model-preview-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .model-preview-stat strong {
+      display: block;
+      color: var(--text);
+      font-size: 16px;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .model-preview-stat:first-child strong { color: var(--link); }
+    .model-preview-foot {
+      margin: 0 14px;
+      padding: 8px 0 11px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .model-preview { transition: none; transform: none; }
+    }
+
     /* Model identity is a two-line block: name, then size / access / licence.
        Folding those three out of their own columns buys the measurement columns
        room, and matches how the mobile cards read. */
@@ -2527,6 +2614,7 @@
 
 <div id="col-tip"></div>
 <div id="chart-tip"></div>
+<div id="model-preview" class="model-preview" role="tooltip" hidden></div>
 
 <script>
 const MEDALS = ['🥇','🥈','🥉'];
@@ -2565,7 +2653,7 @@ const WER_COLS = [
   { key:'#',                      label:'#',             cls:'c-rank',
     tip:'Rank by the selected method (Mean WER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',         cls:'c-model',
-    tip:'Click to open the model on Hugging Face (opens in new tab).' },
+    tip:'Hover or focus to preview the model; click to open its page in a new tab.' },
   { key:'mean_wer',               label:'Mean WER ↓',
     tip:'Word Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_cer',               label:'Mean CER ↓',
@@ -2594,7 +2682,7 @@ const CER_COLS = [
   { key:'#',                      label:'#',              cls:'c-rank',
     tip:'Rank by the selected method (Mean CER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',          cls:'c-model',
-    tip:'Click to open the model on Hugging Face (opens in new tab).' },
+    tip:'Hover or focus to preview the model; click to open its page in a new tab.' },
   { key:'mean_cer',               label:'Mean CER ↓',
     tip:'Character Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_wer',               label:'Mean WER ↓',
@@ -2815,6 +2903,108 @@ function buildHead(cols) {
   return tr;
 }
 
+const MODEL_PREVIEW = document.getElementById('model-preview');
+let previewLink = null;
+let previewDelay = null;
+
+function hideModelPreview() {
+  clearTimeout(previewDelay);
+  previewDelay = null;
+  previewLink?.removeAttribute('aria-describedby');
+  previewLink = null;
+  MODEL_PREVIEW.classList.remove('show');
+  MODEL_PREVIEW.hidden = true;
+}
+
+function positionModelPreview(link) {
+  const rect = link.getBoundingClientRect();
+  const gap = 9, edge = 12;
+  const width = MODEL_PREVIEW.offsetWidth;
+  const height = MODEL_PREVIEW.offsetHeight;
+  const below = rect.bottom + gap;
+  const top = below + height <= innerHeight - edge
+    ? below : Math.max(edge, rect.top - height - gap);
+  MODEL_PREVIEW.style.left = `${Math.max(edge, Math.min(rect.left, innerWidth - width - edge))}px`;
+  MODEL_PREVIEW.style.top = `${Math.max(edge, Math.min(top, innerHeight - height - edge))}px`;
+}
+
+function showModelPreview(link, row) {
+  if (NARROW.matches || !link.isConnected) return;
+  if (previewLink && previewLink !== link) hideModelPreview();
+  previewLink = link;
+  MODEL_PREVIEW.replaceChildren();
+
+  const head = document.createElement('div');
+  head.className = 'model-preview-head';
+  const mark = document.createElement('span');
+  mark.className = 'model-preview-mark';
+  mark.textContent = row.name.split('/').at(-1).charAt(0).toUpperCase();
+  if (row.logo) {
+    const logo = document.createElement('img');
+    logo.className = 'model-preview-logo';
+    logo.alt = '';
+    logo.src = row.logo;
+    logo.onerror = () => logo.replaceWith(mark);
+    head.appendChild(logo);
+  } else head.appendChild(mark);
+  const identity = document.createElement('div');
+  identity.className = 'model-preview-identity';
+  const name = document.createElement('span');
+  name.className = 'model-preview-name';
+  name.textContent = row.name;
+  const context = document.createElement('span');
+  context.className = 'model-preview-context';
+  const size = Number.parseFloat(row.size);
+  context.textContent = (row.access === 'open' ? 'Open weights' : 'Hosted API')
+    + (Number.isFinite(size) ? ` · ${row.size}B parameters` : '');
+  identity.append(name, context);
+  head.appendChild(identity);
+
+  const stats = document.createElement('div');
+  stats.className = 'model-preview-stats';
+  for (const [label, value] of [
+    ['Mean WER', row.mean_wer == null ? '—' : `${row.mean_wer.toFixed(2)}%`],
+    ['Mean CER', row.mean_cer == null ? '—' : `${row.mean_cer.toFixed(2)}%`],
+    ['Speed', row.speed_x == null ? '—' : `${row.speed_x.toFixed(1)}×`],
+  ]) {
+    const stat = document.createElement('div');
+    stat.className = 'model-preview-stat';
+    const caption = document.createElement('span');
+    caption.textContent = label;
+    const number = document.createElement('strong');
+    number.textContent = value;
+    stat.append(caption, number);
+    stats.appendChild(stat);
+  }
+  const foot = document.createElement('div');
+  foot.className = 'model-preview-foot';
+  foot.textContent = `Licence: ${row.license || 'not declared'} · Open model page ↗`;
+  MODEL_PREVIEW.append(head, stats, foot);
+  MODEL_PREVIEW.hidden = false;
+  positionModelPreview(link);
+  link.setAttribute('aria-describedby', 'model-preview');
+  requestAnimationFrame(() => {
+    if (previewLink === link) MODEL_PREVIEW.classList.add('show');
+  });
+}
+
+function wireModelPreview(link, row) {
+  link.addEventListener('pointerenter', event => {
+    if (event.pointerType === 'touch' || NARROW.matches) return;
+    clearTimeout(previewDelay);
+    previewDelay = setTimeout(() => showModelPreview(link, row), 130);
+  });
+  link.addEventListener('pointerleave', hideModelPreview);
+  link.addEventListener('focus', () => showModelPreview(link, row));
+  link.addEventListener('blur', hideModelPreview);
+  link.addEventListener('click', hideModelPreview);
+}
+document.addEventListener('scroll', hideModelPreview, true);
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') hideModelPreview();
+});
+window.addEventListener('resize', hideModelPreview);
+
 function buildRow(row, cols, maxVals) {
   const tr = document.createElement('tr');
   tr.dataset.n = row.name.toLowerCase();
@@ -2865,7 +3055,7 @@ function buildRow(row, cols, maxVals) {
       a.href = row.url || '#';
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
-      a.title = row.name;
+      wireModelPreview(a, row);
       if (row.logo) {
         const img = document.createElement('img');
         img.src = row.logo;

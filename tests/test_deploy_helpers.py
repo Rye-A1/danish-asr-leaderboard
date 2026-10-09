@@ -26,6 +26,7 @@ from update_space import (
     build_leaderboard_json,
     build_seo_payload,
     generate_cover_image,
+    load_leaderboard_df,
 )
 
 
@@ -126,6 +127,23 @@ def test_parse_model_plain():
 def test_parse_model_non_string():
     name, url = _parse_model(None)
     assert url == ""
+
+
+def test_public_ekko_tiny_is_visible_but_private_ryeai_candidates_are_not(monkeypatch):
+    import update_space
+
+    rows = pd.DataFrame({"model": [
+        "[RyeAI/ekko-v1-tiny](https://huggingface.co/RyeAI/ekko-v1-tiny)",
+        "RyeAI/krumme-v1",
+        "syvai/hviske-v5.2",
+        "danish-foundation-models/edda-v0.2",
+    ]})
+    monkeypatch.setattr(update_space.pd, "read_parquet", lambda _path: rows)
+
+    visible = load_leaderboard_df()
+    assert [_parse_model(cell)[0] for cell in visible["model"]] == [
+        "RyeAI/ekko-v1-tiny", "danish-foundation-models/edda-v0.2",
+    ]
 
 
 def test_leaderboard_json_includes_hf_downloads(monkeypatch):

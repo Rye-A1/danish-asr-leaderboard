@@ -140,6 +140,11 @@
     "released": "2026-01-28",
     "source": "huggingface"
   },
+  "RyeAI/ekko-v1-tiny": {
+    "released": "2026-10-09",
+    "source": "leaderboard",
+    "note": "First public leaderboard entry; the Hub repository existed privately before release."
+  },
   "saga-2-l": {
     "released": "2026-09-29",
     "source": "best guess",

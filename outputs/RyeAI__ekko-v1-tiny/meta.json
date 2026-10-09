@@ -1,0 +1,23 @@
+{
+  "model": "RyeAI/ekko-v1-tiny",
+  "model_link": "[RyeAI/ekko-v1-tiny](https://huggingface.co/RyeAI/ekko-v1-tiny)",
+  "params_b": 0.113,
+  "access": "open",
+  "submitted": "2026-10-09",
+  "source_evaluated": "2026-09-21",
+  "checkpoint_sha256": "c48614a2118bb634dc97a1497e3702940153e6db4d16b72f175a3ab94a06cece",
+  "inference_runtime": "NeMo 2.7.1",
+  "speed_hardware": "NVIDIA A100",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "spoken_numbers": true,
+  "filler_words": true,
+  "speed_x": 795.8,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}

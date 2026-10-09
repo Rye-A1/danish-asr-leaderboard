@@ -1,0 +1,19 @@
+{
+  "model": "[RyeAI/ekko-v1-tiny](https://huggingface.co/RyeAI/ekko-v1-tiny)",
+  "params_b": 0.113,
+  "coral_conversation_wer": 24.15,
+  "coral_read_aloud_wer": 11.87,
+  "cv17_da_wer": 8.44,
+  "fleurs_da_wer": 9.75,
+  "ftspeech_wer": 7.62,
+  "mean_wer": 12.37,
+  "coral_conversation_cer": 14.93,
+  "coral_read_aloud_cer": 4.5,
+  "cv17_da_cer": 2.87,
+  "fleurs_da_cer": 3.72,
+  "ftspeech_cer": 4.19,
+  "mean_cer": 6.04,
+  "speed_x": 795.8,
+  "submitted": "2026-10-09",
+  "access": "open"
+}
