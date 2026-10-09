@@ -1,0 +1,1492 @@
+{
+  "3dio-ai/svale-110M": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Five named public corpora; CoRal v3 requires acceptance of access conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Names base, training sources, use, terms and benchmark scores; limitations and detailed training recipe are in the linked publisher repository rather than the card.",
+        "url": "https://huggingface.co/3dio-ai/svale-110M"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "NVIDIA terms permit commercial use; card also applies CoRal restrictions on synthesis and biometric identification.",
+        "url": "https://huggingface.co/3dio-ai/svale-110M#licence"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Publisher publishes modal_finetune.py, data-preparation scripts and models/svale-110M/run.json for the released checkpoint.",
+        "url": "https://github.com/3dio-aps/svale/blob/main/modal_finetune.py"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,768 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option. The card explicitly says lowercase without punctuation.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/3dio-ai__svale-110M.parquet"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/3dio-ai/svale-110M",
+    "reviewed_on": "2026-09-27"
+  },
+  "3dio-ai/svale-600M": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Five named public corpora; CoRal v3 requires acceptance of access conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Names base, training sources, use, terms and benchmark scores; limitations and detailed training recipe are in the linked publisher repository rather than the card.",
+        "url": "https://huggingface.co/3dio-ai/svale-600M"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "NVIDIA terms permit commercial use; card also applies CoRal restrictions on synthesis and biometric identification.",
+        "url": "https://huggingface.co/3dio-ai/svale-600M#licence"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Publisher publishes modal_finetune.py, data-preparation scripts and models/svale-600M/run.json for the released checkpoint.",
+        "url": "https://github.com/3dio-aps/svale/blob/main/modal_finetune.py"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,759 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option. The card explicitly says lowercase without punctuation.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/3dio-ai__svale-600M.parquet"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/3dio-ai/svale-600M",
+    "reviewed_on": "2026-09-27"
+  },
+  "capacit-ai/saga": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "CoRal dataset family is named without exact versions, splits or preprocessing.",
+        "url": "https://huggingface.co/capacit-ai/saga#model-summary"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Gives lineage, usage and evaluation; training data and limitations are thin.",
+        "url": "https://huggingface.co/capacit-ai/saga"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "Hub tag says Apache 2.0, but the CoRal training-data terms and their effect on this fine-tune are not clarified.",
+        "url": "https://huggingface.co/capacit-ai/saga"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 1,167 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/capacit-ai__saga.parquet"
+      },
+      "streaming": {
+        "state": "partial",
+        "detail": "Card describes accumulated-audio continuation in configurable steps, but not interim text while live audio arrives.",
+        "url": "https://huggingface.co/capacit-ai/saga#long-form-audio"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/capacit-ai/saga",
+    "reviewed_on": "2026-09-27"
+  },
+  "capacit-ai/saga-2-m": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Six fine-tuning corpora are named; CoRal access is gated and exact run data are not redistributed.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Card gives a recipe and repo ships inference code; no executable fine-tuning script is linked.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#training-recipe"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents lineage, data, recipe, evaluation, use, limitations and license.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m"
+      },
+      "license": {
+        "state": "no",
+        "detail": "Current weights use CC BY-NC 4.0 from 2026-09-24; commercial use needs separate permission. Earlier revisions had Apache 2.0.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 3,128 of 26,779 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/capacit-ai__saga-2-m.parquet"
+      },
+      "timestamps": {
+        "state": "partial",
+        "detail": "Only chunk boundaries; no word-level timestamps.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#inference-details"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Card explicitly excludes speaker diarization.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#inference-details"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Card specifies offline decoding, no streaming.",
+        "url": "https://huggingface.co/capacit-ai/saga-2-m#inference-details"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/capacit-ai/saga-2-m",
+    "reviewed_on": "2026-09-27"
+  },
+  "CoRal-project/roest-v2-wav2vec2-1B": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v2, published with gated access and use conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v2"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card gives the training command and links the CoRal training framework.",
+        "url": "https://github.com/alexandrainst/coral"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents base, data, training, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "OpenRAIL-based terms permit commercial use but prohibit specified uses.",
+        "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B#model-details"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v2-wav2vec2-1B.parquet"
+      }
+    }
+  },
+  "CoRal-project/roest-v2-wav2vec2-2B": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v2, published with gated access and use conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v2"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card gives the training command and links the CoRal training framework.",
+        "url": "https://github.com/alexandrainst/coral"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents base, data, training, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "OpenRAIL-based terms permit commercial use but prohibit specified uses.",
+        "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B#model-details"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v2-wav2vec2-2B.parquet"
+      }
+    }
+  },
+  "CoRal-project/roest-v3-wav2vec2-315m": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v3, published with gated access and use conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card identifies the training framework and invocation.",
+        "url": "https://github.com/alexandrainst/coral"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Documents use, data and evaluation; limitations are sparse.",
+        "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "OpenRAIL-based terms permit commercial use with synthesis and biometric-use restrictions.",
+        "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m#model-details"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,778 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v3-wav2vec2-315m.parquet"
+      }
+    }
+  },
+  "CoRal-project/roest-v3-whisper-1.5b": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v3, published with gated access and use conditions.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card identifies the training framework and invocation.",
+        "url": "https://github.com/alexandrainst/coral"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Documents use, data and evaluation; limitations are sparse.",
+        "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "OpenRAIL-based terms permit commercial use with synthesis and biometric-use restrictions.",
+        "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b#model-details"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 1,889 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v3-whisper-1__5b.parquet"
+      }
+    }
+  },
+  "danish-foundation-models/edda-v0.1": {
+    "openness": {
+      "license": {
+        "state": "yes",
+        "detail": "Checkpoint card explicitly releases the weights under Apache 2.0; its Whisper Turbo base is MIT licensed.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#license-and-attribution"
+      },
+      "data": {
+        "state": "partial",
+        "detail": "Card lists exact fine-tuning corpora, splits, counts and preprocessing; CoRal v3 access is gated and training copies are not redistributed.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#training-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Card publishes detailed hyperparameters and data recipe, but links no executable training script for this checkpoint.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#training-recipe"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Checkpoint-specific lineage, data, recipe, evaluation, use, limitations and license are documented.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Card documents cased, punctuated output; 2,297 of 26,780 saved raw benchmark transcriptions contain both.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#usage"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Card describes offline consecutive 30-second windows for long recordings, not incremental transcription as audio arrives.",
+        "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#usage"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/danish-foundation-models/edda-v0.1",
+    "reviewed_on": "2026-09-27"
+  },
+  "facebook/mms-1b-all": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "The card's example datasets do not establish public access to the full training corpus.",
+        "url": "https://huggingface.co/facebook/mms-1b-all"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "MMS research code is linked; exact checkpoint training inputs and run configuration need review.",
+        "url": "https://github.com/facebookresearch/fairseq/tree/main/examples/mms#asr"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Usage and language coverage are detailed; data and checkpoint limitations are limited.",
+        "url": "https://huggingface.co/facebook/mms-1b-all"
+      },
+      "license": {
+        "state": "no",
+        "detail": "Model is released under CC BY-NC 4.0; commercial use is excluded.",
+        "url": "https://huggingface.co/facebook/mms-1b-all#model-details"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "MMS paper",
+      "url": "https://arxiv.org/abs/2305.13516"
+    },
+    "reviewed_source": "https://huggingface.co/facebook/mms-1b-all",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,777 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/facebook__mms-1b-all.parquet"
+      }
+    }
+  },
+  "facebook/seamless-m4t-v2-large": {
+    "openness": {
+      "code": {
+        "state": "partial",
+        "detail": "Finetuning code is linked; exact release training recipe and data remain unclear.",
+        "url": "https://github.com/facebookresearch/seamless_communication/tree/main/src/seamless_communication/cli/m4t/finetune"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Describes tasks, usage and evaluation; training-data disclosure is limited.",
+        "url": "https://huggingface.co/facebook/seamless-m4t-v2-large"
+      },
+      "license": {
+        "state": "no",
+        "detail": "Hub declares CC BY-NC 4.0; commercial use is excluded.",
+        "url": "https://huggingface.co/facebook/seamless-m4t-v2-large"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "SeamlessM4T v2 paper",
+      "url": "https://arxiv.org/abs/2312.05187"
+    },
+    "reviewed_source": "https://huggingface.co/facebook/seamless-m4t-v2-large",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 18,084 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/facebook__seamless-m4t-v2-large.parquet"
+      }
+    }
+  },
+  "gpt-4o-mini-transcribe": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "API-only entry; model weights are not licensed for redistribution.",
+        "url": "https://platform.openai.com/docs/models"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 25,406 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/gpt-4o-mini-transcribe.parquet"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "The file-transcription guide directs users to whisper-1 for word or segment timestamps.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#timestamps"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Speaker-labeled output requires the separate gpt-4o-transcribe-diarize model.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#speaker-diarization"
+      },
+      "streaming": {
+        "state": "partial",
+        "detail": "Can stream transcript deltas after a complete file upload; live microphone audio uses a separate Realtime path.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#streaming-transcriptions"
+      }
+    },
+    "reviewed_source": "https://developers.openai.com/api/docs/guides/speech-to-text",
+    "reviewed_on": "2026-09-27"
+  },
+  "gpt-4o-transcribe": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "API-only entry; model weights are not licensed for redistribution.",
+        "url": "https://platform.openai.com/docs/models"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 25,387 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/gpt-4o-transcribe.parquet"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "The file-transcription guide directs users to whisper-1 for word or segment timestamps.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#timestamps"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Speaker-labeled output requires the separate gpt-4o-transcribe-diarize model.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#speaker-diarization"
+      },
+      "streaming": {
+        "state": "partial",
+        "detail": "Can stream transcript deltas after a complete file upload; live microphone audio uses a separate Realtime path.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#streaming-transcriptions"
+      }
+    },
+    "reviewed_source": "https://developers.openai.com/api/docs/guides/speech-to-text",
+    "reviewed_on": "2026-09-27"
+  },
+  "gpt-transcribe": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "API-only entry; model weights are not licensed for redistribution.",
+        "url": "https://platform.openai.com/docs/models"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 24,981 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/gpt-transcribe.parquet"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "The file-transcription guide directs users to whisper-1 for word or segment timestamps.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#timestamps"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Speaker-labeled output requires the separate gpt-4o-transcribe-diarize model.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#speaker-diarization"
+      },
+      "streaming": {
+        "state": "partial",
+        "detail": "Can stream transcript deltas after a complete file upload; live microphone audio uses a separate Realtime path.",
+        "url": "https://developers.openai.com/api/docs/guides/speech-to-text#streaming-transcriptions"
+      }
+    },
+    "reviewed_source": "https://developers.openai.com/api/docs/guides/speech-to-text",
+    "reviewed_on": "2026-09-27"
+  },
+  "hinge/danstral-v1": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on CoRal v1, which has access conditions; base-model corpus is undisclosed.",
+        "url": "https://huggingface.co/datasets/CoRal-project/coral"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Author links the Danstral training script.",
+        "url": "https://github.com/ChristianHinge/danstral"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Explains lineage, training data, usage, evaluation and contamination risk.",
+        "url": "https://huggingface.co/hinge/danstral-v1"
+      },
+      "license": {
+        "state": "unknown",
+        "detail": "No checkpoint-specific license tag or terms on Hub page; parent and adapter terms need review.",
+        "url": "https://huggingface.co/hinge/danstral-v1"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/hinge/danstral-v1",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/hinge__danstral-v1.parquet"
+      }
+    }
+  },
+  "MediaCatch/xls-r-300m-danish-mc-v2": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card names only a 'Preprocessed Dataset'; the corpus and splits are not identified.",
+        "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2#training-and-evaluation-data"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Trainer hyperparameters are published, but no checkpoint-specific training script is linked.",
+        "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2#training-procedure"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Metrics and hyperparameters are present; description, data and limitations say 'More information needed'.",
+        "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2"
+      },
+      "license": {
+        "state": "unknown",
+        "detail": "Hub tag says Apache 2.0, but the base checkpoint and preprocessed-data terms are not described.",
+        "url": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/MediaCatch__xls-r-300m-danish-mc-v2.parquet"
+      }
+    }
+  },
+  "mistralai/Voxtral-Mini-3B-2507": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card does not identify a downloadable training corpus or exact mixture.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Use and benchmarks are documented; training provenance and limitations are sparse.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Voxtral paper",
+      "url": "https://arxiv.org/abs/2507.13264"
+    },
+    "reviewed_source": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 24,520 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/mistralai__Voxtral-Mini-3B-2507.parquet"
+      }
+    }
+  },
+  "mistralai/Voxtral-Small-24B-2507": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card does not identify a downloadable training corpus or exact mixture.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Use and benchmarks are documented; training provenance and limitations are sparse.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Voxtral paper",
+      "url": "https://arxiv.org/abs/2507.13264"
+    },
+    "reviewed_source": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 25,427 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/mistralai__Voxtral-Small-24B-2507.parquet"
+      }
+    }
+  },
+  "nvidia/canary-1b-v2": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Granary is public; training mix also includes in-house NeMo ASR Set 3.0.",
+        "url": "https://huggingface.co/nvidia/canary-1b-v2#training-dataset"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card links the NeMo training script and describes the staged recipe.",
+        "url": "https://github.com/NVIDIA/NeMo/blob/main/examples/asr/speech_multitask/speech_to_text_aed.py"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed terms, data, training, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/nvidia/canary-1b-v2"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Card states CC BY 4.0 and explicitly permits commercial use.",
+        "url": "https://huggingface.co/nvidia/canary-1b-v2#licenseterms-of-use"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 21,946 of 26,033 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/nvidia__canary-1b-v2.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "NeMo example returns word and segment timestamps.",
+        "url": "https://huggingface.co/nvidia/canary-1b-v2#how-to-use-this-model"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Canary 1B v2 technical report",
+      "url": "https://arxiv.org/abs/2509.14128"
+    },
+    "reviewed_source": "https://huggingface.co/nvidia/canary-1b-v2",
+    "reviewed_on": "2026-09-27"
+  },
+  "nvidia/nemotron-3.5-asr-streaming-0.6b": {
+    "openness": {
+      "license": {
+        "state": "yes",
+        "detail": "OpenMDW 1.1 permits use and redistribution, including commercial use, subject to retaining notices.",
+        "url": "https://openmdw.ai/license/1-1/"
+      },
+      "data": {
+        "state": "partial",
+        "detail": "Card lists public source families but says the training blend also contains proprietary internal datasets.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b#training-and-evaluation-datasets"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "NeMo toolkit and inference examples are public; this released checkpoint’s training recipe and run configuration are not linked.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b#nvidia-nemo"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed architecture, data sources, supported locales, usage, evaluation, limitations and license.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Card documents native punctuation and capitalization; 22,547 of 26,780 saved raw benchmark transcriptions contain both.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b#why-choose-nemotron-35-asr"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Cache-aware incremental streaming with configurable 80–1120 ms chunks and documented NeMo and Transformers examples.",
+        "url": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b#streaming-inference"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b",
+    "reviewed_on": "2026-09-27"
+  },
+  "nvidia/parakeet-rnnt-110m-da-dk": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "CoRal, Common Voice and Granary sources are listed; CoRal has gated access.",
+        "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk#training-datasets"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "NeMo toolkit is linked; exact checkpoint run configuration is not in the card.",
+        "url": "https://github.com/NVIDIA/NeMo"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents terms, data, use, evaluation and deployment limitations.",
+        "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk"
+      },
+      "license": {
+        "state": "partial",
+        "detail": "NVIDIA terms permit commercial redistribution but impose guardrail and AI-use conditions.",
+        "url": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "None of 26,524 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/nvidia__parakeet-rnnt-110m-da-dk.parquet"
+      },
+      "streaming": {
+        "state": "unknown",
+        "detail": "Riva offers streaming generally, but the card explicitly says this Danish checkpoint is not yet supported by Riva; no other incremental path is shown.",
+        "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk#nvidia-riva-deployment"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk",
+    "reviewed_on": "2026-09-27"
+  },
+  "nvidia/parakeet-tdt-0.6b-v3": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Granary is public, but card also lists in-house NeMo ASR Set 3.0.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#training-dataset"
+      },
+      "code": {
+        "state": "yes",
+        "detail": "Card links NeMo training example and TDT configuration.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#training"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed terms, data, training, use, evaluation and limitations.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Card states CC BY 4.0 and explicitly permits commercial use.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#licenseterms-of-use"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 22,841 of 26,217 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/nvidia__parakeet-tdt-0__6b-v3.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "NeMo example returns character, word and segment timestamps.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#how-to-use-this-model"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Card links an official chunked incremental NeMo streaming script.",
+        "url": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3#how-to-use-this-model"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Parakeet technical report",
+      "url": "https://arxiv.org/abs/2509.14128"
+    },
+    "reviewed_source": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
+    "reviewed_on": "2026-09-27"
+  },
+  "openai/whisper-base": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Original Whisper training corpus is described but not released.",
+        "url": "https://huggingface.co/openai/whisper-base#training-data"
+      },
+      "code": {
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed training overview, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-base"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-base"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 24,962 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-base.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Whisper timestamp tokens and long-form timestamp decoding are documented.",
+        "url": "https://huggingface.co/openai/whisper-base#model-details"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-base"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Whisper paper",
+      "url": "https://arxiv.org/abs/2212.04356"
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-base",
+    "reviewed_on": "2026-09-27"
+  },
+  "openai/whisper-large-v3": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Training mix is described but the underlying corpus is not released.",
+        "url": "https://huggingface.co/openai/whisper-large-v3#training-data"
+      },
+      "code": {
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed lineage, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-large-v3"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-large-v3"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 23,516 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-large-v3.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Card documents sentence and word timestamps in official pipeline.",
+        "url": "https://huggingface.co/openai/whisper-large-v3#usage"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-large-v3"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-large-v3",
+    "reviewed_on": "2026-09-27"
+  },
+  "openai/whisper-large-v3-turbo": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Training mix is described but the underlying corpus is not released.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo#training-data"
+      },
+      "code": {
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed lineage, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies MIT for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 23,776 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-large-v3-turbo.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Card documents sentence and word timestamps in official pipeline.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo#usage"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-large-v3-turbo"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-large-v3-turbo",
+    "reviewed_on": "2026-09-27"
+  },
+  "openai/whisper-small": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Original Whisper training corpus is described but not released.",
+        "url": "https://huggingface.co/openai/whisper-small#training-data"
+      },
+      "code": {
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed training overview, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-small"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-small"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 24,606 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-small.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Whisper timestamp tokens and long-form timestamp decoding are documented.",
+        "url": "https://huggingface.co/openai/whisper-small#model-details"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-small"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Whisper paper",
+      "url": "https://arxiv.org/abs/2212.04356"
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-small",
+    "reviewed_on": "2026-09-27"
+  },
+  "openai/whisper-tiny": {
+    "openness": {
+      "data": {
+        "state": "no",
+        "detail": "Original Whisper training corpus is described but not released.",
+        "url": "https://huggingface.co/openai/whisper-tiny#training-data"
+      },
+      "code": {
+        "state": "unknown",
+        "detail": "The public Whisper repository contains model and inference code; original checkpoint training scripts and configurations are not established.",
+        "url": "https://github.com/openai/whisper"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed training overview, usage, evaluation and limitations.",
+        "url": "https://huggingface.co/openai/whisper-tiny"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/openai/whisper-tiny"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 25,479 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/openai__whisper-tiny.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Whisper timestamp tokens and long-form timestamp decoding are documented.",
+        "url": "https://huggingface.co/openai/whisper-tiny#model-details"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "The checkpoint card states Whisper cannot perform real-time transcription out of the box; no native incremental audio path is supplied.",
+        "url": "https://huggingface.co/openai/whisper-tiny"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Whisper paper",
+      "url": "https://arxiv.org/abs/2212.04356"
+    },
+    "reviewed_source": "https://huggingface.co/openai/whisper-tiny",
+    "reviewed_on": "2026-09-27"
+  },
+  "ordbogen/whisper": {
+    "openness": {
+      "model_card": {
+        "state": "no",
+        "detail": "The rendered provider page gives only a generic Whisper description, endpoint list and pricing; it has no checkpoint-specific training, evaluation or limitations.",
+        "url": "https://odincore.ai/docs/models/ordbogen-whisper"
+      },
+      "license": {
+        "state": "no",
+        "detail": "Hosted API entry; no redistributable checkpoint weights or public model license are offered.",
+        "url": "https://odincore.ai/docs/models/ordbogen-whisper"
+      }
+    },
+    "reviewed_source": "https://odincore.ai/docs/models/ordbogen-whisper",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 23,816 of 26,632 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/ordbogen__whisper.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "The model page lists the transcription endpoint; its API reference offers verbose_json with segment or word timestamp_granularities.",
+        "url": "https://odincore.ai/api-reference#tag/audio/POST/audio/transcriptions"
+      },
+      "streaming": {
+        "state": "partial",
+        "detail": "The model page says Streaming supported, and the API documents server-sent transcription deltas after an audio file is uploaded. Live microphone audio input is not documented.",
+        "url": "https://odincore.ai/api-reference#tag/audio/POST/audio/transcriptions"
+      }
+    }
+  },
+  "pluttodk/milo-asr": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "CoRal v2 is listed; stage-two podcast and Azure podcast data are not linked.",
+        "url": "https://huggingface.co/pluttodk/milo-asr#tr%C3%A6ningsdetaljer"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Gives use, evaluation and two-stage recipe; dataset provenance and limitations are incomplete.",
+        "url": "https://huggingface.co/pluttodk/milo-asr"
+      },
+      "license": {
+        "state": "unknown",
+        "detail": "Hub says OpenRAIL, but card does not spell out effective commercial and redistribution terms.",
+        "url": "https://huggingface.co/pluttodk/milo-asr"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Card gives two-stage fine-tuning settings; the linked Qwen project offers generic SFT code, not this checkpoint’s training run.",
+        "url": "https://huggingface.co/pluttodk/milo-asr"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 19,427 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/pluttodk__milo-asr.parquet"
+      },
+      "timestamps": {
+        "state": "partial",
+        "detail": "Card shows external forced aligner, but Qwen lists no Danish support for that aligner.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B#released-models-description-and-download"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Card documents incremental vLLM transcription for this fine-tune.",
+        "url": "https://huggingface.co/pluttodk/milo-asr#streaming-vllm"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/pluttodk/milo-asr",
+    "reviewed_on": "2026-09-27"
+  },
+  "Qwen/Qwen3-ASR-1.7B": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card refers to large-scale speech data without an accessible full corpus or exact mixture.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Publisher publishes a Qwen3-ASR fine-tuning script, but not the pretraining code or run configuration for the released 1.7B checkpoint.",
+        "url": "https://github.com/QwenLM/Qwen3-ASR/tree/main/finetuning"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Extensive usage, architecture and evaluation, but training-data provenance is limited.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Hub identifies Apache 2.0 for this checkpoint.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 21,614 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/Qwen__Qwen3-ASR-1__7B.parquet"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "Optional forced aligner lists 11 languages and excludes Danish; no confirmed Danish timestamps.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B#released-models-description-and-download"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Official vLLM path supports incremental streaming; Danish is listed for the ASR checkpoint.",
+        "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B#streaming-demo"
+      }
+    },
+    "report": {
+      "state": "yes",
+      "detail": "Qwen3-ASR paper",
+      "url": "https://arxiv.org/abs/2601.21337"
+    },
+    "reviewed_source": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
+    "reviewed_on": "2026-09-27"
+  },
+  "scribe_v2": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "API-only entry; model weights are not licensed for redistribution.",
+        "url": "https://elevenlabs.io/docs/capabilities/speech-to-text"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 18,138 of 26,777 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/scribe_v2.parquet"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "Scribe v2 documents word-level start and end timestamps.",
+        "url": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text#models"
+      },
+      "diarization": {
+        "state": "yes",
+        "detail": "Scribe v2 documents diarization for up to 32 speakers and speaker IDs in the response.",
+        "url": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text#models"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Real-time transcription is offered by the separate Scribe v2 Realtime model.",
+        "url": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text#models"
+      }
+    },
+    "reviewed_source": "https://elevenlabs.io/docs/overview/capabilities/speech-to-text",
+    "reviewed_on": "2026-09-27"
+  },
+  "syv-transcribe": {
+    "openness": {
+      "license": {
+        "state": "no",
+        "detail": "Hosted service entry; ensemble weights are not released as a redistributable checkpoint.",
+        "url": "https://syv.ai"
+      }
+    },
+    "reviewed_source": "https://syv.ai/",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 1,439 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syv-transcribe.parquet"
+      }
+    }
+  },
+  "syvai/hviske-v3-conversation": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Card shows evaluation data but does not identify fine-tuning corpus and splits.",
+        "url": "https://huggingface.co/syvai/hviske-v3-conversation"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Danish usage and evaluation are documented; fine-tune data and limitations are sparse.",
+        "url": "https://huggingface.co/syvai/hviske-v3-conversation"
+      },
+      "license": {
+        "state": "no",
+        "detail": "The repository LICENSE permits non-commercial use under OpenRAIL terms and directs commercial users to contact Syv for permission.",
+        "url": "https://huggingface.co/syvai/hviske-v3-conversation/blob/main/LICENSE"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v3-conversation",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 2,719 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v3-conversation.parquet"
+      }
+    }
+  },
+  "syvai/hviske-v5": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Unified training corpus is published, but source terms and exact filtering need review.",
+        "url": "https://huggingface.co/datasets/syvai/danish-asr-unified"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Training, dataset mix, evaluation and use are given; limitations are sparse.",
+        "url": "https://huggingface.co/syvai/hviske-v5"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0; card explicitly excludes use by or for a commercial entity without separate license.",
+        "url": "https://huggingface.co/syvai/hviske-v5#license"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Publisher GitHub repository has a reusable ASR fine-tuning entry point and model presets, but no run files tying it to this released checkpoint.",
+        "url": "https://github.com/syv-ai/hviske/blob/main/src/scripts/finetune_asr_model.py"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 1,577 of 26,779 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v5.parquet"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v5",
+    "reviewed_on": "2026-09-27"
+  },
+  "syvai/hviske-v5-tiny": {
+    "openness": {
+      "data": {
+        "state": "unknown",
+        "detail": "Distilled from teacher pseudo-labels; exact distillation corpus is not linked.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Detailed usage, evaluation, runtimes, limitations and license.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0 inherited from teacher; commercial use requires separate permission.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 540 of 26,779 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v5-tiny.parquet"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "Card explicitly excludes timestamps.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Card explicitly excludes diarization.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Card says model is offline; browser demo uses VAD chunks rather than native incremental decoding.",
+        "url": "https://huggingface.co/syvai/hviske-v5-tiny#limitations"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v5-tiny",
+    "reviewed_on": "2026-09-27"
+  },
+  "syvai/hviske-v5.1": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Unified corpus is published, but exact source permissions and filtering need review.",
+        "url": "https://huggingface.co/datasets/syvai/danish-asr-unified"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Lineage, usage, evaluation and training settings are documented; limitations are sparse.",
+        "url": "https://huggingface.co/syvai/hviske-v5.1"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0; commercial use requires separate license.",
+        "url": "https://huggingface.co/syvai/hviske-v5.1#license"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Publisher GitHub repository has a reusable ASR fine-tuning entry point and model presets, but no run files tying it to this released checkpoint.",
+        "url": "https://github.com/syv-ai/hviske/blob/main/src/scripts/finetune_asr_model.py"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v5.1",
+    "reviewed_on": "2026-09-27",
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 2,331 of 26,779 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v5__1.parquet"
+      }
+    }
+  },
+  "syvai/hviske-v5.3": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Fine-tuned on gated CoRal v3 train splits; base v5.1 used published unified corpus.",
+        "url": "https://huggingface.co/syvai/hviske-v5.3#training-details"
+      },
+      "model_card": {
+        "state": "partial",
+        "detail": "Lineage, use, evaluation and training are detailed; limitations are sparse.",
+        "url": "https://huggingface.co/syvai/hviske-v5.3"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0; card explicitly excludes commercial use without separate license.",
+        "url": "https://huggingface.co/syvai/hviske-v5.3#license"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Publisher GitHub repository has a reusable ASR fine-tuning entry point and model presets, but no run files tying it to this released checkpoint.",
+        "url": "https://github.com/syv-ai/hviske/blob/main/src/scripts/finetune_asr_model.py"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 952 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v5__3.parquet"
+      },
+      "streaming": {
+        "state": "yes",
+        "detail": "Publisher's Hviske v5.3 live demo streams microphone audio over WebSocket and receives incremental commit/tail transcription messages while recording.",
+        "url": "https://hviske.syv.ai/"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v5.3",
+    "reviewed_on": "2026-09-27"
+  },
+  "syvai/hviske-v6": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Card links public corpus, but cleaned 2,755-hour subset and filtering are not released as exact split.",
+        "url": "https://huggingface.co/syvai/hviske-v6#training"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "Detailed recipe and inference implementations; no executable fine-tuning script is linked.",
+        "url": "https://huggingface.co/syvai/hviske-v6#training"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents lineage, data, recipe, evaluation, use, limitations and license.",
+        "url": "https://huggingface.co/syvai/hviske-v6"
+      },
+      "license": {
+        "state": "no",
+        "detail": "CC BY-NC 4.0; commercial use is excluded by checkpoint license.",
+        "url": "https://huggingface.co/syvai/hviske-v6#license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 2,540 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/syvai__hviske-v6.parquet"
+      },
+      "timestamps": {
+        "state": "no",
+        "detail": "Card explicitly excludes timestamps.",
+        "url": "https://huggingface.co/syvai/hviske-v6#limitations"
+      },
+      "diarization": {
+        "state": "no",
+        "detail": "Card explicitly excludes diarization.",
+        "url": "https://huggingface.co/syvai/hviske-v6#limitations"
+      },
+      "streaming": {
+        "state": "no",
+        "detail": "Card explicitly excludes streaming.",
+        "url": "https://huggingface.co/syvai/hviske-v6#limitations"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/syvai/hviske-v6",
+    "reviewed_on": "2026-09-27"
+  },
+  "thorhojhus/whisper-large-v3-turbo-danish": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Five public corpora named, but filtered pseudo-labeled data are not redistributed.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#02--training"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "training_recipe.json records configuration; executable training script is not linked.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish/blob/main/training_recipe.json"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents lineage, data, recipe, evaluation, limitations and terms.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Card states MIT for weights and distinguishes upstream data terms.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#05--license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 5,988 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/thorh__whisper-large-v3-turbo-danish.parquet"
+      },
+      "timestamps": {
+        "state": "partial",
+        "detail": "Card uses timestamped sequential decoding for long clips, but shows no timestamp-output API.",
+        "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#03--evaluation"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish",
+    "reviewed_on": "2026-09-27"
+  },
+  "thorhojhus/whisper-small-danish": {
+    "openness": {
+      "data": {
+        "state": "partial",
+        "detail": "Five public corpora named, but filtered pseudo-labeled data are not redistributed.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish#02--training"
+      },
+      "code": {
+        "state": "partial",
+        "detail": "training_recipe.json records configuration; executable training script is not linked.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish/blob/main/training_recipe.json"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "Documents lineage, data, recipe, evaluation, limitations and terms.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish"
+      },
+      "license": {
+        "state": "yes",
+        "detail": "Card states MIT for weights and distinguishes upstream data terms.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish#05--license"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "yes",
+        "detail": "Saved raw benchmark output contains both casing and punctuation in 8,903 of 26,780 transcriptions; the scored path emits formatted Danish.",
+        "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/thorhojhus__whisper-small-danish.parquet"
+      },
+      "timestamps": {
+        "state": "partial",
+        "detail": "Card uses timestamped sequential decoding for long clips, but shows no timestamp-output API.",
+        "url": "https://huggingface.co/thorhojhus/whisper-small-danish#03--evaluation"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/thorhojhus/whisper-small-danish",
+    "reviewed_on": "2026-09-27"
+  }
+}

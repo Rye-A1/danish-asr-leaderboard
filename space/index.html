@@ -324,6 +324,23 @@
     .compare-summary th a:hover { color: var(--link); text-decoration: underline; }
     .compare-head-rank { display: block; margin-bottom: 2px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
     .compare-summary td:nth-child(n+2) { font-variant-numeric: tabular-nums; font-weight: 600; }
+    .compare-profile-intro { margin: -4px 0 14px; color: var(--muted); font-size: 12px; }
+    .compare-profile-group td { border-top: 1px solid var(--border); }
+    .compare-profile-group:first-child td { border-top: 0; }
+    .compare-profile-group td:first-child { color: var(--text); font-weight: 750; }
+    .compare-profile-field td:first-child { padding-left: 28px; }
+    #tab-compare .compare-profile-score .profile-trigger { max-width: 154px; min-height: 28px; }
+    #tab-compare .compare-profile-score .profile-compact-label { display: none; }
+    #tab-compare .compare-profile-score .profile-visual { height: 26px; }
+    #tab-compare .compare-profile-score .profile-score { font-size: 14px; }
+    .compare-profile-status { display: inline-flex; align-items: center; gap: 7px; color: var(--text); text-decoration: none; font-weight: 500; }
+    .compare-profile-status .mark { flex: none; width: 15px; color: var(--link); font-size: 16px; font-weight: 700; line-height: 1; text-align: center; }
+    .compare-profile-status.partial .mark { color: #d97706; }
+    .compare-profile-status.no, .compare-profile-status.unknown { color: var(--muted); }
+    .compare-profile-status.no .mark, .compare-profile-status.unknown .mark { color: var(--muted); }
+    a.compare-profile-status:hover { color: var(--link); text-decoration: underline; }
+    a.compare-profile-status:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .compare-profile-source { font-size: 11px; font-weight: 400; }
     .compare-subheading { margin: 20px 0 10px; font-size: 14px; }
     .compare-metric { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 13px; }
     .compare-metric button { padding: 6px 14px; border: 0; background: var(--surf); color: var(--muted); font: inherit; cursor: pointer; }
@@ -782,6 +799,89 @@
     }
     .badge-open { background: transparent; border: 1px solid var(--border); color: #4ade80; }
     .badge-prop { background: rgba(148,163,184,.12); color: #94a3b8; }
+
+    /* Compact profile scores live in the leaderboard; the status card floats
+       outside the scrolling table so it stays readable on narrow screens. */
+    .c-profile { width: 100px; min-width: 100px; }
+    .profile-trigger {
+      display: flex; flex-direction: column; justify-content: center; width: 100%;
+      align-items: center; min-height: 28px; padding: 0;
+      border: 1px solid transparent; border-radius: 7px;
+      color: var(--text); background: transparent; cursor: pointer;
+      text-align: center; font: inherit;
+    }
+    .profile-trigger:hover, .profile-trigger:focus-visible,
+    .profile-trigger[aria-expanded="true"] { background: var(--surf2); border-color: var(--border); outline: none; }
+    .profile-compact-label { display: none; }
+    .profile-visual {
+      position: relative; width: 100%; height: 26px; flex: none;
+      overflow: hidden; border-radius: 5px;
+    }
+    .profile-score {
+      position: absolute; inset: 50% 0 auto; z-index: 2;
+      transform: translateY(-50%);
+      color: var(--text); font-size: 14px; font-weight: 700;
+      font-variant-numeric: tabular-nums; line-height: 1; text-align: center;
+      text-shadow: 0 0 3px var(--surf), 0 0 6px var(--surf);
+    }
+    .profile-score-total { color: var(--muted); font-weight: 500; }
+    .profile-meter {
+      position: absolute; inset: 0;
+      background: color-mix(in srgb, var(--link) 6%, transparent);
+    }
+    .profile-meter-fill {
+      position: absolute; top: 0; left: 0; width: var(--score-share); height: 100%;
+      background: linear-gradient(to left, color-mix(in srgb, var(--link) 34%, transparent),
+        color-mix(in srgb, var(--link) 5%, transparent));
+    }
+    .profile-visual.empty .profile-meter-fill { display: none; }
+    .profile-meter-tiles {
+      position: absolute; inset: 0; display: grid;
+      grid-template-columns: repeat(var(--segment-count), minmax(0, 1fr));
+    }
+    .profile-meter-tiles span:not(:last-child) {
+      border-right: 2px solid var(--surf2);
+    }
+    .profile-meter::after {
+      content: ""; position: absolute; z-index: 1;
+      top: 0; left: var(--score-share); width: 2px; height: 100%;
+      transform: translateX(-2px); background: var(--link);
+    }
+    .profile-visual.empty .profile-meter::after { display: none; }
+    .profile-segments { display: grid; grid-template-columns: repeat(var(--segment-count), 1fr); gap: 3px; }
+    .profile-segment {
+      width: min(100%, 22px); aspect-ratio: 1; justify-self: center;
+      border-radius: 4px;
+      background: color-mix(in srgb, var(--link) 10%, var(--border));
+    }
+    .profile-segment.yes { background: var(--link); }
+    .profile-popover {
+      display: none; position: fixed; z-index: 10000; width: min(360px, calc(100vw - 24px));
+      max-height: min(70vh, 520px); overflow: auto; padding: 18px 20px;
+      border: 1px solid var(--border); border-radius: 12px;
+      background: var(--surf2); color: var(--text); box-shadow: 0 16px 44px rgba(0,0,0,.36);
+    }
+    .profile-popover.show { display: block; }
+    .profile-popover h3 {
+      margin: 0 0 16px; color: var(--link); font-size: 13px; font-weight: 800;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .profile-summary { display: flex; align-items: center; gap: 14px; }
+    .profile-summary .profile-segments { flex: 1; gap: 5px; }
+    .profile-summary .profile-segment { width: 100%; height: 10px; aspect-ratio: auto; border-radius: 5px; }
+    .profile-tally { flex: none; font-size: 23px; font-weight: 750; line-height: 1; font-variant-numeric: tabular-nums; }
+    .profile-tally span { color: var(--muted); font-size: 17px; font-weight: 500; }
+    .profile-map {
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 14px;
+      list-style: none; margin: 20px 0 0; padding: 0;
+    }
+    .profile-map li { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 13px; line-height: 1.3; }
+    .profile-map .profile-mark { flex: 0 0 16px; width: 16px; text-align: center; font-size: 18px; line-height: 1; }
+    .profile-map li.yes .profile-mark { color: var(--link); }
+    .profile-map li.partial .profile-mark { color: #fbbf24; }
+    .profile-map li.no, .profile-map li.unknown { color: var(--muted); }
+    .profile-map a { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
+    .profile-map a:hover, .profile-map a:focus-visible { color: var(--link); text-decoration: underline; }
 
     /* ── Custom tooltip ─────────────────────────────────────────────── */
     #col-tip {
@@ -1556,6 +1656,18 @@
         tbody td[data-key="model"] a.scrolls .m-name-inner { animation: none; }
       }
 
+      /* Openness and features follow the headline numbers on mobile too. */
+      tbody tr td[data-key="openness_score"],
+      tbody tr td[data-key="feature_count"] {
+        order: 5;
+        flex: 1 1 calc(50% - 3px);
+        min-width: 0;
+      }
+      .profile-trigger { align-items: center; gap: 2px; padding: 4px; background: var(--surf2); }
+      .profile-compact-label { display: inline; color: var(--muted); font-size: 11px; }
+      .profile-visual { height: 29px; }
+      .profile-score { font-size: 15px; }
+
       /* 3 -- zero-height full-width item, so the tiles always start a new line
          regardless of how wide the meta line happens to be. */
       tbody tr::before { content: ""; order: 3; flex: 0 0 100%; height: 0; }
@@ -2059,6 +2171,9 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
+      Openness is scored out of five and Features out of four. Each segment represents one field; the blue fill shows the confirmed share. Hover, focus, or tap a score for the field breakdown; select a field name to open its source.
+    </p>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
     </p>
   </div>
@@ -2217,6 +2332,12 @@
         <h4 class="compare-subheading">By test set</h4>
         <div class="compare-metric" aria-label="Comparison metric"><button id="compare-wer" class="active" type="button" aria-pressed="true">WER</button><button id="compare-cer" type="button" aria-pressed="false">CER</button></div>
         <div id="compare-datasets"></div>
+      </section>
+      <section class="compare-section">
+        <h3>Openness and features</h3>
+        <p class="compare-profile-intro">Scores count confirmed fields only. The rows below distinguish partial, no and unknown; select a linked decision to see its source.</p>
+        <p class="compare-scroll-hint">Swipe sideways to see the full table, if needed.</p>
+        <div class="compare-scroll"><table class="compare-summary" id="compare-profile-summary"><thead><tr id="compare-profile-head"><th scope="col">Field</th></tr></thead><tbody id="compare-profile-body"></tbody></table></div>
       </section>
       <p class="compare-note" id="compare-caveat"></p>
     </div>
@@ -2615,6 +2736,7 @@
 <div id="col-tip"></div>
 <div id="chart-tip"></div>
 <div id="model-preview" class="model-preview" role="tooltip" hidden></div>
+<div id="profile-popover" class="profile-popover" role="dialog" aria-label="Model profile details" tabindex="-1"></div>
 
 <script>
 const MEDALS = ['🥇','🥈','🥉'];
@@ -2638,6 +2760,199 @@ function visible(rows) {
 function chartWerRows(rows, cutoff) {
   return rows.filter(r => r.mean_wer == null || r.mean_wer <= cutoff);
 }
+
+const PROFILE_GROUPS = [
+  {key: 'openness', title: 'Openness', count: 'openness_score',
+   fields: [['weights', 'Open weights'], ['license', 'Open license'],
+            ['data', 'Training data'], ['code', 'Training code'],
+            ['model_card', 'Model card']]},
+  {key: 'features', title: 'Features', count: 'feature_count',
+   fields: [['punctuation_case', 'Formatting'], ['timestamps', 'Timestamps'],
+            ['diarization', 'Speakers'], ['streaming', 'Streaming']]},
+];
+const PROFILE_STATUS = {
+  yes: {mark: '✓', label: 'Confirmed'},
+  partial: {mark: '◐', label: 'Partial'},
+  no: {mark: '×', label: 'No'},
+  unknown: {mark: '?', label: 'Unknown'},
+};
+
+const PROFILE_POPOVER = document.getElementById('profile-popover');
+let profileTrigger = null;
+let profilePinned = false;
+let profileHideTimer = null;
+let suppressProfileFocus = false;
+
+function profileSegments(items, group) {
+  const segments = document.createElement('div');
+  segments.className = 'profile-segments';
+  segments.style.setProperty('--segment-count', group.fields.length);
+  segments.setAttribute('aria-hidden', 'true');
+  for (const [key] of group.fields) {
+    const item = items[key] || {state: 'unknown'};
+    const segment = document.createElement('span');
+    segment.className = `profile-segment ${item.state}`;
+    segments.appendChild(segment);
+  }
+  return segments;
+}
+
+function closeProfilePopover(restoreFocus = false) {
+  clearTimeout(profileHideTimer);
+  const trigger = profileTrigger;
+  if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  profileTrigger = null;
+  profilePinned = false;
+  PROFILE_POPOVER.classList.remove('show');
+  if (restoreFocus && trigger?.isConnected) {
+    suppressProfileFocus = true;
+    trigger.focus();
+    suppressProfileFocus = false;
+  }
+}
+
+function scheduleProfileClose(trigger) {
+  clearTimeout(profileHideTimer);
+  profileHideTimer = setTimeout(() => {
+    if (profilePinned || profileTrigger !== trigger) return;
+    if (trigger.matches(':hover, :focus') || PROFILE_POPOVER.matches(':hover')
+        || PROFILE_POPOVER.contains(document.activeElement)) return;
+    closeProfilePopover();
+  }, 120);
+}
+
+function showProfilePopover(trigger, row, group, pin = false) {
+  clearTimeout(profileHideTimer);
+  const sameTrigger = profileTrigger === trigger;
+  if (profileTrigger && profileTrigger !== trigger) profileTrigger.setAttribute('aria-expanded', 'false');
+  profileTrigger = trigger;
+  profilePinned = pin || (profilePinned && sameTrigger);
+  trigger.setAttribute('aria-expanded', 'true');
+  PROFILE_POPOVER.setAttribute('aria-label', `${row.name} ${group.title} details`);
+  const profile = row.profile || {};
+  const items = profile[group.key] || {};
+  const score = profile[group.count] || 0;
+  PROFILE_POPOVER.replaceChildren();
+
+  const heading = document.createElement('h3');
+  heading.textContent = group.title;
+  const summary = document.createElement('div');
+  summary.className = 'profile-summary';
+  const tally = document.createElement('strong');
+  tally.className = 'profile-tally';
+  tally.setAttribute('aria-label', `${score} of ${group.fields.length} confirmed`);
+  tally.append(String(score));
+  const total = document.createElement('span');
+  total.textContent = `/${group.fields.length}`;
+  tally.appendChild(total);
+  summary.append(profileSegments(items, group), tally);
+  const list = document.createElement('ul');
+  list.className = 'profile-map';
+  for (const [key, label] of group.fields) {
+    const item = items[key] || {state: 'unknown'};
+    const state = PROFILE_STATUS[item.state] ? item.state : 'unknown';
+    const li = document.createElement('li');
+    li.className = state;
+    li.setAttribute('aria-label', `${label}: ${PROFILE_STATUS[state].label}`);
+    const mark = document.createElement('span');
+    mark.className = 'profile-mark';
+    mark.setAttribute('aria-hidden', 'true');
+    mark.textContent = PROFILE_STATUS[state].mark;
+    const name = document.createElement(item.url?.startsWith('https://') ? 'a' : 'span');
+    name.textContent = label;
+    if (item.url?.startsWith('https://')) {
+      name.href = item.url;
+      name.target = '_blank';
+      name.rel = 'noopener noreferrer';
+      name.setAttribute('aria-label', `${label}: ${PROFILE_STATUS[state].label}. Open source in a new tab.`);
+    }
+    li.append(mark, name);
+    list.appendChild(li);
+  }
+  PROFILE_POPOVER.append(heading, summary, list);
+  PROFILE_POPOVER.classList.add('show');
+
+  const rect = trigger.getBoundingClientRect();
+  const width = PROFILE_POPOVER.offsetWidth, height = PROFILE_POPOVER.offsetHeight;
+  const left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12));
+  const below = rect.bottom + 8;
+  const top = below + height <= window.innerHeight - 12 ? below
+    : Math.max(12, rect.top - height - 8);
+  PROFILE_POPOVER.style.left = `${left}px`;
+  PROFILE_POPOVER.style.top = `${top}px`;
+}
+
+function profileCell(td, row, group) {
+  const profile = row.profile || {};
+  const score = profile[group.count] || 0;
+  const items = profile[group.key] || {};
+  const reviewedCount = group.fields.filter(([key]) => items[key]?.reviewed).length;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'profile-trigger';
+  button.setAttribute('aria-controls', 'profile-popover');
+  button.setAttribute('aria-haspopup', 'dialog');
+  button.setAttribute('aria-expanded', 'false');
+  button.setAttribute('aria-label', `${row.name}: ${group.title} ${reviewedCount ? `${score} of ${group.fields.length} confirmed` : 'unreviewed'}. Show status and evidence.`);
+  const label = document.createElement('span');
+  label.className = 'profile-compact-label';
+  label.textContent = group.title;
+  const tally = document.createElement('span');
+  tally.className = 'profile-score';
+  tally.setAttribute('aria-hidden', 'true');
+  tally.append(String(score));
+  const total = document.createElement('span');
+  total.className = 'profile-score-total';
+  total.textContent = `/${group.fields.length}`;
+  tally.appendChild(total);
+  const visual = document.createElement('span');
+  visual.className = 'profile-visual';
+  if (!score) visual.classList.add('empty');
+  visual.style.setProperty('--score-share', `${Math.max(0, Math.min(100, 100 * score / group.fields.length))}%`);
+  const meter = document.createElement('span');
+  meter.className = 'profile-meter';
+  meter.setAttribute('aria-hidden', 'true');
+  meter.style.setProperty('--segment-count', group.fields.length);
+  const fill = document.createElement('span');
+  fill.className = 'profile-meter-fill';
+  const tiles = document.createElement('span');
+  tiles.className = 'profile-meter-tiles';
+  for (const _ of group.fields) tiles.appendChild(document.createElement('span'));
+  meter.append(fill, tiles);
+  visual.append(tally, meter);
+  button.append(label, visual);
+  button.addEventListener('mouseenter', () => showProfilePopover(button, row, group));
+  button.addEventListener('focus', () => {
+    if (!suppressProfileFocus) showProfilePopover(button, row, group);
+  });
+  button.addEventListener('mouseleave', () => scheduleProfileClose(button));
+  button.addEventListener('blur', () => scheduleProfileClose(button));
+  button.addEventListener('click', event => {
+    event.stopPropagation();
+    if (profilePinned && profileTrigger === button) { closeProfilePopover(); return; }
+    showProfilePopover(button, row, group, true);
+    PROFILE_POPOVER.focus();
+  });
+  td.appendChild(button);
+}
+
+PROFILE_POPOVER.addEventListener('mouseenter', () => clearTimeout(profileHideTimer));
+PROFILE_POPOVER.addEventListener('mouseleave', () => {
+  if (profileTrigger) scheduleProfileClose(profileTrigger);
+});
+document.addEventListener('pointerdown', event => {
+  if (profileTrigger && !profileTrigger.contains(event.target)
+      && !PROFILE_POPOVER.contains(event.target)) closeProfilePopover();
+});
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && profileTrigger) closeProfilePopover(true);
+});
+window.addEventListener('scroll', () => {
+  if (profileTrigger) closeProfilePopover();
+}, {passive: true});
+document.querySelector('#tab-wer .table-scroll').addEventListener('scroll', () => {
+  if (profileTrigger) closeProfilePopover();
+}, {passive: true});
 
 const ANALYSIS_PANEL_HEIGHT = 430;
 
@@ -2664,6 +2979,10 @@ const WER_COLS = [
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
+  { key:'openness_score',          label:'Openness',      cls:'c-profile',
+    tip:'Downloadable weights, effective license terms, training data, checkpoint-specific training code, and a substantive model card. Hover or tap for evidence.' },
+  { key:'feature_count',           label:'Features',      cls:'c-profile',
+    tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
     tip:'WER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_wer',    label:'CoRal Read',
@@ -2693,6 +3012,10 @@ const CER_COLS = [
       + 'Not an intrinsic model property — not comparable across stacks or hardware.' },
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
+  { key:'openness_score',          label:'Openness',       cls:'c-profile',
+    tip:'Downloadable weights, effective license terms, training data, checkpoint-specific training code, and a substantive model card. Hover or tap for evidence.' },
+  { key:'feature_count',           label:'Features',       cls:'c-profile',
+    tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',
     tip:'CER on CoRal v3 conversation subset (spontaneous speech).' },
   { key:'coral_read_aloud_cer',    label:'CoRal Read',
@@ -3099,10 +3422,13 @@ function buildRow(row, cols, maxVals) {
       const lic = document.createElement('span');
       lic.className = 'm-license';
       lic.append(ICON_LICENSE(), row.license || '—');
-      lic.title = 'Licence: ' + (row.license || 'not declared');
+      lic.title = 'Hub license tag: ' + (row.license || 'not declared') + '. See Openness for effective terms.';
       meta.appendChild(lic);
 
       td.appendChild(meta);
+
+    } else if (c.key === 'openness_score' || c.key === 'feature_count') {
+      profileCell(td, row, PROFILE_GROUPS[c.key === 'openness_score' ? 0 : 1]);
 
     } else if (c.key === 'mean_wer' || c.key === 'mean_cer') {
       td.style.fontWeight = '700';
@@ -3441,6 +3767,10 @@ const SORT_FIELDS = [
   { key: 'mean_cer',    label: 'Mean CER',  dir:  1 },
   { key: 'speed_x',     label: 'Speed',     dir: -1 },
   { key: 'hf_downloads', label: 'Popularity', dir: -1 },
+  { key: 'openness_score', label: 'Openness', dir: -1,
+    read: r => r.profile?.openness_score ?? 0 },
+  { key: 'feature_count', label: 'Features', dir: -1,
+    read: r => r.profile?.feature_count ?? 0 },
   { key: 'size',        label: 'Size',      dir: -1, always: true,
     read: r => parseFloat(r.size) },
   { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt'    },
@@ -3570,18 +3900,20 @@ if (document.readyState === 'loading') {
 }
 document.addEventListener('click', ev => {
   if (!NARROW.matches) return;
-  if (ev.target.closest('a')) return;
+  if (ev.target.closest('a, button')) return;
   const tr = ev.target.closest('tbody tr');
   if (!tr || !tr.closest('.table-scroll')) return;
   tr.classList.toggle('expanded');
 });
 
 function renderTable(el, rows, cols, maxVals) {
+  closeProfilePopover();
   el.innerHTML = '';
   const thead = el.createTHead();
   thead.appendChild(buildHead(cols));
   const tbody = el.createTBody();
   const paint = (sorted) => {
+    closeProfilePopover();
     tbody.innerHTML = '';
     sorted.forEach(r => tbody.appendChild(buildRow(r, cols, maxVals)));
     fitModelNames(el);
@@ -3599,7 +3931,8 @@ function renderTable(el, rows, cols, maxVals) {
     /* Deliberately not named `valueOf`: that is inherited from
        Object.prototype, so `field.valueOf` is truthy on every field object and
        silently hijacks the comparator into stringifying rows. */
-    const read = readFn || (r => (key === '#' ? r.rank : r[key]));
+    const read = readFn || (r => (key === '#' ? r.rank
+      : key === 'openness_score' || key === 'feature_count' ? (r.profile?.[key] ?? 0) : r[key]));
     return [...rows].sort((a, b) => {
       let av = read(a), bv = read(b);
       /* Non-finite counts as missing: borda_score is Infinity for a model
@@ -3641,7 +3974,8 @@ function renderTable(el, rows, cols, maxVals) {
   thead.querySelectorAll('th').forEach((th, i) => {
     const col = cols[i];
     th.addEventListener('click', () =>
-      el.sortBy(col.key, sortKey === col.key ? sortDir * -1 : 1));
+      el.sortBy(col.key, sortKey === col.key ? sortDir * -1
+        : (col.key === 'openness_score' || col.key === 'feature_count' ? -1 : 1)));
   });
 }
 
@@ -4724,7 +5058,7 @@ function setupCompare(data) {
     head.replaceChildren();
     const measure = document.createElement('th');
     measure.scope = 'col';
-    measure.textContent = 'Measure';
+    measure.textContent = id === 'compare-profile-head' ? 'Field' : 'Measure';
     head.appendChild(measure);
     rows.forEach((row, i) => {
       const th = document.createElement('th');
@@ -4762,6 +5096,67 @@ function setupCompare(data) {
     });
     document.getElementById(bodyId).appendChild(tr);
   }
+  function renderCompareProfiles(rows) {
+    renderHeader('compare-profile-head', rows);
+    const body = document.getElementById('compare-profile-body');
+    body.replaceChildren();
+    for (const group of PROFILE_GROUPS) {
+      const summary = document.createElement('tr');
+      summary.className = 'compare-profile-group';
+      const heading = document.createElement('td');
+      heading.textContent = group.title;
+      summary.appendChild(heading);
+      rows.forEach((row, i) => {
+        const td = document.createElement('td');
+        td.className = 'compare-profile-score';
+        td.dataset.modelCol = '';
+        td.style.setProperty('--model-color', colors[i]);
+        profileCell(td, row, group);
+        summary.appendChild(td);
+      });
+      body.appendChild(summary);
+      for (const [key, label] of group.fields) {
+        const tr = document.createElement('tr');
+        tr.className = 'compare-profile-field';
+        const name = document.createElement('td');
+        name.textContent = label;
+        tr.appendChild(name);
+        rows.forEach((row, i) => {
+          const item = row.profile?.[group.key]?.[key] || {state: 'unknown'};
+          const state = Object.hasOwn(PROFILE_STATUS, item.state) ? item.state : 'unknown';
+          const status = PROFILE_STATUS[state];
+          const td = document.createElement('td');
+          td.dataset.modelCol = '';
+          td.style.setProperty('--model-color', colors[i]);
+          const value = document.createElement(item.url?.startsWith('https://') ? 'a' : 'span');
+          value.className = `compare-profile-status ${state}`;
+          const description = `${row.name}: ${label} — ${status.label}. ${item.detail || ''}`.trim();
+          value.setAttribute('aria-label', description);
+          value.title = description;
+          if (value.tagName === 'A') {
+            value.href = item.url;
+            value.target = '_blank';
+            value.rel = 'noopener noreferrer';
+          }
+          const mark = document.createElement('span');
+          mark.className = 'mark';
+          mark.setAttribute('aria-hidden', 'true');
+          mark.textContent = status.mark;
+          value.append(mark, status.label);
+          if (value.tagName === 'A') {
+            const source = document.createElement('span');
+            source.className = 'compare-profile-source';
+            source.setAttribute('aria-hidden', 'true');
+            source.textContent = '↗';
+            value.appendChild(source);
+          }
+          td.appendChild(value);
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      }
+    }
+  }
   function render() {
     selected.sort(compareNames);
     renderChips();
@@ -4780,7 +5175,6 @@ function setupCompare(data) {
       Number.isFinite(parseFloat(row.size)) ? `${row.size}B` : '—'));
     addSummaryRow('compare-summary-body', 'Weights', rows.map(row =>
       row.access === 'open' ? 'Open' : row.access === 'proprietary' ? 'Proprietary API' : '—'));
-    addSummaryRow('compare-summary-body', 'License', rows.map(row => row.license || '—'));
     addSummaryRow('compare-summary-body', 'Submitted', rows.map(row => row.submitted || '—'));
 
     renderHeader('compare-overall-head', rows);
@@ -4795,6 +5189,7 @@ function setupCompare(data) {
     }
     addSummaryRow('compare-overall-body', 'Speed', rows.map(row =>
       Number.isFinite(row.speed_x) ? `${row.speed_x.toFixed(1)}×` : '—'));
+    renderCompareProfiles(rows);
 
     for (const key of ['wer', 'cer']) {
       document.getElementById(`compare-${key}`).classList.toggle('active', metric === key);
@@ -4907,7 +5302,16 @@ function setupCompare(data) {
 
 async function init() {
   try {
-    const data = await fetch('leaderboard.json', {cache: 'no-cache'}).then(r => r.json());
+    const embedded = document.getElementById('embedded-leaderboard');
+    if (!embedded && location.protocol === 'file:') {
+      // The deployed page fetches leaderboard.json. Local file pages cannot
+      // fetch it, so use the self-contained preview generated by the script.
+      location.replace(new URL('local-preview.html', location.href).href);
+      return;
+    }
+    const data = embedded
+      ? JSON.parse(embedded.textContent)
+      : await fetch('leaderboard.json', {cache: 'no-cache'}).then(r => r.json());
 
     addBordaRanks(data.wer, WER_DS_COLS);
     addBordaRanks(data.cer, CER_DS_COLS);
@@ -5279,6 +5683,7 @@ async function init() {
 document.querySelectorAll('.tab-btn').forEach(btn =>
   btn.addEventListener('click', () => {
     document.querySelectorAll('.settings-sheet[open]').forEach(sheet => sheet.close());
+    closeProfilePopover();
     document.querySelectorAll('.tab-btn, .tab-pane')
             .forEach(el => el.classList.remove('active'));
     btn.classList.add('active');

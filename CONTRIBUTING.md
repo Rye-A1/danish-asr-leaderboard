@@ -56,6 +56,84 @@ run the harness as-is.
 > and catch any configuration differences. Submitting the raw `outputs/` lets us
 > diff transcriptions directly.
 
+## Model openness and feature profiles
+
+The leaderboard's **Openness** and **Features** columns read
+`scripts/model_profiles.json`. A profile is optional; unreviewed fields display
+as unknown. Hover, focus, or tap a column value to see the status map and source
+links. Add a source URL for each confirmed `yes` claim. The five scored openness
+fields are:
+
+| Field | What a `yes` means |
+|---|---|
+| `weights` | The current model weights can be downloaded. This is filled from the benchmark's reviewed `access=open` flag and the model repository link. |
+| `license` | The checkpoint and its base permit commercial reuse and redistribution without model-specific field-of-use restrictions. |
+| `data` | The exact fine-tuning data, splits, and filtering are disclosed and accessible under published terms. For a base model, assess its full training corpus. |
+| `code` | Public training and preprocessing scripts, configuration, and settings reproduce the released checkpoint, not merely generic fine-tuning or inference. |
+| `model_card` | The checkpoint card substantively covers lineage, intended use, training data and method, evaluation, and limitations. |
+
+Papers and technical reports appear as unscored citations. A base model's
+paper does not automatically count for a fine-tune.
+
+The separate feature fields are `punctuation_case` (cased and punctuated Danish
+output, either by default or through an option), `timestamps` (word or segment
+output for Danish), `diarization` (speaker labels), and `streaming`
+(incremental output). A formatting `yes` does not require independent controls.
+Mark `no` when the scored output contains no cased, punctuated text and no
+formatting option is documented; use `unknown` if neither output nor documentation
+is available. Saved raw hypotheses are evidence for what the released inference
+path actually returns.
+Link documentation or a reproducible example for the released checkpoint or
+its official inference package. An external aligner or chunking demo is not
+automatically a native model feature. `partial` means only part of the claim is
+supported, `no` means documented absence or restrictive terms, and `unknown`
+means the available sources do not decide it.
+
+For streaming, a completed-file API that sends partial text is `partial`; a
+documented path that accepts ongoing audio and emits interim results is `yes`.
+
+Each reviewed model may set `reviewed_source` and `reviewed_on` in
+`model_profiles.json`. Missing fields then appear as reviewed `unknown` with a
+link to the source instead of implying that nobody checked them. This does not
+add a positive tile or infer unsupported features from a base model.
+
+Hub license tags are review leads, not automatic positive license claims: a
+model card, attached terms, or base license can narrow them. A non-commercial
+tag is marked `no`; custom commercial licenses with field-of-use restrictions
+are `partial`. Dataset and arXiv tags are also leads, not proof that all data
+is open or the paper covers this checkpoint. Manual decisions in
+`model_profiles.json` override these hints. Example:
+
+```json
+{
+  "example/asr": {
+    "openness": {
+      "code": {
+        "state": "yes",
+        "url": "https://github.com/example/asr",
+        "detail": "Training recipe and scripts"
+      }
+    },
+    "features": {
+      "timestamps": {
+        "state": "yes",
+        "url": "https://example.org/asr/timestamps"
+      }
+    }
+  }
+}
+```
+
+`scripts/refresh_model_profile_candidates.py` gathers Hugging Face model
+metadata and card links for newly submitted models and sources changed since
+their last review. A scheduled workflow opens a PR with the resulting
+`scripts/model_profile_candidates.json`. This is a review queue, not a scoring
+input: apparent open licenses, dataset tags, card headings, and training-script
+links still need checkpoint-specific confirmation. The deployed leaderboard
+shows safe automatic facts and unknowns immediately; the review file supplies
+evidence-backed decisions when confirmed. Run the collector locally with
+`python scripts/refresh_model_profile_candidates.py`.
+
 ## Adding a backend
 
 1. Create `danish_asr_leaderboard/backends/<name>_backend.py`.

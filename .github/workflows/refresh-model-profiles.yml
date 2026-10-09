@@ -1,0 +1,38 @@
+name: Refresh model profile evidence
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'results/**'
+      - 'scripts/model_profiles.json'
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Collect public evidence leads
+        run: python scripts/refresh_model_profile_candidates.py
+      - name: Propose review of new or changed sources
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: codex/refresh-model-profile-candidates
+          delete-branch: true
+          commit-message: 'Refresh model profile evidence leads'
+          title: 'Review new or changed model profile evidence'
+          body: |
+            Automated source discovery for the Openness and Features columns.
+            The candidate file is not used to award points. Please confirm checkpoint-specific evidence and update `scripts/model_profiles.json` for any supported claims.
+          add-paths: scripts/model_profile_candidates.json

@@ -1,0 +1,145 @@
+{
+  "danish-foundation-models/edda-v0.1": {
+    "status": "source_changed",
+    "source": "https://huggingface.co/danish-foundation-models/edda-v0.1",
+    "last_modified": "2026-10-02",
+    "revision": "505b3b6ee40464a6fe305e160b3d1dff397ec676",
+    "gated": false,
+    "weight_files": [
+      "model.safetensors"
+    ],
+    "license_tag": "apache-2.0",
+    "license_tag_class": "open_candidate",
+    "dataset_links": [
+      "https://huggingface.co/datasets/CoRal-project/coral-v3",
+      "https://huggingface.co/datasets/alexandrainst/ftspeech",
+      "https://huggingface.co/datasets/alexandrainst/nst-da",
+      "https://huggingface.co/datasets/google/fleurs",
+      "https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0"
+    ],
+    "paper_links": [],
+    "training_code_leads": [],
+    "card_headings": [
+      "Edda v0.1 — Danish speech recognition",
+      "Usage",
+      "Training data",
+      "Training recipe",
+      "Limitations",
+      "License and attribution"
+    ],
+    "card_characters": 8255,
+    "review_note": "Links and tags are leads. Check exact checkpoint, base terms, data completeness, and code before scoring."
+  },
+  "danish-foundation-models/edda-v0.2": {
+    "status": "new",
+    "source": "https://huggingface.co/danish-foundation-models/edda-v0.2",
+    "last_modified": "2026-10-02",
+    "revision": "98ec5eee028b111a19733890fe32ea65267b662b",
+    "gated": false,
+    "weight_files": [
+      "model.safetensors"
+    ],
+    "license_tag": "apache-2.0",
+    "license_tag_class": "open_candidate",
+    "dataset_links": [
+      "https://huggingface.co/datasets/CoRal-project/coral-v3",
+      "https://huggingface.co/datasets/alexandrainst/ftspeech",
+      "https://huggingface.co/datasets/alexandrainst/nst-da",
+      "https://huggingface.co/datasets/google/fleurs",
+      "https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0"
+    ],
+    "paper_links": [],
+    "training_code_leads": [],
+    "card_headings": [
+      "Edda v0.2 — Danish speech recognition",
+      "Usage",
+      "Training data",
+      "Training recipe",
+      "Limitations",
+      "License and attribution"
+    ],
+    "card_characters": 10064,
+    "review_note": "Links and tags are leads. Check exact checkpoint, base terms, data completeness, and code before scoring."
+  },
+  "Harmonium/brage-v1": {
+    "status": "new",
+    "source": "https://huggingface.co/Harmonium/brage-v1",
+    "last_modified": "2026-10-06",
+    "revision": "f8eb64d83e6f32090a272a369b3f5930b326289f",
+    "gated": "auto",
+    "weight_files": [
+      "lm/brage-4gram.bin",
+      "model.safetensors"
+    ],
+    "license_tag": "other",
+    "license_tag_class": "needs_review",
+    "dataset_links": [
+      "https://huggingface.co/datasets/CoRal-project/coral-v3",
+      "https://huggingface.co/datasets/alexandrainst/ftspeech",
+      "https://huggingface.co/datasets/alexandrainst/nst-da",
+      "https://huggingface.co/datasets/google/fleurs",
+      "https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0"
+    ],
+    "paper_links": [],
+    "training_code_leads": [],
+    "card_headings": [
+      "Brage v1: Danish speech recognition",
+      "Usage",
+      "Training data",
+      "Training recipe",
+      "Limitations",
+      "License and attribution"
+    ],
+    "card_characters": 8065,
+    "review_note": "Links and tags are leads. Check exact checkpoint, base terms, data completeness, and code before scoring."
+  },
+  "RyeAI/ekko-v1-tiny": {
+    "status": "new",
+    "source": "https://huggingface.co/RyeAI/ekko-v1-tiny",
+    "last_modified": "2026-10-09",
+    "revision": "950d88b3818a2a81ace1a2a10f8bc2a13cd333f9",
+    "gated": false,
+    "weight_files": [
+      "gguf-parakeet.cpp/ekko-v1-tiny-f16.gguf",
+      "gguf-parakeet.cpp/ekko-v1-tiny-f32.gguf",
+      "gguf-parakeet.cpp/ekko-v1-tiny-q4_0.gguf",
+      "gguf-parakeet.cpp/ekko-v1-tiny-q4_k.gguf",
+      "gguf-parakeet.cpp/ekko-v1-tiny-q5_0.gguf",
+      "gguf-parakeet.cpp/ekko-v1-tiny-q5_k.gguf",
+      "gguf-parakeet.cpp/ekko-v1-tiny-q6_k.gguf",
+      "gguf-parakeet.cpp/ekko-v1-tiny-q8_0.gguf",
+      "onnx-sherpa/decoder.int8.onnx",
+      "onnx-sherpa/decoder.onnx",
+      "onnx-sherpa/encoder.int8.onnx",
+      "onnx-sherpa/encoder.onnx"
+    ],
+    "license_tag": "other",
+    "license_tag_class": "needs_review",
+    "dataset_links": [
+      "https://huggingface.co/datasets/CoRal-project/coral-v3",
+      "https://huggingface.co/datasets/alexandrainst/ftspeech",
+      "https://huggingface.co/datasets/alexandrainst/nota",
+      "https://huggingface.co/datasets/alexandrainst/nst-da"
+    ],
+    "paper_links": [],
+    "training_code_leads": [],
+    "card_headings": [
+      "Ekko v1 Tiny — Offline Danish Speech-to-Text with Word Timestamps",
+      "Benchmark",
+      "Comparison with models below 800M parameters",
+      "Native GGUF quantization",
+      "ONNX and browser export",
+      "Artifacts",
+      "Local Use",
+      "Training and limitations",
+      "License"
+    ],
+    "card_characters": 7862,
+    "review_note": "Links and tags are leads. Check exact checkpoint, base terms, data completeness, and code before scoring."
+  },
+  "saga-2-l": {
+    "status": "new",
+    "source": "https://capacit.com",
+    "review_note": "Hosted model: review provider documentation manually."
+  }
+}
