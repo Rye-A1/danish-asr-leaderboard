@@ -12,8 +12,8 @@
         "url": "https://huggingface.co/3dio-ai/svale-110M"
       },
       "license": {
-        "state": "partial",
-        "detail": "NVIDIA terms permit commercial use; card also applies CoRal restrictions on synthesis and biometric identification.",
+        "state": "yes",
+        "detail": "NVIDIA Open Model License permits commercial use and redistribution of this checkpoint.",
         "url": "https://huggingface.co/3dio-ai/svale-110M#licence"
       },
       "code": {
@@ -45,8 +45,8 @@
         "url": "https://huggingface.co/3dio-ai/svale-600M"
       },
       "license": {
-        "state": "partial",
-        "detail": "NVIDIA terms permit commercial use; card also applies CoRal restrictions on synthesis and biometric identification.",
+        "state": "yes",
+        "detail": "NVIDIA Open Model License permits commercial use and redistribution of this checkpoint.",
         "url": "https://huggingface.co/3dio-ai/svale-600M#licence"
       },
       "code": {
@@ -164,8 +164,8 @@
         "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B"
       },
       "license": {
-        "state": "partial",
-        "detail": "OpenRAIL-based terms permit commercial use but prohibit specified uses.",
+        "state": "yes",
+        "detail": "Published OpenRAIL-based model terms permit commercial use and redistribution.",
         "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B#model-details"
       }
     },
@@ -197,8 +197,8 @@
         "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B"
       },
       "license": {
-        "state": "partial",
-        "detail": "OpenRAIL-based terms permit commercial use but prohibit specified uses.",
+        "state": "yes",
+        "detail": "Published OpenRAIL-based model terms permit commercial use and redistribution.",
         "url": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B#model-details"
       }
     },
@@ -230,8 +230,8 @@
         "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m"
       },
       "license": {
-        "state": "partial",
-        "detail": "OpenRAIL-based terms permit commercial use with synthesis and biometric-use restrictions.",
+        "state": "yes",
+        "detail": "Published OpenRAIL-based model terms permit commercial use and redistribution.",
         "url": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m#model-details"
       }
     },
@@ -263,8 +263,8 @@
         "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b"
       },
       "license": {
-        "state": "partial",
-        "detail": "OpenRAIL-based terms permit commercial use with synthesis and biometric-use restrictions.",
+        "state": "yes",
+        "detail": "Published OpenRAIL-based model terms permit commercial use and redistribution.",
         "url": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b#model-details"
       }
     },
@@ -717,8 +717,8 @@
         "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk"
       },
       "license": {
-        "state": "partial",
-        "detail": "NVIDIA terms permit commercial redistribution but impose guardrail and AI-use conditions.",
+        "state": "yes",
+        "detail": "NVIDIA Open Model License permits commercial use and redistribution of this checkpoint.",
         "url": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/"
       }
     },
@@ -1142,8 +1142,8 @@
   "RyeAI/ekko-v1-tiny": {
     "openness": {
       "license": {
-        "state": "partial",
-        "detail": "The checkpoint inherits NVIDIA terms and CoRal restrictions on uses of models trained on its data, so the effective terms have field-of-use limits.",
+        "state": "yes",
+        "detail": "NVIDIA Open Model License permits commercial use and redistribution; RyeAI's modifications are licensed under CC BY 4.0.",
         "url": "https://huggingface.co/RyeAI/ekko-v1-tiny/blob/main/MODEL_LICENSE.md"
       },
       "data": {

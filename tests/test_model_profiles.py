@@ -60,7 +60,7 @@ def test_model_specific_report_is_unscored_without_model_card():
     reviews = {"example/asr": {
         "report": {"state": "yes", "url": "https://example.org/report"},
         "openness": {"license": {"state": "partial", "url": REPO,
-                                 "detail": "Commercial use with field restrictions"}},
+                                 "detail": "Commercial redistribution rights unresolved"}},
     }}
     profile = build_profile("example/asr", REPO, {"tags": ["license:mit"]}, reviews)
     assert profile["report"]["state"] == "yes"
@@ -275,9 +275,21 @@ def test_ekko_tiny_review_uses_checkpoint_evidence_without_scoring_pnc():
     profile = build_profile("RyeAI/ekko-v1-tiny",
                             "https://huggingface.co/RyeAI/ekko-v1-tiny", {},
                             reviews, access="open")
-    assert profile["openness_score"] == 2  # weights and checkpoint card
+    assert profile["openness_score"] == 3  # weights, license, and checkpoint card
     assert profile["openness"]["data"]["state"] == "partial"
-    assert profile["openness"]["license"]["state"] == "partial"
+    assert profile["openness"]["license"]["state"] == "yes"
     assert profile["feature_count"] == 1  # native word timestamps
     assert profile["features"]["timestamps"]["state"] == "yes"
     assert profile["features"]["punctuation_case"]["state"] == "no"
+
+
+def test_commercially_redistributable_open_model_licenses_are_scored_consistently():
+    reviews = load_reviews()
+    models = ("RyeAI/ekko-v1-tiny", "3dio-ai/svale-110M", "3dio-ai/svale-600M",
+              "CoRal-project/roest-v2-wav2vec2-1B",
+              "CoRal-project/roest-v2-wav2vec2-2B",
+              "CoRal-project/roest-v3-wav2vec2-315m",
+              "CoRal-project/roest-v3-whisper-1.5b",
+              "nvidia/parakeet-rnnt-110m-da-dk")
+    for model in models:
+        assert reviews[model]["openness"]["license"]["state"] == "yes"

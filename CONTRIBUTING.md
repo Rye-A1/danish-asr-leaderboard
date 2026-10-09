@@ -82,7 +82,7 @@ still use model-specific evidence. The five scored openness fields are:
 | Field | What a `yes` means |
 |---|---|
 | `weights` | The current model weights can be downloaded. This is filled from the benchmark's reviewed `access=open` flag and the model repository link. |
-| `license` | The checkpoint and its base permit commercial reuse and redistribution without model-specific field-of-use restrictions. |
+| `license` | The checkpoint and its base permit commercial use and redistribution without individual permission. Published responsible-use conditions do not by themselves prevent `yes`; noncommercial terms do. This is a leaderboard license factor, not an OSI certification. |
 | `data` | The full training mix for this checkpoint is identified and consists of publicly obtainable datasets. A standard sign-in or acceptance of published access terms, as for CoRal, does not prevent `yes`; authors need not redistribute an ordinary filtered copy. A generated pseudo-labeled, synthetic, or teacher-labeled corpus needs a direct link to that resulting corpus for `yes`; linking only its source audio or teacher model is insufficient. An unlinked component makes the answer at most `partial`, or `no` if no training component is obtainable. For a fine-tune, assess the data newly used for that checkpoint. |
 | `code` | Public training and preprocessing scripts, configuration, and settings reproduce the released checkpoint, not merely generic fine-tuning or inference. |
 | `model_card` | The checkpoint card substantively covers lineage, intended use, training data and method, evaluation, and limitations. |
@@ -139,8 +139,9 @@ add a positive tile or infer unsupported features from a base model.
 
 Hub license tags are review leads, not automatic positive license claims: a
 model card, attached terms, or base license can narrow them. A non-commercial
-tag is marked `no`; custom commercial licenses with field-of-use restrictions
-are `partial`. Dataset and arXiv tags are also leads, not proof that all data
+tag is marked `no`; a commercial license with documented redistribution remains
+`yes` despite responsible-use conditions, while unresolved effective terms are
+`partial` or `unknown`. Dataset and arXiv tags are also leads, not proof that all data
 is open or the paper covers this checkpoint. Manual decisions in
 `model_profiles.json` override these hints. Example:
 

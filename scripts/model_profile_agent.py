@@ -44,8 +44,9 @@ means the supplied sources do not establish the answer; silence is not no.
 Openness:
 - license: yes only when the effective checkpoint AND inherited base terms
   permit commercial use and redistribution without separate permission. A Hub
-  tag alone cannot prove this. Noncommercial or permission-only terms are no;
-  unresolved base terms are unknown or partial.
+  tag alone cannot prove this. Published responsible-use conditions do not by
+  themselves lower this leaderboard factor. Noncommercial or permission-only
+  terms are no; unresolved base terms are unknown or partial.
 - data: yes when the checkpoint identifies its COMPLETE training or fine-tuning
   mix and every named dataset is publicly obtainable. Named public sources such
   as NST, FTSpeech, CoRal and FLEURS count even if access requires accepting
