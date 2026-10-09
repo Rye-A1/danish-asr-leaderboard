@@ -75,7 +75,10 @@ def main() -> None:
     if not key:
         if not sys.stdin.isatty():
             raise SystemExit("Set OPENROUTER_API_KEY locally or run in a terminal for a hidden prompt")
-        key = getpass.getpass("OpenRouter API key (hidden; not saved): ")
+        try:
+            key = getpass.getpass("OpenRouter API key (hidden; not saved): ")
+        except (EOFError, KeyboardInterrupt):
+            raise SystemExit("\nNo key entered; pilot cancelled") from None
     if not key:
         raise SystemExit("An OpenRouter API key is required")
     report = run(models, key, output_dir=args.output_dir)
