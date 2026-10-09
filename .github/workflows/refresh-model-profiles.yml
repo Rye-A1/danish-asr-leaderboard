@@ -25,6 +25,19 @@ jobs:
       - run: pip install requests
       - name: Collect public evidence leads
         run: python scripts/refresh_model_profile_candidates.py
+      - name: Check optional reviewer key
+        id: reviewer_key
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -n "$OPENROUTER_API_KEY" ]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Draft source-quoted profile reviews
+        if: steps.reviewer_key.outputs.available == 'true'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: python scripts/model_profile_agent.py
       - name: Propose review of new or changed sources
         uses: peter-evans/create-pull-request@v7
         with:
@@ -34,5 +47,7 @@ jobs:
           title: 'Review new or changed model profile evidence'
           body: |
             Automated source discovery for the Openness and Features columns.
-            The candidate file is not used to award points. Please confirm checkpoint-specific evidence and update `scripts/model_profiles.json` for any supported claims.
-          add-paths: scripts/model_profile_candidates.json
+            Candidate evidence and optional Nemotron suggestions are not used to award points. Confirm checkpoint-specific evidence and source terms before updating `scripts/model_profiles.json`.
+          add-paths: |
+            scripts/model_profile_candidates.json
+            scripts/model_profile_agent_suggestions.json

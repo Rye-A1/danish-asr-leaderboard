@@ -1,0 +1,78 @@
+"""The optional agent must produce auditable suggestions, never score claims."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+from model_profile_agent import (FIELDS, RUBRIC, collect_sources, response_schema,
+                                 validate_suggestions)
+
+
+def test_agent_rubric_covers_checkpoint_data_and_all_scored_capabilities():
+    assert set(response_schema()["properties"]["fields"]["required"]) == set(FIELDS)
+    for text in ("exact named checkpoint", "inherited base terms", "COMPLETE training corpus",
+                 "preprocessing code", "Danish word or segment timestamps",
+                 "WHILE live audio arrives"):
+        assert text in RUBRIC
+
+
+def test_source_bundle_fetches_pinned_card_dataset_code_and_base_terms():
+    revision = "a" * 40
+    source = "https://huggingface.co/example/asr"
+    candidate = {
+        "source": source, "revision": revision,
+        "dataset_links": ["https://huggingface.co/datasets/example/speech"],
+        "training_code_leads": ["https://github.com/example/asr/blob/main/train.py",
+                                "https://untrusted.example/train.py"],
+    }
+
+    class Response:
+        def __init__(self, text="", status=200, data=None):
+            self.text, self.status_code, self._data = text, status, data
+            self.ok = status == 200
+
+        def raise_for_status(self):
+            assert self.ok
+
+        def json(self):
+            return self._data
+
+    responses = {
+        f"{source}/resolve/{revision}/README.md": Response("Exact model card"),
+        f"{source}/resolve/{revision}/LICENSE": Response("Checkpoint terms"),
+        "https://huggingface.co/datasets/example/speech/resolve/main/README.md": Response("Dataset terms"),
+        "https://raw.githubusercontent.com/example/asr/main/train.py": Response("Training script"),
+        f"https://huggingface.co/api/models/example/asr/revision/{revision}": Response(
+            data={"cardData": {"base_model": "example/base"}}),
+        "https://huggingface.co/example/base/resolve/main/README.md": Response("Base card"),
+        "https://huggingface.co/example/base/resolve/main/LICENSE": Response("Base terms"),
+    }
+
+    class Session:
+        def get(self, url, **kwargs):
+            assert not url.startswith("https://untrusted.example")
+            return responses.get(url, Response(status=404))
+
+    sources = collect_sources(Session(), candidate)
+    assert [item["kind"] for item in sources] == [
+        "model_card", "checkpoint_license", "dataset_card", "training_code",
+        "base_model_card", "base_license"]
+    assert sources[0]["url"].endswith(f"/{revision}/README.md")
+    assert [item["id"] for item in sources] == [f"S{i}" for i in range(1, 7)]
+
+
+def test_fabricated_quotes_and_missing_fields_cannot_pass_validation():
+    sources = [{"id": "S1", "kind": "model_card", "url": "https://example.org/card",
+                "text": "Supports Danish word timestamps."}]
+    raw = {"fields": {
+        "timestamps": {"state": "yes", "source_id": "S1",
+                       "quote": "Supports Danish word timestamps.", "explanation": "Exact model."},
+        "license": {"state": "yes", "source_id": "S1",
+                    "quote": "Apache 2.0 commercial license", "explanation": "Invented."},
+        "streaming": {"state": "no", "source_id": "S2",
+                      "quote": "No streaming", "explanation": "Wrong source."},
+    }}
+    fields = validate_suggestions(raw, sources)
+    assert fields["timestamps"]["state"] == "yes"
+    assert fields["license"]["state"] == "unknown"
+    assert fields["streaming"]["state"] == "unknown"
+    assert fields["data"]["state"] == "unknown"
