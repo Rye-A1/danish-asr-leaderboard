@@ -124,11 +124,9 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict,
         url=f"https://huggingface.co/datasets/{first_dataset}" if first_dataset else repo_url,
         suggestion="listed" if datasets else "",
     )
-    arxiv = next((t.split(":", 1)[1] for t in tags if isinstance(t, str) and t.startswith("arxiv:")), "")
-    paper_url = f"https://arxiv.org/abs/{arxiv}" if re.fullmatch(r"\d{4}\.\d{4,5}", arxiv) else ""
     report_candidate = _candidate(
-        detail="Paper link in Hub metadata; confirm it describes this checkpoint" if paper_url else "Model-specific paper or report not reviewed",
-        url=paper_url, suggestion="linked" if paper_url else "",
+        detail="A paper or technical report for this exact checkpoint has not been verified",
+        url=repo_url,
     )
     openness = {
         "weights": weight_candidate,

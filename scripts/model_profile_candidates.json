@@ -17,7 +17,7 @@
       "https://huggingface.co/datasets/google/fleurs",
       "https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0"
     ],
-    "paper_links": [],
+    "unverified_paper_links": [],
     "training_code_leads": [],
     "card_headings": [
       "Edda v0.1 — Danish speech recognition",
@@ -28,7 +28,7 @@
       "License and attribution"
     ],
     "card_characters": 8255,
-    "review_note": "Links and tags are leads. Check exact checkpoint, base terms, data completeness, and code before scoring."
+    "review_note": "Links and tags are leads. A base-model paper is not a paper for its fine-tune. Check the exact checkpoint, base terms, data completeness, and code before scoring."
   },
   "danish-foundation-models/edda-v0.2": {
     "status": "new",
@@ -48,7 +48,7 @@
       "https://huggingface.co/datasets/google/fleurs",
       "https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0"
     ],
-    "paper_links": [],
+    "unverified_paper_links": [],
     "training_code_leads": [],
     "card_headings": [
       "Edda v0.2 — Danish speech recognition",
@@ -59,7 +59,7 @@
       "License and attribution"
     ],
     "card_characters": 10064,
-    "review_note": "Links and tags are leads. Check exact checkpoint, base terms, data completeness, and code before scoring."
+    "review_note": "Links and tags are leads. A base-model paper is not a paper for its fine-tune. Check the exact checkpoint, base terms, data completeness, and code before scoring."
   },
   "Harmonium/brage-v1": {
     "status": "new",
@@ -80,7 +80,7 @@
       "https://huggingface.co/datasets/google/fleurs",
       "https://huggingface.co/datasets/mozilla-foundation/common_voice_17_0"
     ],
-    "paper_links": [],
+    "unverified_paper_links": [],
     "training_code_leads": [],
     "card_headings": [
       "Brage v1: Danish speech recognition",
@@ -91,7 +91,7 @@
       "License and attribution"
     ],
     "card_characters": 8065,
-    "review_note": "Links and tags are leads. Check exact checkpoint, base terms, data completeness, and code before scoring."
+    "review_note": "Links and tags are leads. A base-model paper is not a paper for its fine-tune. Check the exact checkpoint, base terms, data completeness, and code before scoring."
   },
   "RyeAI/ekko-v1-tiny": {
     "status": "new",
@@ -121,7 +121,7 @@
       "https://huggingface.co/datasets/alexandrainst/nota",
       "https://huggingface.co/datasets/alexandrainst/nst-da"
     ],
-    "paper_links": [],
+    "unverified_paper_links": [],
     "training_code_leads": [],
     "card_headings": [
       "Ekko v1 Tiny — Offline Danish Speech-to-Text with Word Timestamps",
@@ -135,7 +135,7 @@
       "License"
     ],
     "card_characters": 7862,
-    "review_note": "Links and tags are leads. Check exact checkpoint, base terms, data completeness, and code before scoring."
+    "review_note": "Links and tags are leads. A base-model paper is not a paper for its fine-tune. Check the exact checkpoint, base terms, data completeness, and code before scoring."
   },
   "saga-2-l": {
     "status": "new",

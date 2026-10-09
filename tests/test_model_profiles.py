@@ -23,7 +23,7 @@ def test_hub_hints_do_not_claim_open_data_code_or_model_specific_paper():
     assert profile["openness_score"] == 0
     assert profile["openness"]["license"]["state"] == "unknown"
     assert profile["report"]["state"] == "unknown"
-    assert profile["report"]["url"] == "https://arxiv.org/abs/2401.12345"
+    assert profile["report"]["url"] == REPO
     assert profile["openness"]["data"]["url"] == "https://huggingface.co/datasets/example/speech"
     assert all(profile["openness"][key]["state"] == "unknown"
                for key in ("data", "code", "model_card"))
@@ -158,7 +158,7 @@ def test_candidate_collector_does_not_turn_tags_into_scores():
                                "# Model\n## Limitations\nhttps://github.com/example/asr/blob/main/train.py")
     assert candidate["license_tag_class"] == "open_candidate"
     assert candidate["dataset_links"] == ["https://huggingface.co/datasets/example/speech"]
-    assert candidate["paper_links"] == ["https://arxiv.org/abs/2401.12345"]
+    assert candidate["unverified_paper_links"] == ["https://arxiv.org/abs/2401.12345"]
     assert candidate["weight_files"] == ["model.safetensors"]
     assert len(candidate["training_code_leads"]) == 2
     assert not any("preprocessor_config" in url for url in candidate["training_code_leads"])

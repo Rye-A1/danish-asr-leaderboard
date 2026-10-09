@@ -72,8 +72,9 @@ fields are:
 | `code` | Public training and preprocessing scripts, configuration, and settings reproduce the released checkpoint, not merely generic fine-tuning or inference. |
 | `model_card` | The checkpoint card substantively covers lineage, intended use, training data and method, evaluation, and limitations. |
 
-Papers and technical reports appear as unscored citations. A base model's
-paper does not automatically count for a fine-tune.
+Papers and technical reports appear as unscored citations only after their
+connection to the exact checkpoint is confirmed. A base model's paper does not
+count for a fine-tune, even when its Hub metadata repeats the citation.
 
 The separate feature fields are `punctuation_case` (cased and punctuated Danish
 output, either by default or through an option), `timestamps` (word or segment
@@ -128,8 +129,8 @@ is open or the paper covers this checkpoint. Manual decisions in
 metadata and card links for newly submitted models and sources changed since
 their last review. A scheduled workflow opens a PR with the resulting
 `scripts/model_profile_candidates.json`. This is a review queue, not a scoring
-input: apparent open licenses, dataset tags, card headings, and training-script
-links still need checkpoint-specific confirmation. The deployed leaderboard
+input: apparent open licenses, dataset tags, card headings, paper links, and
+training-script links still need checkpoint-specific confirmation. The deployed leaderboard
 shows safe automatic facts and unknowns immediately; the review file supplies
 evidence-backed decisions when confirmed. Run the collector locally with
 `python scripts/refresh_model_profile_candidates.py`.

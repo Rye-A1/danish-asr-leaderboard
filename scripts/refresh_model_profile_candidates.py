@@ -77,11 +77,11 @@ def evidence_leads(name: str, source: str, info: dict | None, readme: str = "") 
         "license_tag": license_tag,
         "license_tag_class": license_tag_class(license_tag),
         "dataset_links": dataset_urls,
-        "paper_links": paper_urls,
+        "unverified_paper_links": paper_urls,
         "training_code_leads": code_links[:12] + [f"{source}/blob/main/{quote(f)}" for f in training_files[:12]],
         "card_headings": headings[:24],
         "card_characters": len(readme),
-        "review_note": "Links and tags are leads. Check exact checkpoint, base terms, data completeness, and code before scoring.",
+        "review_note": "Links and tags are leads. A base-model paper is not a paper for its fine-tune. Check the exact checkpoint, base terms, data completeness, and code before scoring.",
     }
 
 
