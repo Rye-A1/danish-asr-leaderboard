@@ -10,7 +10,10 @@ run the evaluation yourself.
 If you can't (or would rather not) run the eval yourself — e.g. it's a model you
 saw and want benchmarked — open an
 [issue](https://github.com/Rye-A1/danish-asr-leaderboard/issues) with the model
-id, backend, and where to find it. We'll run it through the harness and add it.
+id, backend, and where to find it. If you know the model's openness or feature
+capabilities, include the [profile information](#model-openness-and-feature-profiles)
+and evidence links too. Unknown answers are fine. We'll run it through the
+harness and add it.
 
 ## Submitting a score — *you ran it* (open a PR)
 
@@ -46,7 +49,10 @@ id, backend, and where to find it. We'll run it through the harness and add it.
    automatically — no manual `push_results.py` / `push_outputs.py` step needed.
 
 Please include in the PR description: the exact command you ran, the hardware
-(for context on `speed_x`), and whether the model is `open` or `proprietary`.
+(for context on `speed_x`), whether the model is `open` or `proprietary`, and
+the [profile information](#model-openness-and-feature-profiles) for a new model
+or changed checkpoint/API. For a score-only rerun of the same model, say whether
+its profile remains accurate.
 
 For results to be comparable, do **not** modify the normalisation or metrics —
 run the harness as-is.
@@ -61,7 +67,12 @@ run the harness as-is.
 The leaderboard's **Openness** and **Features** columns read
 `scripts/model_profiles.json`. A profile is optional; unreviewed fields display
 as unknown. Hover, focus, or tap a column value to see the status map and source
-links. Add a source URL for each confirmed `yes` claim. The five scored openness
+links. For a new model or an updated checkpoint/API, provide a status for each
+field below in the issue or PR description. Use `yes`, `partial`, `no`, or
+`unknown`, plus a short explanation and a source URL for each claim that is not
+unknown. Add evidence-backed decisions to `scripts/model_profiles.json` in a
+PR; leave unverified fields as `unknown`. This information helps reviewers but
+does not replace the independent score verification. The five scored openness
 fields are:
 
 | Field | What a `yes` means |
@@ -80,6 +91,7 @@ The separate feature fields are `punctuation_case` (cased and punctuated Danish
 output, either by default or through an option), `timestamps` (word or segment
 output for Danish), `diarization` (speaker labels), and `streaming`
 (incremental output). A formatting `yes` does not require independent controls.
+Include the exact model version and any API option needed to enable a feature.
 Mark `no` only when checkpoint-specific documentation explicitly rules out
 formatted output. If the saved output has none and no optional mode is
 documented, use `unknown`: absence from the benchmark does not prove the

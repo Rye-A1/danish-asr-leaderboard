@@ -2572,7 +2572,7 @@
     <p>If you can't run the eval yourself, open a
       <a href="https://github.com/Rye-A1/danish-asr-leaderboard/issues" target="_blank" rel="noopener">GitHub issue</a>
       (or a <a href="https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/discussions" target="_blank" rel="noopener">Space discussion</a>)
-      with the model id, backend, and where to find it. We'll run it through the harness and add it.</p>
+      with the model id, backend, and where to find it. Add links for any openness or feature claims you know; unknowns are fine. We'll run it through the harness and add it.</p>
 
     <h4>Submit a score — you ran it</h4>
     <p>Run the harness on all five test sets, then open a pull request on the
@@ -2590,6 +2590,14 @@
       <code>proprietary</code>. On merge, CI automatically publishes both to the
       <a href="https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard" target="_blank" rel="noopener">HF dataset</a>
       and updates the leaderboard.</p>
+    <p>For a new model or changed checkpoint/API, also describe its <strong>Openness</strong>
+      (weights, license, training data, training code, model card) and <strong>Features</strong>
+      (formatted text, Danish timestamps, speaker labels, live streaming). Mark each
+      <em>yes</em>, <em>partial</em>, <em>documented no</em>, or <em>unknown</em>, with a source
+      for claims you can verify. For a score-only rerun, say whether the existing
+      profile still applies. See the
+      <a href="https://github.com/Rye-A1/danish-asr-leaderboard/blob/main/CONTRIBUTING.md#model-openness-and-feature-profiles" target="_blank" rel="noopener">profile guidelines</a>
+      for definitions and evidence requirements.</p>
     <blockquote>
       Do <strong>not</strong> modify the normalisation or metrics — run the
       harness as-is so results stay comparable.
