@@ -34,7 +34,8 @@ jobs:
           OPENROUTER_PROVIDER: ${{ matrix.provider }}
           PROFILE_AGENT_MODEL_ID: danish-foundation-models/edda-v0.1
         run: python scripts/model_profile_agent.py
-      - uses: actions/upload-artifact@v4
+      - if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: profile-review-${{ matrix.id }}
           path: scripts/model_profile_agent_suggestions.json

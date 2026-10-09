@@ -197,8 +197,16 @@ def ask_agent(session: requests.Session, key: str, name: str,
             time.sleep(min(max(wait, 1), 30))
             continue
         break
+    if response.status_code == 429:
+        try:
+            detail = response.json().get("error", {}).get("message", "rate limited")
+        except (ValueError, TypeError, AttributeError):
+            detail = "rate limited"
+        raise ValueError(f"OpenRouter rate limit: {str(detail)[:300]}")
     response.raise_for_status()
-    message = response.json()["choices"][0]["message"]
+    result = response.json()
+    choice = result["choices"][0]
+    message = choice["message"]
     calls = message.get("tool_calls") or []
     if calls:
         call = calls[0]["function"]
@@ -209,7 +217,12 @@ def ask_agent(session: requests.Session, key: str, name: str,
     content = message.get("content")
     if isinstance(content, str):
         return json.loads(content)
-    raise ValueError("OpenRouter returned neither a review tool call nor JSON text")
+    raise ValueError(
+        "OpenRouter returned no review "
+        f"(finish_reason={choice.get('finish_reason')!r}, "
+        f"message_keys={sorted(message)}, "
+        f"content_type={type(content).__name__}, "
+        f"reasoning_chars={len(str(message.get('reasoning') or ''))})")
 
 
 def validate_suggestions(raw: dict, sources: list[dict]) -> dict:
@@ -295,6 +308,8 @@ def main() -> None:
                     output[name] = prior
     OUTPUT.write_text(json.dumps(output, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"Wrote {OUTPUT} with {len(output)} review draft(s)")
+    if model_filter and model_filter not in output:
+        raise SystemExit(f"No review draft was produced for {model_filter}")
 
 
 if __name__ == "__main__":

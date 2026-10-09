@@ -60,7 +60,7 @@ jobs:
           PROFILE_AGENT_MODEL_ID: ${{ inputs.model }}
         run: python scripts/model_profile_agent.py
       - name: Preserve review draft
-        if: steps.reviewer_key.outputs.available == 'true'
+        if: always() && steps.reviewer_key.outputs.available == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: model-profile-review-draft
