@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/pilot-model-profile-agent.yml'
+      - 'scripts/model_profile_agent.py'
 
 jobs:
   compare:
