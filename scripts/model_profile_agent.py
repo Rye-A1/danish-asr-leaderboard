@@ -70,8 +70,8 @@ Capabilities (the evaluated checkpoint and available endpoint, not a library):
 
 Where to judge features: for open models, use this checkpoint's card, its exact
 inference code/configuration, or saved output examples. For hosted models, use
-the official API operation, request parameters, response schema, and the model
-compatibility list. A generic provider feature is not proof that this scored
+the official API operation, request parameters, response schema, and its
+model compatibility list. A generic provider feature is not proof that this scored
 model supports it. Timestamps need a timestamp request/response field and this
 model's support; diarization needs speaker IDs from this model, not a separate
 diarization model; live streaming needs audio accepted incrementally by this
