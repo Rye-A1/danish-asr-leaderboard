@@ -268,3 +268,16 @@ def test_unlinked_pseudo_labeled_training_data_is_not_fully_open():
         data = reviews[model]["openness"]["data"]
         assert data["state"] == "partial"
         assert "no direct access link" in data["detail"]
+
+
+def test_ekko_tiny_review_uses_checkpoint_evidence_without_scoring_pnc():
+    reviews = load_reviews()
+    profile = build_profile("RyeAI/ekko-v1-tiny",
+                            "https://huggingface.co/RyeAI/ekko-v1-tiny", {},
+                            reviews, access="open")
+    assert profile["openness_score"] == 2  # weights and checkpoint card
+    assert profile["openness"]["data"]["state"] == "partial"
+    assert profile["openness"]["license"]["state"] == "partial"
+    assert profile["feature_count"] == 1  # native word timestamps
+    assert profile["features"]["timestamps"]["state"] == "yes"
+    assert profile["features"]["punctuation_case"]["state"] == "no"

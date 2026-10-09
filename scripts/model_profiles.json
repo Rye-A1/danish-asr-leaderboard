@@ -1139,6 +1139,54 @@
     "reviewed_source": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
     "reviewed_on": "2026-09-27"
   },
+  "RyeAI/ekko-v1-tiny": {
+    "openness": {
+      "license": {
+        "state": "partial",
+        "detail": "The checkpoint inherits NVIDIA terms and CoRal restrictions on uses of models trained on its data, so the effective terms have field-of-use limits.",
+        "url": "https://huggingface.co/RyeAI/ekko-v1-tiny/blob/main/MODEL_LICENSE.md"
+      },
+      "data": {
+        "state": "partial",
+        "detail": "Named public corpora are used, but the 454.1-hour quality-gated pseudo-labeled training corpus has no direct access link.",
+        "url": "https://huggingface.co/RyeAI/ekko-v1-tiny#training-and-limitations"
+      },
+      "code": {
+        "state": "unknown",
+        "detail": "The linked public repository supplies inference runtimes, but checkpoint-specific training and preprocessing code is not established.",
+        "url": "https://github.com/Rye-A1/ekko-danish-stt"
+      },
+      "model_card": {
+        "state": "yes",
+        "detail": "The checkpoint card documents lineage, intended use, training summary, benchmark results, runtime formats, and limitations.",
+        "url": "https://huggingface.co/RyeAI/ekko-v1-tiny"
+      }
+    },
+    "features": {
+      "punctuation_case": {
+        "state": "no",
+        "detail": "This checkpoint emits lowercase text without punctuation; the separate Ekko PnC model is needed to restore both.",
+        "url": "https://huggingface.co/RyeAI/ekko-v1-tiny#training-and-limitations"
+      },
+      "timestamps": {
+        "state": "yes",
+        "detail": "The released GGUF checkpoint documents native word timestamps and a --timestamps inference option.",
+        "url": "https://huggingface.co/RyeAI/ekko-v1-tiny#local-use"
+      },
+      "diarization": {
+        "state": "unknown",
+        "detail": "Speaker-labeled transcription is not established for this checkpoint.",
+        "url": "https://huggingface.co/RyeAI/ekko-v1-tiny"
+      },
+      "streaming": {
+        "state": "unknown",
+        "detail": "The local inference examples do not establish incremental transcription while audio arrives.",
+        "url": "https://huggingface.co/RyeAI/ekko-v1-tiny#local-use"
+      }
+    },
+    "reviewed_source": "https://huggingface.co/RyeAI/ekko-v1-tiny",
+    "reviewed_on": "2026-10-10"
+  },
   "scribe_v2": {
     "openness": {
       "license": {
