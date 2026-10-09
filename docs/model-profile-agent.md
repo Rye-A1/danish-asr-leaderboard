@@ -55,6 +55,16 @@ without verbatim quotes stay `unknown`. The Gemma 4 free
 endpoint returned provider rate limits in the same pilot. These observations
 do not establish general model accuracy; human review remains required.
 
+You can pilot the current branch locally before merge with
+`python scripts/run_model_profile_pilot.py`. By default it reviews Edda v0.2
+and Ekko Tiny, then prints every difference from the human ratings. Repeat
+`--model MODEL_ID` for selected models, or use `--all` after checking the free
+endpoint's capacity. It reads `OPENROUTER_API_KEY` from the local environment
+or prompts for it with hidden input in an interactive terminal. The key is
+never saved; drafts and the comparison are written under ignored
+`eval_audio_cache/model-profile-pilot/`. A GitHub Actions secret is not
+readable from a local script, so a local key is required for this route.
+
 **Suggestions never alter leaderboard scores.** A reviewer must confirm the
 claim applies to the evaluated checkpoint, inspect effective and inherited
 license terms, and then edit `scripts/model_profiles.json`. In particular, a
