@@ -94,13 +94,17 @@ def test_agent_request_uses_structured_output_and_source_bundle():
             pass
 
         def json(self):
-            return {"choices": [{"message": {"content": json.dumps({"fields": {}})}}]}
+            return {"choices": [{"message": {"tool_calls": [{"function": {
+                "name": "submit_profile_review",
+                "arguments": json.dumps({"fields": {}}),
+            }}]}}]}
 
     class Session:
         def post(self, url, *, headers, json, timeout):
             assert url == "https://openrouter.ai/api/v1/chat/completions"
             assert headers == {"Authorization": "Bearer example-key"}
-            assert json["response_format"]["type"] == "json_schema"
+            assert json["tools"][0]["function"]["name"] == "submit_profile_review"
+            assert json["tool_choice"]["function"]["name"] == "submit_profile_review"
             assert "Exact checkpoint card" in json["messages"][1]["content"]
             assert timeout == 120
             return Response()

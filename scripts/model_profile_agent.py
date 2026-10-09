@@ -22,7 +22,7 @@ import requests
 ROOT = Path(__file__).resolve().parent
 CANDIDATES = ROOT / "model_profile_candidates.json"
 OUTPUT = ROOT / "model_profile_agent_suggestions.json"
-MODEL = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3-super-120b-a12b:free")
+MODEL = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3.5-lightning:free")
 SCHEMA_VERSION = 2
 FIELDS = ("license", "data", "code", "model_card", "punctuation_case",
           "timestamps", "diarization", "streaming")
@@ -168,9 +168,12 @@ def ask_agent(session: requests.Session, key: str, name: str,
         "model": MODEL,
         "temperature": 0,
         "max_tokens": 3500,
-        "response_format": {"type": "json_schema", "json_schema": {
-            "name": "model_profile_review", "strict": True,
-            "schema": response_schema()}},
+        "tools": [{"type": "function", "function": {
+            "name": "submit_profile_review",
+            "description": "Submit source-quoted field review suggestions",
+            "parameters": response_schema()}}],
+        "tool_choice": {"type": "function", "function": {
+            "name": "submit_profile_review"}},
         "messages": [
             {"role": "system", "content": RUBRIC},
             {"role": "user", "content":
@@ -192,10 +195,18 @@ def ask_agent(session: requests.Session, key: str, name: str,
             continue
         break
     response.raise_for_status()
-    message = response.json()["choices"][0]["message"]["content"]
-    if not isinstance(message, str):
-        raise ValueError("OpenRouter returned no text response")
-    return json.loads(message)
+    message = response.json()["choices"][0]["message"]
+    calls = message.get("tool_calls") or []
+    if calls:
+        call = calls[0]["function"]
+        if call.get("name") != "submit_profile_review":
+            raise ValueError("OpenRouter returned the wrong review tool")
+        return json.loads(call["arguments"])
+    # Some providers return valid JSON in content despite a tool choice.
+    content = message.get("content")
+    if isinstance(content, str):
+        return json.loads(content)
+    raise ValueError("OpenRouter returned neither a review tool call nor JSON text")
 
 
 def validate_suggestions(raw: dict, sources: list[dict]) -> dict:

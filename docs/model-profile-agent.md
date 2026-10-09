@@ -3,8 +3,10 @@
 The weekly [profile refresh workflow](../.github/workflows/refresh-model-profiles.yml)
 first identifies new or changed public model sources. If the repository has an
 `OPENROUTER_API_KEY` Actions secret, it also asks
-`nvidia/nemotron-3-super-120b-a12b:free` for field-by-field **review
-suggestions**. The default model can be changed with `OPENROUTER_MODEL`.
+`nvidia/nemotron-3.5-lightning:free` for field-by-field **review
+suggestions**. It requests a structured tool call and validates the returned
+quotes locally. The default model can be changed with `OPENROUTER_MODEL` to
+another tool-capable OpenRouter model.
 
 The agent reads the exact revision of a Hugging Face model card, checkpoint
 license files, linked dataset cards and training files, and base-model card and
