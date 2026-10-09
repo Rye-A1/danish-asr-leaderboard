@@ -22,7 +22,7 @@ OPEN_LICENSE_TAGS = {
 }
 UNCONFIRMED = {
     "weights": "Downloadable weights are not established by the reviewed source.",
-    "data": "Exact training data and release terms are not established by the reviewed source.",
+    "data": "The full set of named, publicly obtainable training sources is not established by the reviewed source.",
     "code": "Checkpoint-specific training and preprocessing code is not established by the reviewed source.",
     "model_card": "A substantive checkpoint card is not established by the reviewed source.",
     "license": "Effective checkpoint terms are not established by the reviewed source.",

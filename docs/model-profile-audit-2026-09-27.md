@@ -2,6 +2,12 @@
 
 Scope: the 40 distinct models in `results/*.json` at `origin/main` commit `05cfdca`, merged into the `codex/openness-features` review branch. Every Hugging Face model card and its metadata were fetched; gated cards were read with an existing accepted Hugging Face login. Public API descriptions, linked licenses, publisher GitHub repositories, and relevant model output examples were checked. The per-field decision, detail, and direct evidence URL are in [`scripts/model_profiles.json`](../scripts/model_profiles.json).
 
+**Policy update (10 October 2026):** The current training-data factor counts a
+complete mix of named, publicly obtainable datasets as `yes`, including CoRal
+under its published access conditions. Exact filtered copies need not be
+redistributed. The historical data decisions below used a stricter criterion;
+the current decisions are in `scripts/model_profiles.json`.
+
 ## Decision rules
 
 - **Openness (out of five):** downloadable weights; effective license allowing commercial use and redistribution without separate permission; identified and accessible training data; executable training/preprocessing code for the released checkpoint, with its run configuration; and a substantive checkpoint-specific model card. A detailed recipe or reusable fine-tuning script without the released run is **partial** for code. Generic inference code is not training code. Papers remain unscored citations.

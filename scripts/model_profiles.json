@@ -2,8 +2,8 @@
   "3dio-ai/svale-110M": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Five named public corpora; CoRal v3 requires acceptance of access conditions.",
+        "state": "yes",
+        "detail": "Five named public training corpora are obtainable; CoRal v3 requires only its published access conditions.",
         "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
       },
       "model_card": {
@@ -35,8 +35,8 @@
   "3dio-ai/svale-600M": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Five named public corpora; CoRal v3 requires acceptance of access conditions.",
+        "state": "yes",
+        "detail": "Five named public training corpora are obtainable; CoRal v3 requires only its published access conditions.",
         "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
       },
       "model_card": {
@@ -101,8 +101,8 @@
   "capacit-ai/saga-2-m": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Six fine-tuning corpora are named; CoRal access is gated and exact run data are not redistributed.",
+        "state": "yes",
+        "detail": "The six named fine-tuning corpora are publicly obtainable; CoRal access conditions and the absence of an exact redistributed copy do not change this.",
         "url": "https://huggingface.co/capacit-ai/saga-2-m#training-data"
       },
       "code": {
@@ -149,8 +149,8 @@
   "CoRal-project/roest-v2-wav2vec2-1B": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Fine-tuned on CoRal v2, published with gated access and use conditions.",
+        "state": "yes",
+        "detail": "Fine-tuning uses publicly obtainable CoRal v2 under its published access conditions.",
         "url": "https://huggingface.co/datasets/CoRal-project/coral-v2"
       },
       "code": {
@@ -182,8 +182,8 @@
   "CoRal-project/roest-v2-wav2vec2-2B": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Fine-tuned on CoRal v2, published with gated access and use conditions.",
+        "state": "yes",
+        "detail": "Fine-tuning uses publicly obtainable CoRal v2 under its published access conditions.",
         "url": "https://huggingface.co/datasets/CoRal-project/coral-v2"
       },
       "code": {
@@ -215,8 +215,8 @@
   "CoRal-project/roest-v3-wav2vec2-315m": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Fine-tuned on CoRal v3, published with gated access and use conditions.",
+        "state": "yes",
+        "detail": "Fine-tuning uses publicly obtainable CoRal v3 under its published access conditions.",
         "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
       },
       "code": {
@@ -248,8 +248,8 @@
   "CoRal-project/roest-v3-whisper-1.5b": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Fine-tuned on CoRal v3, published with gated access and use conditions.",
+        "state": "yes",
+        "detail": "Fine-tuning uses publicly obtainable CoRal v3 under its published access conditions.",
         "url": "https://huggingface.co/datasets/CoRal-project/coral-v3"
       },
       "code": {
@@ -286,8 +286,8 @@
         "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#license-and-attribution"
       },
       "data": {
-        "state": "partial",
-        "detail": "Card lists exact fine-tuning corpora, splits, counts and preprocessing; CoRal v3 access is gated and training copies are not redistributed.",
+        "state": "yes",
+        "detail": "The card names the full fine-tuning mix with splits and counts; all six corpora are publicly obtainable, including CoRal under published access conditions.",
         "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#training-data"
       },
       "code": {
@@ -489,8 +489,8 @@
   "hinge/danstral-v1": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Fine-tuned on CoRal v1, which has access conditions; base-model corpus is undisclosed.",
+        "state": "yes",
+        "detail": "The checkpoint fine-tunes on publicly obtainable CoRal v1 under published access conditions; the base model’s separate pretraining corpus is not required for this fine-tuning data factor.",
         "url": "https://huggingface.co/datasets/CoRal-project/coral"
       },
       "code": {
@@ -702,8 +702,8 @@
   "nvidia/parakeet-rnnt-110m-da-dk": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "CoRal, Common Voice and Granary sources are listed; CoRal has gated access.",
+        "state": "yes",
+        "detail": "The named CoRal, Common Voice, and Granary training sources are publicly obtainable; CoRal has published access conditions.",
         "url": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk#training-datasets"
       },
       "code": {
@@ -1221,8 +1221,8 @@
   "syvai/hviske-v5": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Unified training corpus is published, but source terms and exact filtering need review.",
+        "state": "yes",
+        "detail": "The identified unified training corpus is publicly obtainable; exact filtering and source-level redistribution are not required for this factor.",
         "url": "https://huggingface.co/datasets/syvai/danish-asr-unified"
       },
       "model_card": {
@@ -1297,8 +1297,8 @@
   "syvai/hviske-v5.1": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Unified corpus is published, but exact source permissions and filtering need review.",
+        "state": "yes",
+        "detail": "The identified unified training corpus is publicly obtainable; exact filtering and source-level redistribution are not required for this factor.",
         "url": "https://huggingface.co/datasets/syvai/danish-asr-unified"
       },
       "model_card": {
@@ -1330,8 +1330,8 @@
   "syvai/hviske-v5.3": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Fine-tuned on gated CoRal v3 train splits; base v5.1 used published unified corpus.",
+        "state": "yes",
+        "detail": "Fine-tuning uses publicly obtainable CoRal v3 train splits; its v5.1 base also identifies a published unified corpus.",
         "url": "https://huggingface.co/syvai/hviske-v5.3#training-details"
       },
       "model_card": {
@@ -1368,8 +1368,8 @@
   "syvai/hviske-v6": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Card links public corpus, but cleaned 2,755-hour subset and filtering are not released as exact split.",
+        "state": "yes",
+        "detail": "The identified training corpus is publicly obtainable; the exact cleaned subset and filtering need not be redistributed for this factor.",
         "url": "https://huggingface.co/syvai/hviske-v6#training"
       },
       "code": {
@@ -1416,8 +1416,8 @@
   "thorhojhus/whisper-large-v3-turbo-danish": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Five public corpora named, but filtered pseudo-labeled data are not redistributed.",
+        "state": "yes",
+        "detail": "Five public training corpora are named; the filtered pseudo-labeled copy need not be redistributed for this factor.",
         "url": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish#02--training"
       },
       "code": {
@@ -1454,8 +1454,8 @@
   "thorhojhus/whisper-small-danish": {
     "openness": {
       "data": {
-        "state": "partial",
-        "detail": "Five public corpora named, but filtered pseudo-labeled data are not redistributed.",
+        "state": "yes",
+        "detail": "Five public training corpora are named; the filtered pseudo-labeled copy need not be redistributed for this factor.",
         "url": "https://huggingface.co/thorhojhus/whisper-small-danish#02--training"
       },
       "code": {
