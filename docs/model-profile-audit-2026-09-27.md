@@ -10,6 +10,8 @@ Scope: the 40 distinct models in `results/*.json` at `origin/main` commit `05cfd
 
 - **States:** `Y` confirmed, `P` partial, `N` documented absent or restrictive, `?` not established. Only `Y` earns a point. A Hub license tag never overrides narrower card, gated-access, or LICENSE-file terms.
 
+On 2026-10-09, feature decisions based only on an unobserved output or an undocumented optional mode were clarified from `N` to `?`. A provider can supply checkpoint-specific evidence to resolve an unknown. The table below reflects that clarification while retaining the original audit scope.
+
 ## All 40 models
 
 | Model and primary source | W | L | D | C | M | Open | F | T | S | R | Feat |
@@ -18,23 +20,23 @@ Scope: the 40 distinct models in `results/*.json` at `origin/main` commit `05cfd
 | [3dio-ai/svale-600M](https://huggingface.co/3dio-ai/svale-600M) | Y | P | P | Y | P | 2/5 | N | ? | ? | ? | 0/4 |
 | [capacit-ai/saga](https://huggingface.co/capacit-ai/saga) | Y | P | P | ? | P | 1/5 | Y | ? | ? | P | 1/4 |
 | [capacit-ai/saga-2-m](https://huggingface.co/capacit-ai/saga-2-m) | Y | N | P | P | Y | 2/5 | Y | P | N | N | 1/4 |
-| [CoRal-project/roest-v2-wav2vec2-1B](https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B) | Y | P | P | Y | Y | 3/5 | N | ? | ? | ? | 0/4 |
-| [CoRal-project/roest-v2-wav2vec2-2B](https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B) | Y | P | P | Y | Y | 3/5 | N | ? | ? | ? | 0/4 |
-| [CoRal-project/roest-v3-wav2vec2-315m](https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m) | Y | P | P | Y | P | 2/5 | N | ? | ? | ? | 0/4 |
+| [CoRal-project/roest-v2-wav2vec2-1B](https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B) | Y | P | P | Y | Y | 3/5 | ? | ? | ? | ? | 0/4 |
+| [CoRal-project/roest-v2-wav2vec2-2B](https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B) | Y | P | P | Y | Y | 3/5 | ? | ? | ? | ? | 0/4 |
+| [CoRal-project/roest-v3-wav2vec2-315m](https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m) | Y | P | P | Y | P | 2/5 | ? | ? | ? | ? | 0/4 |
 | [CoRal-project/roest-v3-whisper-1.5b](https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b) | Y | P | P | Y | P | 2/5 | Y | ? | ? | ? | 1/4 |
-| [danish-foundation-models/edda-v0.1](https://huggingface.co/danish-foundation-models/edda-v0.1) | Y | Y | P | P | Y | 3/5 | Y | ? | ? | N | 1/4 |
-| [facebook/mms-1b-all](https://huggingface.co/facebook/mms-1b-all) | Y | N | ? | P | P | 1/5 | N | ? | ? | ? | 0/4 |
+| [danish-foundation-models/edda-v0.1](https://huggingface.co/danish-foundation-models/edda-v0.1) | Y | Y | P | P | Y | 3/5 | Y | ? | ? | ? | 1/4 |
+| [facebook/mms-1b-all](https://huggingface.co/facebook/mms-1b-all) | Y | N | ? | P | P | 1/5 | ? | ? | ? | ? | 0/4 |
 | [facebook/seamless-m4t-v2-large](https://huggingface.co/facebook/seamless-m4t-v2-large) | Y | N | ? | P | P | 1/5 | Y | ? | ? | ? | 1/4 |
 | [gpt-4o-mini-transcribe](https://developers.openai.com/api/docs/guides/speech-to-text) | N | N | ? | ? | ? | 0/5 | Y | N | N | P | 1/4 |
 | [gpt-4o-transcribe](https://developers.openai.com/api/docs/guides/speech-to-text) | N | N | ? | ? | ? | 0/5 | Y | N | N | P | 1/4 |
 | [gpt-transcribe](https://developers.openai.com/api/docs/guides/speech-to-text) | N | N | ? | ? | ? | 0/5 | Y | N | N | P | 1/4 |
-| [hinge/danstral-v1](https://huggingface.co/hinge/danstral-v1) | Y | ? | P | Y | Y | 3/5 | N | ? | ? | ? | 0/4 |
-| [MediaCatch/xls-r-300m-danish-mc-v2](https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2) | Y | ? | ? | P | P | 1/5 | N | ? | ? | ? | 0/4 |
+| [hinge/danstral-v1](https://huggingface.co/hinge/danstral-v1) | Y | ? | P | Y | Y | 3/5 | ? | ? | ? | ? | 0/4 |
+| [MediaCatch/xls-r-300m-danish-mc-v2](https://huggingface.co/MediaCatch/xls-r-300m-danish-mc-v2) | Y | ? | ? | P | P | 1/5 | ? | ? | ? | ? | 0/4 |
 | [mistralai/Voxtral-Mini-3B-2507](https://huggingface.co/mistralai/Voxtral-Mini-3B-2507) | Y | Y | ? | ? | P | 2/5 | Y | ? | ? | ? | 1/4 |
 | [mistralai/Voxtral-Small-24B-2507](https://huggingface.co/mistralai/Voxtral-Small-24B-2507) | Y | Y | ? | ? | P | 2/5 | Y | ? | ? | ? | 1/4 |
 | [nvidia/canary-1b-v2](https://huggingface.co/nvidia/canary-1b-v2) | Y | Y | P | Y | Y | 4/5 | Y | Y | ? | ? | 2/4 |
 | [nvidia/nemotron-3.5-asr-streaming-0.6b](https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b) | Y | Y | P | P | Y | 3/5 | Y | ? | ? | Y | 2/4 |
-| [nvidia/parakeet-rnnt-110m-da-dk](https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk) | Y | P | P | P | Y | 2/5 | N | ? | ? | ? | 0/4 |
+| [nvidia/parakeet-rnnt-110m-da-dk](https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk) | Y | P | P | P | Y | 2/5 | ? | ? | ? | ? | 0/4 |
 | [nvidia/parakeet-tdt-0.6b-v3](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3) | Y | Y | P | Y | Y | 4/5 | Y | Y | ? | Y | 3/4 |
 | [openai/whisper-base](https://huggingface.co/openai/whisper-base) | Y | Y | N | ? | Y | 3/5 | Y | Y | ? | N | 2/4 |
 | [openai/whisper-large-v3](https://huggingface.co/openai/whisper-large-v3) | Y | Y | N | ? | Y | 3/5 | Y | Y | ? | N | 2/4 |
@@ -43,7 +45,7 @@ Scope: the 40 distinct models in `results/*.json` at `origin/main` commit `05cfd
 | [openai/whisper-tiny](https://huggingface.co/openai/whisper-tiny) | Y | Y | N | ? | Y | 3/5 | Y | Y | ? | N | 2/4 |
 | [ordbogen/whisper](https://odincore.ai/docs/models/ordbogen-whisper) | N | N | ? | ? | N | 0/5 | Y | Y | ? | P | 2/4 |
 | [pluttodk/milo-asr](https://huggingface.co/pluttodk/milo-asr) | Y | ? | P | P | P | 1/5 | Y | P | ? | Y | 2/4 |
-| [Qwen/Qwen3-ASR-1.7B](https://huggingface.co/Qwen/Qwen3-ASR-1.7B) | Y | Y | ? | P | P | 2/5 | Y | N | ? | Y | 2/4 |
+| [Qwen/Qwen3-ASR-1.7B](https://huggingface.co/Qwen/Qwen3-ASR-1.7B) | Y | Y | ? | P | P | 2/5 | Y | ? | ? | Y | 2/4 |
 | [scribe_v2](https://elevenlabs.io/docs/overview/capabilities/speech-to-text) | N | N | ? | ? | ? | 0/5 | Y | Y | Y | N | 3/4 |
 | [syv-transcribe](https://syv.ai/) | N | N | ? | ? | ? | 0/5 | Y | ? | ? | ? | 1/4 |
 | [syvai/hviske-v3-conversation](https://huggingface.co/syvai/hviske-v3-conversation) | Y | N | ? | ? | P | 1/5 | Y | ? | ? | ? | 1/4 |

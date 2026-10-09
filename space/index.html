@@ -39,6 +39,8 @@
       --muted:   #8892aa;
       --accent:  #22c55e;
       --link:    #60a5fa;
+      --profile-no: #fb7185;
+      --profile-partial: #fbbf24;
       --pareto-below: #93c5fd;
       --red:     #c60c30;
       --r:       10px;
@@ -57,6 +59,8 @@
       --text:  #1e293b;
       --muted: #64748b;
       --link:  #2563eb;
+      --profile-no: #be123c;
+      --profile-partial: #b45309;
       --pareto-below: #60a5fa;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -335,9 +339,10 @@
     #tab-compare .compare-profile-score .profile-score { font-size: 14px; }
     .compare-profile-status { display: inline-flex; align-items: center; gap: 7px; color: var(--text); text-decoration: none; font-weight: 500; }
     .compare-profile-status .mark { flex: none; width: 15px; color: var(--link); font-size: 16px; font-weight: 700; line-height: 1; text-align: center; }
-    .compare-profile-status.partial .mark { color: #d97706; }
+    .compare-profile-status.partial .mark { color: var(--profile-partial); }
     .compare-profile-status.no, .compare-profile-status.unknown { color: var(--muted); }
-    .compare-profile-status.no .mark, .compare-profile-status.unknown .mark { color: var(--muted); }
+    .compare-profile-status.no .mark { color: var(--profile-no); }
+    .compare-profile-status.unknown .mark { color: var(--muted); }
     a.compare-profile-status:hover { color: var(--link); text-decoration: underline; }
     a.compare-profile-status:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
     .compare-profile-source { font-size: 11px; font-weight: 400; }
@@ -842,6 +847,10 @@
     .profile-meter-tiles span:not(:last-child) {
       border-right: 2px solid var(--surf2);
     }
+    .profile-meter-tiles span.yes { box-shadow: inset 0 -3px var(--link); }
+    .profile-meter-tiles span.partial { box-shadow: inset 0 -3px var(--profile-partial); }
+    .profile-meter-tiles span.no { box-shadow: inset 0 -3px var(--profile-no); }
+    .profile-meter-tiles span.unknown { box-shadow: inset 0 -1px var(--muted); }
     .profile-meter::after {
       content: ""; position: absolute; z-index: 1;
       top: 0; left: var(--score-share); width: 2px; height: 100%;
@@ -855,6 +864,9 @@
       background: color-mix(in srgb, var(--link) 10%, var(--border));
     }
     .profile-segment.yes { background: var(--link); }
+    .profile-segment.partial { background: var(--profile-partial); }
+    .profile-segment.no { background: var(--profile-no); }
+    .profile-segment.unknown { background: transparent; border: 1px dashed var(--muted); }
     .profile-popover {
       display: none; position: fixed; z-index: 10000; width: min(360px, calc(100vw - 24px));
       max-height: min(70vh, 520px); overflow: auto; padding: 18px 20px;
@@ -878,10 +890,13 @@
     .profile-map li { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 13px; line-height: 1.3; }
     .profile-map .profile-mark { flex: 0 0 16px; width: 16px; text-align: center; font-size: 18px; line-height: 1; }
     .profile-map li.yes .profile-mark { color: var(--link); }
-    .profile-map li.partial .profile-mark { color: #fbbf24; }
+    .profile-map li.partial .profile-mark { color: var(--profile-partial); }
+    .profile-map li.no .profile-mark { color: var(--profile-no); }
     .profile-map li.no, .profile-map li.unknown { color: var(--muted); }
     .profile-map a { color: inherit; text-decoration: none; overflow-wrap: anywhere; }
     .profile-map a:hover, .profile-map a:focus-visible { color: var(--link); text-decoration: underline; }
+    .profile-note { margin: 14px 0 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .profile-correction { display: inline-block; margin-top: 8px; color: var(--link); font-size: 12px; }
 
     /* ── Custom tooltip ─────────────────────────────────────────────── */
     #col-tip {
@@ -2171,7 +2186,7 @@
     </div>
     <div class="table-scroll"><table id="table-wer"></table></div>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
-      Openness is scored out of five and Features out of four. Each segment represents one field; the blue fill shows the confirmed share. Hover, focus, or tap a score for the field breakdown; select a field name to open its source.
+      Openness is scored out of five and Features out of four. Blue means confirmed, amber partial, rose documented no, and an outline means unknown. Unknown is not a no. Hover, focus, or tap a score for evidence.
     </p>
     <p style="font-size:12px;color:var(--muted);margin-top:10px">
       Note: Many models do not disclose their training data. Some models may have been trained on one or more of the evaluation datasets, in which case their scores are not directly comparable to models that have not.
@@ -2335,7 +2350,7 @@
       </section>
       <section class="compare-section">
         <h3>Openness and features</h3>
-        <p class="compare-profile-intro">Scores count confirmed fields only. The rows below distinguish partial, no and unknown; select a linked decision to see its source.</p>
+        <p class="compare-profile-intro">Scores count confirmed fields only. No means documented absence; unknown means not established. Select a linked decision to see its source.</p>
         <p class="compare-scroll-hint">Swipe sideways to see the full table, if needed.</p>
         <div class="compare-scroll"><table class="compare-summary" id="compare-profile-summary"><thead><tr id="compare-profile-head"><th scope="col">Field</th></tr></thead><tbody id="compare-profile-body"></tbody></table></div>
       </section>
@@ -2773,8 +2788,8 @@ const PROFILE_GROUPS = [
 const PROFILE_STATUS = {
   yes: {mark: '✓', label: 'Confirmed'},
   partial: {mark: '◐', label: 'Partial'},
-  no: {mark: '×', label: 'No'},
-  unknown: {mark: '?', label: 'Unknown'},
+  no: {mark: '×', label: 'Documented no'},
+  unknown: {mark: '?', label: 'Not established'},
 };
 
 const PROFILE_POPOVER = document.getElementById('profile-popover');
@@ -2869,7 +2884,18 @@ function showProfilePopover(trigger, row, group, pin = false) {
     li.append(mark, name);
     list.appendChild(li);
   }
-  PROFILE_POPOVER.append(heading, summary, list);
+  const note = document.createElement('p');
+  note.className = 'profile-note';
+  note.textContent = 'Unknown means we have not verified the claim; it does not mean the model lacks the feature.';
+  const correction = document.createElement('a');
+  correction.className = 'profile-correction';
+  correction.textContent = 'Have evidence? Suggest a correction';
+  const issueTitle = `Model profile correction: ${row.name}`;
+  const issueBody = `Model: ${row.name}\nField and proposed status:\nEvidence URL:\nWhy this applies to this exact model:`;
+  correction.href = `https://github.com/Rye-A1/danish-asr-leaderboard/issues/new?title=${encodeURIComponent(issueTitle)}&body=${encodeURIComponent(issueBody)}`;
+  correction.target = '_blank';
+  correction.rel = 'noopener noreferrer';
+  PROFILE_POPOVER.append(heading, summary, list, note, correction);
   PROFILE_POPOVER.classList.add('show');
 
   const rect = trigger.getBoundingClientRect();
@@ -2917,7 +2943,11 @@ function profileCell(td, row, group) {
   fill.className = 'profile-meter-fill';
   const tiles = document.createElement('span');
   tiles.className = 'profile-meter-tiles';
-  for (const _ of group.fields) tiles.appendChild(document.createElement('span'));
+  for (const [key] of group.fields) {
+    const tile = document.createElement('span');
+    tile.className = PROFILE_STATUS[items[key]?.state] ? items[key].state : 'unknown';
+    tiles.appendChild(tile);
+  }
   meter.append(fill, tiles);
   visual.append(tally, meter);
   button.append(label, visual);

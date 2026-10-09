@@ -173,8 +173,8 @@
     "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
-        "state": "no",
-        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "state": "unknown",
+        "detail": "No cased-and-punctuated output was observed in 26,780 saved transcriptions. The available source does not establish whether an optional formatting mode exists.",
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v2-wav2vec2-1B.parquet"
       }
     }
@@ -206,8 +206,8 @@
     "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
-        "state": "no",
-        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "state": "unknown",
+        "detail": "No cased-and-punctuated output was observed in 26,780 saved transcriptions. The available source does not establish whether an optional formatting mode exists.",
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v2-wav2vec2-2B.parquet"
       }
     }
@@ -239,8 +239,8 @@
     "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
-        "state": "no",
-        "detail": "None of 26,778 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "state": "unknown",
+        "detail": "No cased-and-punctuated output was observed in 26,778 saved transcriptions. The available source does not establish whether an optional formatting mode exists.",
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/CoRal-project__roest-v3-wav2vec2-315m.parquet"
       }
     }
@@ -308,8 +308,8 @@
         "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#usage"
       },
       "streaming": {
-        "state": "no",
-        "detail": "Card describes offline consecutive 30-second windows for long recordings, not incremental transcription as audio arrives.",
+        "state": "unknown",
+        "detail": "Card describes offline consecutive 30-second windows for long recordings, but does not establish whether incremental transcription is impossible for this checkpoint.",
         "url": "https://huggingface.co/danish-foundation-models/edda-v0.1#usage"
       }
     },
@@ -348,8 +348,8 @@
     "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
-        "state": "no",
-        "detail": "None of 26,777 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "state": "unknown",
+        "detail": "No cased-and-punctuated output was observed in 26,777 saved transcriptions. The available source does not establish whether an optional formatting mode exists.",
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/facebook__mms-1b-all.parquet"
       }
     }
@@ -513,8 +513,8 @@
     "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
-        "state": "no",
-        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "state": "unknown",
+        "detail": "No cased-and-punctuated output was observed in 26,780 saved transcriptions. The available source does not establish whether an optional formatting mode exists.",
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/hinge__danstral-v1.parquet"
       }
     }
@@ -546,8 +546,8 @@
     "reviewed_on": "2026-09-27",
     "features": {
       "punctuation_case": {
-        "state": "no",
-        "detail": "None of 26,780 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "state": "unknown",
+        "detail": "No cased-and-punctuated output was observed in 26,780 saved transcriptions. The available source does not establish whether an optional formatting mode exists.",
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/MediaCatch__xls-r-300m-danish-mc-v2.parquet"
       }
     }
@@ -724,8 +724,8 @@
     },
     "features": {
       "punctuation_case": {
-        "state": "no",
-        "detail": "None of 26,524 saved raw transcriptions combines casing and punctuation; the model card documents no alternate formatting option.",
+        "state": "unknown",
+        "detail": "No cased-and-punctuated output was observed in 26,524 saved transcriptions. The available source does not establish whether an optional formatting mode exists.",
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/nvidia__parakeet-rnnt-110m-da-dk.parquet"
       },
       "streaming": {
@@ -1121,8 +1121,8 @@
         "url": "https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard/blob/main/outputs/Qwen__Qwen3-ASR-1__7B.parquet"
       },
       "timestamps": {
-        "state": "no",
-        "detail": "Optional forced aligner lists 11 languages and excludes Danish; no confirmed Danish timestamps.",
+        "state": "unknown",
+        "detail": "The optional forced aligner does not list Danish; timestamp support for this Danish checkpoint remains unverified.",
         "url": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B#released-models-description-and-download"
       },
       "streaming": {

@@ -80,10 +80,11 @@ The separate feature fields are `punctuation_case` (cased and punctuated Danish
 output, either by default or through an option), `timestamps` (word or segment
 output for Danish), `diarization` (speaker labels), and `streaming`
 (incremental output). A formatting `yes` does not require independent controls.
-Mark `no` when the scored output contains no cased, punctuated text and no
-formatting option is documented; use `unknown` if neither output nor documentation
-is available. Saved raw hypotheses are evidence for what the released inference
-path actually returns.
+Mark `no` only when checkpoint-specific documentation explicitly rules out
+formatted output. If the saved output has none and no optional mode is
+documented, use `unknown`: absence from the benchmark does not prove the
+capability absent. Saved raw hypotheses are evidence for what the released
+inference path actually returns.
 For models without a reviewed formatting decision, the Space automatically
 confirms this field when at least 1,000 saved outputs exist and at least 1% (and
 50 clips) contain both casing and punctuation. Missing examples leave the field
