@@ -12,6 +12,8 @@ Scope: the 40 distinct models in `results/*.json` at `origin/main` commit `05cfd
 
 On 2026-10-09, feature decisions based only on an unobserved output or an undocumented optional mode were clarified from `N` to `?`. A provider can supply checkpoint-specific evidence to resolve an unknown. The table below reflects that clarification while retaining the original audit scope.
 
+The table records evidence decisions. In the displayed leaderboard, entries marked `access=proprietary` have all five Openness fields set to `N` and score 0/5 by policy, even where this historical audit records `?`. This is not a claim that every provider resource is absent. Features and unscored reports keep their evidence decisions.
+
 ## All 40 models
 
 | Model and primary source | W | L | D | C | M | Open | F | T | S | R | Feat |

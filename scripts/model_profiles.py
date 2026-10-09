@@ -202,6 +202,17 @@ def build_profile(model: str, model_url: str, metadata: dict, reviews: dict,
             openness["paper"] = report_candidate
     else:
         report_candidate = openness["paper"]
+    if access == "proprietary":
+        # This is a leaderboard scoring policy for hosted/API entries, not a
+        # claim that each provider has explicitly denied every resource.
+        for key in OPENNESS:
+            openness[key] = _candidate(
+                "no",
+                detail=("Hosted/API models receive no openness points by leaderboard "
+                        "policy; this does not establish that this specific resource "
+                        "is absent."),
+            )
+            openness[key]["reviewed"] = True
     return {"openness": openness, "features": features, "report": report_candidate,
             "openness_score": sum(openness[key]["state"] == "yes" for key in OPENNESS),
             "feature_count": sum(features[key]["state"] == "yes" for key in FEATURES)}

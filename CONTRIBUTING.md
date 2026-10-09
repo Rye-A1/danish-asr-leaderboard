@@ -11,9 +11,10 @@ If you can't (or would rather not) run the eval yourself — e.g. it's a model y
 saw and want benchmarked — open an
 [issue](https://github.com/Rye-A1/danish-asr-leaderboard/issues) with the model
 id, backend, and where to find it. If you know the model's openness or feature
-capabilities, include the [profile information](#model-openness-and-feature-profiles)
-and evidence links too. Unknown answers are fine. We'll run it through the
-harness and add it.
+capabilities, include [profile information](#model-openness-and-feature-profiles)
+and evidence links too. Hosted/API entries only need feature evidence because
+their Openness score is fixed at 0/5 by policy. Unknown answers are fine. We'll
+run it through the harness and add it.
 
 ## Submitting a score — *you ran it* (open a PR)
 
@@ -68,12 +69,15 @@ The leaderboard's **Openness** and **Features** columns read
 `scripts/model_profiles.json`. A profile is optional; unreviewed fields display
 as unknown. Hover, focus, or tap a column value to see the status map and source
 links. For a new model or an updated checkpoint/API, provide a status for each
-field below in the issue or PR description. Use `yes`, `partial`, `no`, or
-`unknown`, plus a short explanation and a source URL for each claim that is not
-unknown. Add evidence-backed decisions to `scripts/model_profiles.json` in a
-PR; leave unverified fields as `unknown`. This information helps reviewers but
-does not replace the independent score verification. The five scored openness
-fields are:
+applicable field below in the issue or PR description. Use `yes`, `partial`,
+`no`, or `unknown`, plus a short explanation and a source URL for each claim
+that is not unknown. Add evidence-backed decisions to `scripts/model_profiles.json`
+in a PR; leave unverified fields as `unknown`. This information helps reviewers
+but does not replace the independent score verification. Hosted/API models are
+an exception for Openness: all five fields display `no` and score 0/5 by
+leaderboard policy, regardless of individual provider disclosures. This is a
+scoring rule, not a claim that each resource is absent. Their Features fields
+still use model-specific evidence. The five scored openness fields are:
 
 | Field | What a `yes` means |
 |---|---|
@@ -106,7 +110,8 @@ Link documentation or a reproducible example for the released checkpoint or
 its official inference package. An external aligner or chunking demo is not
 automatically a native model feature. `partial` means only part of the claim is
 supported, `no` means documented absence or restrictive terms, and `unknown`
-means the available sources do not decide it.
+means the available sources do not decide it. The hosted/API Openness policy
+above is the exception to the usual meaning of `no`.
 
 Timestamps, speaker labels, and streaming require evidence from the exact model
 and API path. A provider's general capability or a separate model does not

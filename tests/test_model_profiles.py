@@ -89,7 +89,27 @@ def test_downloadable_weights_count_separately_from_license():
     assert open_model["openness"]["license"]["state"] == "no"
     assert open_model["openness_score"] == 1
     assert api_model["openness"]["weights"]["state"] == "no"
+    assert all(api_model["openness"][key]["state"] == "no" for key in OPENNESS)
     assert api_model["openness_score"] == 0
+
+
+def test_proprietary_openness_policy_overrides_review_without_changing_features():
+    reviews = {"api-model": {
+        "openness": {
+            "data": {"state": "yes", "url": "https://example.org/data"},
+            "model_card": {"state": "yes", "url": "https://example.org/card"},
+        },
+        "report": {"state": "yes", "url": "https://example.org/paper"},
+        "features": {"timestamps": {"state": "yes", "url": "https://example.org/docs"}},
+    }}
+    profile = build_profile("api-model", "https://example.org/docs", {}, reviews,
+                            access="proprietary")
+    assert profile["openness_score"] == 0
+    assert all(profile["openness"][key]["state"] == "no" for key in OPENNESS)
+    assert all("policy" in profile["openness"][key]["detail"] for key in OPENNESS)
+    assert profile["features"]["timestamps"]["state"] == "yes"
+    assert profile["feature_count"] == 1
+    assert profile["report"]["state"] == "yes"
 
 
 def test_review_requires_evidence_for_positive_claim(tmp_path):

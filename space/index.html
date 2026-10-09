@@ -39,7 +39,6 @@
       --muted:   #8892aa;
       --accent:  #22c55e;
       --link:    #60a5fa;
-      --profile-no: #fb7185;
       --profile-partial: #fbbf24;
       --pareto-below: #93c5fd;
       --red:     #c60c30;
@@ -59,7 +58,6 @@
       --text:  #1e293b;
       --muted: #64748b;
       --link:  #2563eb;
-      --profile-no: #be123c;
       --profile-partial: #b45309;
       --pareto-below: #60a5fa;
     }
@@ -341,7 +339,7 @@
     .compare-profile-status .mark { flex: none; width: 15px; color: var(--link); font-size: 16px; font-weight: 700; line-height: 1; text-align: center; }
     .compare-profile-status.partial .mark { color: var(--profile-partial); }
     .compare-profile-status.no, .compare-profile-status.unknown { color: var(--muted); }
-    .compare-profile-status.no .mark { color: var(--profile-no); }
+    .compare-profile-status.no .mark { color: var(--muted); }
     .compare-profile-status.unknown .mark { color: var(--muted); }
     a.compare-profile-status:hover { color: var(--link); text-decoration: underline; }
     a.compare-profile-status:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
@@ -2346,7 +2344,7 @@
       </section>
       <section class="compare-section">
         <h3>Openness and features</h3>
-        <p class="compare-profile-intro">Scores count confirmed fields only. No means documented absence; unknown means not established. Select a linked decision to see its source.</p>
+        <p class="compare-profile-intro">Scores count confirmed fields only. Hosted/API models receive 0/5 Openness by policy. Elsewhere, no means documented absence and unknown means not established. Select a linked decision to see its source.</p>
         <p class="compare-scroll-hint">Swipe sideways to see the full table, if needed.</p>
         <div class="compare-scroll"><table class="compare-summary" id="compare-profile-summary"><thead><tr id="compare-profile-head"><th scope="col">Field</th></tr></thead><tbody id="compare-profile-body"></tbody></table></div>
       </section>
@@ -2568,7 +2566,7 @@
     <p>If you can't run the eval yourself, open a
       <a href="https://github.com/Rye-A1/danish-asr-leaderboard/issues" target="_blank" rel="noopener">GitHub issue</a>
       (or a <a href="https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/discussions" target="_blank" rel="noopener">Space discussion</a>)
-      with the model id, backend, and where to find it. Add links for any openness or feature claims you know; unknowns are fine. We'll run it through the harness and add it.</p>
+      with the model id, backend, and where to find it. Add feature documentation where available, plus openness evidence for open-weight models. Unknowns are fine. We'll run it through the harness and add it.</p>
 
     <h4>Submit a score — you ran it</h4>
     <p>Run the harness on all five test sets, then open a pull request on the
@@ -2586,12 +2584,13 @@
       <code>proprietary</code>. On merge, CI automatically publishes both to the
       <a href="https://huggingface.co/datasets/RyeAI/danish-asr-leaderboard" target="_blank" rel="noopener">HF dataset</a>
       and updates the leaderboard.</p>
-    <p>For a new model or changed checkpoint/API, also describe its <strong>Openness</strong>
+    <p>For a new open model or changed checkpoint, also describe its <strong>Openness</strong>
       (weights, license, training data, training code, model card) and <strong>Features</strong>
       (formatted text, Danish timestamps, speaker labels, live streaming). Mark each
       <em>yes</em>, <em>partial</em>, <em>documented no</em>, or <em>unknown</em>, with a source
       for claims you can verify. For a score-only rerun, say whether the existing
-      profile still applies. See the
+      profile still applies. Hosted/API models receive <strong>0/5 Openness by policy</strong>;
+      their feature evidence is still welcome. See the
       <a href="https://github.com/Rye-A1/danish-asr-leaderboard/blob/main/CONTRIBUTING.md#model-openness-and-feature-profiles" target="_blank" rel="noopener">profile guidelines</a>
       for definitions and evidence requirements.</p>
     <blockquote>
@@ -2796,6 +2795,12 @@ const PROFILE_STATUS = {
   unknown: {mark: '?', label: 'Not established'},
 };
 
+function profileStatusLabel(state, row, group) {
+  if (state === 'no' && row.access === 'proprietary' && group.key === 'openness')
+    return 'No by policy';
+  return PROFILE_STATUS[state].label;
+}
+
 const PROFILE_POPOVER = document.getElementById('profile-popover');
 let profileTrigger = null;
 let profilePinned = false;
@@ -2872,7 +2877,8 @@ function showProfilePopover(trigger, row, group, pin = false) {
     const state = PROFILE_STATUS[item.state] ? item.state : 'unknown';
     const li = document.createElement('li');
     li.className = state;
-    li.setAttribute('aria-label', `${label}: ${PROFILE_STATUS[state].label}`);
+    const statusLabel = profileStatusLabel(state, row, group);
+    li.setAttribute('aria-label', `${label}: ${statusLabel}`);
     const mark = document.createElement('span');
     mark.className = 'profile-mark';
     mark.setAttribute('aria-hidden', 'true');
@@ -2883,14 +2889,16 @@ function showProfilePopover(trigger, row, group, pin = false) {
       name.href = item.url;
       name.target = '_blank';
       name.rel = 'noopener noreferrer';
-      name.setAttribute('aria-label', `${label}: ${PROFILE_STATUS[state].label}. Open source in a new tab.`);
+      name.setAttribute('aria-label', `${label}: ${statusLabel}. Open source in a new tab.`);
     }
     li.append(mark, name);
     list.appendChild(li);
   }
   const note = document.createElement('p');
   note.className = 'profile-note';
-  note.textContent = 'Unknown means we have not verified the claim; it does not mean the model lacks the feature.';
+  note.textContent = row.access === 'proprietary' && group.key === 'openness'
+    ? 'Hosted/API models receive No for all five openness fields by leaderboard policy. This does not claim each resource is individually absent.'
+    : 'Unknown means we have not verified the claim; it does not mean the model lacks the feature.';
   const correction = document.createElement('a');
   correction.className = 'profile-correction';
   correction.textContent = 'Did we miss something? Open an issue on GitHub :)';
@@ -3010,7 +3018,7 @@ const WER_COLS = [
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'openness_score',          label:'Openness',      cls:'c-profile',
-    tip:'Downloadable weights, effective license terms, training data, checkpoint-specific training code, and a substantive model card. Hover or tap for evidence.' },
+    tip:'Downloadable weights, effective license terms, training data, checkpoint-specific training code, and a substantive model card. Hosted/API models score 0/5 by policy. Hover or tap for details.' },
   { key:'feature_count',           label:'Features',      cls:'c-profile',
     tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_wer',  label:'CoRal Conv.',
@@ -3043,7 +3051,7 @@ const CER_COLS = [
   { key:'hf_downloads',           label:'Popularity',
     tip:'Hugging Face download tendency from daily snapshots of its rolling 30-day download count. This is activity context, not a quality score.' },
   { key:'openness_score',          label:'Openness',       cls:'c-profile',
-    tip:'Downloadable weights, effective license terms, training data, checkpoint-specific training code, and a substantive model card. Hover or tap for evidence.' },
+    tip:'Downloadable weights, effective license terms, training data, checkpoint-specific training code, and a substantive model card. Hosted/API models score 0/5 by policy. Hover or tap for details.' },
   { key:'feature_count',           label:'Features',       cls:'c-profile',
     tip:'Cased and punctuated output (default or selectable), Danish timestamps, speaker diarization, and incremental streaming. Hover or tap for evidence.' },
   { key:'coral_conversation_cer',  label:'CoRal Conv.',
@@ -5160,7 +5168,8 @@ function setupCompare(data) {
           td.style.setProperty('--model-color', colors[i]);
           const value = document.createElement(item.url?.startsWith('https://') ? 'a' : 'span');
           value.className = `compare-profile-status ${state}`;
-          const description = `${row.name}: ${label} — ${status.label}. ${item.detail || ''}`.trim();
+          const statusLabel = profileStatusLabel(state, row, group);
+          const description = `${row.name}: ${label} — ${statusLabel}. ${item.detail || ''}`.trim();
           value.setAttribute('aria-label', description);
           value.title = description;
           if (value.tagName === 'A') {
@@ -5172,7 +5181,7 @@ function setupCompare(data) {
           mark.className = 'mark';
           mark.setAttribute('aria-hidden', 'true');
           mark.textContent = status.mark;
-          value.append(mark, status.label);
+          value.append(mark, statusLabel);
           if (value.tagName === 'A') {
             const source = document.createElement('span');
             source.className = 'compare-profile-source';
