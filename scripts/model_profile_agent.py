@@ -185,6 +185,11 @@ def ask_agent(session: requests.Session, key: str, name: str,
              f"\nPublic source documents:\n{documents}"},
         ],
     }
+    if MODEL.startswith("nvidia/nemotron-3-super-"):
+        # This endpoint spent the entire 3,500-token completion budget on
+        # hidden reasoning during the pilot, leaving no review tool call.
+        payload["max_tokens"] = 8000
+        payload["reasoning"] = {"effort": "low"}
     for attempt in range(3):
         response = session.post("https://openrouter.ai/api/v1/chat/completions",
                                 headers={"Authorization": f"Bearer {key}"},

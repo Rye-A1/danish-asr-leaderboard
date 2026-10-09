@@ -13,9 +13,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - id: gemma
-            model: google/gemma-4-26b-a4b-it:free
-            provider: google-ai-studio
           - id: nemotron-super
             model: nvidia/nemotron-3-super-120b-a12b:free
             provider: nvidia
