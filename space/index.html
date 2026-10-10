@@ -695,8 +695,8 @@
       .model-preview { transition: none; transform: none; }
     }
 
-    /* Model identity is a two-line block: name, then size / access / licence.
-       Folding those three out of their own columns buys the measurement columns
+    /* Model identity is a two-line block: name, then size / licence.
+       Folding those out of their own columns buys the measurement columns
        room, and matches how the mobile cards read. */
     .model-meta {
       display: flex;
@@ -707,10 +707,9 @@
       color: var(--muted);
       white-space: nowrap;
     }
-    /* Size, access and licence render as one set of chips. */
+    /* Size and licence render as one set of chips. */
     .model-meta .m-size,
-    .model-meta .m-license,
-    .model-meta .badge {
+    .model-meta .m-license {
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -772,16 +771,29 @@
     }
     .download-spark { grid-area: 1 / 1; width: 100%; height: 22px; color: var(--link); }
 
-    /* Access badge */
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 99px;
-      font-size: 11px;
-      font-weight: 600;
+    /* Openness: one icon per criterion, lit and linked to its evidence when
+       met, dimmed when not. */
+    .c-open { white-space: nowrap; }
+    .open-wrap { display: inline-flex; align-items: center; gap: 3px; }
+    .open-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
     }
-    .badge-open { background: transparent; border: 1px solid var(--border); color: #4ade80; }
-    .badge-prop { background: rgba(148,163,184,.12); color: #94a3b8; }
+    .open-item svg { width: 13px; height: 13px; }
+    a.open-item {
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, transparent);
+    }
+    a.open-item:hover { background: color-mix(in srgb, var(--accent) 28%, transparent); }
+    span.open-item { color: var(--muted); opacity: 0.35; }
+    /* Icon legend appended to the Openness header tooltip. */
+    .open-legend { display: grid; gap: 4px; margin-top: 7px; }
+    .open-legend div { display: flex; align-items: center; gap: 7px; }
+    .open-legend svg { width: 13px; height: 13px; flex: 0 0 auto; color: var(--accent); }
 
     /* ── Custom tooltip ─────────────────────────────────────────────── */
     #col-tip {
@@ -1480,7 +1492,7 @@
       }
       tbody tr:last-child { border-bottom: none; }
       tbody tr:nth-child(even) td { background-color: transparent; }
-      :root[data-theme="light"] tbody tr:nth-child(even) td:is([data-key="#"], [data-key="model"]) {
+      :root[data-theme="light"] tbody tr:nth-child(even) td:is([data-key="#"], [data-key="model"], [data-key="openness_score"]) {
         background-color: transparent;
       }
       tbody tr:hover td { background-image: none; }
@@ -1509,7 +1521,7 @@
         flex: 1 1 0;
         min-width: 0;
       }
-      /* size / access / licence now live inside the model cell, so the card's
+      /* size / licence now live inside the model cell, so the card's
          second line comes for free -- no separate cells to re-order. */
       tbody td[data-key="model"] .model-meta {
         margin-top: 4px;
@@ -1684,6 +1696,25 @@
         font-size: 11px;
         font-weight: 400;
         white-space: nowrap;
+      }
+
+      /* 5 -- openness, always shown below the tiles. It shares order 5 with the
+         per-dataset cells but precedes them in the DOM, so it stays on top
+         when those are expanded. */
+      tbody tr td[data-key="openness_score"] {
+        order: 5;
+        flex: 1 1 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      tbody tr td[data-key="openness_score"]::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
       }
 
       /* 6 -- submission date, hidden until expanded. */
@@ -2441,13 +2472,17 @@
     <h4>Submit a score — you ran it</h4>
     <p>Run the harness on all five test sets, then open a pull request on the
       <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">GitHub repo</a>
-      committing the two outputs the harness writes:</p>
+      committing the two outputs the harness writes, plus a metadata entry:</p>
     <ol>
       <li><code>results/&lt;model-slug&gt;.json</code> — scores and metadata.</li>
       <li><code>outputs/&lt;model-slug&gt;/</code> — the raw per-dataset transcriptions
         (<code>&lt;dataset&gt;.jsonl</code> + <code>meta.json</code>), one
         <code>{"id", "reference", "hypothesis"}</code> per line. Lets reviewers inspect actual
         transcriptions and enables re-scoring under future normalisers.</li>
+      <li>An entry in <code>scripts/model_metadata.json</code>: the release date, plus links to the
+        training code, training data, model card and paper, or
+        <code>null</code> where there is none
+        (criteria in <a href="https://github.com/Rye-A1/danish-asr-leaderboard/blob/main/CONTRIBUTING.md#openness-annotations" target="_blank" rel="noopener">CONTRIBUTING.md</a>).</li>
     </ol>
     <p>Include in the PR description: the exact command you ran, the hardware used (for
       <code>speed_x</code> context), and whether the model is <code>open</code> or
@@ -2649,11 +2684,18 @@ function appendCI(td, ci, fmt) {
   td.appendChild(sm);
 }
 
+const OPENNESS_TIP =
+  'How open the model is. A lit icon means the criterion is met and links to the evidence; '
+  + 'a faded icon means it is not. An open licence permits commercial use and redistribution '
+  + 'without use restrictions.';
+
 const WER_COLS = [
   { key:'#',                      label:'#',             cls:'c-rank',
     tip:'Rank by the selected method (Mean WER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',         cls:'c-model',
     tip:'Hover or focus to preview the model; click to open its page in a new tab.' },
+  { key:'openness_score',          label:'Openness',       cls:'c-open',
+    tip:OPENNESS_TIP },
   { key:'mean_wer',               label:'Mean WER ↓',
     tip:'Word Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_cer',               label:'Mean CER ↓',
@@ -2683,6 +2725,8 @@ const CER_COLS = [
     tip:'Rank by the selected method (Mean CER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',          cls:'c-model',
     tip:'Hover or focus to preview the model; click to open its page in a new tab.' },
+  { key:'openness_score',          label:'Openness',       cls:'c-open',
+    tip:OPENNESS_TIP },
   { key:'mean_cer',               label:'Mean CER ↓',
     tip:'Character Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_wer',               label:'Mean WER ↓',
@@ -2715,7 +2759,9 @@ const LEADERBOARD_CSV_FIELDS = [
   ['model', 'model'], ['model_url', 'url'], ['access', 'access'], ['license', 'license'],
   ['size_b', 'size_b'], ['mean_wer_percent', 'mean_wer'],
   ['mean_cer_percent', 'mean_cer'], ['speed_x', 'speed_x'],
-  ['hf_downloads', 'hf_downloads'],
+  ['hf_downloads', 'hf_downloads'], ['openness_score', 'openness_score'],
+  ...['weights', 'license', 'training_code', 'training_data', 'model_card', 'paper']
+    .map(key => [`openness_${key}_url`, `openness_${key}`]),
   ...['coral_conversation', 'coral_read_aloud', 'ftspeech', 'cv17_da', 'fleurs_da']
     .flatMap(set => [
       [`${set}_wer_percent`, `${set}_wer`],
@@ -2761,6 +2807,8 @@ function makeLeaderboardCsv(data, viewRows, metric, method) {
       rank_score: method === 'mean' ? rankingRow?.[`mean_${metric}`]
         : rankingRow?.[method === 'borda' ? 'borda_score' : 'bt_score'],
       model: name, size_b: Number.isFinite(size) ? size : null,
+      ...Object.fromEntries(Object.entries(model.openness || {})
+        .map(([key, url]) => [`openness_${key}`, url])),
     };
   });
   return makeCsv(LEADERBOARD_CSV_FIELDS, rows);
@@ -2878,6 +2926,37 @@ function downloadCell(td, value, history) {
     maximumFractionDigits: 1,
   }).format(value);
   wrap.append(sparkline, number);
+  td.appendChild(wrap);
+}
+
+/* Icon key for the Openness header tooltip. */
+function opennessLegend() {
+  const legend = document.createElement('div');
+  legend.className = 'open-legend';
+  for (const [, label, icon] of OPENNESS) {
+    const item = document.createElement('div');
+    item.append(icon(), label);
+    legend.appendChild(item);
+  }
+  return legend;
+}
+
+/* Openness cell: one icon per criterion, linked to its evidence when met. */
+function openCell(td, row) {
+  const o = row.openness;
+  if (!o) { td.textContent = '—'; return; }
+  const wrap = document.createElement('span');
+  wrap.className = 'open-wrap';
+  for (const [key, label, icon] of OPENNESS) {
+    const url = o[key];
+    const el = document.createElement(url ? 'a' : 'span');
+    el.className = 'open-item';
+    el.title = (url ? '✓ ' : '✗ ') + label;
+    el.setAttribute('aria-label', (url ? '' : 'No ') + label);
+    if (url) { el.href = url; el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+    el.appendChild(icon());
+    wrap.appendChild(el);
+  }
   td.appendChild(wrap);
 }
 
@@ -3075,9 +3154,9 @@ function buildRow(row, cols, maxVals) {
       a.appendChild(nm);
       td.appendChild(a);
 
-      // Second line: size, access and licence travel with the model identity
-      // instead of taking three columns of their own. The wide table and the
-      // mobile cards now render from this one structure.
+      // Second line: size and licence travel with the model identity instead
+      // of taking columns of their own. The wide table and the mobile cards
+      // now render from this one structure.
       const meta = document.createElement('div');
       meta.className = 'model-meta';
 
@@ -3089,12 +3168,6 @@ function buildRow(row, cols, maxVals) {
       sz.append(ICON_SIZE(), hasSize ? row.size + 'B' : '—');
       sz.title = hasSize ? row.size + ' billion parameters' : 'Parameter count not published';
       meta.appendChild(sz);
-
-      const isOpen = row.access === 'open';
-      const badge = document.createElement('span');
-      badge.className = 'badge ' + (isOpen ? 'badge-open' : 'badge-prop');
-      badge.append(isOpen ? ICON_OPEN() : ICON_CLOSED(), row.access || '—');
-      meta.appendChild(badge);
 
       const lic = document.createElement('span');
       lic.className = 'm-license';
@@ -3116,6 +3189,9 @@ function buildRow(row, cols, maxVals) {
 
     } else if (c.key === 'hf_downloads') {
       downloadCell(td, v, row.hf_download_history);
+
+    } else if (c.key === 'openness_score') {
+      openCell(td, row);
 
     } else if (typeof v === 'number') {
       td.textContent = v.toFixed(2);
@@ -3419,17 +3495,33 @@ function _icon(paths, cls) {
   return svg;
 }
 const ICON_FILTER = () => _icon(['M22 3H2l8 9.46V19l4 2v-8.54L22 3z'], 'ctl-icon');
-const ICON_SIZE = () => _icon(
-  ['M12 3 3 7.5 12 12l9-4.5L12 3z', 'M3 12l9 4.5 9-4.5', 'M3 16.5 12 21l9-4.5'], 'meta-icon');
-const ICON_OPEN = () => _icon(
-  ['M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z',
-   'M8 11V7a4 4 0 0 1 8 0'], 'meta-icon');
-const ICON_CLOSED = () => _icon(
-  ['M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z',
-   'M8 11V7a4 4 0 0 1 8 0v4'], 'meta-icon');
-const ICON_LICENSE = () => _icon(
-  ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', 'M14 2v6h6'], 'meta-icon');
+/* The size and licence chips share their icons with the matching openness
+   criteria (open weights, open licence), so the two read as one vocabulary. */
+const WEIGHTS_PATHS = [
+  'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
+  'M3.3 7 12 12l8.7-5', 'M12 22V12'];
+const LICENSE_PATHS = [
+  'M12 3v18', 'M7 21h10', 'M3 7h18', 'M6 7l-3 7a3 3 0 0 0 6 0z', 'M18 7l-3 7a3 3 0 0 0 6 0z'];
+const ICON_SIZE = () => _icon(WEIGHTS_PATHS, 'meta-icon');
+const ICON_LICENSE = () => _icon(LICENSE_PATHS, 'meta-icon');
 const ICON_SORT   = () => _icon(['M3 6h13', 'M3 12h9', 'M3 18h5'], 'ctl-icon');
+
+/* Openness criteria, in the order update_space.py emits them. */
+const OPENNESS = [
+  ['weights', 'Open weights', () => _icon(WEIGHTS_PATHS, 'open-icon')],
+  ['license', 'Open licence', () => _icon(LICENSE_PATHS, 'open-icon')],
+  ['training_code', 'Open training code', () => _icon(
+    ['m16 18 6-6-6-6', 'm8 6-6 6 6 6'], 'open-icon')],
+  ['training_data', 'Open training data', () => _icon(
+    ['M3 5c0 1.66 4 3 9 3s9-1.34 9-3-4-3-9-3-9 1.34-9 3',
+     'M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5', 'M3 12c0 1.66 4 3 9 3s9-1.34 9-3'], 'open-icon')],
+  ['model_card', 'Model card', () => _icon(
+    ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', 'M14 2v6h6',
+     'M16 13H8', 'M16 17H8'], 'open-icon')],
+  ['paper', 'Paper', () => _icon(
+    ['M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z',
+     'M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z'], 'open-icon')],
+];
 
 /* `dir` is the direction that puts the best model first, applied when the
    field is picked; the arrow button flips it. `always` marks a field that is
@@ -3441,6 +3533,7 @@ const SORT_FIELDS = [
   { key: 'mean_cer',    label: 'Mean CER',  dir:  1 },
   { key: 'speed_x',     label: 'Speed',     dir: -1 },
   { key: 'hf_downloads', label: 'Popularity', dir: -1 },
+  { key: 'openness_score', label: 'Openness', dir: -1 },
   { key: 'size',        label: 'Size',      dir: -1, always: true,
     read: r => parseFloat(r.size) },
   { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt'    },
@@ -4752,7 +4845,8 @@ function setupCompare(data) {
     const tr = document.createElement('tr');
     [label, ...values].forEach((text, i) => {
       const td = document.createElement('td');
-      td.textContent = text;
+      if (text instanceof Node) td.appendChild(text);
+      else td.textContent = text;
       if (i > 0) {
         td.dataset.modelCol = '';
         td.style.setProperty('--model-color', colors[i - 1]);
@@ -4781,6 +4875,11 @@ function setupCompare(data) {
     addSummaryRow('compare-summary-body', 'Weights', rows.map(row =>
       row.access === 'open' ? 'Open' : row.access === 'proprietary' ? 'Proprietary API' : '—'));
     addSummaryRow('compare-summary-body', 'License', rows.map(row => row.license || '—'));
+    addSummaryRow('compare-summary-body', 'Openness', rows.map(row => {
+      const cell = document.createElement('span');
+      openCell(cell, row);
+      return cell;
+    }));
     addSummaryRow('compare-summary-body', 'Submitted', rows.map(row => row.submitted || '—'));
 
     renderHeader('compare-overall-head', rows);
@@ -5338,6 +5437,7 @@ document.addEventListener('mouseover', e => {
   const el = e.target.closest('[data-tip]');
   if (!el) return;
   TIP.textContent = el.dataset.tip;
+  if (el.dataset.key === 'openness_score') TIP.appendChild(opennessLegend());
   TIP.classList.add('show');
   tipActive = true;
 });

@@ -11,7 +11,8 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 from update_space import (
-    RELEASE_DATES,
+    ANNOTATED_OPENNESS_KEYS,
+    MODEL_METADATA,
     SEO_MARKER,
     THUMBNAIL_SIZE,
     _api_docs_url,
@@ -107,6 +108,21 @@ def test_official_size_api_model():
 def test_api_docs_url(name, key_fragment):
     url = _api_docs_url(name)
     assert key_fragment in url
+
+
+# ---------------------------------------------------------------------------
+# Openness annotations
+# ---------------------------------------------------------------------------
+def test_every_result_has_openness_metadata():
+    """Each model needs all four annotated openness fields: an evidence URL or null."""
+    results = Path(__file__).resolve().parent.parent / "results"
+    for f in results.glob("*.json"):
+        name, _ = _parse_model(json.loads(f.read_text(encoding="utf-8"))["model"])
+        entry = MODEL_METADATA.get(name, {})
+        for key in ANNOTATED_OPENNESS_KEYS:
+            assert key in entry, f"{name}: add {key!r} to scripts/model_metadata.json"
+            url = entry[key]
+            assert url is None or url.startswith("https://"), f"{name}: {key} = {url!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -326,7 +342,7 @@ def test_every_release_date_is_empty_or_a_real_iso_date():
     """The Over Time chart plots `released`, so each value must parse as a date.
 
     This used to read the generated space/leaderboard.json, which is no longer
-    tracked. release_dates.json is the hand-maintained source, so a typo'd or
+    tracked. model_metadata.json is the hand-maintained source, so a typo'd or
     half-written date is the regression that actually happens — and it would
     otherwise surface only as a model silently missing from the chart.
 
@@ -334,8 +350,8 @@ def test_every_release_date_is_empty_or_a_real_iso_date():
     repo to read one from is left off the chart and counted in the panel rather
     than given a guessed date.
     """
-    for name, entry in RELEASE_DATES.items():
-        released = entry.get("released", "")
+    for name, entry in MODEL_METADATA.items():
+        released = entry.get("released", {}).get("date", "")
         assert released == "" or re.fullmatch(r"\d{4}-\d{2}-\d{2}", released), (
             f"{name} -> {released!r}")
         if released:

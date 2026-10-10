@@ -1,0 +1,486 @@
+{
+  "3dio-ai/svale-110M": {
+    "released": {
+      "date": "2026-09-09",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/3dio-ai/svale-110M",
+    "model_card": "https://huggingface.co/3dio-ai/svale-110M",
+    "paper": null
+  },
+  "3dio-ai/svale-600M": {
+    "released": {
+      "date": "2026-09-09",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/3dio-ai/svale-600M",
+    "model_card": "https://huggingface.co/3dio-ai/svale-600M",
+    "paper": null
+  },
+  "capacit-ai/saga": {
+    "released": {
+      "date": "2026-03-30",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/CoRal-project/datasets",
+    "model_card": "https://huggingface.co/capacit-ai/saga",
+    "paper": null
+  },
+  "capacit-ai/saga-2-m": {
+    "released": {
+      "date": "2026-09-13",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/capacit-ai/saga-2-m#training-data",
+    "model_card": "https://huggingface.co/capacit-ai/saga-2-m",
+    "paper": null
+  },
+  "CoRal-project/roest-v2-wav2vec2-1B": {
+    "released": {
+      "date": "2025-04-25",
+      "source": "huggingface"
+    },
+    "training_code": "https://github.com/alexandrainst/coral",
+    "training_data": "https://huggingface.co/datasets/CoRal-project/coral-v2",
+    "model_card": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B",
+    "paper": null
+  },
+  "CoRal-project/roest-v2-wav2vec2-2B": {
+    "released": {
+      "date": "2025-06-23",
+      "source": "huggingface"
+    },
+    "training_code": "https://github.com/alexandrainst/coral",
+    "training_data": "https://huggingface.co/datasets/CoRal-project/coral-v2",
+    "model_card": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B",
+    "paper": null
+  },
+  "CoRal-project/roest-v3-wav2vec2-315m": {
+    "released": {
+      "date": "2025-12-22",
+      "source": "huggingface"
+    },
+    "training_code": "https://github.com/alexandrainst/coral",
+    "training_data": "https://huggingface.co/datasets/CoRal-project/coral-v3",
+    "model_card": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m",
+    "paper": null
+  },
+  "CoRal-project/roest-v3-whisper-1.5b": {
+    "released": {
+      "date": "2026-01-11",
+      "source": "huggingface"
+    },
+    "training_code": "https://github.com/alexandrainst/coral",
+    "training_data": "https://huggingface.co/datasets/CoRal-project/coral-v3",
+    "model_card": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b",
+    "paper": null
+  },
+  "danish-foundation-models/edda-v0.1": {
+    "released": {
+      "date": "2026-09-24",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/danish-foundation-models/edda-v0.1#training-data",
+    "model_card": "https://huggingface.co/danish-foundation-models/edda-v0.1",
+    "paper": null
+  },
+  "danish-foundation-models/edda-v0.2": {
+    "released": {
+      "date": "2026-10-02",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/danish-foundation-models/edda-v0.2#training-data",
+    "model_card": "https://huggingface.co/danish-foundation-models/edda-v0.2",
+    "paper": null
+  },
+  "facebook/mms-1b-all": {
+    "released": {
+      "date": "2023-05-27",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/facebook/mms-1b-all",
+    "paper": "https://arxiv.org/abs/2305.13516"
+  },
+  "facebook/seamless-m4t-v2-large": {
+    "released": {
+      "date": "2023-11-29",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/facebook/seamless-m4t-v2-large",
+    "paper": "https://arxiv.org/abs/2312.05187"
+  },
+  "gpt-4o-mini-transcribe": {
+    "released": {
+      "date": "2025-03-20",
+      "source": "published",
+      "note": "https://openai.com/index/introducing-our-next-generation-audio-models/",
+      "plot_by": "submitted"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://openai.com/index/introducing-our-next-generation-audio-models/",
+    "paper": null
+  },
+  "gpt-4o-mini-transcribe-benchmark": {
+    "released": {
+      "date": "2025-03-20",
+      "source": "published",
+      "note": "https://openai.com/index/introducing-our-next-generation-audio-models/"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://openai.com/index/introducing-our-next-generation-audio-models/",
+    "paper": null
+  },
+  "gpt-4o-transcribe": {
+    "released": {
+      "date": "2025-03-20",
+      "source": "published",
+      "note": "https://openai.com/index/introducing-our-next-generation-audio-models/",
+      "plot_by": "submitted"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://openai.com/index/introducing-our-next-generation-audio-models/",
+    "paper": null
+  },
+  "gpt-4o-transcribe-benchmark": {
+    "released": {
+      "date": "2025-03-20",
+      "source": "published",
+      "note": "https://openai.com/index/introducing-our-next-generation-audio-models/"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://openai.com/index/introducing-our-next-generation-audio-models/",
+    "paper": null
+  },
+  "gpt-transcribe": {
+    "released": {
+      "date": "2026-07-29",
+      "source": "published",
+      "note": "Announcement date; OpenAI publishes no release date. https://community.openai.com/t/gpt-live-transcribe-and-gpt-transcribe-two-new-transcription-models-in-the-api/1388318",
+      "plot_by": "submitted"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://developers.openai.com/api/docs/models/gpt-transcribe",
+    "paper": null
+  },
+  "hinge/danstral-v1": {
+    "released": {
+      "date": "2025-09-19",
+      "source": "huggingface"
+    },
+    "training_code": "https://github.com/ChristianHinge/danstral",
+    "training_data": "https://huggingface.co/datasets/CoRal-project/coral",
+    "model_card": "https://huggingface.co/hinge/danstral-v1",
+    "paper": null
+  },
+  "MediaCatch/xls-r-300m-danish-mc-v2": {
+    "released": {
+      "date": "2025-09-29",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": null,
+    "paper": null
+  },
+  "microsoft/VibeVoice-ASR-HF": {
+    "released": {
+      "date": "2026-03-02",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/microsoft/VibeVoice-ASR-HF",
+    "paper": "https://arxiv.org/abs/2601.18184"
+  },
+  "mistralai/Voxtral-Mini-3B-2507": {
+    "released": {
+      "date": "2025-07-01",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/mistralai/Voxtral-Mini-3B-2507",
+    "paper": "https://arxiv.org/abs/2507.13264"
+  },
+  "mistralai/Voxtral-Small-24B-2507": {
+    "released": {
+      "date": "2025-07-01",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/mistralai/Voxtral-Small-24B-2507",
+    "paper": "https://arxiv.org/abs/2507.13264"
+  },
+  "nvidia/canary-1b-v2": {
+    "released": {
+      "date": "2025-08-04",
+      "source": "huggingface"
+    },
+    "training_code": "https://github.com/NVIDIA/NeMo/blob/main/examples/asr/speech_multitask/speech_to_text_aed.py",
+    "training_data": null,
+    "model_card": "https://huggingface.co/nvidia/canary-1b-v2",
+    "paper": "https://arxiv.org/abs/2509.14128"
+  },
+  "nvidia/parakeet-rnnt-110m-da-dk": {
+    "released": {
+      "date": "2025-05-28",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk#training-datasets",
+    "model_card": "https://huggingface.co/nvidia/parakeet-rnnt-110m-da-dk",
+    "paper": null
+  },
+  "nvidia/parakeet-tdt-0.6b-v3": {
+    "released": {
+      "date": "2025-08-04",
+      "source": "huggingface"
+    },
+    "training_code": "https://github.com/NVIDIA/NeMo/blob/main/examples/asr/asr_transducer/speech_to_text_rnnt_bpe.py",
+    "training_data": null,
+    "model_card": "https://huggingface.co/nvidia/parakeet-tdt-0.6b-v3",
+    "paper": "https://arxiv.org/abs/2509.14128"
+  },
+  "openai/whisper-base": {
+    "released": {
+      "date": "2022-09-26",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/openai/whisper-base",
+    "paper": "https://arxiv.org/abs/2212.04356"
+  },
+  "openai/whisper-large-v3": {
+    "released": {
+      "date": "2023-11-07",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/openai/whisper-large-v3",
+    "paper": "https://arxiv.org/abs/2212.04356"
+  },
+  "openai/whisper-large-v3-turbo": {
+    "released": {
+      "date": "2024-10-01",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/openai/whisper-large-v3-turbo",
+    "paper": "https://arxiv.org/abs/2212.04356"
+  },
+  "openai/whisper-small": {
+    "released": {
+      "date": "2022-09-26",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/openai/whisper-small",
+    "paper": "https://arxiv.org/abs/2212.04356"
+  },
+  "openai/whisper-tiny": {
+    "released": {
+      "date": "2022-09-26",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/openai/whisper-tiny",
+    "paper": "https://arxiv.org/abs/2212.04356"
+  },
+  "ordbogen/whisper": {
+    "released": {
+      "date": "2026-04-28",
+      "source": "best guess",
+      "note": "No release date published by Ordbogen/odincore.ai and no public HF repo. Best guess: dated to syvai/hviske-v5.3 (2026-04-28) as a recency proxy."
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": null,
+    "paper": null
+  },
+  "pluttodk/milo-asr": {
+    "released": {
+      "date": "2026-02-09",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/pluttodk/milo-asr",
+    "paper": null
+  },
+  "Qwen/Qwen3-ASR-1.7B": {
+    "released": {
+      "date": "2026-01-28",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
+    "paper": "https://arxiv.org/abs/2601.21337"
+  },
+  "RyeAI/ekko-v1-tiny": {
+    "released": {
+      "date": "2026-10-09",
+      "source": "leaderboard",
+      "note": "First public leaderboard entry; the Hub repository existed privately before release."
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/RyeAI/ekko-v1-tiny",
+    "paper": null
+  },
+  "saga-2-l": {
+    "released": {
+      "date": "2026-09-29",
+      "source": "best guess",
+      "note": "Provisional date supplied for this hosted model; provider website: https://capacit.com"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": null,
+    "paper": null
+  },
+  "scribe_v2": {
+    "released": {
+      "date": "2026-01-09",
+      "source": "published",
+      "note": "https://elevenlabs.io/blog/introducing-scribe-v2"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://elevenlabs.io/blog/introducing-scribe-v2",
+    "paper": null
+  },
+  "syv-transcribe": {
+    "released": {
+      "date": "2026-06-24",
+      "source": "confirmed",
+      "note": "The service launched on 2026-06-24. The Over Time chart plots each evaluated score on its submission date.",
+      "plot_by": "submitted"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": null,
+    "paper": null
+  },
+  "syvai/hviske-v3-conversation": {
+    "released": {
+      "date": "2025-07-01",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/syvai/hviske-v3-conversation",
+    "paper": null
+  },
+  "syvai/hviske-v5": {
+    "released": {
+      "date": "2026-04-11",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/datasets/syvai/danish-asr-unified",
+    "model_card": "https://huggingface.co/syvai/hviske-v5",
+    "paper": null
+  },
+  "syvai/hviske-v5-tiny": {
+    "released": {
+      "date": "2026-08-11",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/syvai/hviske-v5-tiny",
+    "paper": null
+  },
+  "syvai/hviske-v5.1": {
+    "released": {
+      "date": "2026-04-23",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/datasets/syvai/danish-asr-unified",
+    "model_card": "https://huggingface.co/syvai/hviske-v5.1",
+    "paper": null
+  },
+  "syvai/hviske-v5.3": {
+    "released": {
+      "date": "2026-04-28",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/datasets/CoRal-project/coral-v3",
+    "model_card": "https://huggingface.co/syvai/hviske-v5.3",
+    "paper": null
+  },
+  "syvai/hviske-v6": {
+    "released": {
+      "date": "2026-09-22",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/datasets/syvai/danish-asr-unified",
+    "model_card": "https://huggingface.co/syvai/hviske-v6",
+    "paper": null
+  },
+  "thorhojhus/whisper-large-v3-turbo-danish": {
+    "released": {
+      "date": "2026-09-06",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/thorhojhus/whisper-large-v3-turbo-danish",
+    "paper": null
+  },
+  "thorhojhus/whisper-small-danish": {
+    "released": {
+      "date": "2026-09-14",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/thorhojhus/whisper-small-danish",
+    "paper": null
+  },
+  "nvidia/nemotron-3.5-asr-streaming-0.6b": {
+    "released": {
+      "date": "2026-05-15",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b",
+    "paper": null
+  },
+  "Harmonium/brage-v1": {
+    "released": {
+      "date": "2026-10-05",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/Harmonium/brage-v1#training-data",
+    "model_card": "https://huggingface.co/Harmonium/brage-v1",
+    "paper": null
+  }
+}
