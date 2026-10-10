@@ -47,3 +47,12 @@ same pinned model-card URLs and current public dataset-card URLs; it did not
 call the language model again. The incorrect Edda timestamp `no` still fails
 the explicit-negative-evidence guard and stays `unknown`. Agreement on these
 two selected models does not establish accuracy across the other 42 models.
+
+**Another live repeat: 15/16 before, 16/16 after an offline recheck.** The
+new model response again suggested Ekko's model card as `yes`, but used a
+standalone `...` line to mark omitted card text. The validator initially
+rejected that stitched quote. It now treats only standalone ellipsis lines as
+omission markers and still verifies every substantive line against the pinned
+card in source order. Revalidating this saved response against the public
+sources yields 16/16. Edda's unsupported timestamp `no` is still rejected;
+one unmatched ancillary dataset-card quote is discarded with a review warning.

@@ -222,7 +222,7 @@ def test_stitched_long_quote_is_split_only_when_every_prose_line_matches():
             "## Limitations\nNoisy overlapping speech was not evaluated.")
     quote = ("# Exact checkpoint\n\nThis model recognizes Danish speech.\n\n"
              "| corpus | rows |\n|:---|---:|\n| Public set | 100 |\n\n"
-             "# ...\n## Limitations\nNoisy overlapping speech was not evaluated."
+             "# ...\n...\n## Limitations\nNoisy overlapping speech was not evaluated."
              + " " * 301)
     sources = [{"id": "S1", "kind": "model_card", "text": card}]
     raw = {"fields": {"model_card": {"state": "yes", "evidence": [

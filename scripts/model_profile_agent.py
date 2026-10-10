@@ -404,7 +404,7 @@ def _verified_quote_spans(source_text: str, claim: dict) -> list[str]:
     spans = []
     for line in quote.splitlines():
         line = line.strip()
-        if not line or line == "# ..." or re.fullmatch(r"[|:\-\s]+", line):
+        if not line or line in {"# ...", "...", "…"} or re.fullmatch(r"[|:\-\s]+", line):
             continue
         pattern = r"\s+".join(re.escape(part) for part in line.split())
         match = re.search(pattern, source_text[cursor:])
