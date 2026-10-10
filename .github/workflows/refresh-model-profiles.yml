@@ -1,0 +1,115 @@
+name: Refresh model profile evidence
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'results/**'
+      - 'scripts/model_profiles.json'
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+    inputs:
+      model:
+        description: 'Optional exact model ID for a one-model pilot'
+        required: false
+        type: string
+      reviewer_model:
+        description: 'Optional OpenRouter model for the pilot'
+        required: false
+        type: string
+      reviewer_provider:
+        description: 'Optional OpenRouter provider slug for the pilot'
+        required: false
+        type: string
+      pilot_only:
+        description: 'Upload draft as an artifact without opening a review PR'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install requests
+      - name: Collect public evidence leads
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          TARGET_MODEL: ${{ inputs.model }}
+        run: |
+          if [ -n "$TARGET_MODEL" ]; then
+            python scripts/refresh_model_profile_candidates.py --model "$TARGET_MODEL"
+          elif [ "$EVENT_NAME" = "schedule" ] || [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            python scripts/refresh_model_profile_candidates.py --all
+          else
+            python scripts/refresh_model_profile_candidates.py
+      - name: Check optional reviewer key
+        if: github.ref == 'refs/heads/main'
+        id: reviewer_key
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ -n "$OPENROUTER_API_KEY" ]; then
+            echo 'available=true' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Draft source-quoted profile reviews
+        if: github.ref == 'refs/heads/main' && steps.reviewer_key.outputs.available == 'true'
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ inputs.reviewer_model }}
+          OPENROUTER_PROVIDER: ${{ inputs.reviewer_provider }}
+          PROFILE_AGENT_MODEL_ID: ${{ inputs.model }}
+        run: python scripts/model_profile_agent.py
+      - name: Compare draft with reviewed profiles
+        if: github.ref == 'refs/heads/main' && steps.reviewer_key.outputs.available == 'true'
+        run: python scripts/compare_model_profile_agent.py > model-profile-agent-comparison.md
+      - name: Preserve review draft
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-profile-review-draft
+          path: |
+            scripts/model_profile_candidates.json
+            scripts/model_profile_agent_suggestions.json
+            model-profile-agent-comparison.md
+          if-no-files-found: ignore
+      - name: Summarize source review
+        if: always()
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          leads = json.loads(Path('scripts/model_profile_candidates.json').read_text())
+          draft_path = Path('scripts/model_profile_agent_suggestions.json')
+          drafts = json.loads(draft_path.read_text()) if draft_path.exists() else {}
+          print(f'### Model profile evidence: {len(leads)} source check(s), {len(drafts)} review draft(s)')
+          for name in leads:
+              print(f'- `{name}`: {"draft available" if name in drafts else "manual review needed"}')
+          comparison = Path('model-profile-agent-comparison.md')
+          if comparison.exists():
+              print('\n' + comparison.read_text())
+          print('\nReview drafts never change leaderboard metadata automatically.')
+          PY
+      - name: Propose review of new or changed sources
+        if: inputs.pilot_only != true
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: codex/refresh-model-profile-candidates
+          delete-branch: true
+          commit-message: 'Refresh model profile evidence leads'
+          title: 'Review new or changed model profile evidence'
+          body: |
+            Automated source discovery for the Openness and Features columns.
+            Candidate evidence and optional agent suggestions are not used to award points. Confirm checkpoint-specific evidence and source terms before updating `scripts/model_profiles.json`.
+          add-paths: |
+            scripts/model_profile_candidates.json
+            scripts/model_profile_agent_suggestions.json

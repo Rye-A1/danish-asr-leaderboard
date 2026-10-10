@@ -10,7 +10,11 @@ run the evaluation yourself.
 If you can't (or would rather not) run the eval yourself — e.g. it's a model you
 saw and want benchmarked — open an
 [issue](https://github.com/Rye-A1/danish-asr-leaderboard/issues) with the model
-id, backend, and where to find it. We'll run it through the harness and add it.
+id, backend, and where to find it. If you know the model's openness or feature
+capabilities, include [profile information](#model-openness-and-feature-profiles)
+and evidence links too. Hosted/API entries only need feature evidence because
+their Openness score is fixed at 0/5 by policy. Unknown answers are fine. We'll
+run it through the harness and add it.
 
 ## Submitting a score — *you ran it* (open a PR)
 
@@ -46,7 +50,10 @@ id, backend, and where to find it. We'll run it through the harness and add it.
    automatically — no manual `push_results.py` / `push_outputs.py` step needed.
 
 Please include in the PR description: the exact command you ran, the hardware
-(for context on `speed_x`), and whether the model is `open` or `proprietary`.
+(for context on `speed_x`), whether the model is `open` or `proprietary`, and
+the [profile information](#model-openness-and-feature-profiles) for a new model
+or changed checkpoint/API. For a score-only rerun of the same model, say whether
+its profile remains accurate.
 
 For results to be comparable, do **not** modify the normalisation or metrics —
 run the harness as-is.
@@ -55,6 +62,122 @@ run the harness as-is.
 > ourselves before publishing, to confirm the scores reproduce on our hardware
 > and catch any configuration differences. Submitting the raw `outputs/` lets us
 > diff transcriptions directly.
+
+## Model openness and feature profiles
+
+The leaderboard's **Openness** and **Features** columns read
+`scripts/model_profiles.json`. A profile is optional; unreviewed fields display
+as unknown. Hover, focus, or tap a column value to see the status map and source
+links. For a new model or an updated checkpoint/API, provide a status for each
+applicable field below in the issue or PR description. Use `yes`, `partial`,
+`no`, or `unknown`, plus a short explanation and a source URL for each claim
+that is not unknown. Add evidence-backed decisions to `scripts/model_profiles.json`
+in a PR; leave unverified fields as `unknown`. This information helps reviewers
+but does not replace the independent score verification. Hosted/API models are
+an exception for Openness: all five fields display `no` and score 0/5 by
+leaderboard policy, regardless of individual provider disclosures. This is a
+scoring rule, not a claim that each resource is absent. Their Features fields
+still use model-specific evidence. The five scored openness fields are:
+
+| Field | What a `yes` means |
+|---|---|
+| `weights` | The current model weights can be downloaded. This is filled from the benchmark's reviewed `access=open` flag and the model repository link. |
+| `license` | The checkpoint and its base permit commercial use and redistribution without individual permission. Published responsible-use conditions do not by themselves prevent `yes`; noncommercial terms do. This is a leaderboard license factor, not an OSI certification. |
+| `data` | The full training mix for this checkpoint is identified and consists of publicly obtainable datasets. A standard sign-in or acceptance of published access terms, as for CoRal, does not prevent `yes`; authors need not redistribute an ordinary filtered copy. A generated pseudo-labeled, synthetic, or teacher-labeled corpus needs a direct link to that resulting corpus for `yes`; linking only its source audio or teacher model is insufficient. An unlinked component makes the answer at most `partial`, or `no` if no training component is obtainable. For a fine-tune, assess the data newly used for that checkpoint. |
+| `code` | Public training and preprocessing scripts, configuration, and settings reproduce the released checkpoint, not merely generic fine-tuning or inference. |
+| `model_card` | The checkpoint card substantively covers lineage, intended use, training data and method, evaluation, and limitations. |
+
+Papers and technical reports appear as unscored citations only after their
+connection to the exact checkpoint is confirmed. A base model's paper does not
+count for a fine-tune, even when its Hub metadata repeats the citation.
+
+The separate feature fields are `punctuation_case` (cased and punctuated Danish
+output, either by default or through an option), `timestamps` (word or segment
+output for Danish), `diarization` (speaker labels), and `streaming`
+(incremental output). A formatting `yes` does not require independent controls.
+Include the exact model version and any API option needed to enable a feature.
+Mark `no` only when checkpoint-specific documentation explicitly rules out
+formatted output. If the saved output has none and no optional mode is
+documented, use `unknown`: absence from the benchmark does not prove the
+capability absent. Saved raw hypotheses are evidence for what the released
+inference path actually returns.
+For models without a reviewed formatting decision, the Space automatically
+confirms this field when at least 1,000 saved outputs exist and at least 1% (and
+50 clips) contain both casing and punctuation. Missing examples leave the field
+unknown; they do not prove the feature absent. A reviewed decision takes
+precedence over this signal.
+Link documentation or a reproducible example for the released checkpoint or
+its official inference package. An external aligner or chunking demo is not
+automatically a native model feature. `partial` means only part of the claim is
+supported, `no` means documented absence or restrictive terms, and `unknown`
+means the available sources do not decide it. The hosted/API Openness policy
+above is the exception to the usual meaning of `no`.
+
+Timestamps, speaker labels, and streaming require evidence from the exact model
+and API path. A provider's general capability or a separate model does not
+establish support. For hosted models, a structured response or live-audio probe
+can confirm these fields; the text-only benchmark outputs cannot. For an API
+model, link its official model-specific API specification in
+`scripts/provider_profile_sources.json` so the weekly source review can read it.
+For a new provider domain, a maintainer must also add that official host to
+the agent's source allowlist.
+
+| Feature | Where to verify it |
+|---|---|
+| `punctuation_case` | Exact checkpoint card or official output examples; saved raw transcripts can positively confirm cased, punctuated output. |
+| `timestamps` | Model-specific request option and word/segment timestamp fields in the response; verify Danish and the scored model are supported. |
+| `diarization` | Speaker IDs in this model's response schema or a checkpoint-specific example. A separate diarization model does not count. |
+| `streaming` | A documented path that accepts live audio incrementally and emits interim text from this model. Streaming text after a completed file upload is only `partial`. |
+
+For streaming, a completed-file API that sends partial text is `partial`; a
+documented path that accepts ongoing audio and emits interim results is `yes`.
+
+Each reviewed model may set `reviewed_source` and `reviewed_on` in
+`model_profiles.json`. Missing fields then appear as reviewed `unknown` with a
+link to the source instead of implying that nobody checked them. This does not
+add a positive tile or infer unsupported features from a base model.
+
+Hub license tags are review leads, not automatic positive license claims: a
+model card, attached terms, or base license can narrow them. A non-commercial
+tag is marked `no`; a commercial license with documented redistribution remains
+`yes` despite responsible-use conditions, while unresolved effective terms are
+`partial` or `unknown`. Dataset and arXiv tags are also leads, not proof that all data
+is open or the paper covers this checkpoint. Manual decisions in
+`model_profiles.json` override these hints. Example:
+
+```json
+{
+  "example/asr": {
+    "openness": {
+      "code": {
+        "state": "yes",
+        "url": "https://github.com/example/asr",
+        "detail": "Training recipe and scripts"
+      }
+    },
+    "features": {
+      "timestamps": {
+        "state": "yes",
+        "url": "https://example.org/asr/timestamps"
+      }
+    }
+  }
+}
+```
+
+`scripts/refresh_model_profile_candidates.py` gathers Hugging Face model
+metadata and card links for newly submitted models and sources changed since
+their last review. The pre-merge PR check gathers leads for changed result
+files without a credential; it does not run PR code with the OpenRouter key.
+The weekly main-branch workflow checks all current models and drafts quoted
+suggestions from public model cards or the official provider documentation in
+`scripts/provider_profile_sources.json`. A scheduled workflow opens a PR with
+the review queue when repository Actions are allowed to create PRs. This is not a scoring
+input: apparent open licenses, dataset tags, card headings, paper links, and
+training-script links still need checkpoint-specific confirmation. The deployed leaderboard
+shows safe automatic facts and unknowns immediately; the review file supplies
+evidence-backed decisions when confirmed. Run the collector locally with
+`python scripts/refresh_model_profile_candidates.py`.
 
 ## Adding a backend
 

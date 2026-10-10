@@ -37,6 +37,7 @@ data/
 
 # AppMap instrumentation 
 appmap.yml
+space/local-preview.html
 uv.lock
 
 # Env

@@ -9,6 +9,8 @@ on:
       - 'results/**'
       - 'outputs/**'
       - 'scripts/update_space.py'
+      - 'scripts/model_profiles.py'
+      - 'scripts/model_profiles.json'
       - 'history/hf_downloads.json'
       - 'dataset_card.md'
       - 'assets/fonts/**'
