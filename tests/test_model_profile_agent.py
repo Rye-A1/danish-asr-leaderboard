@@ -216,6 +216,45 @@ def test_whitespace_only_quote_variation_resolves_to_exact_source_span():
     assert field["evidence"][0]["quote"] == sources[0]["text"]
 
 
+def test_stitched_long_quote_is_split_only_when_every_prose_line_matches():
+    card = ("# Exact checkpoint\n\nThis model recognizes Danish speech.\n\n"
+            "| corpus | rows |\n|---|---|\n| Public set | 100 |\n\n"
+            "## Limitations\nNoisy overlapping speech was not evaluated.")
+    quote = ("# Exact checkpoint\n\nThis model recognizes Danish speech.\n\n"
+             "| corpus | rows |\n|:---|---:|\n| Public set | 100 |\n\n"
+             "# ...\n## Limitations\nNoisy overlapping speech was not evaluated."
+             + " " * 301)
+    sources = [{"id": "S1", "kind": "model_card", "text": card}]
+    raw = {"fields": {"model_card": {"state": "yes", "evidence": [
+        {"source_id": "S1", "quote": quote}], "explanation": "Complete card."}}}
+    field = validate_suggestions(raw, sources)["model_card"]
+    assert field["state"] == "yes"
+    assert len(field["evidence"]) > 1
+    assert all(quote["quote"] in card for quote in field["evidence"])
+
+    raw["fields"]["model_card"]["evidence"][0]["quote"] = quote.replace(
+        "This model recognizes Danish speech.", "This model recognizes every language.")
+    assert validate_suggestions(raw, sources)["model_card"]["state"] == "unknown"
+
+
+def test_training_mix_anchor_can_survive_bad_ancillary_dataset_license_quote():
+    sources = [
+        {"id": "S1", "kind": "model_card", "text":
+         "Six public corpora, training splits only: Foo/bar train and Baz/qux train."},
+        {"id": "S2", "kind": "dataset_card", "text": "license: other"},
+    ]
+    raw = {"fields": {"data": {"state": "yes", "evidence": [
+        {"source_id": "S1", "quote": sources[0]["text"]},
+        {"source_id": "S2", "quote": "license: cc-by-4.0"},
+        {"source_id": "S2", "quote": ""}], "explanation": "Complete public mix."}}}
+    field = validate_suggestions(raw, sources)["data"]
+    assert field["state"] == "yes"
+    assert field["evidence"] == [{"source_id": "S1", "quote": sources[0]["text"]}]
+    assert "validation_warning" in field
+    raw["fields"]["data"]["evidence"][0]["quote"] = "Six private corpora"
+    assert validate_suggestions(raw, sources)["data"]["state"] == "unknown"
+
+
 def test_training_format_does_not_prove_timestamps_are_unsupported():
     sources = [{"id": "S1", "kind": "model_card", "url": "https://example.org/card",
                 "text": "Trained on <|notimestamps|> text."}]

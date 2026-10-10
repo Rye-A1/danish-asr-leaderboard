@@ -385,6 +385,43 @@ def _verified_quote(source_text: str, claim: dict) -> str | None:
     return match.group(0) if match else None
 
 
+def _verified_quote_spans(source_text: str, claim: dict) -> list[str]:
+    """Split an overlong stitched excerpt into exact, ordered source lines.
+
+    Every substantive line must be present. Markdown table rules and an explicit
+    omission marker carry no evidence; they may differ without inventing prose.
+    The returned quotes are individual source spans, never the stitched input.
+    """
+    exact = _verified_quote(source_text, claim)
+    if exact is not None:
+        return [exact]
+    quote = claim.get("quote")
+    if not isinstance(quote, str) or len(quote) < 300 or "\n" not in quote:
+        return []
+    if "[... middle of model card omitted ...]" in quote:
+        return []
+    cursor = 0
+    spans = []
+    for line in quote.splitlines():
+        line = line.strip()
+        if not line or line == "# ..." or re.fullmatch(r"[|:\-\s]+", line):
+            continue
+        pattern = r"\s+".join(re.escape(part) for part in line.split())
+        match = re.search(pattern, source_text[cursor:])
+        if match is None:
+            return []
+        spans.append(source_text[cursor + match.start():cursor + match.end()])
+        cursor += match.end()
+    return spans if len(spans) >= 2 else []
+
+
+def _sample_spans(spans: list[str], limit: int = 12) -> list[str]:
+    if len(spans) <= limit:
+        return spans
+    return [spans[round(i * (len(spans) - 1) / (limit - 1))]
+            for i in range(limit)]
+
+
 def validate_suggestions(raw: dict, sources: list[dict]) -> dict:
     """Reject fabricated or unsupported quotes; suggestions still need review."""
     by_id = {s["id"]: s for s in sources}
@@ -400,6 +437,7 @@ def validate_suggestions(raw: dict, sources: list[dict]) -> dict:
         evidence = item.get("evidence", [])
         explanation = str(item.get("explanation", ""))[:600]
         verified = []
+        invalid = []
         valid = isinstance(evidence, list)
         if valid:
             for claim in evidence:
@@ -408,11 +446,25 @@ def validate_suggestions(raw: dict, sources: list[dict]) -> dict:
                         or claim["source_id"] not in by_id):
                     valid = False
                     break
-                quote = _verified_quote(by_id[claim["source_id"]]["text"], claim)
-                if quote is None:
-                    valid = False
-                    break
-                verified.append({"source_id": claim["source_id"], "quote": quote})
+                source = by_id[claim["source_id"]]
+                spans = _verified_quote_spans(source["text"], claim)
+                if not spans:
+                    invalid.append(source["kind"])
+                    continue
+                verified.extend({"source_id": claim["source_id"], "quote": quote}
+                                for quote in _sample_spans(spans))
+        # Dataset-card license snippets are ancillary to a checkpoint card's
+        # explicit complete-public-corpora table. Discard bad snippets, but keep
+        # the draft visibly flagged for human review. All other bad claims
+        # still invalidate the field, particularly effective license terms.
+        data_anchor = (key == "data" and state == "yes"
+                       and any(by_id[claim["source_id"]]["kind"] == "model_card"
+                               and re.search(r"\bpublic\b", claim["quote"], re.I)
+                               and re.search(r"\btrain", claim["quote"], re.I)
+                               and "/" in claim["quote"]
+                               for claim in verified))
+        ancillary_only = bool(invalid) and all(kind == "dataset_card" for kind in invalid)
+        valid = valid and (not invalid or (data_anchor and ancillary_only))
         explicit_capability_no = (
             key not in EXPLICIT_CAPABILITY_NO
             or state != "no"
@@ -420,7 +472,7 @@ def validate_suggestions(raw: dict, sources: list[dict]) -> dict:
                    for claim in verified))
         if (state not in STATES or not valid
                 or not explicit_capability_no
-                or (state != "unknown" and not evidence)):
+                or (state != "unknown" and not verified)):
             checked[key] = {"state": "unknown", "evidence": [],
                             "explanation": "Agent claim lacked an exact quote in a fetched source; review manually."}
         elif state == "unknown":
@@ -430,8 +482,12 @@ def validate_suggestions(raw: dict, sources: list[dict]) -> dict:
             checked[key] = {"state": state,
                             "evidence": [{"source_id": claim["source_id"],
                                           "quote": claim["quote"][:1000]}
-                                         for claim in verified[:6]],
+                                         for claim in verified[:12]],
                             "explanation": explanation}
+            if invalid:
+                checked[key]["validation_warning"] = (
+                    f"Discarded {len(invalid)} unmatched ancillary dataset-card "
+                    "quote(s); inspect every linked dataset before accepting this draft.")
     return checked
 
 

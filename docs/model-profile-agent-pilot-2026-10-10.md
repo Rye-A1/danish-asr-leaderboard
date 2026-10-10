@@ -34,3 +34,16 @@ The change from 15/16 to 14/16 on the same two models shows run-to-run
 variability despite temperature zero. These small, selected pilots test the
 workflow and guards, not general reviewer accuracy. Gated cards still need
 manual review, and no agent draft is applied to leaderboard scores.
+
+**Offline recheck of that saved final response: 16/16.** We improved the
+validator to split an oversized stitched excerpt into individual, exact,
+source-ordered lines. Every substantive line must match the fetched card; a
+fabricated line still invalidates the field. For training-data reviews, an
+explicit complete-public-corpora statement in the checkpoint card can remain
+as evidence when the agent also supplies unmatched ancillary dataset-card
+license snippets. Those snippets are discarded and the draft receives a
+visible warning to inspect every linked dataset. The recheck fetched the
+same pinned model-card URLs and current public dataset-card URLs; it did not
+call the language model again. The incorrect Edda timestamp `no` still fails
+the explicit-negative-evidence guard and stays `unknown`. Agreement on these
+two selected models does not establish accuracy across the other 42 models.
