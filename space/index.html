@@ -39,8 +39,14 @@
       --muted:   #8892aa;
       --accent:  #22c55e;
       --link:    #60a5fa;
+      --pareto-below: #93c5fd;
       --red:     #c60c30;
       --r:       10px;
+      --brand-mesh:
+        radial-gradient(115% 520% at  0% 125%, rgba(216, 20,  58, .56) 0%, rgba(216, 20,  58, 0) 52%),
+        radial-gradient( 95% 460% at 34% 150%, rgba(152, 20,  74, .32) 0%, rgba(152, 20,  74, 0) 58%),
+        radial-gradient( 80% 480% at 74% -55%, rgba( 92, 26, 104, .34) 0%, rgba( 92, 26, 104, 0) 60%),
+        radial-gradient( 85% 520% at 100% -30%, rgba( 58, 24, 106, .48) 0%, rgba( 58, 24, 106, 0) 58%);
     }
     :root[data-theme="light"] {
       color-scheme: light;
@@ -51,6 +57,7 @@
       --text:  #1e293b;
       --muted: #64748b;
       --link:  #2563eb;
+      --pareto-below: #60a5fa;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -74,12 +81,7 @@
     .banner {
       /* Same mesh as the social cover (scripts/update_space.py): a crimson
          bloom low-left, a violet counter-tone top-right, over near-black. */
-      background:
-        radial-gradient(115% 520% at  0% 125%, rgba(216, 20,  58, .56) 0%, rgba(216, 20,  58, 0) 52%),
-        radial-gradient( 95% 460% at 34% 150%, rgba(152, 20,  74, .32) 0%, rgba(152, 20,  74, 0) 58%),
-        radial-gradient( 80% 480% at 74% -55%, rgba( 92, 26, 104, .34) 0%, rgba( 92, 26, 104, 0) 60%),
-        radial-gradient( 85% 520% at 100% -30%, rgba( 58, 24, 106, .48) 0%, rgba( 58, 24, 106, 0) 58%),
-        #09080d;
+      background: var(--brand-mesh), #09080d;
       border: 0;
       border-radius: 0;
       padding: 19px max(16px, calc(50vw - 734px));
@@ -94,7 +96,7 @@
     /* Film grain. Also a dither: a gradient this dark bands visibly on 8-bit
        displays, and the noise breaks the contours up. Inline SVG keeps the
        page self-contained — no external asset to fetch. */
-    .banner::after, .site-footer::after {
+    .banner::after, .site-footer::after, .time-range-selection::after, .settings-sheet-head::after {
       content: "";
       position: absolute;
       inset: 0;
@@ -222,6 +224,34 @@
     .tab-btn:focus-visible { outline: 2px solid var(--link); outline-offset: -2px; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
+    .info-nav {
+      display: inline-flex;
+      gap: 4px;
+      margin-bottom: 20px;
+      padding: 4px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surf);
+    }
+    .info-tab-btn {
+      padding: 8px 14px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .info-tab-btn:hover { color: var(--text); }
+    .info-tab-btn.active {
+      background: var(--surf2);
+      box-shadow: inset 0 0 0 1px var(--border);
+      color: var(--text);
+    }
+    .info-tab-btn:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .info-pane { display: none; }
+    .info-pane.active { display: block; }
 
     /* ── Model comparison ───────────────────────────────────────────── */
     .compare-intro { color: var(--muted); margin-bottom: 18px; }
@@ -338,7 +368,7 @@
       background: var(--surf);
       color: var(--muted);
       font-size: 13px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
     }
     .filters-toggle.has-filters {
@@ -351,6 +381,21 @@
       flex: 0 0 auto;
       opacity: 0.75;
     }
+    .filters-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 17px;
+      height: 17px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: #2563eb;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .filters-count:empty { display: none; }
     .filter-summary {
       display: flex;
       align-items: center;
@@ -365,6 +410,28 @@
       min-width: 0;
       max-width: 300px;
     }
+    .period-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surf);
+      color: var(--muted);
+      font: inherit;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .period-toggle:hover, .period-toggle[aria-expanded="true"] { color: var(--text); }
+    .period-toggle.has-range { border-color: color-mix(in srgb, var(--link) 55%, var(--border)); }
+    .period-toggle:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .period-toggle svg { width: 14px; height: 14px; flex: none; }
+    .period-toggle-label { font-weight: 600; }
+    .period-toggle-value { color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .period-toggle-chevron { transition: transform .15s ease; }
+    .period-toggle[aria-expanded="true"] .period-toggle-chevron { transform: rotate(180deg); }
     .download-csv {
       display: inline-flex;
       align-items: center;
@@ -384,10 +451,6 @@
     .download-csv:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .download-csv:disabled { opacity: 0.5; cursor: not-allowed; }
     .download-csv svg { width: 14px; height: 14px; flex: 0 0 auto; }
-    @media (max-width: 700px) {
-      .filter-summary .search-wrap { display: none; }
-      .filter-summary.open .search-wrap { display: block; }
-    }
     .toolbar {
       display: none;
       align-items: center;
@@ -395,7 +458,6 @@
       gap: 8px 10px;
       margin-bottom: 12px;
     }
-    .toolbar.open { display: flex; }
     .search-wrap {
       position: relative;
       display: block;
@@ -546,6 +608,93 @@
     }
     .c-model .m-name { overflow: hidden; text-overflow: ellipsis; }
 
+    /* Model links preview their own saved leaderboard result. The card lives
+       outside the scrolling table so it never gets clipped by its edges. */
+    .model-preview {
+      position: fixed;
+      z-index: 120;
+      width: min(300px, calc(100vw - 24px));
+      overflow: hidden;
+      border: 1px solid color-mix(in srgb, var(--link) 30%, var(--border));
+      border-radius: 12px;
+      background: var(--surf);
+      box-shadow: 0 18px 44px rgba(0, 0, 0, .32);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity .14s ease, transform .14s ease;
+    }
+    .model-preview[hidden] { display: none; }
+    .model-preview.show { opacity: 1; transform: translateY(0); }
+    .model-preview-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      padding: 12px 14px;
+      background: var(--brand-mesh), #09080d;
+      color: #fff;
+    }
+    .model-preview-logo, .model-preview-mark {
+      display: grid;
+      flex: 0 0 34px;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .14);
+      object-fit: cover;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .model-preview-identity { min-width: 0; }
+    .model-preview-name {
+      display: block;
+      overflow-wrap: anywhere;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+    .model-preview-context { color: rgba(255,255,255,.72); font-size: 11px; }
+    .model-preview-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 5px;
+      padding: 12px 14px 9px;
+    }
+    .model-preview-stat { min-width: 0; }
+    .model-preview-stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .model-preview-stat strong {
+      display: block;
+      color: var(--text);
+      font-size: 16px;
+      font-variant-numeric: tabular-nums;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .model-preview-stat:first-child strong { color: var(--link); }
+    .model-preview-foot {
+      margin: 0 14px;
+      padding: 8px 0 11px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 11px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .model-preview { transition: none; transform: none; }
+    }
+
     /* Model identity is a two-line block: name, then size / licence.
        Folding those out of their own columns buys the measurement columns
        room, and matches how the mobile cards read. */
@@ -664,6 +813,7 @@
       transition: opacity 0.12s;
     }
     #col-tip.show { opacity: 1; }
+    dialog.settings-sheet #col-tip { position: absolute; }
 
     /* ── Footer ─────────────────────────────────────────────────────── */
     .site-footer {
@@ -787,6 +937,12 @@
       margin: 0 0 16px;
       font-size: 17px;
       font-weight: 750;
+    }
+    .chart-page .chart-subtitle {
+      margin: -8px 0 16px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
     }
     .chart-title-icon {
       flex: none;
@@ -937,6 +1093,78 @@
     .size-filter select option { background: var(--surf); color: var(--text); }
     :root[data-theme="light"] .size-filter select { color-scheme: light; }
     .size-filter select:focus-visible { outline: 2px solid var(--link); }
+    .period-reset {
+      height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surf);
+      color: var(--link);
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .period-reset:hover { border-color: var(--link); }
+    .period-reset:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .period-reset[hidden] { display: none; }
+    .time-range {
+      margin-top: 16px;
+      padding: 15px 18px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      background: var(--surf);
+    }
+    .time-range[hidden] { display: none; }
+    .time-range-head { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .time-range-head strong { font-weight: 700; }
+    .time-range-value { color: var(--muted); font-variant-numeric: tabular-nums; }
+    .time-range-head .period-reset { margin-left: auto; }
+    .time-range-track { position: relative; height: 36px; margin: 10px 9px 0; cursor: pointer; touch-action: none; }
+    .time-range-rail, .time-range-selection { position: absolute; height: 8px; border-radius: 99px; }
+    .time-range-rail { top: 14px; left: 10px; right: 10px; background: var(--border); }
+    .time-range-selection {
+      left: var(--range-from, 0%); right: calc(100% - var(--range-through, 100%));
+      background: var(--brand-mesh), linear-gradient(90deg, #84233c, #492367);
+      overflow: hidden;
+    }
+    .time-range-ticks { position: absolute; inset: 0 10px; pointer-events: none; }
+    .time-range-ticks span {
+      position: absolute; top: 14px; width: 1px; height: 8px;
+      transform: translateX(-50%); background: var(--text); opacity: .32;
+    }
+    .time-range-ticks span.quarter { top: 12px; height: 12px; opacity: .46; }
+    .time-range-ticks span.year { top: 10px; height: 16px; opacity: .65; }
+    .time-range-track input[type="range"] {
+      position: absolute; inset: 0; width: 100%; height: 36px; margin: 0;
+      appearance: none; -webkit-appearance: none; background: transparent;
+      pointer-events: none; cursor: grab;
+    }
+    .time-range-track input[type="range"]:active { cursor: grabbing; }
+    .time-range-track input[type="range"]::-webkit-slider-runnable-track { height: 8px; background: transparent; }
+    .time-range-track input[type="range"]::-moz-range-track { height: 8px; background: transparent; }
+    .time-range-track input[type="range"]::-webkit-slider-thumb {
+      width: 20px; height: 20px; margin-top: -6px;
+      appearance: none; -webkit-appearance: none;
+      border: 3px solid var(--page-accent); border-radius: 50%;
+      background: var(--page-accent); box-shadow: 0 1px 5px rgba(0,0,0,.18);
+      pointer-events: auto;
+    }
+    .time-range-track input[type="range"]::-moz-range-thumb {
+      width: 14px; height: 14px; border: 3px solid var(--page-accent);
+      border-radius: 50%; background: var(--page-accent);
+      box-shadow: 0 1px 5px rgba(0,0,0,.18); pointer-events: auto;
+    }
+    #time-from { z-index: 2; }
+    #time-through { z-index: 3; }
+    .time-range-track input[type="range"]:focus-visible { outline: none; }
+    .time-range-track input[type="range"]:focus-visible::-webkit-slider-thumb { outline: 2px solid var(--link); outline-offset: 3px; }
+    .time-range-track input[type="range"]:focus-visible::-moz-range-thumb { outline: 2px solid var(--link); outline-offset: 3px; }
+    .time-range-years { position: relative; height: 16px; margin: 0 19px; color: var(--muted); font-size: 10px; }
+    .time-range-years span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+    @media (max-width: 700px) {
+      .time-range { padding: 13px 14px 9px; }
+      .time-range-head { flex-wrap: wrap; }
+      .time-range-ticks span.month { display: none; }
+    }
 
     /* ── Rank delta cell ────────────────────────────────────────────── */
     .delta-up { color: #4ade80; font-weight: 700; }
@@ -1038,6 +1266,10 @@
       padding: 6px 6px 4px;
       display: flex;
       min-height: 430px;
+    }
+    #size-chart-analysis .pareto-frontier-point {
+      filter: drop-shadow(0 0 4px color-mix(in srgb, var(--link) 80%, transparent))
+              drop-shadow(0 0 9px color-mix(in srgb, var(--link) 55%, transparent));
     }
     /* Side panel next to a chart: the Pareto list on the Pareto tab and the
        record-holder list on the Over Time tab share these styles. */
@@ -1203,6 +1435,8 @@
       .banner { padding: 15px 12px; gap: 8px; }
       .banner h1 { font-size: clamp(12px, 3.5vw, 15px); }
       .tab-btn { padding: 10px 11px 9px; font-size: 13px; }
+      .period-toggle { gap: 4px; padding: 0 7px; font-size: 12px; }
+      .period-toggle svg { width: 12px; height: 12px; }
       .filter-summary .search {
         width: 100%;
         height: 34px;
@@ -1558,23 +1792,6 @@
         cursor: pointer;
       }
 
-      /* Collapsing the filters hides whether any are set, so the button carries
-         a count of the non-default controls. */
-      .filters-count {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 17px;
-        height: 17px;
-        padding: 0 5px;
-        border-radius: 999px;
-        background: var(--link);
-        color: #0f1117;
-        font-size: 11px;
-        font-weight: 700;
-        line-height: 1;
-      }
-      .filters-count:empty { display: none; }
       /* Confidence intervals go under the value, not beside it. */
       tbody td .ci-val { display: block; font-size: 10px; font-weight: 400; }
 
@@ -1592,6 +1809,209 @@
       #tab-compare .compare-summary tr::after { content: none; }
       #tab-compare .compare-summary td { display: table-cell; padding: 9px 7px; border-bottom: 1px solid var(--border); }
       #tab-compare .compare-summary th { display: table-cell; padding: 9px 7px; }
+    }
+
+    /* Native dialog supplies focus containment and Escape. Desktop slides in
+       from the right; phones use the same controls in a bottom drawer. */
+    dialog.settings-sheet {
+      position: fixed;
+      inset: 0 0 0 auto;
+      width: min(440px, calc(100vw - 32px));
+      height: 100dvh;
+      max-width: none;
+      max-height: none;
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-top: 0;
+      border-right: 0;
+      border-bottom: 0;
+      border-radius: 0;
+      background: var(--surf);
+      color: var(--text);
+      box-shadow: -24px 0 80px rgba(0, 0, 0, .38);
+      overflow: hidden;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: transform .28s cubic-bezier(.22, 1, .36, 1), opacity .28s ease,
+        display .28s allow-discrete, overlay .28s allow-discrete;
+    }
+    dialog.settings-sheet[open] { display: flex; flex-direction: column; transform: translateX(0); opacity: 1; }
+    @starting-style {
+      dialog.settings-sheet[open] { transform: translateX(100%); opacity: 0; }
+    }
+    dialog.settings-sheet::backdrop { background: rgba(3, 6, 18, .64); }
+    .settings-sheet-head {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, .12);
+      background: var(--brand-mesh), #09080d;
+      position: relative;
+      overflow: hidden;
+    }
+    .settings-sheet-head > * { position: relative; z-index: 1; }
+    .settings-sheet-title { flex: 1; color: #fff; font-size: 17px; font-weight: 700; }
+    .settings-sheet-close {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .1);
+      color: #fff;
+      cursor: pointer;
+    }
+    .settings-sheet-close:hover { background: rgba(255, 255, 255, .18); }
+    .settings-sheet-close:focus-visible,
+    .settings-sheet-clear:focus-visible,
+    .settings-sheet-done:focus-visible,
+    .filters-toggle:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .settings-sheet-close svg { width: 16px; height: 16px; }
+    .settings-sheet .toolbar,
+    .chart-page .page-hero .settings-sheet .toolbar {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-content: start;
+      gap: 10px;
+      flex: 1 1 auto;
+      min-height: 0;
+      margin: 0;
+      padding: 18px 20px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+    .settings-sheet .toolbar > *:not(.search-wrap) { min-width: 0; }
+    .settings-sheet .toolbar > :not(.ci-btn) { grid-column: 1 / -1; }
+    .settings-sheet .tog-wrap,
+    .settings-sheet .size-filter,
+    .settings-sheet .ci-btn {
+      min-height: 74px;
+      height: auto;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surf2);
+    }
+    .settings-sheet .tog-wrap { align-content: center; flex-wrap: wrap; gap: 6px 3px; }
+    .settings-sheet .tog-label {
+      display: flex;
+      align-items: center;
+      flex: 0 0 100%;
+      gap: 8px;
+      padding: 0 0 3px;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .settings-sheet .tog-btn { flex: 1 1 auto; padding: 6px 8px; }
+    .settings-sheet .tog-btn.active {
+      background: var(--surf);
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--link) 35%, var(--border));
+    }
+    .settings-sheet .size-filter {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
+      gap: 8px;
+      white-space: normal;
+    }
+    .settings-field-title { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font-weight: 650; }
+    .settings-sheet .size-filter select {
+      width: 100%;
+      max-width: none;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surf);
+    }
+    .settings-sheet .ci-btn {
+      display: grid;
+      grid-template-columns: 18px minmax(0, 1fr);
+      grid-template-rows: auto 28px;
+      align-content: space-between;
+      gap: 8px;
+      min-height: 104px;
+      width: 100%;
+      text-align: left;
+      white-space: normal;
+    }
+    .settings-sheet .ci-btn .settings-icon { grid-column: 1; grid-row: 1; }
+    .settings-sheet .ci-text { grid-column: 2; grid-row: 1; line-height: 1.3; }
+    .settings-sheet .ci-switch {
+      grid-column: 2;
+      grid-row: 2;
+      justify-self: end;
+      width: 48px;
+      height: 28px;
+      flex: 0 0 48px;
+    }
+    .settings-sheet .ci-switch::after { left: 3px; width: 22px; height: 22px; }
+    .settings-sheet .ci-btn.active .ci-switch::after { transform: translate(20px, -50%); }
+    .settings-icon { width: 17px; height: 17px; flex: 0 0 auto; color: var(--link); }
+    .settings-sheet-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: auto;
+      padding: 12px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .settings-sheet-clear,
+    .settings-sheet-done {
+      padding: 8px 18px;
+      border-radius: 8px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .settings-sheet-clear { border: 1px solid transparent; background: transparent; color: var(--muted); }
+    .settings-sheet-clear:hover { background: var(--surf2); color: var(--text); }
+    .settings-sheet-clear[hidden] { display: none; }
+    .settings-sheet-done { border: 1px solid var(--border); background: var(--surf2); color: var(--text); }
+    .settings-sheet-done:hover { border-color: color-mix(in srgb, var(--text) 30%, var(--border)); }
+    @media (max-width: 700px) {
+      dialog.settings-sheet {
+        inset: auto 0 0;
+        width: 100%;
+        height: auto;
+        max-height: min(88dvh, 760px);
+        margin: 0;
+        border-radius: 18px 18px 0 0;
+        border-top: 1px solid var(--border);
+        border-left: 0;
+        border-bottom: 0;
+        transform: translateY(100%);
+      }
+      dialog.settings-sheet[open] { transform: translateY(0); }
+      @starting-style {
+        dialog.settings-sheet[open] { transform: translateY(100%); opacity: 0; }
+      }
+      .settings-sheet-head { padding: 17px 16px 14px; }
+      .settings-sheet .toolbar,
+      .chart-page .page-hero .settings-sheet .toolbar {
+        max-height: calc(min(88dvh, 760px) - 132px);
+        padding: 14px 16px;
+      }
+      .settings-sheet .ci-btn {
+        min-height: 112px;
+        padding: 10px;
+        column-gap: 6px;
+      }
+      .settings-sheet-foot { padding: 12px 16px max(12px, env(safe-area-inset-bottom)); }
+      .filter-summary .search-wrap {
+        display: block;
+        flex: 0 0 100%;
+        order: 3;
+        max-width: none;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      dialog.settings-sheet { transition: none; }
     }
 
   </style>
@@ -1627,8 +2047,7 @@
     <button class="tab-btn" data-tab="analysis"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg>Pareto</button>
     <button class="tab-btn" data-tab="time"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Over Time</button>
     <button class="tab-btn" data-tab="compare"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16M9 4v16M15 4v16"/></svg>Compare</button>
-    <button class="tab-btn" data-tab="methodology"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Methodology</button>
-    <button class="tab-btn" data-tab="about"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>About</button>
+    <button class="tab-btn" data-tab="info"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Info</button>
    </div>
   </nav>
 
@@ -1680,7 +2099,7 @@
     <header class="page-hero">
       <p class="page-eyebrow">Model tradeoffs</p>
       <h2>Pareto frontier</h2>
-      <p class="page-intro">See how scores change with model size. The frontier marks open models with no smaller, better-scoring open alternative on the selected metric.</p>
+      <p class="page-intro">See how scores change with model size. Dark blue points mark open models on the frontier, with no smaller, better-scoring open alternative on the selected metric; lighter blue points fall below it.</p>
     <div class="toolbar">
       <div class="tog-wrap">
         <span class="tog-label">Metric</span>
@@ -1707,11 +2126,20 @@
           <option value="10">≤ 10B</option>
         </select>
       </label>
+      <label class="size-filter">Max mean WER
+        <select id="wer-limit-analysis" aria-label="Pareto maximum mean WER" data-default="30">
+          <option value="10">10%</option><option value="15">15%</option><option value="20">20%</option>
+          <option value="25">25%</option><option value="30" selected>30%</option><option value="40">40%</option>
+          <option value="50">50%</option><option value="75">75%</option><option value="100">100%</option>
+          <option value="">No limit</option>
+        </select>
+      </label>
       <button class="download-csv" id="download-pareto" type="button" aria-label="Download Pareto CSV" data-tip="Download plotted Pareto data as CSV" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4"/><path d="M4 17v4h16v-4"/></svg></button>
     </div>
     </header>
     <div class="chart-section">
       <h3 id="analysis-chart-title"><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg></span><span class="chart-title-text">Performance vs. Model Size</span></h3>
+      <p class="chart-subtitle" id="pareto-cutoff-note">Models above 30% mean WER are omitted from this plot and its CSV; change the limit in Settings.</p>
       <div class="chart-with-panel">
         <div id="size-chart-wrap-analysis" class="chart-plot-wrap">
           <svg id="size-chart-analysis" style="width:100%;display:block;overflow:visible"></svg>
@@ -1753,16 +2181,35 @@
           <option value="10">≤ 10B</option>
         </select>
       </label>
+      <label class="size-filter">Max mean WER
+        <select id="wer-limit-time" aria-label="Over Time maximum mean WER" data-default="30">
+          <option value="10">10%</option><option value="15">15%</option><option value="20">20%</option>
+          <option value="25">25%</option><option value="30" selected>30%</option><option value="40">40%</option>
+          <option value="50">50%</option><option value="75">75%</option><option value="100">100%</option>
+          <option value="">No limit</option>
+        </select>
+      </label>
       <button class="download-csv" id="download-time" type="button" aria-label="Download Over Time CSV" data-tip="Download plotted history as CSV" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4"/><path d="M4 17v4h16v-4"/></svg></button>
+    </div>
+    <button class="period-toggle" id="time-period-toggle" type="button" aria-controls="time-range" aria-expanded="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/></svg><span class="period-toggle-label">Period</span><span class="period-toggle-value" id="time-period-summary">Loading…</span><svg class="period-toggle-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="time-range" id="time-range" role="group" aria-label="Displayed period" hidden>
+      <div class="time-range-head"><strong>Period</strong><span class="time-range-value" id="time-range-value">All time</span><button class="period-reset" id="time-reset" type="button" hidden>All time</button></div>
+      <div class="time-range-track" id="time-range-track">
+        <div class="time-range-rail" aria-hidden="true"><div class="time-range-selection"></div></div>
+        <div class="time-range-ticks" id="time-range-ticks" aria-hidden="true"></div>
+        <input type="range" id="time-from" aria-label="Start month" min="0" max="0" value="0">
+        <input type="range" id="time-through" aria-label="End month" min="0" max="0" value="0">
+      </div>
+      <div class="time-range-years" id="time-range-years" aria-hidden="true"></div>
     </div>
     </header>
     <div class="chart-section">
       <h3 id="time-chart-title"><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span class="chart-title-text">Performance Over Time</span></h3>
+      <p class="chart-subtitle" id="time-cutoff-note">Models above 30% mean WER are excluded; change the limit in Settings.</p>
       <div class="chart-legend">
         <span><i class="legend-dot" style="background:var(--link)"></i>Open weights</span>
         <span><i class="legend-dot" style="background:#94a3b8"></i>Proprietary API</span>
         <span><i class="legend-line"></i>Best at date</span>
-        <span>Models with mean WER &gt; 50% are excluded.</span>
       </div>
       <div class="chart-with-panel">
         <div id="time-chart-wrap-time" class="chart-plot-wrap">
@@ -1806,8 +2253,15 @@
     </div>
   </div>
 
-  <!-- About tab -->
-  <div id="tab-about" class="tab-pane about about-page">
+  <!-- Info tab -->
+  <div id="tab-info" class="tab-pane">
+    <nav class="info-nav" aria-label="Info sections">
+      <button class="info-tab-btn active" data-info-tab="methodology" type="button" aria-pressed="true" aria-controls="tab-methodology">Methodology</button>
+      <button class="info-tab-btn" data-info-tab="about" type="button" aria-pressed="false" aria-controls="tab-about">About</button>
+    </nav>
+
+  <!-- About section -->
+  <div id="tab-about" class="info-pane about about-page">
     <header class="page-hero">
       <p class="page-eyebrow">The benchmark</p>
       <h2>About</h2>
@@ -1867,8 +2321,8 @@
 
   </div><!-- /about -->
 
-  <!-- Methodology tab -->
-  <div id="tab-methodology" class="tab-pane about methodology">
+  <!-- Methodology section -->
+  <div id="tab-methodology" class="info-pane active about methodology">
     <header class="page-hero">
       <p class="page-eyebrow">How the leaderboard is scored</p>
       <h2>Methodology</h2>
@@ -2173,6 +2627,8 @@
 
   </div><!-- /methodology -->
 
+  </div><!-- /info -->
+
 </div><!-- /app -->
 
 <footer class="site-footer">
@@ -2193,6 +2649,7 @@
 
 <div id="col-tip"></div>
 <div id="chart-tip"></div>
+<div id="model-preview" class="model-preview" role="tooltip" hidden></div>
 
 <script>
 const MEDALS = ['🥇','🥈','🥉'];
@@ -2209,6 +2666,12 @@ function visible(rows) {
     const size = parseFloat(r.size);
     return Number.isFinite(size) && size <= maxSizeB;
   });
+}
+
+// The two chart views omit outliers that make the useful score range hard to see.
+// The leaderboard table remains complete.
+function chartWerRows(rows, cutoff) {
+  return rows.filter(r => r.mean_wer == null || r.mean_wer <= cutoff);
 }
 
 const ANALYSIS_PANEL_HEIGHT = 430;
@@ -2230,7 +2693,7 @@ const WER_COLS = [
   { key:'#',                      label:'#',             cls:'c-rank',
     tip:'Rank by the selected method (Mean WER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',         cls:'c-model',
-    tip:'Click to open the model on Hugging Face (opens in new tab).' },
+    tip:'Hover or focus to preview the model; click to open its page in a new tab.' },
   { key:'openness_score',          label:'Openness',       cls:'c-open',
     tip:OPENNESS_TIP },
   { key:'mean_wer',               label:'Mean WER ↓',
@@ -2261,7 +2724,7 @@ const CER_COLS = [
   { key:'#',                      label:'#',              cls:'c-rank',
     tip:'Rank by the selected method (Mean CER, Borda, or Bradley-Terry). Lower is better.' },
   { key:'model',                   label:'Model',          cls:'c-model',
-    tip:'Click to open the model on Hugging Face (opens in new tab).' },
+    tip:'Hover or focus to preview the model; click to open its page in a new tab.' },
   { key:'openness_score',          label:'Openness',       cls:'c-open',
     tip:OPENNESS_TIP },
   { key:'mean_cer',               label:'Mean CER ↓',
@@ -2519,6 +2982,108 @@ function buildHead(cols) {
   return tr;
 }
 
+const MODEL_PREVIEW = document.getElementById('model-preview');
+let previewLink = null;
+let previewDelay = null;
+
+function hideModelPreview() {
+  clearTimeout(previewDelay);
+  previewDelay = null;
+  previewLink?.removeAttribute('aria-describedby');
+  previewLink = null;
+  MODEL_PREVIEW.classList.remove('show');
+  MODEL_PREVIEW.hidden = true;
+}
+
+function positionModelPreview(link) {
+  const rect = link.getBoundingClientRect();
+  const gap = 9, edge = 12;
+  const width = MODEL_PREVIEW.offsetWidth;
+  const height = MODEL_PREVIEW.offsetHeight;
+  const below = rect.bottom + gap;
+  const top = below + height <= innerHeight - edge
+    ? below : Math.max(edge, rect.top - height - gap);
+  MODEL_PREVIEW.style.left = `${Math.max(edge, Math.min(rect.left, innerWidth - width - edge))}px`;
+  MODEL_PREVIEW.style.top = `${Math.max(edge, Math.min(top, innerHeight - height - edge))}px`;
+}
+
+function showModelPreview(link, row) {
+  if (NARROW.matches || !link.isConnected) return;
+  if (previewLink && previewLink !== link) hideModelPreview();
+  previewLink = link;
+  MODEL_PREVIEW.replaceChildren();
+
+  const head = document.createElement('div');
+  head.className = 'model-preview-head';
+  const mark = document.createElement('span');
+  mark.className = 'model-preview-mark';
+  mark.textContent = row.name.split('/').at(-1).charAt(0).toUpperCase();
+  if (row.logo) {
+    const logo = document.createElement('img');
+    logo.className = 'model-preview-logo';
+    logo.alt = '';
+    logo.src = row.logo;
+    logo.onerror = () => logo.replaceWith(mark);
+    head.appendChild(logo);
+  } else head.appendChild(mark);
+  const identity = document.createElement('div');
+  identity.className = 'model-preview-identity';
+  const name = document.createElement('span');
+  name.className = 'model-preview-name';
+  name.textContent = row.name;
+  const context = document.createElement('span');
+  context.className = 'model-preview-context';
+  const size = Number.parseFloat(row.size);
+  context.textContent = (row.access === 'open' ? 'Open weights' : 'Hosted API')
+    + (Number.isFinite(size) ? ` · ${row.size}B parameters` : '');
+  identity.append(name, context);
+  head.appendChild(identity);
+
+  const stats = document.createElement('div');
+  stats.className = 'model-preview-stats';
+  for (const [label, value] of [
+    ['Mean WER', row.mean_wer == null ? '—' : `${row.mean_wer.toFixed(2)}%`],
+    ['Mean CER', row.mean_cer == null ? '—' : `${row.mean_cer.toFixed(2)}%`],
+    ['Speed', row.speed_x == null ? '—' : `${row.speed_x.toFixed(1)}×`],
+  ]) {
+    const stat = document.createElement('div');
+    stat.className = 'model-preview-stat';
+    const caption = document.createElement('span');
+    caption.textContent = label;
+    const number = document.createElement('strong');
+    number.textContent = value;
+    stat.append(caption, number);
+    stats.appendChild(stat);
+  }
+  const foot = document.createElement('div');
+  foot.className = 'model-preview-foot';
+  foot.textContent = `Licence: ${row.license || 'not declared'} · Open model page ↗`;
+  MODEL_PREVIEW.append(head, stats, foot);
+  MODEL_PREVIEW.hidden = false;
+  positionModelPreview(link);
+  link.setAttribute('aria-describedby', 'model-preview');
+  requestAnimationFrame(() => {
+    if (previewLink === link) MODEL_PREVIEW.classList.add('show');
+  });
+}
+
+function wireModelPreview(link, row) {
+  link.addEventListener('pointerenter', event => {
+    if (event.pointerType === 'touch' || NARROW.matches) return;
+    clearTimeout(previewDelay);
+    previewDelay = setTimeout(() => showModelPreview(link, row), 130);
+  });
+  link.addEventListener('pointerleave', hideModelPreview);
+  link.addEventListener('focus', () => showModelPreview(link, row));
+  link.addEventListener('blur', hideModelPreview);
+  link.addEventListener('click', hideModelPreview);
+}
+document.addEventListener('scroll', hideModelPreview, true);
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape') hideModelPreview();
+});
+window.addEventListener('resize', hideModelPreview);
+
 function buildRow(row, cols, maxVals) {
   const tr = document.createElement('tr');
   tr.dataset.n = row.name.toLowerCase();
@@ -2569,7 +3134,7 @@ function buildRow(row, cols, maxVals) {
       a.href = row.url || '#';
       a.target = '_blank';
       a.rel = 'noopener noreferrer';
-      a.title = row.name;
+      wireModelPreview(a, row);
       if (row.logo) {
         const img = document.createElement('img');
         img.src = row.logo;
@@ -2676,8 +3241,41 @@ window.addEventListener('resize', () => {
   fitTimer = setTimeout(fitModelNames, 150);
 });
 
+/* Give each setting a distinct outline icon without changing the existing
+   controls or their event handlers. */
+function decorateSettings(bar) {
+  const glyphs = {
+    metric: ['M3 17l5-5 4 3 8-9', 'M3 3v18h18'],
+    rank: ['M8 21h8', 'M12 17v4', 'M7 4h10v5a5 5 0 0 1-10 0V4Z', 'M5 6H3v2a4 4 0 0 0 4 4', 'M19 6h2v2a4 4 0 0 1-4 4'],
+    confidence: ['M5 5v14', 'M2 5h6', 'M2 19h6', 'M19 5v14', 'M16 5h6', 'M16 19h6', 'M8 12h8'],
+    open: ['M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z', 'M8 11V7a4 4 0 0 1 8 0'],
+    size: ['M12 3 3 7.5 12 12l9-4.5L12 3z', 'M3 12l9 4.5 9-4.5', 'M3 16.5 12 21l9-4.5'],
+    limit: ['M4 5h16', 'M7 11h10', 'M10 17h4', 'M12 17v4'],
+  };
+  const icon = kind => _icon(glyphs[kind], 'settings-icon');
+  bar.querySelectorAll('.tog-wrap').forEach(wrap => {
+    const label = wrap.querySelector('.tog-label');
+    if (label) label.prepend(icon(label.textContent.trim().startsWith('Metric') ? 'metric' : 'rank'));
+  });
+  bar.querySelectorAll('.ci-btn').forEach(button => {
+    button.prepend(icon(button.id.includes('ci-') ? 'confidence' : 'open'));
+  });
+  bar.querySelectorAll('.size-filter').forEach(field => {
+    const textNode = [...field.childNodes].find(node => node.nodeType === Node.TEXT_NODE && node.textContent.trim());
+    if (!textNode) return;
+    const title = document.createElement('span');
+    title.className = 'settings-field-title';
+    title.append(icon(field.querySelector('select')?.id.startsWith('wer-limit-') ? 'limit' : 'size'), textNode.textContent.trim());
+    textNode.replaceWith(title);
+  });
+}
+
 /* Keep filter controls out of the table's scanning path until a user asks for
-  them. The button carries an active-filter count while the toolbar is closed. */
+   them. The button carries an active-filter count while the sheet is closed. */
+const settingsLabels = [];
+function refreshSettingsButtons() {
+  settingsLabels.forEach(label => label());
+}
 function initFilterToggles() {
   for (const bar of document.querySelectorAll('.toolbar')) {
     // Scoped to the pane rather than previousElementSibling: the sort control
@@ -2691,10 +3289,41 @@ function initFilterToggles() {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'filters-toggle';
-    const caret = document.createElement('span');
     const count = document.createElement('span');
     count.className = 'filters-count';
-    btn.append(ICON_FILTER(), 'Settings ', caret, count);
+    btn.append(ICON_FILTER(), 'Settings', count);
+
+    const paneName = { wer: 'Leaderboard', analysis: 'Pareto', time: 'Over Time' }[paneFor?.id.replace('tab-', '')] || 'View';
+    const sheet = document.createElement('dialog');
+    sheet.className = 'settings-sheet';
+    sheet.id = `settings-${paneFor?.id.replace('tab-', '')}`;
+    sheet.setAttribute('aria-labelledby', `${sheet.id}-title`);
+    const head = document.createElement('div');
+    head.className = 'settings-sheet-head';
+    const heading = document.createElement('h2');
+    heading.className = 'settings-sheet-title';
+    heading.id = `${sheet.id}-title`;
+    heading.textContent = `${paneName} settings`;
+    const close = document.createElement('button');
+    close.className = 'settings-sheet-close';
+    close.type = 'button';
+    close.setAttribute('aria-label', 'Close settings');
+    close.append(_icon(['M5 5l14 14', 'M19 5 5 19'], ''));
+    head.append(heading, close);
+    const foot = document.createElement('div');
+    foot.className = 'settings-sheet-foot';
+    const clear = document.createElement('button');
+    clear.className = 'settings-sheet-clear';
+    clear.type = 'button';
+    clear.textContent = 'Clear';
+    const done = document.createElement('button');
+    done.className = 'settings-sheet-done';
+    done.type = 'button';
+    done.textContent = 'Done';
+    foot.append(clear, done);
+    btn.setAttribute('aria-haspopup', 'dialog');
+    btn.setAttribute('aria-controls', sheet.id);
+    decorateSettings(bar);
 
     /* Counts the controls that are not at their default, so a collapsed
        toolbar still says whether anything is filtering the table. Within
@@ -2713,52 +3342,88 @@ function initFilterToggles() {
         const active = togs.find(b => b.classList.contains('active'));
         if (active && togs.indexOf(active) > 0) n++;
       });
-      if (bar.querySelector('.size-filter select')?.value) n++;
+      bar.querySelectorAll('.size-filter select').forEach(select => {
+        if (select.value !== (select.dataset.default ?? '')) n++;
+      });
       return n;
     };
 
     const label = () => {
-      const open = bar.classList.contains('open');
-      caret.textContent = open ? '▴' : '▾';
+      const open = sheet.open;
       btn.setAttribute('aria-expanded', String(open));
       const n = activeCount();
       count.textContent = n ? String(n) : '';
       btn.classList.toggle('has-filters', n > 0);
+      clear.hidden = n === 0;
       btn.setAttribute('aria-label',
         n ? 'Settings, ' + n + ' active' : 'Settings');
     };
 
     btn.addEventListener('click', () => {
-      bar.classList.toggle('open');
-      summary.classList.toggle('open', bar.classList.contains('open'));
+      TIP.classList.remove('show');
+      tipActive = false;
+      sheet.append(TIP);
+      sheet.showModal();
       label();
-      // A newly revealed toolbar may change the name column's width.
-      fitModelNames();
+    });
+    close.addEventListener('click', () => sheet.close());
+    done.addEventListener('click', () => sheet.close());
+    clear.addEventListener('click', () => {
+      const search = summary.querySelector('.search');
+      if (search?.value) {
+        search.value = '';
+        search.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+
+      // Rank method is shared by metric. Reset the visible method before
+      // switching back to WER, then reset WER's method if it also changed.
+      const groups = [...bar.querySelectorAll('.tog-wrap')];
+      const metricDefault = groups[0]?.querySelector('.tog-btn');
+      const rankDefault = groups[1]?.querySelector('.tog-btn');
+      if (rankDefault && !rankDefault.classList.contains('active')) rankDefault.click();
+      if (metricDefault && !metricDefault.classList.contains('active')) metricDefault.click();
+      if (rankDefault && !rankDefault.classList.contains('active')) rankDefault.click();
+
+      bar.querySelectorAll('.ci-btn').forEach(toggle => {
+        if (toggle.getAttribute('aria-pressed') === 'true') toggle.click();
+      });
+      bar.querySelectorAll('.size-filter select').forEach(select => {
+        const defaultValue = select.dataset.default ?? '';
+        if (select.value === defaultValue) return;
+        select.value = defaultValue;
+        select.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+      refreshSettingsButtons();
+    });
+    sheet.addEventListener('click', event => { if (event.target === sheet) sheet.close(); });
+    sheet.addEventListener('close', () => {
+      TIP.classList.remove('show');
+      tipActive = false;
+      document.body.append(TIP);
+      label();
     });
     // Keep the count live as the controls inside the toolbar are used.
     bar.addEventListener('input', label);
+    bar.addEventListener('change', label);
     bar.addEventListener('click', () => setTimeout(label, 0));
 
     summary.append(btn);
+    if (paneFor?.id === 'tab-time') summary.append(document.getElementById('time-period-toggle'));
     if (searchWrap) summary.append(searchWrap);
     const download = bar.querySelector('.download-csv');
     if (download) summary.append(download);
     bar.parentNode.insertBefore(summary, bar);
+    bar.replaceWith(sheet);
+    sheet.append(head, bar, foot);
     const search = summary.querySelector('.search');
     if (search) search.addEventListener('input', label);
+    settingsLabels.push(label);
     label();
   }
 }
-/* Crossing the breakpoint resets the optional toolbar to its closed state. */
+/* Close a sheet when switching between desktop and phone layouts. */
 NARROW.addEventListener('change', () => {
-  document.querySelectorAll('.toolbar').forEach(bar => bar.classList.remove('open'));
-  document.querySelectorAll('.filter-summary').forEach(summary => summary.classList.remove('open'));
-  document.querySelectorAll('.filters-toggle').forEach(b => {
-    const open = false;
-    const caret = b.querySelector('span');
-    if (caret) caret.textContent = open ? '▴' : '▾';
-    b.setAttribute('aria-expanded', String(open));
-  });
+  document.querySelectorAll('.settings-sheet[open]').forEach(sheet => sheet.close());
   fitModelNames();
 });
 /* This script runs at the end of the body, so DOMContentLoaded may already
@@ -3584,6 +4249,9 @@ function _drawChart(rows, method, tab) {
   /* ── Pareto frontier (open models only) ── */
   const openPts = pts.filter(p => p.r.access === 'open');
   const pareto  = computePareto(openPts, yUp);
+  const frontierPoints = new Set(pareto);
+  const pointColor = p => p.r.access !== 'open' ? '#94a3b8'
+    : frontierPoints.has(p) ? 'var(--link)' : 'var(--pareto-below)';
   if (pareto.length >= 2) {
     let d = `M ${ML} ${sy(pareto[0].yv).toFixed(1)} H ${sx(pareto[0].sz).toFixed(1)}`;
     for (let i = 1; i < pareto.length; i++)
@@ -3595,7 +4263,8 @@ function _drawChart(rows, method, tab) {
 
   /* ── data points ── */
   const CTIP = document.getElementById('chart-tip');
-  for (const { r, sz, yv } of pts) {
+  for (const point of pts) {
+    const { r, sz, yv } = point;
     const xc = sx(sz), yc = sy(yv);
     if (xc < ML - 8 || xc > ML + cW + 8 || yc < MT - 8 || yc > MT + cH + 8) continue;
 
@@ -3608,7 +4277,7 @@ function _drawChart(rows, method, tab) {
         const yt = Math.max(MT, rawYt);
         const yb = Math.min(MT + cH, rawYb);
         if (yb > yt) {
-          const ecol = r.access === 'open' ? 'var(--link)' : '#94a3b8';
+          const ecol = pointColor(point);
           mk('line', { x1: xc, y1: yt, x2: xc, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
           if (rawYt >= MT)    mk('line', { x1: xc-4, y1: yt, x2: xc+4, y2: yt, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
           if (rawYb <= MT+cH) mk('line', { x1: xc-4, y1: yb, x2: xc+4, y2: yb, stroke: ecol, 'stroke-width': '1.5', opacity: '0.45' }, svgEl);
@@ -3622,10 +4291,11 @@ function _drawChart(rows, method, tab) {
 
     const circ = mk('circle', {
       cx: xc, cy: yc, r: '6',
-      fill: r.access === 'open' ? 'var(--link)' : '#94a3b8',
+      fill: pointColor(point),
       stroke: 'var(--bg)', 'stroke-width': '1.5',
       style: 'cursor:pointer',
     }, svgEl);
+    if (frontierPoints.has(point)) circ.classList.add('pareto-frontier-point');
     chartPointByName.set(r.name, { circ, tipHTML });
     circ.addEventListener('mouseenter', () => { CTIP.innerHTML = tipHTML; CTIP.classList.add('show'); });
     circ.addEventListener('mousemove', e => positionChartTip(e.clientX, e.clientY));
@@ -3665,6 +4335,18 @@ const MONTHS_ABBR = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct'
 function parseISODate(str) {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(str || ''));
   return m ? Date.UTC(+m[1], +m[2] - 1, +m[3]) : null;
+}
+
+function monthStart(str) {
+  const m = /^(\d{4})-(0[1-9]|1[0-2])$/.exec(String(str || ''));
+  return m ? Date.UTC(+m[1], +m[2] - 1, 1) : null;
+}
+
+function monthEnd(str) {
+  const start = monthStart(str);
+  if (start == null) return null;
+  const date = new Date(start);
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 1);
 }
 
 function fmtDate(ms) {
@@ -3709,15 +4391,23 @@ function computeRecords(pts, yUp) {
   return records;
 }
 
-function timeChartData(rows, metric, method) {
+function timeChartData(rows, metric, method, period = {}) {
   const key = chartScoreKey(metric, method);
   const yUp = method === 'bt';
   const dated = rows.map(r => ({ r, t: parseISODate(r.released), yv: r[key] }))
     .filter(({ yv }) => Number.isFinite(yv));
+  const allPts = dated.filter(p => p.t != null)
+    .sort((a, b) => a.t - b.t || (yUp ? b.yv - a.yv : a.yv - b.yv));
+  const from = monthStart(period.from) ?? -Infinity;
+  const through = monthEnd(period.through) ?? Infinity;
+  const allRecords = computeRecords(allPts, yUp);
   return {
     undated: dated.filter(p => p.t == null).length,
-    pts: dated.filter(p => p.t != null)
-      .sort((a, b) => a.t - b.t || (yUp ? b.yv - a.yv : a.yv - b.yv)),
+    pts: allPts.filter(p => p.t >= from && p.t < through),
+    records: allRecords.filter(p => p.t >= from && p.t < through),
+    priorRecord: Number.isFinite(from) ? allRecords.filter(p => p.t < from).at(-1) : null,
+    from: Number.isFinite(from) ? from : null,
+    through: Number.isFinite(through) ? through : null,
   };
 }
 
@@ -3728,9 +4418,9 @@ const TIME_CSV_FIELDS = [
   ['score', 'score'], ['score_unit', 'score_unit'],
   ['ci_low', 'ci_low'], ['ci_high', 'ci_high'], ['record_at_date', 'record_at_date'],
 ];
-function makeTimeCsv(rows, metric, method, includeCI) {
-  const { pts } = timeChartData(rows, metric, method);
-  const records = new Set(computeRecords(pts, method === 'bt'));
+function makeTimeCsv(rows, metric, method, includeCI, period = {}) {
+  const { pts, records } = timeChartData(rows, metric, method, period);
+  const recordSet = new Set(records);
   const ciKey = chartScoreKey(metric, method) + '_ci';
   return makeCsv(TIME_CSV_FIELDS, pts.map(p => ({
     date: new Date(p.t).toISOString().slice(0, 10), date_basis: p.r.date_basis,
@@ -3739,11 +4429,11 @@ function makeTimeCsv(rows, metric, method, includeCI) {
     score: p.yv, score_unit: CHART_SCORE_UNIT[method],
     ci_low: includeCI ? p.r[ciKey]?.lo : null,
     ci_high: includeCI ? p.r[ciKey]?.hi : null,
-    record_at_date: records.has(p),
+    record_at_date: recordSet.has(p),
   })));
 }
 
-function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
+function updateRecordPanel(records, metricLbl, fmt, method, undated = 0, period = {}, priorRecord = null) {
   const yUp = method === 'bt';
   const panel = document.getElementById('record-panel-time');
   if (!panel) return;
@@ -3755,8 +4445,7 @@ function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
     panel.appendChild(el);
   };
   if (!records.length) {
-    footnote('No release dates to plot.');
-    return;
+    footnote(period.from || period.through ? 'No new records in this period.' : 'No release dates to plot.');
   }
   for (const p of [...records].reverse()) {
     const item = document.createElement('div');
@@ -3780,16 +4469,19 @@ function updateRecordPanel(records, metricLbl, fmt, method, undated = 0) {
       + `${method === 'borda' ? 'places' : 'points'}${rel} `
       + `between ${fmtDate(first.t)} and ${fmtDate(last.t)}.`);
   }
+  if (priorRecord)
+    footnote(`The best score entering this period was ${fmt(priorRecord.yv)} `
+      + `by ${priorRecord.r.name} (${fmtDate(priorRecord.t)}).`);
   /* Named rather than silently dropped: a model missing from the plot is not
      evidence of anything about the model. */
-  if (undated)
+  if (undated && !period.from && !period.through)
     footnote(`${undated} model${undated > 1 ? 's have' : ' has'} no published `
       + `release date and ${undated > 1 ? 'are' : 'is'} not plotted.`);
   if (method !== 'mean')
     footnote('Earlier evaluation snapshots are shown with mean WER/CER only.');
 }
 
-function _drawTimeChart(rows, metric, method) {
+function _drawTimeChart(rows, metric, method, period = {}) {
   const wrap  = document.getElementById('time-chart-wrap-time');
   const svgEl = document.getElementById('time-chart-time');
   const panel = document.getElementById('record-panel-time');
@@ -3822,21 +4514,23 @@ function _drawTimeChart(rows, metric, method) {
   /* Ties on a date are ordered best-first so the day's best model is the one
      that takes the record, instead of a worse model on the same day taking it
      and producing two steps at the same x. */
-  const { pts, undated } = timeChartData(rows, metric, method);
+  const { pts, records, priorRecord, undated, from, through } = timeChartData(rows, metric, method, period);
 
-  if (pts.length < 2) {
-    tx('Not enough release dates to plot.', { x: W / 2, y: H / 2, 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '13' }, svgEl);
-    updateRecordPanel([], metricLbl, fmt, method, undated);
+  if (!pts.length) {
+    tx(period.from || period.through ? 'No models in this period.' : 'No release dates to plot.',
+      { x: W / 2, y: H / 2, 'text-anchor': 'middle', fill: 'var(--muted)', 'font-size': '13' }, svgEl);
+    updateRecordPanel(records, metricLbl, fmt, method, undated, period, priorRecord);
     return;
   }
 
   /* ── scales ── */
   const tMin = pts[0].t, tMax = pts[pts.length - 1].t;
-  const tPad = (tMax - tMin) * 0.05 || DAY_MS;
-  const tL = tMin - tPad, tR = tMax + tPad;
+  const tPad = Math.max((tMax - tMin) * 0.05, DAY_MS);
+  const tL = from ?? tMin - tPad, tR = through ?? tMax + tPad;
   const sx = t => ML + (t - tL) / (tR - tL) * cW;
 
   const yVals = pts.map(d => d.yv);
+  if (priorRecord) yVals.push(priorRecord.yv);
   const yDMin = Math.min(...yVals), yDMax = Math.max(...yVals);
   const ySpan = yDMax - yDMin || 1;
   const yLo = yDMin - ySpan * 0.18;
@@ -3871,16 +4565,17 @@ function _drawTimeChart(rows, metric, method) {
   mk('line', { x1: ML, y1: MT + cH, x2: ML + cW, y2: MT + cH, stroke: 'var(--border)', 'stroke-width': '1' }, svgEl);
 
   /* ── best-so-far step line ── */
-  const records = computeRecords(pts, yUp);
   const recordSet = new Set(records);
-  if (records.length) {
-    let d = `M ${sx(records[0].t).toFixed(1)} ${sy(records[0].yv).toFixed(1)}`;
-    for (let i = 1; i < records.length; i++)
+  if (priorRecord || records.length) {
+    let d = priorRecord
+      ? `M ${ML} ${sy(priorRecord.yv).toFixed(1)}`
+      : `M ${sx(records[0].t).toFixed(1)} ${sy(records[0].yv).toFixed(1)}`;
+    for (let i = priorRecord ? 0 : 1; i < records.length; i++)
       d += ` H ${sx(records[i].t).toFixed(1)} V ${sy(records[i].yv).toFixed(1)}`;
     d += ` H ${(ML + cW).toFixed(1)}`;
     mk('path', { d, fill: 'none', stroke: 'var(--link)', 'stroke-width': '2', opacity: '0.75' }, svgEl);
   }
-  updateRecordPanel(records, metricLbl, fmt, method, undated);
+  updateRecordPanel(records, metricLbl, fmt, method, undated, period, priorRecord);
 
   /* ── data points ── */
   const CTIP = document.getElementById('chart-tip');
@@ -3934,9 +4629,9 @@ function _drawTimeChart(rows, metric, method) {
     fill: 'var(--muted)', 'font-size': '10' }, svgEl);
 }
 
-function renderTimeChart(rows, metric, method) {
-  _chartState.time = { ..._chartState.time, rows, sourceTab: metric, method };
-  requestAnimationFrame(() => _drawTimeChart(rows, metric, method));
+function renderTimeChart(rows, metric, method, period = {}) {
+  _chartState.time = { ..._chartState.time, rows, sourceTab: metric, method, period };
+  requestAnimationFrame(() => _drawTimeChart(rows, metric, method, period));
 }
 
 /* One entry point per tab, so the resize and tab-switch handlers do not have to
@@ -3944,7 +4639,7 @@ function renderTimeChart(rows, metric, method) {
 function redrawChart(tab) {
   const st = _chartState[tab];
   if (!st) return;
-  if (tab === 'time') _drawTimeChart(st.rows, st.sourceTab, st.method);
+  if (tab === 'time') _drawTimeChart(st.rows, st.sourceTab, st.method, st.period);
   else                _drawChart(st.rows, st.method, tab);
 }
 
@@ -4336,8 +5031,121 @@ async function init() {
        and CER restores the method that metric was last ranked by. */
     let werMethod = 'mean', cerMethod = 'mean';
     let lbMetric = 'wer', analysisMetric = 'wer', timeMetric = 'wer';
+    let timePeriod = { from: '', through: '' };
+
+    /* Include every month between the first and last model or score snapshot,
+       so the two handles move through a continuous calendar timeline. */
+    const datedMonths = [...new Set([...data.wer, ...data.cer]
+      .flatMap(r => [r.released, ...(r.history || []).map(h => h.submitted)])
+      .map(parseISODate).filter(t => t != null)
+      .map(t => new Date(t).toISOString().slice(0, 7)))].sort();
+    const timeMonths = [];
+    if (datedMonths.length) {
+      const last = monthStart(datedMonths.at(-1));
+      for (let ms = monthStart(datedMonths[0]); ms <= last;) {
+        const date = new Date(ms);
+        timeMonths.push(`${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`);
+        ms = Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 1);
+      }
+    }
+    const fromRange = document.getElementById('time-from');
+    const throughRange = document.getElementById('time-through');
+    const rangeTrack = document.getElementById('time-range-track');
+    const rangeTicks = document.getElementById('time-range-ticks');
+    const rangeValue = document.getElementById('time-range-value');
+    const periodSummary = document.getElementById('time-period-summary');
+    const periodToggle = document.getElementById('time-period-toggle');
+    const rangeYears = document.getElementById('time-range-years');
+    const resetPeriod = document.getElementById('time-reset');
+    const lastMonth = Math.max(0, timeMonths.length - 1);
+    const monthLabel = month => `${MONTHS_ABBR[Number(month.slice(5)) - 1]} ${month.slice(0, 4)}`;
+    for (const input of [fromRange, throughRange]) {
+      input.max = String(lastMonth);
+      input.disabled = !timeMonths.length;
+    }
+    fromRange.value = '0';
+    throughRange.value = String(lastMonth);
+    timeMonths.forEach((month, i) => {
+      const marker = document.createElement('span');
+      marker.className = month.endsWith('-01') ? 'year' : ['04', '07', '10'].includes(month.slice(5)) ? 'quarter' : 'month';
+      marker.style.left = `${lastMonth ? i / lastMonth * 100 : 0}%`;
+      rangeTicks.append(marker);
+      if (!month.endsWith('-01')) return;
+      const tick = document.createElement('span');
+      tick.style.left = `${lastMonth ? i / lastMonth * 100 : 0}%`;
+      tick.textContent = month.slice(0, 4);
+      rangeYears.append(tick);
+    });
+    function updateTimePeriod(changed, render = true) {
+      let from = Number(fromRange.value), through = Number(throughRange.value);
+      if (from > through) {
+        if (changed === 'from') from = through;
+        else through = from;
+      }
+      fromRange.value = String(from);
+      throughRange.value = String(through);
+      const fromMonth = timeMonths[from], throughMonth = timeMonths[through];
+      timePeriod = {
+        from: from > 0 ? fromMonth : '',
+        through: through < lastMonth ? throughMonth : '',
+      };
+      rangeTrack.style.setProperty('--range-from', `${lastMonth ? from / lastMonth * 100 : 0}%`);
+      rangeTrack.style.setProperty('--range-through', `${lastMonth ? through / lastMonth * 100 : 100}%`);
+      rangeValue.textContent = fromMonth && throughMonth
+        ? `${monthLabel(fromMonth)} – ${monthLabel(throughMonth)}` : 'No dates available';
+      periodSummary.textContent = fromMonth && throughMonth
+        ? `${fromMonth.slice(5)}.${fromMonth.slice(0, 4)} – ${throughMonth.slice(5)}.${throughMonth.slice(0, 4)}`
+        : 'No dates available';
+      periodToggle.classList.toggle('has-range', !!(timePeriod.from || timePeriod.through));
+      fromRange.setAttribute('aria-valuetext', fromMonth ? monthLabel(fromMonth) : 'No dates available');
+      throughRange.setAttribute('aria-valuetext', throughMonth ? monthLabel(throughMonth) : 'No dates available');
+      resetPeriod.hidden = !timePeriod.from && !timePeriod.through;
+      if (render) applyTime();
+    }
+    fromRange.addEventListener('input', () => updateTimePeriod('from'));
+    throughRange.addEventListener('input', () => updateTimePeriod('through'));
+    function moveHandle(event, handle) {
+      const rect = rangeTrack.getBoundingClientRect();
+      const fraction = Math.min(1, Math.max(0, (event.clientX - rect.left - 10) / Math.max(1, rect.width - 20)));
+      const index = Math.round(fraction * lastMonth);
+      (handle === 'from' ? fromRange : throughRange).value = String(index);
+      updateTimePeriod(handle);
+    }
+    rangeTrack.addEventListener('pointerdown', event => {
+      if (event.target.matches('input') || !timeMonths.length) return;
+      const rect = rangeTrack.getBoundingClientRect();
+      const index = Math.round(Math.min(1, Math.max(0, (event.clientX - rect.left - 10) / Math.max(1, rect.width - 20))) * lastMonth);
+      const from = Number(fromRange.value), through = Number(throughRange.value);
+      const handle = index < from ? 'from' : index > through ? 'through'
+        : index - from <= through - index ? 'from' : 'through';
+      rangeTrack.setPointerCapture(event.pointerId);
+      moveHandle(event, handle);
+      const onMove = e => moveHandle(e, handle);
+      const onEnd = e => {
+        rangeTrack.removeEventListener('pointermove', onMove);
+        rangeTrack.removeEventListener('pointerup', onEnd);
+        rangeTrack.removeEventListener('pointercancel', onEnd);
+        if (rangeTrack.hasPointerCapture(e.pointerId)) rangeTrack.releasePointerCapture(e.pointerId);
+      };
+      rangeTrack.addEventListener('pointermove', onMove);
+      rangeTrack.addEventListener('pointerup', onEnd);
+      rangeTrack.addEventListener('pointercancel', onEnd);
+    });
+    resetPeriod.addEventListener('click', () => {
+      fromRange.value = '0';
+      throughRange.value = String(lastMonth);
+      updateTimePeriod('reset');
+    });
+    updateTimePeriod('reset', false);
 
     const methodFor = (metric) => (metric === 'wer' ? werMethod : cerMethod);
+    const paretoWerLimit = document.getElementById('wer-limit-analysis');
+    const timeWerLimit = document.getElementById('wer-limit-time');
+    paretoWerLimit.value = paretoWerLimit.dataset.default;
+    timeWerLimit.value = timeWerLimit.dataset.default;
+    paretoWerLimit.dispatchEvent(new Event('change', { bubbles: true }));
+    timeWerLimit.dispatchEvent(new Event('change', { bubbles: true }));
+    const werLimit = select => select.value === '' ? Infinity : Number(select.value);
     document.getElementById('download-csv').addEventListener('click', () => {
       const viewRows = [...werEl.tBodies[0].rows]
         .filter(tr => !tr.classList.contains('hidden'))
@@ -4353,9 +5161,9 @@ async function init() {
         `danish-asr-pareto-${data.updated || 'results'}.csv`);
     });
     document.getElementById('download-time').addEventListener('click', () => {
-      const { rows, method, sourceTab } = _chartState.time;
-      if (!rows || timeChartData(rows, sourceTab, method).pts.length < 2) return;
-      downloadCsv(makeTimeCsv(rows, sourceTab, method, showCI),
+      const { rows, method, sourceTab, period } = _chartState.time;
+      if (!rows || !timeChartData(rows, sourceTab, method, period).pts.length) return;
+      downloadCsv(makeTimeCsv(rows, sourceTab, method, showCI, period),
         `danish-asr-over-time-${data.updated || 'results'}.csv`);
     });
     /* Which metric each tab is showing; its Rank by group acts on that one. */
@@ -4364,28 +5172,35 @@ async function init() {
     function applyTime(metric = timeMetric) {
       timeMetric = metric;
       const isWer = metric === 'wer';
-      const rows = (isWer ? visible(data.wer) : visible(data.cer))
+      const limit = werLimit(timeWerLimit);
+      const rows = chartWerRows((isWer ? visible(data.wer) : visible(data.cer))
         .flatMap(r => methodFor(metric) === 'mean'
           ? [...(r.history || []).map(h => ({
               ...r, ...h, released: h.submitted, date_basis: 'score',
               mean_wer_ci: null, mean_cer_ci: null,
             })), r]
-          : [r])
-        .filter(r => r.mean_wer == null || r.mean_wer <= 50);
+          : [r]), limit);
+      document.getElementById('time-cutoff-note').textContent = Number.isFinite(limit)
+        ? `Models above ${limit}% mean WER are excluded; change the limit in Settings.`
+        : 'No mean WER limit is applied.';
       document.getElementById('tog-time-wer').classList.toggle('active', isWer);
       document.getElementById('tog-time-cer').classList.toggle('active', !isWer);
       document.querySelector('#time-chart-title .chart-title-text').textContent =
         `Performance Over Time (${isWer ? 'WER' : 'CER'})`;
       document.getElementById('download-time').disabled =
-        timeChartData(rows, metric, methodFor(metric)).pts.length < 2;
-      renderTimeChart(rows, metric, methodFor(metric));
+        !timeChartData(rows, metric, methodFor(metric), timePeriod).pts.length;
+      renderTimeChart(rows, metric, methodFor(metric), timePeriod);
       syncMethodBtns();
     }
 
     function applyAnalysis(metric = analysisMetric) {
       analysisMetric = metric;
       const isWer = metric === 'wer';
-      const rows = isWer ? _chartState.wer.rows : _chartState.cer.rows;
+      const limit = werLimit(paretoWerLimit);
+      const rows = chartWerRows(isWer ? _chartState.wer.rows : _chartState.cer.rows, limit);
+      document.getElementById('pareto-cutoff-note').textContent = Number.isFinite(limit)
+        ? `Models above ${limit}% mean WER are omitted from this plot and its CSV; change the limit in Settings.`
+        : 'No mean WER limit is applied to this plot or its CSV.';
       _chartState.analysis = {
         ..._chartState.analysis,
         rows,
@@ -4445,6 +5260,7 @@ async function init() {
           const b = document.getElementById(`tog-${tab}-${m}`);
           if (b) b.classList.toggle('active', m === methodFor(tm[tab]));
         }
+      refreshSettingsButtons();
     }
     function applyMethod(tab, m) {
       if (tabMetric()[tab] === 'wer') werMethod = m; else cerMethod = m;
@@ -4478,6 +5294,8 @@ async function init() {
     document.getElementById('tog-analysis-cer').addEventListener('click', () => applyAnalysis('cer'));
     document.getElementById('tog-time-wer').addEventListener('click', () => applyTime('wer'));
     document.getElementById('tog-time-cer').addEventListener('click', () => applyTime('cer'));
+    paretoWerLimit.addEventListener('change', () => applyAnalysis());
+    timeWerLimit.addEventListener('change', () => applyTime());
 
     /* CI toggle */
     const CI_BTNS = ['tog-ci-wer', 'tog-ci-analysis', 'tog-ci-time'];
@@ -4488,6 +5306,7 @@ async function init() {
         b.classList.toggle('active', showCI);
         b.setAttribute('aria-pressed', String(showCI));
       }
+      refreshSettingsButtons();
     }
     function toggleCI() {
       showCI = !showCI;
@@ -4510,6 +5329,7 @@ async function init() {
         b.classList.toggle('active', openOnly);
         b.setAttribute('aria-pressed', String(openOnly));
       }
+      refreshSettingsButtons();
     }
     function toggleOpen() {
       openOnly = !openOnly;
@@ -4557,6 +5377,7 @@ async function init() {
 
 document.querySelectorAll('.tab-btn').forEach(btn =>
   btn.addEventListener('click', () => {
+    document.querySelectorAll('.settings-sheet[open]').forEach(sheet => sheet.close());
     document.querySelectorAll('.tab-btn, .tab-pane')
             .forEach(el => el.classList.remove('active'));
     btn.classList.add('active');
@@ -4582,6 +5403,32 @@ document.querySelectorAll('.tab-btn').forEach(btn =>
   })
 );
 
+document.querySelectorAll('.info-tab-btn').forEach(btn =>
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.info-tab-btn').forEach(other => {
+      const active = other === btn;
+      other.classList.toggle('active', active);
+      other.setAttribute('aria-pressed', String(active));
+    });
+    document.querySelectorAll('.info-pane').forEach(pane =>
+      pane.classList.toggle('active', pane.id === 'tab-' + btn.dataset.infoTab));
+  })
+);
+
+const periodToggle = document.getElementById('time-period-toggle');
+const periodPanel = document.getElementById('time-range');
+periodToggle.addEventListener('click', () => {
+  const expanded = periodToggle.getAttribute('aria-expanded') !== 'true';
+  periodToggle.setAttribute('aria-expanded', String(expanded));
+  periodPanel.hidden = !expanded;
+});
+periodPanel.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  periodToggle.setAttribute('aria-expanded', 'false');
+  periodPanel.hidden = true;
+  periodToggle.focus();
+});
+
 /* Custom column tooltips */
 const TIP = document.getElementById('col-tip');
 let tipActive = false;
@@ -4602,9 +5449,17 @@ document.addEventListener('mouseout', e => {
 document.addEventListener('mousemove', e => {
   if (!tipActive) return;
   const w = TIP.offsetWidth, h = TIP.offsetHeight;
-  let x = e.clientX + 14, y = e.clientY + 14;
-  if (x + w > window.innerWidth  - 8) x = e.clientX - w - 14;
-  if (y + h > window.innerHeight - 8) y = e.clientY - h - 14;
+  const sheet = TIP.closest('dialog.settings-sheet[open]');
+  const bounds = sheet?.getBoundingClientRect();
+  const left = bounds?.left ?? 0, top = bounds?.top ?? 0;
+  const width = bounds?.width ?? window.innerWidth;
+  const height = bounds?.height ?? window.innerHeight;
+  const px = e.clientX - left, py = e.clientY - top;
+  let x = px + 14, y = py + 14;
+  if (x + w > width - 8) x = px - w - 14;
+  if (y + h > height - 8) y = py - h - 14;
+  x = Math.max(8, Math.min(x, width - w - 8));
+  y = Math.max(8, Math.min(y, height - h - 8));
   TIP.style.left = x + 'px';
   TIP.style.top  = y + 'px';
 });

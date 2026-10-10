@@ -110,6 +110,7 @@ LOCAL_MODELS=(
   "nvidia/canary-1b-v2|nemo|--nemo-model-type canary"
   "nvidia/parakeet-tdt-0.6b-v3|nemo|--nemo-model-type parakeet"
   "nvidia/parakeet-rnnt-110m-da-dk|nemo|--nemo-model-type parakeet"   # NEW — raw .nemo, auto-restored
+  "RyeAI/ekko-v1-tiny|nemo|--nemo-model-type parakeet"  # Public 113M Danish FastConformer RNN-T
   # nemotron-3.5-asr-streaming-0.6b: DEFERRED — restore_from resolves to abstract ASRModel
   #   (needs the correct concrete NeMo class / newer nemo_toolkit) and emits <da-DK> language tags.
   # RyeAI in-house (rebranded from canary-1b-v2-da). Three rows: greedy, +KenLM, and the turbo parakeet.

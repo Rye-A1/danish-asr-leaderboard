@@ -45,9 +45,11 @@ UPLOAD = ["index.html", "leaderboard.json", "models.py", "README.md", "cover.jpe
 OBSOLETE = ["app.py", "requirements.txt"]
 
 # Orgs to drop from the published board (case-insensitive match on the model's
-# "<org>/..." prefix). Temporary: RyeAI models aren't public yet — clear this
-# set (or remove the org) once the model repos are published.
+# "<org>/..." prefix). Keep private RyeAI candidates hidden until released.
 EXCLUDE_ORGS = {"ryeai"}
+# Public models within an otherwise excluded org. Add only after the model
+# weights are anonymously downloadable and its benchmark has been verified.
+PUBLIC_ORG_MODELS = {"ryeai/ekko-v1-tiny"}
 # Specific models to drop from the board (case-insensitive, exact model name).
 EXCLUDE_MODELS = {"syvai/hviske-v5.2"}
 
@@ -429,11 +431,14 @@ def load_leaderboard_df() -> pd.DataFrame:
     # Drop excluded orgs and models before ranking so ranks stay contiguous.
     if EXCLUDE_ORGS or EXCLUDE_MODELS:
         excl_models = {m.lower() for m in EXCLUDE_MODELS}
+        public_models = {m.lower() for m in PUBLIC_ORG_MODELS}
 
         def _drop(cell) -> bool:
             name, _ = _parse_model(cell)
             org = name.split("/", 1)[0].lower() if "/" in name else ""
-            return org in EXCLUDE_ORGS or name.lower() in excl_models
+            return name.lower() in excl_models or (
+                org in EXCLUDE_ORGS and name.lower() not in public_models
+            )
 
         keep = ~df["model"].map(_drop)
         dropped = int((~keep).sum())

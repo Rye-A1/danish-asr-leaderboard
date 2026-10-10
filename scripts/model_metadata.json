@@ -338,6 +338,17 @@
     "model_card": "https://huggingface.co/Qwen/Qwen3-ASR-1.7B",
     "paper": "https://arxiv.org/abs/2601.21337"
   },
+  "RyeAI/ekko-v1-tiny": {
+    "released": {
+      "date": "2026-10-09",
+      "source": "leaderboard",
+      "note": "First public leaderboard entry; the Hub repository existed privately before release."
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/RyeAI/ekko-v1-tiny",
+    "paper": null
+  },
   "saga-2-l": {
     "released": {
       "date": "2026-09-29",
