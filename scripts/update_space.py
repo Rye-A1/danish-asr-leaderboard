@@ -87,9 +87,33 @@ PROVIDER_HF_ORG: dict[str, str] = {
     "saga-2-l": "capacit-ai",
 }
 
-# Hand-maintained model release dates; see CONTRIBUTING.md for the format.
-RELEASE_DATES = json.loads(
-    (Path(__file__).resolve().parent / "release_dates.json").read_text(encoding="utf-8"))
+# Hand-maintained per-model metadata. See CONTRIBUTING.md.
+MODEL_METADATA_PATH = Path(__file__).resolve().parent / "model_metadata.json"
+MODEL_METADATA = json.loads(MODEL_METADATA_PATH.read_text(encoding="utf-8"))
+
+# Licences counted as open: they allow use, modification and redistribution,
+# commercial use included, with no field-of-use restrictions. That leaves out
+# the NC Creative Commons variants, OpenRAIL (use restrictions) and bespoke
+# vendor licences (HF tag "other"). Keyed by HF licence tag -> licence text.
+OPEN_LICENSES = {
+    "apache-2.0": "https://www.apache.org/licenses/LICENSE-2.0",
+    "mit": "https://opensource.org/license/mit",
+    "bsd-2-clause": "https://opensource.org/license/bsd-2-clause",
+    "bsd-3-clause": "https://opensource.org/license/bsd-3-clause",
+    "mpl-2.0": "https://www.mozilla.org/en-US/MPL/2.0/",
+    "gpl-3.0": "https://www.gnu.org/licenses/gpl-3.0.html",
+    "lgpl-3.0": "https://www.gnu.org/licenses/lgpl-3.0.html",
+    "agpl-3.0": "https://www.gnu.org/licenses/agpl-3.0.html",
+    "cc0-1.0": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "cc-by-4.0": "https://creativecommons.org/licenses/by/4.0/",
+    "cc-by-sa-4.0": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "unlicense": "https://unlicense.org/",
+}
+
+# The six openness criteria, in display order. weights and license are derived
+# (HF repo + licence tag); the other four are annotated in model_metadata.json.
+OPENNESS_KEYS = ("weights", "license", "training_code", "training_data", "model_card", "paper")
+ANNOTATED_OPENNESS_KEYS = OPENNESS_KEYS[2:]
 
 _MD_LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
 # A size the model advertises in its own name: 24B, 1.7B, 0.6b, 315m, …
@@ -265,6 +289,24 @@ def _model_downloads(model_id: str) -> int | None:
     return downloads if downloads >= 0 else None
 
 
+def _openness(name: str, is_repo: bool, access: str, license: str) -> dict[str, str | None]:
+    """Evidence link per openness criterion, or None where it is not met.
+
+    Open weights and open licence are derived -- an open HF repo that anyone
+    can download (no manual approval gate), and a licence tag in OPEN_LICENSES
+    -- so they cannot drift from the Hub. The other four come from the model's
+    entry in model_metadata.json.
+    """
+    downloadable = (is_repo and access == "open"
+                    and _model_metadata(name).get("gated") != "manual")
+    ann = MODEL_METADATA.get(name, {})
+    return {
+        "weights": f"https://huggingface.co/{name}" if downloadable else None,
+        "license": OPEN_LICENSES.get(license.lower()) if license else None,
+        **{key: ann.get(key) or None for key in ANNOTATED_OPENNESS_KEYS},
+    }
+
+
 def _release_date(model_id: str) -> str:
     """ISO release date for a model, or '' if there is no entry for it.
 
@@ -273,7 +315,7 @@ def _release_date(model_id: str) -> str:
     fallback this used to have was never reached -- and it would have resolved
     "syvai/hviske-v5.1" to whichever of "syvai/hviske-v5" came first.
     """
-    return RELEASE_DATES.get(model_id, {}).get("released", "")
+    return MODEL_METADATA.get(model_id, {}).get("released", {}).get("date", "")
 
 
 def _fmt_size(x) -> str:
@@ -426,14 +468,19 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 logo = _api_logo(name)
             submitted = row.get("submitted")
             submitted_date = str(submitted)[:10] if pd.notna(submitted) else ""
-            plot_by_submission = RELEASE_DATES.get(name, {}).get("plot_by") == "submitted"
+            license = _model_license(name) if is_repo else ""
+            openness = _openness(name, is_repo, access, license)
+            plot_by_submission = (
+                MODEL_METADATA.get(name, {}).get("released", {}).get("plot_by") == "submitted")
             entry: dict = {
                 "rank": rank,
                 "name": name,
                 "url": url,
                 "logo": logo,
-                "access": str(row.get("access", "open")),
-                "license": _model_license(name) if is_repo else "",
+                "access": access,
+                "license": license,
+                "openness": openness,
+                "openness_score": sum(v is not None for v in openness.values()),
                 # Hugging Face reports a rolling 30-day download count. It is
                 # activity context, not a quality or historical trend metric.
                 "hf_downloads": _model_downloads(name) if is_repo else None,
@@ -442,7 +489,7 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "submitted": submitted_date,
                 "history": _score_history(name),
                 # A mutable API is plotted at each score's evaluation date;
-                # release_dates.json retains its actual service launch date.
+                # model_metadata.json retains its actual service launch date.
                 "released": submitted_date if plot_by_submission else _release_date(name),
                 "date_basis": "score" if plot_by_submission else "release",
             }
@@ -778,10 +825,17 @@ def main() -> None:
     print("Building leaderboard.json …")
     df = load_leaderboard_df()
     data = build_leaderboard_json(df)
+    unannotated = [r["name"] for r in data["wer"]
+                   if not all(k in MODEL_METADATA.get(r["name"], {})
+                              for k in ANNOTATED_OPENNESS_KEYS)]
+    if unannotated:
+        print(f"  no openness annotations for {len(unannotated)} model(s) — add "
+              f"{', '.join(ANNOTATED_OPENNESS_KEYS)} to model_metadata.json: "
+              f"{', '.join(unannotated)}")
     missing = [r["name"] for r in data["wer"] if not r["released"]]
     if missing:
         print(f"  no release date for {len(missing)} model(s) — add them to "
-              f"release_dates.json to plot them on the Over Time chart: "
+              f"model_metadata.json to plot them on the Over Time chart: "
               f"{', '.join(missing)}")
     out = SPACE_DIR / "leaderboard.json"
     out.write_text(json.dumps(data, ensure_ascii=False, indent=2))
