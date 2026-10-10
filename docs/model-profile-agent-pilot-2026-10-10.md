@@ -24,6 +24,13 @@ the pilot nor the comparison changed leaderboard scores.
 discarded the claim. Edda's raw suggestion inferred `no` timestamps from the
 `<|notimestamps|>` training target; validation kept `unknown` because that
 target alone does not prove output support is impossible. The final prompt asks
-for one short contiguous passage or bullet per quote. This small, selected
-pilot tests the workflow and guards, not general reviewer accuracy. Gated
-cards still need manual review.
+for one short contiguous passage or bullet per quote.
+
+**Repeat with that final prompt: 14/16 exact matches.** Ekko's model-card and
+Edda's training-data suggestions were both `yes`, but the free model again
+provided unsupported combined or empty quotes; validation kept both `unknown`.
+It also repeated the unsupported Edda timestamp `no`, which validation rejected.
+The change from 15/16 to 14/16 on the same two models shows run-to-run
+variability despite temperature zero. These small, selected pilots test the
+workflow and guards, not general reviewer accuracy. Gated cards still need
+manual review, and no agent draft is applied to leaderboard scores.

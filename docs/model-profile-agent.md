@@ -51,12 +51,13 @@ The first live pilot on Edda v0.1 yielded source-validated license and data
 suggestions from Nemotron Super under the former data rule; Gemma 4's free
 endpoint returned provider rate limits. A 10 October local pilot with the
 revised rule compared Edda v0.2 and Ekko Tiny with human reviews. In the third
-iteration, validated suggestions matched **15 of 16 field states**. The one
-remaining strict mismatch was Ekko's model-card field: the agent said `yes`
-but combined separate bullet lines into one purported quote, which validation
-rejected. It also inferred `no` timestamps for Edda from a no-timestamps
-training token; validation rejected that speculation and retained `unknown`.
-Two models are too few to establish general accuracy. Human review remains
+iteration, validated suggestions matched **15 of 16 field states**. Repeating
+the same two models with the final quote wording yielded **14 of 16**. The free
+model still combined or left empty some purported quotes, so validation
+withheld Ekko's model-card claim and, on the repeat, Edda's training-data claim.
+It also inferred `no` timestamps for Edda from a no-timestamps training token;
+validation rejected that speculation and retained `unknown`. Two models and
+variable runs cannot establish general accuracy. Human review remains
 required, especially for licenses and negative capability claims. The
 [pilot field comparison](model-profile-agent-pilot-2026-10-10.md) records all
 16 decisions and the two validation limits.
