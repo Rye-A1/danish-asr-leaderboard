@@ -40,6 +40,9 @@ danish-asr-eval = "danish_asr_leaderboard.cli:main"
 
 [project.optional-dependencies]
 transformers   = ["torch>=2.0.0", "transformers>=4.54.0"]
+# Any model whose decoding code ships in its Hub repo (trust_remote_code) and exposes
+# model.transcribe(processor=, language=, audio_arrays=, sample_rates=).
+transformers-remote = ["torch>=2.0.0", "transformers>=4.56.0", "soundfile>=0.12.1"]
 wav2vec2       = ["torch>=2.0.0", "transformers>=4.54.0",
                   # n-gram LM decoding for repos shipping language_model/
                   # (CoRal Røst, MediaCatch) — worth ~6pp WER on those models.

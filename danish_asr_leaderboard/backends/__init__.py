@@ -24,6 +24,7 @@ from danish_asr_leaderboard.backends import (  # noqa: F401,E402
     saga2_backend,
     seamless_backend,
     transformers_backend,
+    transformers_remote_backend,
     vibevoice_backend,
     voxtral_backend,
     wav2vec2_backend,
