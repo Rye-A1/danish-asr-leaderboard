@@ -1,5 +1,5 @@
 {
-  "model": "[syv-transcribe](https://syv.ai)",
+  "model": "[syv-transcribe](https://platform.syv.ai)",
   "params_b": 0.0,
   "coral_conversation_wer": 14.74,
   "coral_read_aloud_wer": 7.6,

@@ -62,7 +62,7 @@ PROVIDER_DOCS = {
     "chirp": "https://cloud.google.com/speech-to-text/v2/docs/chirp_3-model",
     "soniox": "https://soniox.com/docs/stt/get-started/transcribe-audio-file",
     "azure": "https://learn.microsoft.com/azure/ai-services/openai/concepts/models",
-    "syv-transcribe": "https://syv.ai",
+    "syv-transcribe": "https://platform.syv.ai",
     "saga-2-l": "https://capacit.com",
     "ordbogen": "https://odincore.ai/docs/models/ordbogen-whisper",
     # Distinct from the "gpt-4o" key above: gpt-transcribe is a separate model

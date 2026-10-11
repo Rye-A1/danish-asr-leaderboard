@@ -1,6 +1,6 @@
 {
   "model": "syv-transcribe",
-  "model_link": "[syv-transcribe](https://syv.ai)",
+  "model_link": "[syv-transcribe](https://platform.syv.ai)",
   "params_b": 0.0,
   "access": "proprietary",
   "submitted": "2026-10-11",
