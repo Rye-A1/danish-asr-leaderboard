@@ -46,6 +46,7 @@ Install [uv](https://docs.astral.sh/uv/getting-started/installation/) if you hav
 
 ```bash
 uv pip install -e ".[transformers]"    # Whisper, Røst, hviske, …
+uv pip install -e ".[transformers-remote]"  # models shipping their own code (trust_remote_code)
 uv pip install -e ".[nemo]"            # Canary / Parakeet / SALM
 uv pip install -e ".[nemotron-asr]"    # Nemotron 3.5 ASR (transformers, no NeMo)
 uv pip install -e ".[faster-whisper]"
@@ -59,7 +60,7 @@ uv pip install -e ".[google-chirp]"
 uv pip install -e ".[soniox]"
 ```
 
-Available extras match the `--backend` names: `transformers`, `wav2vec2`,
+Available extras match the `--backend` names: `transformers`, `transformers-remote`, `wav2vec2`,
 `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemotron-asr`, `voxtral`, `danstral`, `seamless`, `cohere-asr`,
 `vibevoice`, `brage`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`, `syv`.
 
@@ -132,6 +133,10 @@ danish-asr-eval --model capacit-ai/saga-2-m --backend saga2
 # 1.543B in Brage plus 7.242B in the Munin rescoring model.
 danish-asr-eval --model Harmonium/brage-v1 --backend brage --params-b 8.785
 
+# Models whose decoding code ships in their own repo (trust_remote_code). The repo's config picks
+# the dtype; the model must expose model.transcribe(processor=, language=, audio_arrays=, sample_rates=).
+danish-asr-eval --model danish-foundation-models/edda-v0.2-duo --backend transformers-remote
+
 # API backends (params not applicable → defaults to 0.0)
 danish-asr-eval --model chirp_3 --backend google-chirp --google-cloud-project my-gcp-project
 danish-asr-eval --model soniox-v1 --backend soniox --soniox-api-key "$SONIOX_API_KEY"
@@ -162,7 +167,7 @@ no-op when unconfigured.
 Run `danish-asr-eval --help` for all options (device, batch size, beam/KenLM,
 per-API credentials, `--access open|proprietary`, …). Available backends:
 
-`transformers`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`, `nemotron-asr`,
+`transformers`, `transformers-remote`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`, `nemotron-asr`,
 `voxtral`, `danstral`, `seamless`, `cohere-asr`, `vibevoice`, `brage`, `elevenlabs`,
 `azure-openai`, `google-chirp`, `soniox`, `syv`.
 

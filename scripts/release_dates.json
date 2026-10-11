@@ -39,6 +39,10 @@
     "released": "2026-10-02",
     "source": "huggingface"
   },
+  "danish-foundation-models/edda-v0.2-duo": {
+    "released": "2026-10-10",
+    "source": "huggingface"
+  },
   "facebook/mms-1b-all": {
     "released": "2023-05-27",
     "source": "huggingface"
