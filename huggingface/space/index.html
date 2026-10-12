@@ -2887,7 +2887,7 @@ const OPENNESS_TIP =
 const LICENSE_LABELS = {
   'nvidia-open-model-license': 'NVIDIA Open Model',
   'openmdw-1.1': 'OpenMDW 1.1',
-  'ekko-composite-model-terms': 'Ekko model terms',
+  'ekko-composite-model-terms': 'NVIDIA Open Model',
   'brage-v1-license': 'Brage v1 licence',
   openrail: 'OpenRAIL',
 };
@@ -3435,7 +3435,9 @@ function buildRow(row, cols, maxVals) {
       licName.className = 'm-license-label';
       licName.textContent = licenseLabel(row.license) || '—';
       lic.append(ICON_LICENSE(), licName);
-      lic.title = 'Licence: ' + (row.license || 'not declared');
+      lic.title = row.license === 'ekko-composite-model-terms'
+        ? 'NVIDIA Open Model License; additional model terms apply'
+        : 'Licence: ' + (row.license || 'not declared');
       meta.appendChild(lic);
 
       td.appendChild(meta);
