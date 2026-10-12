@@ -20,6 +20,7 @@ from update_space import (
     _download_series,
     _release_date,
     _fmt_size,
+    _model_license,
     _official_size,
     _openness,
     _parse_model,
@@ -56,6 +57,21 @@ def test_reviewed_commercial_redistribution_licences(name, tag):
 def test_custom_licence_evidence_does_not_override_noncommercial_relicensing():
     assert _openness("RyeAI/ekko-v1-tiny", True, "open", "cc-by-nc-4.0")["license"] is None
     assert _openness("unreviewed/model", True, "open", "other")["license"] is None
+    assert _openness("Harmonium/brage-v1", True, "open", "brage-v1-license")["license"] is None
+
+
+@pytest.mark.parametrize("tag, name, expected", [
+    ("other", "nvidia-open-model-license", "nvidia-open-model-license"),
+    ("other", "", "other"),
+    ("apache-2.0", "unrelated-custom-name", "apache-2.0"),
+])
+def test_custom_licence_name_replaces_only_other_tag(monkeypatch, tag, name, expected):
+    import update_space
+
+    monkeypatch.setattr(update_space, "_model_metadata", lambda _model: {
+        "tags": [f"license:{tag}"], "cardData": {"license_name": name},
+    })
+    assert _model_license("example/model") == expected
 
 
 # ---------------------------------------------------------------------------

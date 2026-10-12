@@ -726,7 +726,8 @@
       color: var(--muted);
     }
     .model-meta .m-size { font-variant-numeric: tabular-nums; }
-    .model-meta .m-license { max-width: 112px; overflow: hidden; }
+    .model-meta .m-license { max-width: 150px; }
+    .model-meta .m-license-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
     .meta-icon {
       width: 10px;
       height: 10px;
@@ -2883,6 +2884,14 @@ function appendCI(td, ci, fmt) {
 
 const OPENNESS_TIP =
   'Blue icons link to supporting evidence. Faded icons have no confirmed source. The licence point allows commercial reuse and redistribution; conditions may still apply.';
+const LICENSE_LABELS = {
+  'nvidia-open-model-license': 'NVIDIA Open Model',
+  'openmdw-1.1': 'OpenMDW 1.1',
+  'ekko-composite-model-terms': 'Ekko model terms',
+  'brage-v1-license': 'Brage v1 licence',
+  openrail: 'OpenRAIL',
+};
+const licenseLabel = tag => LICENSE_LABELS[tag] || tag || '';
 
 const WER_COLS = [
   { key:'#',                      label:'#',             cls:'c-rank',
@@ -3308,7 +3317,7 @@ function showModelPreview(link, row) {
   }
   const foot = document.createElement('div');
   foot.className = 'model-preview-foot';
-  foot.textContent = `Licence: ${row.license || 'not declared'} · Open model page ↗`;
+  foot.textContent = `Licence: ${licenseLabel(row.license) || 'not declared'} · Open model page ↗`;
   MODEL_PREVIEW.append(head, stats, foot);
   MODEL_PREVIEW.hidden = false;
   positionModelPreview(link);
@@ -3422,7 +3431,10 @@ function buildRow(row, cols, maxVals) {
 
       const lic = document.createElement('span');
       lic.className = 'm-license';
-      lic.append(ICON_LICENSE(), row.license || '—');
+      const licName = document.createElement('span');
+      licName.className = 'm-license-label';
+      licName.textContent = licenseLabel(row.license) || '—';
+      lic.append(ICON_LICENSE(), licName);
       lic.title = 'Licence: ' + (row.license || 'not declared');
       meta.appendChild(lic);
 
@@ -5184,7 +5196,7 @@ function setupCompare(data) {
       Number.isFinite(parseFloat(row.size)) ? `${row.size}B` : '—'));
     addSummaryRow('compare-summary-body', 'Weights', rows.map(row =>
       row.access === 'open' ? 'Open' : row.access === 'proprietary' ? 'Proprietary API' : '—'));
-    addSummaryRow('compare-summary-body', 'License', rows.map(row => row.license || '—'));
+    addSummaryRow('compare-summary-body', 'License', rows.map(row => licenseLabel(row.license) || '—'));
     addSummaryRow('compare-summary-body', 'Openness', rows.map(row => {
       const cell = document.createElement('span');
       openCell(cell, row);

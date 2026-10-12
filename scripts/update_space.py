@@ -232,16 +232,22 @@ def _model_metadata(model_id: str) -> dict:
 
 
 def _model_license(model_id: str) -> str:
-    """Licence tag from the model's HF repo, or '' if none/unavailable.
+    """Licence tag or named custom licence from the HF repo, if available.
 
     Read live from the Hub (same approach as the org avatars) rather than stored
     in the result JSONs, so a re-licensed model corrects itself on the next
     deploy instead of going stale. Hosted API models have no repo — they get ''
     and render as an em dash.
     """
-    for tag in _model_metadata(model_id).get("tags", []):
+    metadata = _model_metadata(model_id)
+    for tag in metadata.get("tags", []):
         if tag.startswith("license:"):
-            return tag.split(":", 1)[1]
+            license_tag = tag.split(":", 1)[1]
+            if license_tag == "other":
+                name = (metadata.get("cardData") or {}).get("license_name")
+                if isinstance(name, str) and name.strip():
+                    return name.strip()
+            return license_tag
     return ""
 
 
