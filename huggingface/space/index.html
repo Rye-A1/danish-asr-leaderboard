@@ -2035,6 +2035,7 @@
     .settings-sheet .toolbar > :not(.ci-btn) { grid-column: 1 / -1; }
     .settings-sheet .tog-wrap,
     .settings-sheet .size-filter,
+    .settings-sheet .openness-filter,
     .settings-sheet .ci-btn {
       min-height: 74px;
       height: auto;
@@ -2068,6 +2069,8 @@
       gap: 8px;
       white-space: normal;
     }
+    .settings-sheet .openness-filter { height: max-content; white-space: normal; }
+    .openness-filter > .settings-field-title { display: flex; margin-bottom: 8px; }
     .settings-field-title { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font-weight: 650; }
     .settings-sheet .size-filter select {
       width: 100%;
@@ -2077,6 +2080,33 @@
       border-radius: 6px;
       background: var(--surf);
     }
+    .openness-filter details { display: block; width: 100%; }
+    .openness-filter summary {
+      display: flex; align-items: center; gap: 8px;
+      min-height: 32px; padding: 6px 8px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surf); color: var(--text);
+      font-size: 13px; cursor: pointer; list-style: none;
+    }
+    .openness-filter summary::-webkit-details-marker { display: none; }
+    .openness-filter summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .openness-filter-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .openness-filter summary svg { width: 15px; height: 15px; flex: none; transition: transform .15s; }
+    .openness-filter details[open] summary svg { transform: rotate(180deg); }
+    .openness-filter-options {
+      display: grid; gap: 2px; max-height: 240px; overflow-y: auto;
+      margin-top: 6px; padding: 5px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surf);
+    }
+    .openness-filter-option {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 6px; border-radius: 5px;
+      color: var(--text); font-size: 13px; cursor: pointer;
+    }
+    .openness-filter-option:hover { background: var(--surf2); }
+    .openness-filter-option input { width: 16px; height: 16px; flex: none; accent-color: var(--link); }
+    .openness-filter-help { display: block; margin-top: 8px; color: var(--muted); font-size: 11px; line-height: 1.4; }
     .settings-sheet .ci-btn {
       display: grid;
       grid-template-columns: 18px minmax(0, 1fr);
@@ -2819,15 +2849,19 @@ const MEDALS = ['🥇','🥈','🥉'];
 let showCI = false;
 let openOnly = false;   // hide hosted/API (proprietary) models — opt-in
 let maxSizeB = null;    // billions of parameters; null includes unknown sizes
+const requiredOpenness = new Set();
+let onOpennessFilterChanged = null;
 
-// Rows for a tab, honouring the shared access and size filters. A size limit
-// excludes unknown sizes because their position relative to the limit is unknown.
+// Rows for a tab, honouring the shared access, size, and openness filters.
+// A size limit excludes unknown sizes; openness requires linked evidence.
 function visible(rows) {
   return rows.filter(r => {
     if (openOnly && r.access === 'proprietary') return false;
-    if (maxSizeB == null) return true;
-    const size = parseFloat(r.size);
-    return Number.isFinite(size) && size <= maxSizeB;
+    if (maxSizeB != null) {
+      const size = parseFloat(r.size);
+      if (!Number.isFinite(size) || size > maxSizeB) return false;
+    }
+    return [...requiredOpenness].every(key => Boolean(r.openness?.[key]));
   });
 }
 
@@ -3485,6 +3519,58 @@ function decorateSettings(bar) {
     title.append(icon(field.querySelector('select')?.id.startsWith('wer-limit-') ? 'limit' : 'size'), textNode.textContent.trim());
     textNode.replaceWith(title);
   });
+  const field = document.createElement('div');
+  field.className = 'openness-filter';
+  const title = document.createElement('span');
+  title.className = 'settings-field-title';
+  title.append(icon('open'), 'Openness factors');
+  const details = document.createElement('details');
+  const summary = document.createElement('summary');
+  const value = document.createElement('span');
+  value.className = 'openness-filter-value';
+  summary.append(value, _icon(['m6 9 6 6 6-6'], ''));
+  const options = document.createElement('div');
+  options.className = 'openness-filter-options';
+  options.setAttribute('role', 'group');
+  options.setAttribute('aria-label', 'Required openness factors');
+  for (const [key, label] of OPENNESS) {
+    const option = document.createElement('label');
+    option.className = 'openness-filter-option';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = key;
+    checkbox.addEventListener('change', () => {
+      if (checkbox.checked) requiredOpenness.add(key);
+      else requiredOpenness.delete(key);
+      syncOpennessFilterControls();
+      refreshSettingsButtons();
+      onOpennessFilterChanged?.();
+    });
+    option.append(checkbox, label);
+    options.appendChild(option);
+  }
+  details.append(summary, options);
+  details.addEventListener('toggle', () => {
+    if (details.open) details.scrollIntoView({ block: 'nearest' });
+  });
+  const help = document.createElement('span');
+  help.className = 'openness-filter-help';
+  help.textContent = 'Require linked evidence for every selected factor.';
+  field.append(title, details, help);
+  bar.insertBefore(field, bar.querySelector('.download-csv'));
+  syncOpennessFilterControls();
+}
+
+function syncOpennessFilterControls() {
+  const labels = OPENNESS.filter(([key]) => requiredOpenness.has(key)).map(([, label]) => label);
+  const value = labels.length === 0 ? 'All models' : labels.length <= 2 ? labels.join(', ') : `${labels.length} selected`;
+  document.querySelectorAll('.openness-filter').forEach(field => {
+    field.querySelectorAll('input[type="checkbox"]').forEach(input => {
+      input.checked = requiredOpenness.has(input.value);
+    });
+    field.querySelector('.openness-filter-value').textContent = value;
+    field.querySelector('summary').setAttribute('aria-label', `Openness factors filter: ${value}`);
+  });
 }
 
 /* Keep filter controls out of the table's scanning path until a user asks for
@@ -3562,6 +3648,7 @@ function initFilterToggles() {
       bar.querySelectorAll('.size-filter select').forEach(select => {
         if (select.value !== (select.dataset.default ?? '')) n++;
       });
+      if (requiredOpenness.size) n++;
       return n;
     };
 
@@ -3610,10 +3697,16 @@ function initFilterToggles() {
         select.value = defaultValue;
         select.dispatchEvent(new Event('change', { bubbles: true }));
       });
+      if (requiredOpenness.size) {
+        requiredOpenness.clear();
+        syncOpennessFilterControls();
+        onOpennessFilterChanged?.();
+      }
       refreshSettingsButtons();
     });
     sheet.addEventListener('click', event => { if (event.target === sheet) sheet.close(); });
     sheet.addEventListener('close', () => {
+      sheet.querySelectorAll('.openness-filter details[open]').forEach(details => { details.open = false; });
       TIP.classList.remove('show');
       tipActive = false;
       document.body.append(TIP);
@@ -5465,6 +5558,10 @@ async function init() {
       if (analysisMetric === 'cer') applyAnalysis('cer');
       if (timeMetric === 'cer') applyTime('cer');
     }
+    onOpennessFilterChanged = () => {
+      applyWer();
+      applyCer();
+    };
 
     /* Rank by: one group per tab, each acting on the metric that tab shows. The
        method is stored per metric, so a choice made on Pareto while it displays
