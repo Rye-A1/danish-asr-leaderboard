@@ -1,0 +1,34 @@
+"""Guard the published speaker breakdown against split or reference drift."""
+
+import pandas as pd
+import pytest
+
+from scripts.build_compare_data import metadata_groups, output_slugs, score_groups
+
+
+def test_breakdown_requires_exact_test_rows_and_references():
+    metadata = {"ftspeech": {
+        "ftspeech_00000.wav": {"reference": "Dette er en prøve", "gender": "F", "speaker": "A"},
+        "ftspeech_00001.wav": {"reference": "Det er en anden", "gender": "M", "speaker": "B"},
+    }}
+    groups = metadata_groups(metadata)
+    outputs = pd.DataFrame([
+        {"id": "cache/ftspeech_00000.wav", "reference": "Dette er en prøve", "hypothesis": "Dette er en prøve"},
+        {"id": "cache/ftspeech_00001.wav", "reference": "Det er en anden", "hypothesis": "Det er anden"},
+    ])
+    scores = score_groups(outputs, "ftspeech", metadata, groups)
+    assert scores["gender"]["Women"]["wer"] == 0
+    assert scores["gender"]["Men"]["wer"] > 0
+    assert score_groups(outputs.iloc[:1], "ftspeech", metadata, groups) is None
+    changed = outputs.copy()
+    changed.loc[1, "reference"] = "Different reference"
+    assert score_groups(changed, "ftspeech", metadata, groups) is None
+    with pytest.raises(ValueError, match="duplicate output ID"):
+        score_groups(pd.concat([outputs.iloc[:1], outputs.iloc[:1]]), "ftspeech", metadata, groups)
+
+
+def test_legacy_output_slug_uses_model_name(tmp_path):
+    source = tmp_path / "short__model"
+    source.mkdir()
+    (source / "meta.json").write_text('{"model":"publisher/model"}')
+    assert output_slugs(tmp_path)["short__model"] == "publisher__model"

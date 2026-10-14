@@ -340,6 +340,31 @@
     .compare-fill { height: 100%; border-radius: 99px; }
     .compare-bar-value { text-align: right; font-size: 12px; }
     .compare-winner-icon { width: 14px; height: 14px; flex: none; }
+    .compare-view-nav { display: inline-flex; gap: 4px; padding: 4px; margin: 0 0 18px; border: 1px solid var(--border); border-radius: 10px; background: var(--surf2); }
+    .compare-view-nav button { padding: 8px 17px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; }
+    .compare-view-nav button.active { background: var(--surf); color: var(--text); box-shadow: 0 1px 5px rgba(0,0,0,.12); }
+    .compare-view-nav button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .compare-controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 14px; }
+    .compare-controls label { display: grid; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 700; }
+    .compare-controls select { min-height: 38px; min-width: 170px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; font-size: 13px; }
+    .compare-group { padding: 14px 0; border-top: 1px solid var(--border); }
+    .compare-group:first-child { border-top: 0; }
+    .compare-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+    .compare-group-head strong { font-size: 14px; }
+    .compare-group-head span { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .compare-group .compare-bars { max-width: 780px; }
+    .compare-example-nav { display: flex; align-items: center; gap: 12px; margin: 4px 0 16px; }
+    .compare-example-nav button { min-width: 36px; min-height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; cursor: pointer; }
+    .compare-example-nav button:disabled { opacity: .4; cursor: default; }
+    .compare-example-nav span { color: var(--muted); font-size: 12px; }
+    .compare-reference { padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf2); }
+    .compare-reference small, .compare-hypothesis small { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+    .compare-reference p, .compare-hypothesis p { margin: 0; overflow-wrap: anywhere; line-height: 1.6; }
+    .compare-hypotheses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .compare-hypothesis { padding: 16px; border: 1px solid var(--border); border-top: 3px solid var(--model-color); border-radius: var(--r); background: var(--surf); }
+    .compare-hypothesis small { color: var(--model-color); }
+    .compare-help { margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    @media (max-width: 650px) { .compare-hypotheses { grid-template-columns: 1fr; } .compare-controls label { flex: 1; } .compare-controls select { width: 100%; min-width: 0; } }
     @media (max-width: 720px) {
       .compare-hero { padding: 8px 4px 20px; }
       .compare-section { padding: 17px 14px; }
@@ -2416,6 +2441,8 @@
     </section>
     <div id="compare-empty" class="compare-empty">Add a model to see its results.</div>
     <div id="compare-results" hidden>
+      <nav class="compare-view-nav" aria-label="Comparison view"><button id="compare-view-scores" class="active" type="button" aria-pressed="true">Scores</button><button id="compare-view-outputs" type="button" aria-pressed="false">Outputs</button></nav>
+      <div id="compare-scores-pane">
       <section class="compare-section">
         <h3>Model attributes</h3>
         <p class="compare-scroll-hint">Swipe sideways to see the full table, if needed.</p>
@@ -2429,7 +2456,23 @@
         <div class="compare-metric" aria-label="Comparison metric"><button id="compare-wer" class="active" type="button" aria-pressed="true">WER</button><button id="compare-cer" type="button" aria-pressed="false">CER</button></div>
         <div id="compare-datasets"></div>
       </section>
+      <section class="compare-section">
+        <h3>By speaker group</h3>
+        <div class="compare-controls"><label>Test set<select id="compare-breakdown-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="ftspeech">FTSpeech</option></select></label><label>Group<select id="compare-breakdown-dimension"><option value="gender">Gender</option><option value="dialect">Dialect</option></select></label></div>
+        <div id="compare-breakdown" aria-live="polite">Loading speaker breakdown…</div>
+        <p class="compare-help">Corpus WER/CER on the same clips for each group. CoRal labels are self-reported; FTSpeech provides speaker gender. Many CoRal dialect groups contain only one speaker, so these scores are descriptive rather than population estimates.</p>
+      </section>
       <p class="compare-note" id="compare-caveat"></p>
+      </div>
+      <div id="compare-outputs-pane" hidden>
+        <section class="compare-section">
+          <h3>Compare transcripts</h3>
+          <p class="compare-note">Examples are drawn from clips where saved model transcripts differ most. They are for inspection, not a representative accuracy sample.</p>
+          <div class="compare-controls"><label>Test set<select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></label></div>
+          <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
+          <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
+        </section>
+      </div>
     </div>
   </div>
 
@@ -5032,6 +5075,10 @@ function setupCompare(data) {
   const clearAll = document.getElementById('compare-clear-all');
   const downloadCompare = document.getElementById('download-compare');
   let metric = new URL(window.location.href).searchParams.get('metric') === 'cer' ? 'cer' : 'wer';
+  let view = new URL(window.location.href).searchParams.get('compare_mode') === 'outputs' ? 'outputs' : 'scores';
+  let extra = null;
+  let extraPromise = null;
+  let exampleIndex = 0;
 
   const score = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : '—';
   const count = (row, suffix) => COMPARE_DATASETS.filter(([key]) =>
@@ -5043,6 +5090,8 @@ function setupCompare(data) {
     url.searchParams.set('view', 'compare');
     if (metric === 'cer') url.searchParams.set('metric', 'cer');
     else url.searchParams.delete('metric');
+    if (view === 'outputs') url.searchParams.set('compare_mode', 'outputs');
+    else url.searchParams.delete('compare_mode');
     url.searchParams.delete('model');
     selected.forEach(name => url.searchParams.append('model', name));
     return url;
@@ -5180,6 +5229,128 @@ function setupCompare(data) {
     });
     document.getElementById(bodyId).appendChild(tr);
   }
+  function loadExtra() {
+    if (extraPromise) return;
+    extraPromise = fetch('compare_data.json', {cache: 'no-cache'})
+      .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+      .then(data => { extra = data; renderExtra(); })
+      .catch(() => {
+        document.getElementById('compare-breakdown').textContent = 'Speaker breakdown is temporarily unavailable.';
+        document.getElementById('compare-example').textContent = 'Saved transcript examples are temporarily unavailable.';
+      });
+  }
+  function renderExtra() {
+    if (!extra || !selected.length) return;
+    const dataset = document.getElementById('compare-breakdown-dataset').value;
+    const dimensionSelect = document.getElementById('compare-breakdown-dimension');
+    dimensionSelect.querySelector('[value="dialect"]').disabled = dataset === 'ftspeech';
+    if (dataset === 'ftspeech') dimensionSelect.value = 'gender';
+    const dimension = dimensionSelect.value;
+    const groups = extra.groups?.[dataset]?.[dimension] || {};
+    const target = document.getElementById('compare-breakdown');
+    target.replaceChildren();
+    for (const [label, group] of Object.entries(groups)) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'compare-group';
+      const heading = document.createElement('div');
+      heading.className = 'compare-group-head';
+      const name = document.createElement('strong');
+      name.textContent = label;
+      const count = document.createElement('span');
+      count.textContent = `${group.clips.toLocaleString()} clips · ${group.speakers} ${group.speakers === 1 ? 'speaker' : 'speakers'}`;
+      heading.append(name, count);
+      const bars = document.createElement('div');
+      bars.className = 'compare-bars';
+      const values = selected.map(model => extra.breakdown?.[model.replace(/[^a-zA-Z0-9_-]/g, '__')]?.[dataset]?.[dimension]?.[label]?.[metric]);
+      const finite = values.filter(Number.isFinite);
+      const max = Math.max(1, ...finite);
+      selected.forEach((model, i) => {
+        const line = document.createElement('div');
+        line.className = 'compare-bar';
+        const tag = document.createElement('span');
+        tag.className = 'compare-bar-tag';
+        tag.style.color = colors[i];
+        const modelName = document.createElement('span');
+        modelName.className = 'compare-bar-label';
+        modelName.textContent = shortName(model);
+        tag.appendChild(modelName);
+        const track = document.createElement('div');
+        track.className = 'compare-track';
+        if (Number.isFinite(values[i])) {
+          const fill = document.createElement('div');
+          fill.className = 'compare-fill';
+          fill.style.width = `${Math.max(0, Math.min(100, values[i] / max * 100))}%`;
+          fill.style.background = colors[i];
+          track.appendChild(fill);
+        }
+        const number = document.createElement('span');
+        number.className = 'compare-bar-value';
+        number.textContent = score(values[i]);
+        line.append(tag, track, number);
+        bars.appendChild(line);
+      });
+      wrapper.append(heading, bars);
+      target.appendChild(wrapper);
+    }
+    if (!target.childElementCount) target.textContent = 'No group labels are available for this test set.';
+    renderExample();
+  }
+  function renderExample() {
+    if (!extra || !selected.length) return;
+    const dataset = document.getElementById('compare-output-dataset').value;
+    const candidates = extra.examples?.[dataset] || [];
+    const comparable = candidates.map((item, index) => {
+      const hypotheses = selected.map(model => item.hypotheses[model.replace(/[^a-zA-Z0-9_-]/g, '__')])
+        .filter(value => typeof value === 'string')
+        .map(value => value.normalize('NFKC').toLocaleLowerCase('da-DK').replace(/[^\p{L}\p{N}]+/gu, ' ').trim());
+      return {item, index, diversity: new Set(hypotheses).size};
+    });
+    const differing = selected.length > 1 ? comparable.filter(row => row.diversity > 1) : comparable;
+    const examples = (differing.length ? differing : comparable)
+      .sort((a, b) => b.diversity - a.diversity || a.index - b.index)
+      .map(row => row.item);
+    exampleIndex = Math.max(0, Math.min(exampleIndex, examples.length - 1));
+    const target = document.getElementById('compare-example');
+    target.replaceChildren();
+    document.getElementById('compare-example-count').textContent = examples.length
+      ? `Clip ${exampleIndex + 1} of ${examples.length}` : 'No examples';
+    document.getElementById('compare-example-prev').disabled = exampleIndex === 0;
+    document.getElementById('compare-example-next').disabled = exampleIndex >= examples.length - 1;
+    if (!examples.length) { target.textContent = 'No saved examples for this test set.'; return; }
+    const item = examples[exampleIndex];
+    const reference = document.createElement('div');
+    reference.className = 'compare-reference';
+    const refLabel = document.createElement('small');
+    refLabel.textContent = `Reference · ${item.id}`;
+    const refText = document.createElement('p');
+    refText.textContent = item.reference;
+    reference.append(refLabel, refText);
+    const columns = document.createElement('div');
+    columns.className = 'compare-hypotheses';
+    selected.forEach((model, i) => {
+      const card = document.createElement('div');
+      card.className = 'compare-hypothesis';
+      card.style.setProperty('--model-color', colors[i]);
+      const label = document.createElement('small');
+      label.textContent = model;
+      const text = document.createElement('p');
+      const slug = model.replace(/[^a-zA-Z0-9_-]/g, '__');
+      text.textContent = Object.hasOwn(item.hypotheses, slug)
+        ? (item.hypotheses[slug] || '(empty transcription)') : 'No saved output for this clip';
+      card.append(label, text);
+      columns.appendChild(card);
+    });
+    target.append(reference, columns);
+  }
+  function renderView() {
+    for (const name of ['scores', 'outputs']) {
+      const active = view === name;
+      const button = document.getElementById(`compare-view-${name}`);
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+      document.getElementById(`compare-${name}-pane`).hidden = !active;
+    }
+  }
   function render() {
     selected.sort(compareNames);
     renderChips();
@@ -5187,6 +5358,7 @@ function setupCompare(data) {
     const ready = rows.length >= 1;
     document.getElementById('compare-empty').hidden = ready;
     document.getElementById('compare-results').hidden = !ready;
+    renderView();
     if (!ready) {
       document.getElementById('compare-empty').textContent = 'Add a model to see its results.';
       return;
@@ -5282,6 +5454,8 @@ function setupCompare(data) {
       (rows.some(row => count(row, metric) < 5)
         ? 'Mean scores with fewer than five test sets are not directly comparable. ' : '') +
       'Speed reflects the measured hardware and serving stack; compare it with that context in mind.';
+    if (extra) renderExtra();
+    else loadExtra();
   }
 
   add.addEventListener('click', () => list.hidden ? showOptions() : hideOptions());
@@ -5304,6 +5478,13 @@ function setupCompare(data) {
   });
   ['wer', 'cer'].forEach(key => document.getElementById(`compare-${key}`)
     .addEventListener('click', () => { metric = key; syncURL(); render(); }));
+  ['scores', 'outputs'].forEach(name => document.getElementById(`compare-view-${name}`)
+    .addEventListener('click', () => { view = name; syncURL(); renderView(); }));
+  ['compare-breakdown-dataset', 'compare-breakdown-dimension'].forEach(id =>
+    document.getElementById(id).addEventListener('change', renderExtra));
+  document.getElementById('compare-output-dataset').addEventListener('change', () => { exampleIndex = 0; renderExample(); });
+  document.getElementById('compare-example-prev').addEventListener('click', () => { exampleIndex--; renderExample(); });
+  document.getElementById('compare-example-next').addEventListener('click', () => { exampleIndex++; renderExample(); });
   copy.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(shareURL().href);

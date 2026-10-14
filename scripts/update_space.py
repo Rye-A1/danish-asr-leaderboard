@@ -42,7 +42,7 @@ RESULTS_DIR = REPO_ROOT / "results"
 DOWNLOAD_HISTORY_PATH = REPO_ROOT / "huggingface" / "hf_downloads.json"
 DOWNLOAD_HISTORY_WINDOW = 90
 
-UPLOAD = ["index.html", "leaderboard.json", "models.py", "README.md", "cover.jpeg"]
+UPLOAD = ["index.html", "leaderboard.json", "compare_data.json", "models.py", "README.md", "cover.jpeg"]
 OBSOLETE = ["app.py", "requirements.txt"]
 
 # Orgs to drop from the published board (case-insensitive match on the model's
