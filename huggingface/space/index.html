@@ -345,8 +345,22 @@
     .compare-view-nav button.active { background: var(--surf); color: var(--text); box-shadow: 0 1px 5px rgba(0,0,0,.12); }
     .compare-view-nav button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
     .compare-controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 14px; }
-    .compare-controls label { display: grid; gap: 5px; color: var(--muted); font-size: 12px; font-weight: 700; }
-    .compare-controls select { min-height: 38px; min-width: 170px; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; font-size: 13px; }
+    .compare-control { position: relative; display: grid; gap: 5px; width: min(220px, 100%); }
+    .compare-control:focus-within { z-index: 20; }
+    .compare-control label { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .compare-control select, .compare-select-trigger { min-height: 38px; width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; font-size: 13px; font-weight: 650; }
+    .compare-select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; cursor: pointer; }
+    .compare-select-trigger:hover, .compare-select-trigger[aria-expanded="true"] { border-color: var(--link); }
+    .compare-select-trigger:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .compare-select-trigger svg { width: 15px; height: 15px; flex: none; stroke: var(--muted); transition: transform .15s ease; }
+    .compare-select-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .compare-select-menu { position: absolute; z-index: 25; top: calc(100% + 5px); left: 0; right: 0; display: grid; gap: 3px; max-height: min(280px, 45vh); overflow-y: auto; padding: 5px; border: 1px solid var(--border); border-radius: 10px; background: var(--surf); box-shadow: 0 16px 35px rgba(0,0,0,.22); }
+    .compare-select-menu[hidden] { display: none; }
+    .compare-select-option { width: 100%; min-height: 36px; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--text); text-align: left; font: inherit; font-size: 13px; cursor: pointer; }
+    .compare-select-option:hover, .compare-select-option:focus-visible { background: var(--surf2); outline: none; }
+    .compare-select-option[aria-selected="true"] { background: color-mix(in srgb, var(--link) 12%, var(--surf)); color: var(--link); font-weight: 700; }
+    .compare-select-option[aria-selected="true"]::after { content: "✓"; float: right; margin-left: 8px; }
+    .compare-select-option:disabled { color: var(--muted); opacity: .45; cursor: not-allowed; }
     .compare-group { padding: 14px 0; border-top: 1px solid var(--border); }
     .compare-group:first-child { border-top: 0; }
     .compare-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
@@ -368,7 +382,7 @@
     .compare-word-change { border-radius: 3px; background: color-mix(in srgb, var(--model-color) 16%, transparent); box-shadow: inset 0 -1px var(--model-color); }
     .compare-word-omitted { text-decoration: underline dotted var(--link) 2px; text-underline-offset: 3px; }
     .compare-help { margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
-    @media (max-width: 650px) { .compare-hypotheses { grid-template-columns: 1fr; } .compare-controls label { flex: 1; } .compare-controls select { width: 100%; min-width: 0; } }
+    @media (max-width: 650px) { .compare-hypotheses { grid-template-columns: 1fr; } .compare-control { width: 100%; } }
     @media (max-width: 720px) {
       .compare-hero { padding: 8px 4px 20px; }
       .compare-section { padding: 17px 14px; }
@@ -2462,7 +2476,7 @@
       </section>
       <section class="compare-section">
         <h3>By speaker group</h3>
-        <div class="compare-controls"><label>Test set<select id="compare-breakdown-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="ftspeech">FTSpeech</option></select></label><label>Group<select id="compare-breakdown-dimension"><option value="gender">Gender</option><option value="dialect">Dialect</option></select></label></div>
+        <div class="compare-controls"><div class="compare-control"><label for="compare-breakdown-dataset">Test set</label><select id="compare-breakdown-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="ftspeech">FTSpeech</option></select></div><div class="compare-control"><label for="compare-breakdown-dimension">Group</label><select id="compare-breakdown-dimension"><option value="gender">Gender</option><option value="dialect">Dialect</option></select></div></div>
         <div id="compare-breakdown" aria-live="polite">Loading speaker breakdown…</div>
         <p class="compare-help">Corpus WER/CER on the same clips for each group. CoRal labels are self-reported; FTSpeech provides speaker gender. Many CoRal dialect groups contain only one speaker, so these scores are descriptive rather than population estimates.</p>
       </section>
@@ -2472,7 +2486,7 @@
         <section class="compare-section">
           <h3>Compare transcripts</h3>
           <p class="compare-note">These high-disagreement clips are for inspection, not a representative accuracy sample. Highlighted words differ from the reference; dotted underlines mark omissions. Clip WER/CER use leaderboard normalization and can exceed 100%.</p>
-          <div class="compare-controls"><label>Test set<select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></label></div>
+          <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset">Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
           <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
           <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
         </section>
@@ -5083,6 +5097,7 @@ function setupCompare(data) {
   let extra = null;
   let extraPromise = null;
   let exampleIndex = 0;
+  const compareSelects = new Map();
 
   const score = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : '—';
   const count = (row, suffix) => COMPARE_DATASETS.filter(([key]) =>
@@ -5243,12 +5258,106 @@ function setupCompare(data) {
         document.getElementById('compare-example').textContent = 'Saved transcript examples are temporarily unavailable.';
       });
   }
+  function upgradeCompareSelect(select) {
+    const control = select.closest('.compare-control');
+    const label = control.querySelector('label');
+    label.id = `${select.id}-label`;
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'compare-select-trigger';
+    trigger.setAttribute('aria-haspopup', 'listbox');
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.setAttribute('aria-controls', `${select.id}-menu`);
+    const value = document.createElement('span');
+    value.id = `${select.id}-value`;
+    trigger.setAttribute('aria-labelledby', `${label.id} ${value.id}`);
+    const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    chevron.setAttribute('viewBox', '0 0 24 24');
+    chevron.setAttribute('fill', 'none');
+    chevron.setAttribute('stroke-width', '2');
+    chevron.setAttribute('stroke-linecap', 'round');
+    chevron.setAttribute('aria-hidden', 'true');
+    chevron.innerHTML = '<path d="m6 9 6 6 6-6"/>';
+    trigger.append(value, chevron);
+    const menu = document.createElement('div');
+    menu.id = `${select.id}-menu`;
+    menu.className = 'compare-select-menu';
+    menu.setAttribute('role', 'listbox');
+    menu.setAttribute('aria-labelledby', label.id);
+    menu.hidden = true;
+    const buttons = [...select.options].map(option => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'compare-select-option';
+      button.setAttribute('role', 'option');
+      button.textContent = option.textContent;
+      button.addEventListener('click', () => {
+        if (option.disabled) return;
+        select.value = option.value;
+        select.dispatchEvent(new Event('change', {bubbles: true}));
+        close();
+        trigger.focus();
+      });
+      menu.appendChild(button);
+      return button;
+    });
+    function sync() {
+      value.textContent = select.selectedOptions[0]?.textContent || '';
+      [...select.options].forEach((option, index) => {
+        buttons[index].disabled = option.disabled;
+        buttons[index].setAttribute('aria-selected', String(option.selected));
+      });
+    }
+    function close() {
+      menu.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+    }
+    function open() {
+      compareSelects.forEach(entry => entry.close());
+      sync();
+      menu.hidden = false;
+      trigger.setAttribute('aria-expanded', 'true');
+    }
+    trigger.addEventListener('click', () => menu.hidden ? open() : close());
+    label.addEventListener('click', event => {
+      event.preventDefault();
+      trigger.focus();
+      menu.hidden ? open() : close();
+    });
+    control.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !menu.hidden) {
+        event.preventDefault();
+        close();
+        trigger.focus();
+        return;
+      }
+      if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+      if (event.target === trigger && menu.hidden) open();
+      if (menu.hidden) return;
+      event.preventDefault();
+      const enabled = buttons.filter(button => !button.disabled);
+      const current = enabled.indexOf(document.activeElement);
+      const next = event.key === 'Home' ? 0 : event.key === 'End' ? enabled.length - 1
+        : event.target === trigger ? enabled.findIndex(button => button.getAttribute('aria-selected') === 'true')
+        : (current + (event.key === 'ArrowDown' ? 1 : -1) + enabled.length) % enabled.length;
+      enabled[Math.max(0, next)]?.focus();
+    });
+    control.addEventListener('focusout', event => {
+      if (!control.contains(event.relatedTarget)) close();
+    });
+    select.addEventListener('change', sync);
+    select.hidden = true;
+    control.append(trigger, menu);
+    compareSelects.set(select, {control, sync, close});
+    sync();
+  }
   function renderExtra() {
     if (!extra || !selected.length) return;
     const dataset = document.getElementById('compare-breakdown-dataset').value;
     const dimensionSelect = document.getElementById('compare-breakdown-dimension');
     dimensionSelect.querySelector('[value="dialect"]').disabled = dataset === 'ftspeech';
     if (dataset === 'ftspeech') dimensionSelect.value = 'gender';
+    compareSelects.get(dimensionSelect)?.sync();
     const dimension = dimensionSelect.value;
     const groups = extra.groups?.[dataset]?.[dimension] || {};
     const target = document.getElementById('compare-breakdown');
@@ -5559,6 +5668,13 @@ function setupCompare(data) {
   document.getElementById('compare-output-dataset').addEventListener('change', () => { exampleIndex = 0; renderExample(); });
   document.getElementById('compare-example-prev').addEventListener('click', () => { exampleIndex--; renderExample(); });
   document.getElementById('compare-example-next').addEventListener('click', () => { exampleIndex++; renderExample(); });
+  ['compare-breakdown-dataset', 'compare-breakdown-dimension', 'compare-output-dataset']
+    .forEach(id => upgradeCompareSelect(document.getElementById(id)));
+  document.addEventListener('click', event => {
+    compareSelects.forEach(entry => {
+      if (!entry.control.contains(event.target)) entry.close();
+    });
+  });
   copy.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(shareURL().href);
