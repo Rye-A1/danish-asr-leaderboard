@@ -284,6 +284,7 @@
     .compare-clear-all:hover, .compare-copy:hover { border-color: var(--link); }
     .compare-copy:disabled { opacity: .45; cursor: not-allowed; }
     .compare-note { color: var(--muted); font-size: 12px; }
+    .compare-section > .compare-note + .compare-controls { margin-top: 14px; }
     .compare-empty { margin-top: 15px; padding: 48px 18px; border: 1px dashed var(--border); border-radius: var(--r); color: var(--muted); text-align: center; }
     #compare-results { padding-top: 18px; counter-reset: compare-section; }
     .compare-section {
@@ -2493,8 +2494,8 @@
       <div id="compare-outputs-pane" hidden>
         <section class="compare-section">
           <h3>Compare transcripts</h3>
-          <p class="compare-note">These high-disagreement clips are for inspection, not a representative accuracy sample. Highlighted words differ from the reference; dotted underlines mark omissions. Clip WER/CER use leaderboard normalization and can exceed 100%.</p>
-          <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset">Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
+          <p class="compare-note">Select a test set to inspect high-disagreement clips; these are not a representative accuracy sample. Highlighted words differ from the reference; dotted underlines mark omissions. Clip WER/CER use leaderboard normalization and can exceed 100%.</p>
+          <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset" hidden>Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
           <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
           <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
         </section>
