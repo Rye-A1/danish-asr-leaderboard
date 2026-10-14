@@ -51,6 +51,6 @@ renders empty:
 
 ```bash
 curl -sL https://huggingface.co/spaces/RyeAI/danish-asr-leaderboard/raw/main/leaderboard.json \
-  -o space/leaderboard.json
-python -m http.server 7860 --directory space
+  -o huggingface/space/leaderboard.json
+python -m http.server 7860 --directory huggingface/space
 ```

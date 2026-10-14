@@ -23,5 +23,5 @@
   "speed_hardware": "NVIDIA A100 80GB PCIe",
   "speed_audio_seconds": 150792.34843749995,
   "speed_inference_seconds": 12078.64913554769,
-  "speed_timings": "benchmark_runs/Harmonium__brage-v1_2026-10-07/timings.jsonl"
+  "speed_timings": "outputs/Harmonium__brage-v1/verification/timings.jsonl"
 }

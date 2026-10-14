@@ -11,8 +11,8 @@ To support Discord (``{"content": ...}``), Teams, or another service, change the
 single payload dict in ``send_mattermost`` — the rest is service-agnostic.
 
 This lives inside the package so it imports cleanly under the installed
-``danish-asr-eval`` console script regardless of cwd; ``notify.py`` at the repo
-root is a thin CLI shim over this module.
+``danish-asr-eval`` console script regardless of cwd. The benchmark sweep
+invokes this module directly with ``python -m``.
 
 CLI:
     python -m danish_asr_leaderboard.notify "message text"

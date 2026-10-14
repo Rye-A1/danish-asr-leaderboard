@@ -67,7 +67,7 @@ py_for() {  # interpreter for a given backend
 
 # Mattermost progress notifications: no-op unless MATTERMOST_WEBHOOK_URL is set
 # (in the env or a repo-root .env). Never blocks or fails the sweep.
-notify() { "$DEFAULT_PY" notify.py "$1" >/dev/null 2>&1 || true; }
+notify() { "$DEFAULT_PY" -m danish_asr_leaderboard.notify "$1" >/dev/null 2>&1 || true; }
 
 want_backend() {  # honour ONLY_BACKENDS allow-list
   [ -z "$ONLY_BACKENDS" ] && return 0

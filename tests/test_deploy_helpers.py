@@ -11,7 +11,8 @@ from PIL import Image
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 from update_space import (
-    RELEASE_DATES,
+    ANNOTATED_OPENNESS_KEYS,
+    MODEL_METADATA,
     SEO_MARKER,
     THUMBNAIL_SIZE,
     _api_docs_url,
@@ -19,7 +20,9 @@ from update_space import (
     _download_series,
     _release_date,
     _fmt_size,
+    _model_license,
     _official_size,
+    _openness,
     _parse_model,
     _size_from_name,
     bake_seo,
@@ -28,6 +31,47 @@ from update_space import (
     generate_cover_image,
     load_leaderboard_df,
 )
+
+
+def test_proprietary_models_have_no_openness_points():
+    """API docs and product announcements are not model cards or open artifacts."""
+    openness = _openness("gpt-transcribe", False, "proprietary", "")
+    assert all(value is None for value in openness.values())
+
+
+@pytest.mark.parametrize("name, tag", [
+    ("RyeAI/ekko-v1-tiny", "ekko-composite-model-terms"),
+    ("3dio-ai/svale-110M", "other"),
+    ("3dio-ai/svale-600M", "nvidia-open-model-license"),
+    ("CoRal-project/roest-v2-wav2vec2-1B", "openrail"),
+    ("CoRal-project/roest-v2-wav2vec2-2B", "openrail"),
+    ("CoRal-project/roest-v3-wav2vec2-315m", "openrail"),
+    ("CoRal-project/roest-v3-whisper-1.5b", "openrail"),
+    ("nvidia/parakeet-rnnt-110m-da-dk", "other"),
+    ("nvidia/nemotron-3.5-asr-streaming-0.6b", "other"),
+])
+def test_reviewed_commercial_redistribution_licences(name, tag):
+    assert _openness(name, True, "open", tag)["license"].startswith("https://")
+
+
+def test_custom_licence_evidence_does_not_override_noncommercial_relicensing():
+    assert _openness("RyeAI/ekko-v1-tiny", True, "open", "cc-by-nc-4.0")["license"] is None
+    assert _openness("unreviewed/model", True, "open", "other")["license"] is None
+    assert _openness("Harmonium/brage-v1", True, "open", "brage-v1-license")["license"] is None
+
+
+@pytest.mark.parametrize("tag, name, expected", [
+    ("other", "nvidia-open-model-license", "nvidia-open-model-license"),
+    ("other", "", "other"),
+    ("apache-2.0", "unrelated-custom-name", "apache-2.0"),
+])
+def test_custom_licence_name_replaces_only_other_tag(monkeypatch, tag, name, expected):
+    import update_space
+
+    monkeypatch.setattr(update_space, "_model_metadata", lambda _model: {
+        "tags": [f"license:{tag}"], "cardData": {"license_name": name},
+    })
+    assert _model_license("example/model") == expected
 
 
 # ---------------------------------------------------------------------------
@@ -107,6 +151,21 @@ def test_official_size_api_model():
 def test_api_docs_url(name, key_fragment):
     url = _api_docs_url(name)
     assert key_fragment in url
+
+
+# ---------------------------------------------------------------------------
+# Openness annotations
+# ---------------------------------------------------------------------------
+def test_every_result_has_openness_metadata():
+    """Each model needs all four annotated openness fields: an evidence URL or null."""
+    results = Path(__file__).resolve().parent.parent / "results"
+    for f in results.glob("*.json"):
+        name, _ = _parse_model(json.loads(f.read_text(encoding="utf-8"))["model"])
+        entry = MODEL_METADATA.get(name, {})
+        for key in ANNOTATED_OPENNESS_KEYS:
+            assert key in entry, f"{name}: add {key!r} to scripts/model_metadata.json"
+            url = entry[key]
+            assert url is None or url.startswith("https://"), f"{name}: {key} = {url!r}"
 
 
 # ---------------------------------------------------------------------------
@@ -256,7 +315,7 @@ def test_generate_cover_image(tmp_path):
 # names. Structured data + a prose summary supply them without a second
 # renderer, and without the visible table-swap that baking the rows caused.
 
-SPACE_INDEX = Path(__file__).resolve().parent.parent / "space" / "index.html"
+SPACE_INDEX = Path(__file__).resolve().parent.parent / "huggingface" / "space" / "index.html"
 
 _ROWS = {
     "updated": "2026-09-05",
@@ -326,8 +385,8 @@ def test_methodology_is_reachable_under_info_with_data_changes():
 def test_every_release_date_is_empty_or_a_real_iso_date():
     """The Over Time chart plots `released`, so each value must parse as a date.
 
-    This used to read the generated space/leaderboard.json, which is no longer
-    tracked. release_dates.json is the hand-maintained source, so a typo'd or
+    This used to read the generated huggingface/space/leaderboard.json, which is
+    no longer tracked. model_metadata.json is the hand-maintained source, so a typo'd or
     half-written date is the regression that actually happens — and it would
     otherwise surface only as a model silently missing from the chart.
 
@@ -335,8 +394,8 @@ def test_every_release_date_is_empty_or_a_real_iso_date():
     repo to read one from is left off the chart and counted in the panel rather
     than given a guessed date.
     """
-    for name, entry in RELEASE_DATES.items():
-        released = entry.get("released", "")
+    for name, entry in MODEL_METADATA.items():
+        released = entry.get("released", {}).get("date", "")
         assert released == "" or re.fullmatch(r"\d{4}-\d{2}-\d{2}", released), (
             f"{name} -> {released!r}")
         if released:

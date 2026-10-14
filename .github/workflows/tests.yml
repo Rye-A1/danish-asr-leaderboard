@@ -1,8 +1,8 @@
 name: Tests
 
 # Runs the unit suite on every push and pull request. Deliberately a separate
-# workflow from deploy-space.yml: that one only triggers on space/** changes, so it
-# would never exercise a change to the scoring/normalizer code. This one covers the
+# workflow from deploy-space.yml: that one runs only for publication-related
+# changes, so it would not exercise every scoring/normalizer change. This one covers the
 # whole repo so e.g. a regression in danish_asr_leaderboard/ is caught before merge.
 on:
   push:

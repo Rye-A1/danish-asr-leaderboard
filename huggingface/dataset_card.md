@@ -15,7 +15,7 @@ size_categories:
 - n<1K
 ---
 
-<!-- This card is generated from dataset_card.md in the GitHub repo. Edit it there
+<!-- This card is generated from huggingface/dataset_card.md in the GitHub repo. Edit it there
      (not on the Hub) — the `configs:` block is injected automatically on deploy by
      scripts/update_dataset_card.py, and any direct Hub edits are overwritten. -->
 

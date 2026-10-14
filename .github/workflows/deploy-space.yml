@@ -5,15 +5,16 @@ on:
     branches:
       - main
     paths:
-      - 'space/**'
+      - 'huggingface/space/**'
       - 'results/**'
       - 'outputs/**'
       - 'scripts/update_space.py'
-      - 'history/hf_downloads.json'
-      - 'dataset_card.md'
+      - 'huggingface/hf_downloads.json'
+      - 'huggingface/dataset_card.md'
       - 'assets/fonts/**'
       - 'scripts/push_results.py'
       - 'scripts/push_outputs.py'
+      - 'scripts/update_dataset_card.py'
       - '.github/workflows/deploy-space.yml'
   workflow_dispatch:
 

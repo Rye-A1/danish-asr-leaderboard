@@ -13,7 +13,7 @@ from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_HISTORY_PATH = ROOT / "history" / "hf_downloads.json"
+DEFAULT_HISTORY_PATH = ROOT / "huggingface" / "hf_downloads.json"
 DEFAULT_RESULTS_DIR = ROOT / "results"
 _MODEL_LINK = re.compile(r"\[([^\]]+)\]\((https?://[^)]+)\)")
 

@@ -695,8 +695,8 @@
       .model-preview { transition: none; transform: none; }
     }
 
-    /* Model identity is a two-line block: name, then size / access / licence.
-       Folding those three out of their own columns buys the measurement columns
+    /* Model identity is a two-line block: name, then size / licence.
+       Folding those out of their own columns buys the measurement columns
        room, and matches how the mobile cards read. */
     .model-meta {
       display: flex;
@@ -707,10 +707,9 @@
       color: var(--muted);
       white-space: nowrap;
     }
-    /* Size, access and licence render as one set of chips. */
+    /* Size and licence render as one set of chips. */
     .model-meta .m-size,
-    .model-meta .m-license,
-    .model-meta .badge {
+    .model-meta .m-license {
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -727,7 +726,8 @@
       color: var(--muted);
     }
     .model-meta .m-size { font-variant-numeric: tabular-nums; }
-    .model-meta .m-license { max-width: 112px; overflow: hidden; }
+    .model-meta .m-license { max-width: 150px; }
+    .model-meta .m-license-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
     .meta-icon {
       width: 10px;
       height: 10px;
@@ -772,16 +772,170 @@
     }
     .download-spark { grid-area: 1 / 1; width: 100%; height: 22px; color: var(--link); }
 
-    /* Access badge */
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 99px;
-      font-size: 11px;
+    /* Openness: one icon per criterion, lit and linked to its evidence when
+       met, dimmed when not. */
+    .c-open { white-space: nowrap; }
+    .open-wrap { display: inline-flex; align-items: center; gap: 3px; }
+    .open-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+    }
+    .open-item svg { width: 13px; height: 13px; }
+    a.open-item {
+      color: var(--link);
+      background: color-mix(in srgb, var(--link) 14%, transparent);
+    }
+    a.open-item:hover { background: color-mix(in srgb, var(--link) 28%, transparent); }
+    button.open-item { color: var(--muted); opacity: 0.35; cursor: pointer; }
+    /* The Openness tooltip keeps its evidence cards below a model-preview header. */
+    #col-tip.open-tip {
+      width: min(320px, calc(100vw - 24px));
+      max-width: 320px;
+      padding: 0;
+      overflow: hidden;
+      pointer-events: auto;
+      background: var(--surf);
+      border-color: color-mix(in srgb, var(--link) 35%, var(--border));
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .2);
+    }
+    .open-tip-head {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      background: var(--brand-mesh), #09080d;
+      color: #fff;
+    }
+    .open-tip-head-model { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .open-tip-title { display: block; font-weight: 700; font-size: 13px; }
+    .open-tip-copy { display: block; margin-top: 3px; color: rgba(255, 255, 255, .72); }
+    .open-legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 10px; }
+    .open-legend div {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px;
+      border-radius: 6px;
+      background: var(--surf2);
+    }
+    .open-legend svg { width: 13px; height: 13px; flex: 0 0 auto; color: var(--link); }
+    .open-legend .unconfirmed { opacity: .4; }
+    .open-legend .unconfirmed svg { color: var(--muted); }
+    .open-tip-issue {
+      display: block;
+      padding: 8px 13px 10px;
+      border-top: 1px solid var(--border);
+      color: var(--link);
+      text-decoration: none;
       font-weight: 600;
     }
-    .badge-open { background: transparent; border: 1px solid var(--border); color: #4ade80; }
-    .badge-prop { background: rgba(148,163,184,.12); color: #94a3b8; }
+    .open-tip-issue:hover, .openness-drawer-issue:hover { text-decoration: underline; }
+    .open-tip-issue:focus-visible, .openness-drawer-issue:focus-visible {
+      outline: 2px solid var(--link);
+      outline-offset: -3px;
+    }
+
+    /* On phones, an openness icon opens this model-specific evidence drawer. */
+    dialog.openness-drawer {
+      position: fixed;
+      inset: auto 0 0;
+      width: 100%;
+      max-width: none;
+      max-height: min(85dvh, 680px);
+      margin: 0;
+      padding: 0;
+      border: 1px solid var(--border);
+      border-bottom: 0;
+      border-radius: 18px 18px 0 0;
+      background: var(--surf);
+      color: var(--text);
+      box-shadow: 0 -20px 70px rgba(0, 0, 0, .3);
+      overflow: hidden;
+      transform: translateY(100%);
+      opacity: 0;
+      transition: transform .28s cubic-bezier(.22, 1, .36, 1), opacity .28s ease,
+        display .28s allow-discrete, overlay .28s allow-discrete;
+    }
+    dialog.openness-drawer[open] { display: flex; flex-direction: column; transform: translateY(0); opacity: 1; }
+    @starting-style {
+      dialog.openness-drawer[open] { transform: translateY(100%); opacity: 0; }
+    }
+    dialog.openness-drawer::backdrop { background: rgba(3, 6, 18, .64); }
+    .openness-drawer-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 20px;
+      background: var(--brand-mesh), #09080d;
+      color: #fff;
+    }
+    .openness-drawer-avatar {
+      position: relative;
+      display: grid;
+      flex: 0 0 44px;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, .14);
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .openness-drawer-avatar img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: inherit;
+      object-fit: cover;
+    }
+    .openness-drawer-identity { flex: 1; min-width: 0; }
+    .openness-drawer-identity strong { display: block; overflow-wrap: anywhere; font-size: 16px; line-height: 1.3; }
+    .openness-drawer-context { color: rgba(255, 255, 255, .72); font-size: 12px; }
+    .openness-drawer-a11y { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .openness-drawer-close {
+      flex: 0 0 32px;
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(255, 255, 255, .22);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .1);
+      color: #fff;
+      font-size: 23px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .openness-drawer-close:hover { background: rgba(255, 255, 255, .18); }
+    .openness-drawer-body { overflow-y: auto; padding: 16px 20px max(20px, env(safe-area-inset-bottom)); }
+    .openness-drawer-list { display: grid; gap: 8px; }
+    .openness-drawer-issue { display: inline-block; margin-top: 16px; color: var(--link); font-weight: 600; text-decoration: none; }
+    .openness-drawer-row {
+      display: grid;
+      grid-template-columns: 22px minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      background: var(--surf2);
+      color: var(--text);
+      text-decoration: none;
+    }
+    .openness-drawer-row svg { width: 18px; height: 18px; color: var(--muted); }
+    a.openness-drawer-row svg, a.openness-drawer-row .openness-drawer-status { color: var(--link); }
+    a.openness-drawer-row:hover { border-color: var(--link); }
+    .openness-drawer-row.unconfirmed { opacity: .5; }
+    .openness-drawer-row.selected { border-color: color-mix(in srgb, var(--link) 65%, var(--border)); }
+    .openness-drawer-status { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .openness-drawer-close:focus-visible,
+    .open-item:focus-visible,
+    .openness-drawer-row:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
 
     /* ── Custom tooltip ─────────────────────────────────────────────── */
     #col-tip {
@@ -1509,7 +1663,7 @@
         flex: 1 1 0;
         min-width: 0;
       }
-      /* size / access / licence now live inside the model cell, so the card's
+      /* size / licence now live inside the model cell, so the card's
          second line comes for free -- no separate cells to re-order. */
       tbody td[data-key="model"] .model-meta {
         margin-top: 4px;
@@ -1686,6 +1840,32 @@
         white-space: nowrap;
       }
 
+      /* 5 -- openness, always shown below the tiles. It shares order 5 with the
+         per-dataset cells but precedes them in the DOM, so it stays on top
+         when those are expanded. */
+      tbody tr td[data-key="openness_score"] {
+        order: 5;
+        flex: 1 1 100%;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px;
+        background: var(--surf2);
+        border-radius: 8px;
+      }
+      tbody td[data-key="openness_score"] .open-wrap { margin-left: auto; }
+      tbody td[data-key="openness_score"] .open-wrap { gap: 4px; }
+      tbody td[data-key="openness_score"] .open-item { width: 23px; height: 23px; }
+      tbody td[data-key="openness_score"] .open-item svg { width: 15px; height: 15px; }
+      tbody tr td[data-key="openness_score"]::before {
+        content: attr(data-label);
+        color: var(--muted);
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
       /* 6 -- submission date, hidden until expanded. */
       tbody td[data-key="submitted"] {
         order: 6;
@@ -1856,6 +2036,7 @@
     .settings-sheet .toolbar > :not(.ci-btn) { grid-column: 1 / -1; }
     .settings-sheet .tog-wrap,
     .settings-sheet .size-filter,
+    .settings-sheet .openness-filter,
     .settings-sheet .ci-btn {
       min-height: 74px;
       height: auto;
@@ -1889,6 +2070,8 @@
       gap: 8px;
       white-space: normal;
     }
+    .settings-sheet .openness-filter { height: max-content; white-space: normal; }
+    .openness-filter > .settings-field-title { display: flex; margin-bottom: 8px; }
     .settings-field-title { display: inline-flex; align-items: center; gap: 8px; color: var(--text); font-weight: 650; }
     .settings-sheet .size-filter select {
       width: 100%;
@@ -1898,6 +2081,33 @@
       border-radius: 6px;
       background: var(--surf);
     }
+    .openness-filter details { display: block; width: 100%; }
+    .openness-filter summary {
+      display: flex; align-items: center; gap: 8px;
+      min-height: 32px; padding: 6px 8px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surf); color: var(--text);
+      font-size: 13px; cursor: pointer; list-style: none;
+    }
+    .openness-filter summary::-webkit-details-marker { display: none; }
+    .openness-filter summary:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .openness-filter-value { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .openness-filter summary svg { width: 15px; height: 15px; flex: none; transition: transform .15s; }
+    .openness-filter details[open] summary svg { transform: rotate(180deg); }
+    .openness-filter-options {
+      display: grid; gap: 2px; max-height: 240px; overflow-y: auto;
+      margin-top: 6px; padding: 5px;
+      border: 1px solid var(--border); border-radius: 6px;
+      background: var(--surf);
+    }
+    .openness-filter-option {
+      display: flex; align-items: center; gap: 9px;
+      padding: 7px 6px; border-radius: 5px;
+      color: var(--text); font-size: 13px; cursor: pointer;
+    }
+    .openness-filter-option:hover { background: var(--surf2); }
+    .openness-filter-option input { width: 16px; height: 16px; flex: none; accent-color: var(--link); }
+    .openness-filter-help { display: block; margin-top: 8px; color: var(--muted); font-size: 11px; line-height: 1.4; }
     .settings-sheet .ci-btn {
       display: grid;
       grid-template-columns: 18px minmax(0, 1fr);
@@ -1981,6 +2191,7 @@
     }
     @media (prefers-reduced-motion: reduce) {
       dialog.settings-sheet { transition: none; }
+      dialog.openness-drawer { transition: none; }
     }
 
   </style>
@@ -2441,13 +2652,17 @@
     <h4>Submit a score — you ran it</h4>
     <p>Run the harness on all five test sets, then open a pull request on the
       <a href="https://github.com/Rye-A1/danish-asr-leaderboard" target="_blank" rel="noopener">GitHub repo</a>
-      committing the two outputs the harness writes:</p>
+      committing the two outputs the harness writes, plus a metadata entry:</p>
     <ol>
       <li><code>results/&lt;model-slug&gt;.json</code> — scores and metadata.</li>
       <li><code>outputs/&lt;model-slug&gt;/</code> — the raw per-dataset transcriptions
         (<code>&lt;dataset&gt;.jsonl</code> + <code>meta.json</code>), one
         <code>{"id", "reference", "hypothesis"}</code> per line. Lets reviewers inspect actual
         transcriptions and enables re-scoring under future normalisers.</li>
+      <li>An entry in <code>scripts/model_metadata.json</code>: the release date, plus links to the
+        training code, training data, model card and paper, or
+        <code>null</code> where there is none
+        (criteria in <a href="https://github.com/Rye-A1/danish-asr-leaderboard/blob/main/CONTRIBUTING.md#openness-annotations" target="_blank" rel="noopener">CONTRIBUTING.md</a>).</li>
     </ol>
     <p>Include in the PR description: the exact command you ran, the hardware used (for
       <code>speed_x</code> context), and whether the model is <code>open</code> or
@@ -2615,21 +2830,39 @@
 <div id="col-tip"></div>
 <div id="chart-tip"></div>
 <div id="model-preview" class="model-preview" role="tooltip" hidden></div>
+<dialog id="openness-drawer" class="openness-drawer" aria-labelledby="openness-drawer-title">
+  <div class="openness-drawer-head">
+    <span class="openness-drawer-avatar" aria-hidden="true"></span>
+    <div class="openness-drawer-identity">
+      <strong id="openness-drawer-title"><span class="openness-drawer-a11y">Openness details for </span><span class="openness-drawer-name"></span></strong>
+      <span class="openness-drawer-context"></span>
+    </div>
+    <button type="button" class="openness-drawer-close" aria-label="Close openness details">&times;</button>
+  </div>
+  <div class="openness-drawer-body">
+    <div class="openness-drawer-list"></div>
+    <a class="openness-drawer-issue" href="https://github.com/Rye-A1/danish-asr-leaderboard/issues/new" target="_blank" rel="noopener noreferrer">Did we miss something? Open an issue ↗</a>
+  </div>
+</dialog>
 
 <script>
 const MEDALS = ['🥇','🥈','🥉'];
 let showCI = false;
 let openOnly = false;   // hide hosted/API (proprietary) models — opt-in
 let maxSizeB = null;    // billions of parameters; null includes unknown sizes
+const requiredOpenness = new Set();
+let onOpennessFilterChanged = null;
 
-// Rows for a tab, honouring the shared access and size filters. A size limit
-// excludes unknown sizes because their position relative to the limit is unknown.
+// Rows for a tab, honouring the shared access, size, and openness filters.
+// A size limit excludes unknown sizes; openness requires linked evidence.
 function visible(rows) {
   return rows.filter(r => {
     if (openOnly && r.access === 'proprietary') return false;
-    if (maxSizeB == null) return true;
-    const size = parseFloat(r.size);
-    return Number.isFinite(size) && size <= maxSizeB;
+    if (maxSizeB != null) {
+      const size = parseFloat(r.size);
+      if (!Number.isFinite(size) || size > maxSizeB) return false;
+    }
+    return [...requiredOpenness].every(key => Boolean(r.openness?.[key]));
   });
 }
 
@@ -2649,6 +2882,17 @@ function appendCI(td, ci, fmt) {
   td.appendChild(sm);
 }
 
+const OPENNESS_TIP =
+  'Blue icons link to supporting evidence. Faded icons have no confirmed source. The licence point allows commercial reuse and redistribution; conditions may still apply.';
+const LICENSE_LABELS = {
+  'nvidia-open-model-license': 'NVIDIA Open Model',
+  'openmdw-1.1': 'OpenMDW 1.1',
+  'ekko-composite-model-terms': 'NVIDIA Open Model',
+  'brage-v1-license': 'Brage v1 licence',
+  openrail: 'OpenRAIL',
+};
+const licenseLabel = tag => LICENSE_LABELS[tag] || tag || '';
+
 const WER_COLS = [
   { key:'#',                      label:'#',             cls:'c-rank',
     tip:'Rank by the selected method (Mean WER, Borda, or Bradley-Terry). Lower is better.' },
@@ -2658,6 +2902,8 @@ const WER_COLS = [
     tip:'Word Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_cer',               label:'Mean CER ↓',
     tip:'Character Error Rate, macro-averaged over the five test sets. Lower is better.' },
+  { key:'openness_score',          label:'Openness',       cls:'c-open',
+    tip:OPENNESS_TIP },
   { key:'speed_x',                label:'Speed (x) ↑',
     tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
       + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
@@ -2687,6 +2933,8 @@ const CER_COLS = [
     tip:'Character Error Rate, macro-averaged over the five test sets. Lower is better.' },
   { key:'mean_wer',               label:'Mean WER ↓',
     tip:'Word Error Rate, macro-averaged over the five test sets. Shown here for context alongside CER.' },
+  { key:'openness_score',          label:'Openness',       cls:'c-open',
+    tip:OPENNESS_TIP },
   { key:'speed_x',                label:'Speed (x) ↑',
     tip:'Audio seconds processed per wall-clock second on one NVIDIA A100 80 GB at batch size 16. '
       + 'Reflects the serving stack (vLLM >> plain transformers for the same model). '
@@ -2715,7 +2963,9 @@ const LEADERBOARD_CSV_FIELDS = [
   ['model', 'model'], ['model_url', 'url'], ['access', 'access'], ['license', 'license'],
   ['size_b', 'size_b'], ['mean_wer_percent', 'mean_wer'],
   ['mean_cer_percent', 'mean_cer'], ['speed_x', 'speed_x'],
-  ['hf_downloads', 'hf_downloads'],
+  ['hf_downloads', 'hf_downloads'], ['openness_score', 'openness_score'],
+  ...['weights', 'license', 'training_code', 'training_data', 'model_card', 'paper']
+    .map(key => [`openness_${key}_url`, `openness_${key}`]),
   ...['coral_conversation', 'coral_read_aloud', 'ftspeech', 'cv17_da', 'fleurs_da']
     .flatMap(set => [
       [`${set}_wer_percent`, `${set}_wer`],
@@ -2761,6 +3011,8 @@ function makeLeaderboardCsv(data, viewRows, metric, method) {
       rank_score: method === 'mean' ? rankingRow?.[`mean_${metric}`]
         : rankingRow?.[method === 'borda' ? 'borda_score' : 'bt_score'],
       model: name, size_b: Number.isFinite(size) ? size : null,
+      ...Object.fromEntries(Object.entries(model.openness || {})
+        .map(([key, url]) => [`openness_${key}`, url])),
     };
   });
   return makeCsv(LEADERBOARD_CSV_FIELDS, rows);
@@ -2881,6 +3133,86 @@ function downloadCell(td, value, history) {
   td.appendChild(wrap);
 }
 
+/* The header shows the key; a model icon shows that row's actual status. */
+function opennessLegend(row = null) {
+  const legend = document.createElement('div');
+  legend.className = 'open-legend';
+  const head = document.createElement('div');
+  head.className = 'open-tip-head';
+  if (row) {
+    head.classList.add('open-tip-head-model');
+    const identity = document.createElement('div');
+    identity.className = 'model-preview-identity';
+    const name = document.createElement('strong');
+    name.className = 'model-preview-name';
+    name.textContent = row.name;
+    const context = document.createElement('span');
+    context.className = 'model-preview-context';
+    context.textContent = modelSummary(row);
+    identity.append(name, context);
+    head.append(modelAvatar(row), identity);
+  } else {
+    const title = document.createElement('strong');
+    title.className = 'open-tip-title';
+    title.textContent = 'Openness';
+    const copy = document.createElement('span');
+    copy.className = 'open-tip-copy';
+    copy.textContent = OPENNESS_TIP;
+    head.append(title, copy);
+  }
+  for (const [key, label, icon] of OPENNESS) {
+    const item = document.createElement('div');
+    if (row && !row.openness[key]) item.classList.add('unconfirmed');
+    item.append(icon(), label);
+    legend.appendChild(item);
+  }
+  const issue = document.createElement('a');
+  issue.className = 'open-tip-issue';
+  issue.href = 'https://github.com/Rye-A1/danish-asr-leaderboard/issues/new';
+  issue.target = '_blank';
+  issue.rel = 'noopener noreferrer';
+  issue.textContent = 'Did we miss something? Open an issue ↗';
+  const content = document.createDocumentFragment();
+  content.append(head, legend, issue);
+  return content;
+}
+
+/* Openness cell: one icon per criterion, linked to its evidence when met. */
+const OPENNESS_ROWS = new WeakMap();
+function setOpenIconA11y(el) {
+  const label = el.dataset.opennessLabel;
+  const hasProof = el.tagName === 'A';
+  if (NARROW.matches) {
+    el.setAttribute('aria-label', `${label}, ${hasProof ? 'proof available' : 'not confirmed'}, open details`);
+    el.setAttribute('aria-haspopup', 'dialog');
+  } else {
+    el.setAttribute('aria-label', `${label}, ${hasProof ? 'view proof' : 'not confirmed'}`);
+    el.removeAttribute('aria-haspopup');
+  }
+}
+function openCell(td, row) {
+  const o = row.openness;
+  if (!o) { td.textContent = '—'; return; }
+  OPENNESS_ROWS.set(td, row);
+  const wrap = document.createElement('span');
+  wrap.className = 'open-wrap';
+  for (const [key, label, icon] of OPENNESS) {
+    const url = o[key];
+    const el = document.createElement(url ? 'a' : 'button');
+    el.className = 'open-item';
+    if (!url) el.type = 'button';
+    el.dataset.key = 'openness_score';
+    el.dataset.opennessKey = key;
+    el.dataset.opennessLabel = label;
+    el.dataset.tip = '';
+    if (url) { el.href = url; el.target = '_blank'; el.rel = 'noopener noreferrer'; }
+    el.appendChild(icon());
+    setOpenIconA11y(el);
+    wrap.appendChild(el);
+  }
+  td.appendChild(wrap);
+}
+
 function buildHead(cols) {
   const tr = document.createElement('tr');
   for (const c of cols) {
@@ -2928,6 +3260,25 @@ function positionModelPreview(link) {
   MODEL_PREVIEW.style.top = `${Math.max(edge, Math.min(top, innerHeight - height - edge))}px`;
 }
 
+function modelSummary(row) {
+  const size = Number.parseFloat(row.size);
+  return (row.access === 'open' ? 'Open weights' : 'Hosted API')
+    + (Number.isFinite(size) ? ` · ${row.size}B parameters` : '');
+}
+
+function modelAvatar(row) {
+  const mark = document.createElement('span');
+  mark.className = 'model-preview-mark';
+  mark.textContent = row.name.split('/').at(-1).charAt(0).toUpperCase();
+  if (!row.logo) return mark;
+  const logo = document.createElement('img');
+  logo.className = 'model-preview-logo';
+  logo.alt = '';
+  logo.src = row.logo;
+  logo.onerror = () => logo.replaceWith(mark);
+  return logo;
+}
+
 function showModelPreview(link, row) {
   if (NARROW.matches || !link.isConnected) return;
   if (previewLink && previewLink !== link) hideModelPreview();
@@ -2936,17 +3287,7 @@ function showModelPreview(link, row) {
 
   const head = document.createElement('div');
   head.className = 'model-preview-head';
-  const mark = document.createElement('span');
-  mark.className = 'model-preview-mark';
-  mark.textContent = row.name.split('/').at(-1).charAt(0).toUpperCase();
-  if (row.logo) {
-    const logo = document.createElement('img');
-    logo.className = 'model-preview-logo';
-    logo.alt = '';
-    logo.src = row.logo;
-    logo.onerror = () => logo.replaceWith(mark);
-    head.appendChild(logo);
-  } else head.appendChild(mark);
+  head.appendChild(modelAvatar(row));
   const identity = document.createElement('div');
   identity.className = 'model-preview-identity';
   const name = document.createElement('span');
@@ -2954,9 +3295,7 @@ function showModelPreview(link, row) {
   name.textContent = row.name;
   const context = document.createElement('span');
   context.className = 'model-preview-context';
-  const size = Number.parseFloat(row.size);
-  context.textContent = (row.access === 'open' ? 'Open weights' : 'Hosted API')
-    + (Number.isFinite(size) ? ` · ${row.size}B parameters` : '');
+  context.textContent = modelSummary(row);
   identity.append(name, context);
   head.appendChild(identity);
 
@@ -2978,7 +3317,7 @@ function showModelPreview(link, row) {
   }
   const foot = document.createElement('div');
   foot.className = 'model-preview-foot';
-  foot.textContent = `Licence: ${row.license || 'not declared'} · Open model page ↗`;
+  foot.textContent = `Licence: ${licenseLabel(row.license) || 'not declared'} · Open model page ↗`;
   MODEL_PREVIEW.append(head, stats, foot);
   MODEL_PREVIEW.hidden = false;
   positionModelPreview(link);
@@ -3075,9 +3414,9 @@ function buildRow(row, cols, maxVals) {
       a.appendChild(nm);
       td.appendChild(a);
 
-      // Second line: size, access and licence travel with the model identity
-      // instead of taking three columns of their own. The wide table and the
-      // mobile cards now render from this one structure.
+      // Second line: size and licence travel with the model identity instead
+      // of taking columns of their own. The wide table and the mobile cards
+      // now render from this one structure.
       const meta = document.createElement('div');
       meta.className = 'model-meta';
 
@@ -3090,16 +3429,15 @@ function buildRow(row, cols, maxVals) {
       sz.title = hasSize ? row.size + ' billion parameters' : 'Parameter count not published';
       meta.appendChild(sz);
 
-      const isOpen = row.access === 'open';
-      const badge = document.createElement('span');
-      badge.className = 'badge ' + (isOpen ? 'badge-open' : 'badge-prop');
-      badge.append(isOpen ? ICON_OPEN() : ICON_CLOSED(), row.access || '—');
-      meta.appendChild(badge);
-
       const lic = document.createElement('span');
       lic.className = 'm-license';
-      lic.append(ICON_LICENSE(), row.license || '—');
-      lic.title = 'Licence: ' + (row.license || 'not declared');
+      const licName = document.createElement('span');
+      licName.className = 'm-license-label';
+      licName.textContent = licenseLabel(row.license) || '—';
+      lic.append(ICON_LICENSE(), licName);
+      lic.title = row.license === 'ekko-composite-model-terms'
+        ? 'NVIDIA Open Model License; additional model terms apply'
+        : 'Licence: ' + (row.license || 'not declared');
       meta.appendChild(lic);
 
       td.appendChild(meta);
@@ -3116,6 +3454,9 @@ function buildRow(row, cols, maxVals) {
 
     } else if (c.key === 'hf_downloads') {
       downloadCell(td, v, row.hf_download_history);
+
+    } else if (c.key === 'openness_score') {
+      openCell(td, row);
 
     } else if (typeof v === 'number') {
       td.textContent = v.toFixed(2);
@@ -3191,6 +3532,58 @@ function decorateSettings(bar) {
     title.className = 'settings-field-title';
     title.append(icon(field.querySelector('select')?.id.startsWith('wer-limit-') ? 'limit' : 'size'), textNode.textContent.trim());
     textNode.replaceWith(title);
+  });
+  const field = document.createElement('div');
+  field.className = 'openness-filter';
+  const title = document.createElement('span');
+  title.className = 'settings-field-title';
+  title.append(icon('open'), 'Openness factors');
+  const details = document.createElement('details');
+  const summary = document.createElement('summary');
+  const value = document.createElement('span');
+  value.className = 'openness-filter-value';
+  summary.append(value, _icon(['m6 9 6 6 6-6'], ''));
+  const options = document.createElement('div');
+  options.className = 'openness-filter-options';
+  options.setAttribute('role', 'group');
+  options.setAttribute('aria-label', 'Required openness factors');
+  for (const [key, label] of OPENNESS) {
+    const option = document.createElement('label');
+    option.className = 'openness-filter-option';
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.value = key;
+    checkbox.addEventListener('change', () => {
+      if (checkbox.checked) requiredOpenness.add(key);
+      else requiredOpenness.delete(key);
+      syncOpennessFilterControls();
+      refreshSettingsButtons();
+      onOpennessFilterChanged?.();
+    });
+    option.append(checkbox, label);
+    options.appendChild(option);
+  }
+  details.append(summary, options);
+  details.addEventListener('toggle', () => {
+    if (details.open) details.scrollIntoView({ block: 'nearest' });
+  });
+  const help = document.createElement('span');
+  help.className = 'openness-filter-help';
+  help.textContent = 'Require linked evidence for every selected factor.';
+  field.append(title, details, help);
+  bar.insertBefore(field, bar.querySelector('.download-csv'));
+  syncOpennessFilterControls();
+}
+
+function syncOpennessFilterControls() {
+  const labels = OPENNESS.filter(([key]) => requiredOpenness.has(key)).map(([, label]) => label);
+  const value = labels.length === 0 ? 'All models' : labels.length <= 2 ? labels.join(', ') : `${labels.length} selected`;
+  document.querySelectorAll('.openness-filter').forEach(field => {
+    field.querySelectorAll('input[type="checkbox"]').forEach(input => {
+      input.checked = requiredOpenness.has(input.value);
+    });
+    field.querySelector('.openness-filter-value').textContent = value;
+    field.querySelector('summary').setAttribute('aria-label', `Openness factors filter: ${value}`);
   });
 }
 
@@ -3269,6 +3662,7 @@ function initFilterToggles() {
       bar.querySelectorAll('.size-filter select').forEach(select => {
         if (select.value !== (select.dataset.default ?? '')) n++;
       });
+      if (requiredOpenness.size) n++;
       return n;
     };
 
@@ -3317,10 +3711,16 @@ function initFilterToggles() {
         select.value = defaultValue;
         select.dispatchEvent(new Event('change', { bubbles: true }));
       });
+      if (requiredOpenness.size) {
+        requiredOpenness.clear();
+        syncOpennessFilterControls();
+        onOpennessFilterChanged?.();
+      }
       refreshSettingsButtons();
     });
     sheet.addEventListener('click', event => { if (event.target === sheet) sheet.close(); });
     sheet.addEventListener('close', () => {
+      sheet.querySelectorAll('.openness-filter details[open]').forEach(details => { details.open = false; });
       TIP.classList.remove('show');
       tipActive = false;
       document.body.append(TIP);
@@ -3419,17 +3819,33 @@ function _icon(paths, cls) {
   return svg;
 }
 const ICON_FILTER = () => _icon(['M22 3H2l8 9.46V19l4 2v-8.54L22 3z'], 'ctl-icon');
-const ICON_SIZE = () => _icon(
-  ['M12 3 3 7.5 12 12l9-4.5L12 3z', 'M3 12l9 4.5 9-4.5', 'M3 16.5 12 21l9-4.5'], 'meta-icon');
-const ICON_OPEN = () => _icon(
-  ['M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z',
-   'M8 11V7a4 4 0 0 1 8 0'], 'meta-icon');
-const ICON_CLOSED = () => _icon(
-  ['M6 11h12a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1z',
-   'M8 11V7a4 4 0 0 1 8 0v4'], 'meta-icon');
-const ICON_LICENSE = () => _icon(
-  ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', 'M14 2v6h6'], 'meta-icon');
+/* The size and licence chips share their icons with the matching openness
+   criteria (open weights, open licence), so the two read as one vocabulary. */
+const WEIGHTS_PATHS = [
+  'M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z',
+  'M3.3 7 12 12l8.7-5', 'M12 22V12'];
+const LICENSE_PATHS = [
+  'M12 3v18', 'M7 21h10', 'M3 7h18', 'M6 7l-3 7a3 3 0 0 0 6 0z', 'M18 7l-3 7a3 3 0 0 0 6 0z'];
+const ICON_SIZE = () => _icon(WEIGHTS_PATHS, 'meta-icon');
+const ICON_LICENSE = () => _icon(LICENSE_PATHS, 'meta-icon');
 const ICON_SORT   = () => _icon(['M3 6h13', 'M3 12h9', 'M3 18h5'], 'ctl-icon');
+
+/* Openness criteria, in the order update_space.py emits them. */
+const OPENNESS = [
+  ['weights', 'Open weights', () => _icon(WEIGHTS_PATHS, 'open-icon')],
+  ['license', 'Open licence', () => _icon(LICENSE_PATHS, 'open-icon')],
+  ['training_code', 'Open training code', () => _icon(
+    ['m16 18 6-6-6-6', 'm8 6-6 6 6 6'], 'open-icon')],
+  ['training_data', 'Open training data', () => _icon(
+    ['M3 5c0 1.66 4 3 9 3s9-1.34 9-3-4-3-9-3-9 1.34-9 3',
+     'M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5', 'M3 12c0 1.66 4 3 9 3s9-1.34 9-3'], 'open-icon')],
+  ['model_card', 'Model card', () => _icon(
+    ['M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z', 'M14 2v6h6',
+     'M16 13H8', 'M16 17H8'], 'open-icon')],
+  ['paper', 'Paper', () => _icon(
+    ['M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z',
+     'M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z'], 'open-icon')],
+];
 
 /* `dir` is the direction that puts the best model first, applied when the
    field is picked; the arrow button flips it. `always` marks a field that is
@@ -3441,6 +3857,7 @@ const SORT_FIELDS = [
   { key: 'mean_cer',    label: 'Mean CER',  dir:  1 },
   { key: 'speed_x',     label: 'Speed',     dir: -1 },
   { key: 'hf_downloads', label: 'Popularity', dir: -1 },
+  { key: 'openness_score', label: 'Openness', dir: -1 },
   { key: 'size',        label: 'Size',      dir: -1, always: true,
     read: r => parseFloat(r.size) },
   { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt'    },
@@ -3570,7 +3987,7 @@ if (document.readyState === 'loading') {
 }
 document.addEventListener('click', ev => {
   if (!NARROW.matches) return;
-  if (ev.target.closest('a')) return;
+  if (ev.target.closest('a, .open-item')) return;
   const tr = ev.target.closest('tbody tr');
   if (!tr || !tr.closest('.table-scroll')) return;
   tr.classList.toggle('expanded');
@@ -4162,7 +4579,7 @@ function _drawChart(rows, method, tab) {
   if (pareto.length >= 2) {
     let d = `M ${ML} ${sy(pareto[0].yv).toFixed(1)} H ${sx(pareto[0].sz).toFixed(1)}`;
     for (let i = 1; i < pareto.length; i++)
-      d += ` V ${sy(pareto[i].yv).toFixed(1)} H ${sx(pareto[i].sz).toFixed(1)}`;
+      d += ` H ${sx(pareto[i].sz).toFixed(1)} V ${sy(pareto[i].yv).toFixed(1)}`;
     d += ` H ${ML + cW}`;
     mk('path', { d, fill: 'none', stroke: 'var(--link)', 'stroke-width': '1.5', opacity: '0.5' }, svgEl);
   }
@@ -4752,7 +5169,8 @@ function setupCompare(data) {
     const tr = document.createElement('tr');
     [label, ...values].forEach((text, i) => {
       const td = document.createElement('td');
-      td.textContent = text;
+      if (text instanceof Node) td.appendChild(text);
+      else td.textContent = text;
       if (i > 0) {
         td.dataset.modelCol = '';
         td.style.setProperty('--model-color', colors[i - 1]);
@@ -4780,7 +5198,12 @@ function setupCompare(data) {
       Number.isFinite(parseFloat(row.size)) ? `${row.size}B` : '—'));
     addSummaryRow('compare-summary-body', 'Weights', rows.map(row =>
       row.access === 'open' ? 'Open' : row.access === 'proprietary' ? 'Proprietary API' : '—'));
-    addSummaryRow('compare-summary-body', 'License', rows.map(row => row.license || '—'));
+    addSummaryRow('compare-summary-body', 'License', rows.map(row => licenseLabel(row.license) || '—'));
+    addSummaryRow('compare-summary-body', 'Openness', rows.map(row => {
+      const cell = document.createElement('span');
+      openCell(cell, row);
+      return cell;
+    }));
     addSummaryRow('compare-summary-body', 'Submitted', rows.map(row => row.submitted || '—'));
 
     renderHeader('compare-overall-head', rows);
@@ -5149,6 +5572,10 @@ async function init() {
       if (analysisMetric === 'cer') applyAnalysis('cer');
       if (timeMetric === 'cer') applyTime('cer');
     }
+    onOpennessFilterChanged = () => {
+      applyWer();
+      applyCer();
+    };
 
     /* Rank by: one group per tab, each acting on the metric that tab shows. The
        method is stored per metric, so a choice made on Pareto while it displays
@@ -5332,37 +5759,165 @@ periodPanel.addEventListener('keydown', event => {
 
 /* Custom column tooltips */
 const TIP = document.getElementById('col-tip');
+const OPENNESS_DRAWER = document.getElementById('openness-drawer');
 let tipActive = false;
+let tipOwner = null;
+let tipPinned = false;
+let tipHideTimer = null;
+let opennessReturnFocus = null;
 
-document.addEventListener('mouseover', e => {
-  const el = e.target.closest('[data-tip]');
-  if (!el) return;
-  TIP.textContent = el.dataset.tip;
-  TIP.classList.add('show');
-  tipActive = true;
+function openOpennessDrawer(iconEl) {
+  const td = iconEl.closest('td[data-key="openness_score"]');
+  const row = OPENNESS_ROWS.get(td);
+  if (!row) return;
+  const list = OPENNESS_DRAWER.querySelector('.openness-drawer-list');
+  const avatar = OPENNESS_DRAWER.querySelector('.openness-drawer-avatar');
+  avatar.textContent = row.name.split('/').at(-1).charAt(0).toUpperCase();
+  if (row.logo) {
+    const logo = document.createElement('img');
+    logo.alt = '';
+    logo.src = row.logo;
+    logo.onerror = () => logo.remove();
+    avatar.appendChild(logo);
+  }
+  OPENNESS_DRAWER.querySelector('.openness-drawer-name').textContent = row.name;
+  OPENNESS_DRAWER.querySelector('.openness-drawer-context').textContent = modelSummary(row);
+  list.replaceChildren();
+  for (const [key, label, icon] of OPENNESS) {
+    const url = row.openness[key];
+    const item = document.createElement(url ? 'a' : 'div');
+    item.className = 'openness-drawer-row';
+    if (!url) item.classList.add('unconfirmed');
+    if (key === iconEl.dataset.opennessKey) item.classList.add('selected');
+    if (url) {
+      item.href = url;
+      item.target = '_blank';
+      item.rel = 'noopener noreferrer';
+      item.setAttribute('aria-label', label + ', view proof');
+    }
+    const text = document.createElement('span');
+    text.textContent = label;
+    const status = document.createElement('span');
+    status.className = 'openness-drawer-status';
+    status.textContent = url ? 'View proof ↗' : 'Not confirmed';
+    item.append(icon(), text, status);
+    list.appendChild(item);
+  }
+  opennessReturnFocus = iconEl;
+  OPENNESS_DRAWER.showModal();
+  OPENNESS_DRAWER.querySelector('.openness-drawer-close').focus();
+}
+
+OPENNESS_DRAWER.querySelector('.openness-drawer-close').addEventListener('click', () => OPENNESS_DRAWER.close());
+OPENNESS_DRAWER.addEventListener('click', e => {
+  if (e.target === OPENNESS_DRAWER || e.target.closest('a.openness-drawer-row')) OPENNESS_DRAWER.close();
 });
-document.addEventListener('mouseout', e => {
-  if (!e.target.closest('[data-tip]')) return;
-  TIP.classList.remove('show');
-  tipActive = false;
+OPENNESS_DRAWER.addEventListener('close', () => {
+  if (opennessReturnFocus?.isConnected) opennessReturnFocus.focus();
+  opennessReturnFocus = null;
 });
-document.addEventListener('mousemove', e => {
-  if (!tipActive) return;
+NARROW.addEventListener('change', e => {
+  if (!e.matches && OPENNESS_DRAWER.open) OPENNESS_DRAWER.close();
+  document.querySelectorAll('.open-item').forEach(setOpenIconA11y);
+});
+
+function positionTip(clientX, clientY) {
   const w = TIP.offsetWidth, h = TIP.offsetHeight;
   const sheet = TIP.closest('dialog.settings-sheet[open]');
   const bounds = sheet?.getBoundingClientRect();
   const left = bounds?.left ?? 0, top = bounds?.top ?? 0;
   const width = bounds?.width ?? window.innerWidth;
   const height = bounds?.height ?? window.innerHeight;
-  const px = e.clientX - left, py = e.clientY - top;
+  const px = clientX - left, py = clientY - top;
   let x = px + 14, y = py + 14;
   if (x + w > width - 8) x = px - w - 14;
   if (y + h > height - 8) y = py - h - 14;
   x = Math.max(8, Math.min(x, width - w - 8));
   y = Math.max(8, Math.min(y, height - h - 8));
   TIP.style.left = x + 'px';
-  TIP.style.top  = y + 'px';
+  TIP.style.top = y + 'px';
+}
+
+function showTip(el, clientX, clientY, pinned = false) {
+  clearTimeout(tipHideTimer);
+  tipOwner = el;
+  tipPinned = pinned;
+  const openness = el.dataset.key === 'openness_score';
+  TIP.classList.toggle('open-tip', openness);
+  if (openness) {
+    const td = el.closest('td[data-key="openness_score"]');
+    TIP.replaceChildren(opennessLegend(td ? OPENNESS_ROWS.get(td) : null));
+  }
+  else TIP.textContent = el.dataset.tip;
+  TIP.classList.add('show');
+  tipActive = true;
+  const rect = el.getBoundingClientRect();
+  positionTip(clientX ?? rect.left + rect.width / 2,
+              clientY ?? rect.bottom);
+}
+
+function hideTip() {
+  clearTimeout(tipHideTimer);
+  TIP.classList.remove('show');
+  tipActive = false;
+  tipPinned = false;
+  tipOwner = null;
+}
+
+function scheduleTipHide() {
+  clearTimeout(tipHideTimer);
+  const owner = tipOwner;
+  tipHideTimer = setTimeout(() => {
+    if (!tipPinned && tipOwner === owner && !TIP.matches(':hover') &&
+        !owner?.matches(':hover') && !TIP.contains(document.activeElement)) hideTip();
+  }, 180);
+}
+
+document.addEventListener('mouseover', e => {
+  if (TIP.contains(e.target)) { clearTimeout(tipHideTimer); return; }
+  const el = e.target.closest('[data-tip]');
+  if (el && !tipPinned && !(NARROW.matches && el.classList.contains('open-item')))
+    showTip(el, e.clientX, e.clientY);
 });
+document.addEventListener('mouseout', e => {
+  if (tipPinned || !tipOwner) return;
+  if (TIP.contains(e.target)) {
+    if (!TIP.contains(e.relatedTarget) && !tipOwner.contains(e.relatedTarget)) scheduleTipHide();
+    return;
+  }
+  if (tipOwner.contains(e.relatedTarget) || TIP.contains(e.relatedTarget)) return;
+  if (e.target.closest('[data-tip]') === tipOwner) {
+    if (TIP.classList.contains('open-tip')) scheduleTipHide();
+    else hideTip();
+  }
+});
+document.addEventListener('mousemove', e => {
+  if (tipActive && !tipPinned && !TIP.classList.contains('open-tip')) positionTip(e.clientX, e.clientY);
+});
+document.addEventListener('focusin', e => {
+  const el = e.target.closest('[data-tip]');
+  if (el && !tipPinned && !(NARROW.matches && el.classList.contains('open-item')))
+    showTip(el);
+});
+document.addEventListener('focusout', e => {
+  if (!tipPinned && tipOwner === e.target && !TIP.contains(e.relatedTarget)) hideTip();
+  if (!tipPinned && TIP.contains(e.target) && !TIP.contains(e.relatedTarget)) hideTip();
+});
+document.addEventListener('click', e => {
+  const icon = e.target.closest('.open-item');
+  if (icon && NARROW.matches) {
+    e.preventDefault();
+    hideTip();
+    openOpennessDrawer(icon);
+  } else if (icon?.tagName === 'BUTTON') {
+    if (tipPinned && tipOwner === icon) hideTip();
+    else showTip(icon, undefined, undefined, true);
+  } else if (tipPinned) hideTip();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && tipActive) hideTip();
+});
+window.addEventListener('resize', hideTip);
 
 init();
 </script>

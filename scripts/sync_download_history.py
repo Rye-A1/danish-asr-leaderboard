@@ -9,7 +9,7 @@ from pathlib import Path
 
 DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 REMOTE_PATH = "data/hf_downloads.json"
-DEFAULT_HISTORY_PATH = Path(__file__).resolve().parent.parent / "history" / "hf_downloads.json"
+DEFAULT_HISTORY_PATH = Path(__file__).resolve().parent.parent / "huggingface" / "hf_downloads.json"
 
 
 def snapshot_date(path: Path) -> str:

@@ -8,13 +8,13 @@ The HF dataset viewer is driven by the `configs:` key in the dataset card
   - one config per model  -> outputs/<slug>.parquet — that model's raw
     transcriptions, browsable from the viewer's config dropdown
 
-The card body + static frontmatter live in `dataset_card.md` at the repo root
+The card body + static frontmatter live in `huggingface/dataset_card.md`
 (version-controlled, human-editable). This script reads that file, enumerates the
 parquets that actually exist in the dataset repo, injects a freshly-built
 `configs:` block, and uploads the result as the dataset README — so a
 newly-submitted model self-registers in the viewer on the next deploy without
 anyone hand-maintaining ~30 config entries. Direct edits on the Hub are
-overwritten; edit dataset_card.md instead.
+overwritten; edit huggingface/dataset_card.md instead.
 
 Run after push_outputs.py / push_results.py have uploaded the parquets:
   uv run --no-project --with huggingface_hub --with pyyaml python scripts/update_dataset_card.py
@@ -31,7 +31,7 @@ from huggingface_hub import HfApi, hf_hub_download
 
 DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 RESULTS_PARQUET = "data/results.parquet"
-CARD_SOURCE = Path(__file__).resolve().parent.parent / "dataset_card.md"
+CARD_SOURCE = Path(__file__).resolve().parent.parent / "huggingface" / "dataset_card.md"
 
 
 def build_configs(api: HfApi) -> list[dict]:

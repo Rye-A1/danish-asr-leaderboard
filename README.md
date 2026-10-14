@@ -155,8 +155,9 @@ RUN_API=1 bash scripts/run_benchmark.sh       # also hosted APIs (needs keys)
 The sweep posts progress to a webhook if `MATTERMOST_WEBHOOK_URL` is set (in the
 environment or `.env`). Mattermost and Slack share the `{"text": …}` webhook
 payload, so either works out of the box; other services need a one-line tweak in
-`notify.py`. Copy [.env.example](.env.example) to `.env` to configure this and the
-other optional integrations (Mozilla CV key, HF token). Notifications are a silent
+`danish_asr_leaderboard/notify.py`. Copy [.env.example](.env.example) to
+`.env` to configure this and the other optional integrations (Mozilla CV key,
+HF token). Notifications are a silent
 no-op when unconfigured.
 
 Run `danish-asr-eval --help` for all options (device, batch size, beam/KenLM,
@@ -215,7 +216,7 @@ Each file is `outputs/<model-slug>.parquet` with columns
 `dataset, id, reference, hypothesis` — incremental, so re-running one model only
 re-uploads that model. Use `--no-upload` to build the Parquet locally without pushing.
 
-To redeploy the static Space after editing `space/index.html`:
+To redeploy the static Space after editing `huggingface/space/index.html`:
 
 ```bash
 HF_TOKEN=hf_... python scripts/update_space.py
@@ -270,10 +271,13 @@ danish_asr_leaderboard/
     api/            # hosted-API backends
 run_eval.py         # thin CLI entry point
 scripts/            # run_benchmark.sh, fetch_common_voice_da.py, push_results.py, push_outputs.py, update_space.py, rescore.py
-  release_dates.json  # hand-maintained model release dates (Over Time chart)
+  model_metadata.json # hand-maintained per-model metadata: release dates, openness
 outputs/            # raw per-sample model outputs (git-ignored)
 results/            # generated result JSONs (git-ignored)
-space/              # Static HTML leaderboard (deployed to the HF Space)
+huggingface/
+  space/            # Static HTML leaderboard (deployed to the HF Space)
+  dataset_card.md   # Source for the published HF dataset README
+  hf_downloads.json # Fallback seed for Hub download history
 ```
 
 ## Adding a backend
