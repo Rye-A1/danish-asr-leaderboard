@@ -375,12 +375,15 @@
     .compare-example-nav button:disabled { opacity: .4; cursor: default; }
     .compare-example-nav span { color: var(--muted); font-size: 12px; }
     .compare-reference { padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf2); }
+    .compare-reference-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 5px 12px; margin-bottom: 7px; }
     .compare-reference small, .compare-hypothesis small { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+    .compare-reference-head small { margin-bottom: 0; }
+    .compare-source { color: var(--muted); font-size: 11px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+    .compare-source:hover, .compare-source:focus-visible { color: var(--link); text-decoration: underline; }
     .compare-reference p, .compare-hypothesis p { margin: 0; overflow-wrap: anywhere; line-height: 1.6; }
     .compare-audio { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
     .compare-audio audio { display: block; width: min(100%, 380px); height: 36px; }
     .compare-audio span { display: block; color: var(--muted); font-size: 12px; }
-    .compare-audio a { display: inline-block; margin-top: 5px; color: var(--link); font-size: 11px; }
     .compare-hypotheses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .compare-hypothesis { position: relative; display: flex; flex-direction: column; padding: 16px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf); }
     .compare-hypothesis::after { content: ""; position: absolute; top: 18px; right: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--model-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--model-color) 14%, transparent); }
@@ -5519,11 +5522,14 @@ function setupCompare(data) {
     const item = examples[exampleIndex];
     const reference = document.createElement('div');
     reference.className = 'compare-reference';
+    const refHead = document.createElement('div');
+    refHead.className = 'compare-reference-head';
     const refLabel = document.createElement('small');
     refLabel.textContent = `Reference · ${item.id}`;
+    refHead.appendChild(refLabel);
     const refText = document.createElement('p');
     const refOmissions = new Set();
-    reference.append(refLabel, refText);
+    reference.append(refHead, refText);
     const columns = document.createElement('div');
     columns.className = 'compare-hypotheses';
     selected.forEach((model, i) => {
@@ -5555,18 +5561,19 @@ function setupCompare(data) {
     });
     appendMarkedWords(refText, item.reference, refOmissions, 'compare-word-omitted');
     target.append(reference, columns);
-    renderExampleAudio(reference, dataset, item);
+    renderExampleAudio(reference, refHead, dataset, item);
   }
-  async function renderExampleAudio(reference, dataset, item) {
+  async function renderExampleAudio(reference, refHead, dataset, item) {
     const box = document.createElement('div');
     box.className = 'compare-audio';
     const message = document.createElement('span');
     box.appendChild(message);
     reference.appendChild(box);
     const source = document.createElement('a');
+    source.className = 'compare-source';
     source.target = '_blank';
     source.rel = 'noopener noreferrer';
-    const available = (url, label) => {
+    const available = url => {
       if (!reference.isConnected) return;
       const player = document.createElement('audio');
       player.controls = true;
@@ -5580,10 +5587,11 @@ function setupCompare(data) {
         }
       });
       message.replaceWith(player);
-      source.textContent = label;
-      box.appendChild(source);
     };
     if (dataset === 'fleurs_da' && /^fleurs_da_\d{5}\.wav$/.test(item.id)) {
+      source.href = 'https://huggingface.co/datasets/google/fleurs';
+      source.textContent = 'FLEURS · CC BY 4.0 ↗';
+      refHead.appendChild(source);
       message.textContent = 'Loading audio…';
       try {
         fleursManifestPromise ||= fetch('audio/fleurs_da/manifest.json').then(response => {
@@ -5593,13 +5601,15 @@ function setupCompare(data) {
         const manifest = await fleursManifestPromise;
         if (manifest.examples?.[item.id] !== item.reference) throw new Error('FLEURS reference mismatch');
         const filename = item.id.replace(/\.wav$/, '.m4a');
-        source.href = 'https://huggingface.co/datasets/google/fleurs';
-        available(`audio/fleurs_da/${filename}`, 'FLEURS audio · CC BY 4.0');
+        available(`audio/fleurs_da/${filename}`);
       } catch {
         fleursManifestPromise = null;
         if (reference.isConnected) message.textContent = 'Audio unavailable for this clip.';
       }
     } else if (dataset === 'ftspeech' && /^ftspeech_\d{5}\.wav$/.test(item.id)) {
+      source.href = 'https://huggingface.co/datasets/alexandrainst/ftspeech';
+      source.textContent = 'FTSpeech source ↗';
+      refHead.appendChild(source);
       message.textContent = 'Loading audio from FTSpeech…';
       try {
         const offset = Number(item.id.slice(9, 14));
@@ -5612,14 +5622,12 @@ function setupCompare(data) {
         if (row?.sentence !== item.reference || !asset || new URL(asset).hostname !== 'datasets-server.huggingface.co') {
           throw new Error('FTSpeech reference or audio mismatch');
         }
-        source.href = 'https://huggingface.co/datasets/alexandrainst/ftspeech';
-        available(asset, 'Audio from FTSpeech');
+        available(asset);
       } catch {
         if (reference.isConnected) message.textContent = 'Audio unavailable from the source right now.';
       }
     } else {
-      message.textContent = dataset.startsWith('coral_')
-        ? 'CoRal audio requires gated access.' : 'Audio is unavailable for this test set.';
+      message.textContent = 'Playback audio is unavailable for this test set.';
     }
   }
   function renderView() {
