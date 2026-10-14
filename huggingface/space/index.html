@@ -296,8 +296,7 @@
       background: var(--surf);
     }
     .compare-section > h3 { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; font-size: 17px; font-weight: 750; }
-    .compare-section > h3::before {
-      content: "0" counter(compare-section);
+    .compare-section > h3::before, .compare-section-glyph {
       flex: none;
       display: inline-grid;
       place-items: center;
@@ -311,6 +310,9 @@
       font-weight: 800;
       letter-spacing: .02em;
     }
+    .compare-section > h3::before { content: "0" counter(compare-section); }
+    #compare-outputs-pane .compare-section > h3::before { display: none; }
+    .compare-section-glyph svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .compare-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r); }
     .compare-scroll-hint { display: none; margin: -5px 0 9px; color: var(--muted); font-size: 12px; }
     @media (max-width: 1100px) { .compare-scroll-hint { display: block; } }
@@ -2504,7 +2506,7 @@
       </div>
       <div id="compare-outputs-pane" hidden>
         <section class="compare-section">
-          <h3>Compare transcripts</h3>
+          <h3><span class="compare-section-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h9a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M10 9h5M10 13h5M10 17h3"/></svg></span>Compare transcripts</h3>
           <p class="compare-note">Select a test set to inspect high-disagreement clips; these are not a representative accuracy sample. Highlighted words differ from the reference; dotted underlines mark omissions. Clip WER/CER use leaderboard normalization and can exceed 100%.</p>
           <div class="compare-example-toolbar">
             <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset" hidden>Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
