@@ -7,7 +7,7 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-from build_compare_data import metadata_groups, output_slugs, score_groups
+from build_compare_data import metadata_groups, output_slugs, score_example, score_groups
 
 
 def test_breakdown_requires_exact_test_rows_and_references():
@@ -36,3 +36,9 @@ def test_legacy_output_slug_uses_model_name(tmp_path):
     source.mkdir()
     (source / "meta.json").write_text('{"model":"publisher/model"}')
     assert output_slugs(tmp_path)["short__model"] == "publisher__model"
+
+
+def test_example_scores_use_leaderboard_normalization():
+    assert score_example("Jeg har 4 æbler.", "jeg har fire æbler") == {"wer": 0.0, "cer": 0.0}
+    assert score_example("Hej verden", "") == {"wer": 100.0, "cer": 100.0}
+    assert score_example("Hej verden", "Hej verden igen") == {"wer": 50.0, "cer": 50.0}

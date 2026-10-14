@@ -285,7 +285,7 @@
     .compare-copy:disabled { opacity: .45; cursor: not-allowed; }
     .compare-note { color: var(--muted); font-size: 12px; }
     .compare-empty { margin-top: 15px; padding: 48px 18px; border: 1px dashed var(--border); border-radius: var(--r); color: var(--muted); text-align: center; }
-    #compare-results { counter-reset: compare-section; }
+    #compare-results { padding-top: 18px; counter-reset: compare-section; }
     .compare-section {
       counter-increment: compare-section;
       margin: 15px 0;
@@ -361,8 +361,9 @@
     .compare-reference small, .compare-hypothesis small { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
     .compare-reference p, .compare-hypothesis p { margin: 0; overflow-wrap: anywhere; line-height: 1.6; }
     .compare-hypotheses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-    .compare-hypothesis { padding: 16px; border: 1px solid var(--border); border-top: 3px solid var(--model-color); border-radius: var(--r); background: var(--surf); }
+    .compare-hypothesis { display: flex; flex-direction: column; padding: 16px; border: 1px solid var(--border); border-top: 3px solid var(--model-color); border-radius: var(--r); background: var(--surf); }
     .compare-hypothesis small { color: var(--model-color); }
+    .compare-clip-score { margin-top: auto; padding-top: 10px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
     .compare-word-change { border-radius: 3px; background: color-mix(in srgb, var(--link) 13%, transparent); box-shadow: inset 0 -1px var(--link); }
     .compare-word-omitted { text-decoration: underline dotted var(--link) 2px; text-underline-offset: 3px; }
     .compare-help { margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
@@ -2469,7 +2470,7 @@
       <div id="compare-outputs-pane" hidden>
         <section class="compare-section">
           <h3>Compare transcripts</h3>
-          <p class="compare-note">These high-disagreement clips are for inspection, not a representative accuracy sample. Highlighted words differ from the reference; dotted underlines mark words omitted by a shown model. Matching ignores case and surrounding punctuation.</p>
+          <p class="compare-note">These high-disagreement clips are for inspection, not a representative accuracy sample. Highlighted words differ from the reference; dotted underlines mark omissions. Clip WER/CER use leaderboard normalization and can exceed 100%.</p>
           <div class="compare-controls"><label>Test set<select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></label></div>
           <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
           <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
@@ -5402,6 +5403,13 @@ function setupCompare(data) {
         text.textContent = 'No saved output for this clip';
       }
       card.append(label, text);
+      const clipScore = item.scores?.[slug];
+      if (clipScore && Number.isFinite(clipScore.wer) && Number.isFinite(clipScore.cer)) {
+        const metrics = document.createElement('span');
+        metrics.className = 'compare-clip-score';
+        metrics.textContent = `WER ${clipScore.wer.toFixed(1)}% · CER ${clipScore.cer.toFixed(1)}%`;
+        card.appendChild(metrics);
+      }
       columns.appendChild(card);
     });
     appendMarkedWords(refText, item.reference, refOmissions, 'compare-word-omitted');

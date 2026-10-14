@@ -144,6 +144,14 @@ def choose_examples(outputs: Path, limit: int):
     return chosen
 
 
+def score_example(reference: str, hypothesis: str) -> dict[str, float]:
+    """Score one displayed clip using the published leaderboard normalization."""
+    ref = normalise(reference, **NORMALISE)
+    hyp = normalise(hypothesis or "", **NORMALISE)
+    return {"wer": round(compute_wer([ref], [hyp]), 1),
+            "cer": round(compute_cer([ref], [hyp]), 1)}
+
+
 def score_groups(frame: pd.DataFrame, dataset: str, metadata, groups):
     records = {}
     for row in frame.itertuples(index=False):
@@ -214,6 +222,10 @@ def build(metadata_path: Path, outputs_dir: Path, cache_dir: Path, limit: int):
                   for dimension, labels in dimensions.items()}
         for dataset, dimensions in groups.items()
     }
+    for items in examples.values():
+        for example in items.values():
+            example["scores"] = {slug: score_example(example["reference"], hypothesis)
+                                 for slug, hypothesis in example["hypotheses"].items()}
     return {
         "generated": date.today().isoformat(),
         "output_revision": info.sha,
