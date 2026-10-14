@@ -1,9 +1,13 @@
 """Guard the published speaker breakdown against split or reference drift."""
 
+import sys
+from pathlib import Path
+
 import pandas as pd
 import pytest
 
-from scripts.build_compare_data import metadata_groups, output_slugs, score_groups
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+from build_compare_data import metadata_groups, output_slugs, score_groups
 
 
 def test_breakdown_requires_exact_test_rows_and_references():
