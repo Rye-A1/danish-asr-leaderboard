@@ -2106,6 +2106,7 @@
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--link) 35%, var(--border));
     }
     .settings-sheet .size-filter {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: stretch;
@@ -2124,6 +2125,14 @@
       border-radius: 6px;
       background: var(--surf);
     }
+    .settings-sheet .size-filter .compare-select-trigger { width: 100%; }
+    .settings-sheet .size-filter .compare-select-menu {
+      position: static;
+      max-height: 250px;
+      margin-top: 2px;
+      box-shadow: none;
+    }
+    .settings-sheet .size-filter:has(.compare-select-menu:not([hidden])) { min-height: 350px; }
     .openness-filter details { display: block; width: 100%; }
     .openness-filter summary {
       display: flex; align-items: center; gap: 8px;
@@ -3567,8 +3576,107 @@ window.addEventListener('resize', () => {
   fitTimer = setTimeout(fitModelNames, 150);
 });
 
-/* Give each setting a distinct outline icon without changing the existing
-   controls or their event handlers. */
+/* Keep the native select as the source of truth while giving Compare and
+   Settings the same keyboard-friendly menu. */
+const styledSelects = new Map();
+function upgradeStyledSelect(select, control, label) {
+  label.id = `${select.id}-label`;
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'compare-select-trigger';
+  trigger.setAttribute('aria-haspopup', 'listbox');
+  trigger.setAttribute('aria-expanded', 'false');
+  trigger.setAttribute('aria-controls', `${select.id}-menu`);
+  const value = document.createElement('span');
+  value.id = `${select.id}-value`;
+  trigger.setAttribute('aria-labelledby', `${label.id} ${value.id}`);
+  const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  chevron.setAttribute('viewBox', '0 0 24 24');
+  chevron.setAttribute('fill', 'none');
+  chevron.setAttribute('stroke-width', '2');
+  chevron.setAttribute('stroke-linecap', 'round');
+  chevron.setAttribute('aria-hidden', 'true');
+  chevron.innerHTML = '<path d="m6 9 6 6 6-6"/>';
+  trigger.append(value, chevron);
+  const menu = document.createElement('div');
+  menu.id = `${select.id}-menu`;
+  menu.className = 'compare-select-menu';
+  menu.setAttribute('role', 'listbox');
+  menu.setAttribute('aria-labelledby', label.id);
+  menu.hidden = true;
+  const buttons = [...select.options].map(option => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'compare-select-option';
+    button.setAttribute('role', 'option');
+    button.textContent = option.textContent;
+    button.addEventListener('click', () => {
+      if (option.disabled) return;
+      select.value = option.value;
+      select.dispatchEvent(new Event('change', {bubbles: true}));
+      close();
+      trigger.focus();
+    });
+    menu.appendChild(button);
+    return button;
+  });
+  function sync() {
+    value.textContent = select.selectedOptions[0]?.textContent || '';
+    [...select.options].forEach((option, index) => {
+      buttons[index].disabled = option.disabled;
+      buttons[index].setAttribute('aria-selected', String(option.selected));
+    });
+  }
+  function close() {
+    menu.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+  function open() {
+    styledSelects.forEach(entry => entry.close());
+    sync();
+    menu.hidden = false;
+    trigger.setAttribute('aria-expanded', 'true');
+  }
+  trigger.addEventListener('click', () => menu.hidden ? open() : close());
+  label.addEventListener('click', event => {
+    event.preventDefault();
+    trigger.focus();
+    menu.hidden ? open() : close();
+  });
+  control.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !menu.hidden) {
+      event.preventDefault();
+      close();
+      trigger.focus();
+      return;
+    }
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+    if (event.target === trigger && menu.hidden) open();
+    if (menu.hidden) return;
+    event.preventDefault();
+    const enabled = buttons.filter(button => !button.disabled);
+    const current = enabled.indexOf(document.activeElement);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? enabled.length - 1
+      : event.target === trigger ? enabled.findIndex(button => button.getAttribute('aria-selected') === 'true')
+      : (current + (event.key === 'ArrowDown' ? 1 : -1) + enabled.length) % enabled.length;
+    enabled[Math.max(0, next)]?.focus();
+  });
+  control.addEventListener('focusout', event => {
+    if (!control.contains(event.relatedTarget)) close();
+  });
+  select.addEventListener('change', sync);
+  select.hidden = true;
+  control.append(trigger, menu);
+  styledSelects.set(select, {control, sync, close});
+  sync();
+}
+document.addEventListener('click', event => {
+  styledSelects.forEach(entry => {
+    if (!entry.control.contains(event.target)) entry.close();
+  });
+});
+
+/* Give each setting a distinct outline icon without changing its handlers. */
 function decorateSettings(bar) {
   const glyphs = {
     metric: ['M3 17l5-5 4 3 8-9', 'M3 3v18h18'],
@@ -3593,6 +3701,7 @@ function decorateSettings(bar) {
     title.className = 'settings-field-title';
     title.append(icon(field.querySelector('select')?.id.startsWith('wer-limit-') ? 'limit' : 'size'), textNode.textContent.trim());
     textNode.replaceWith(title);
+    upgradeStyledSelect(field.querySelector('select'), field, title);
   });
   const field = document.createElement('div');
   field.className = 'openness-filter';
@@ -5097,7 +5206,6 @@ function setupCompare(data) {
   let extra = null;
   let extraPromise = null;
   let exampleIndex = 0;
-  const compareSelects = new Map();
 
   const score = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : '—';
   const count = (row, suffix) => COMPARE_DATASETS.filter(([key]) =>
@@ -5261,95 +5369,7 @@ function setupCompare(data) {
   function upgradeCompareSelect(select) {
     const control = select.closest('.compare-control');
     const label = control.querySelector('label');
-    label.id = `${select.id}-label`;
-    const trigger = document.createElement('button');
-    trigger.type = 'button';
-    trigger.className = 'compare-select-trigger';
-    trigger.setAttribute('aria-haspopup', 'listbox');
-    trigger.setAttribute('aria-expanded', 'false');
-    trigger.setAttribute('aria-controls', `${select.id}-menu`);
-    const value = document.createElement('span');
-    value.id = `${select.id}-value`;
-    trigger.setAttribute('aria-labelledby', `${label.id} ${value.id}`);
-    const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    chevron.setAttribute('viewBox', '0 0 24 24');
-    chevron.setAttribute('fill', 'none');
-    chevron.setAttribute('stroke-width', '2');
-    chevron.setAttribute('stroke-linecap', 'round');
-    chevron.setAttribute('aria-hidden', 'true');
-    chevron.innerHTML = '<path d="m6 9 6 6 6-6"/>';
-    trigger.append(value, chevron);
-    const menu = document.createElement('div');
-    menu.id = `${select.id}-menu`;
-    menu.className = 'compare-select-menu';
-    menu.setAttribute('role', 'listbox');
-    menu.setAttribute('aria-labelledby', label.id);
-    menu.hidden = true;
-    const buttons = [...select.options].map(option => {
-      const button = document.createElement('button');
-      button.type = 'button';
-      button.className = 'compare-select-option';
-      button.setAttribute('role', 'option');
-      button.textContent = option.textContent;
-      button.addEventListener('click', () => {
-        if (option.disabled) return;
-        select.value = option.value;
-        select.dispatchEvent(new Event('change', {bubbles: true}));
-        close();
-        trigger.focus();
-      });
-      menu.appendChild(button);
-      return button;
-    });
-    function sync() {
-      value.textContent = select.selectedOptions[0]?.textContent || '';
-      [...select.options].forEach((option, index) => {
-        buttons[index].disabled = option.disabled;
-        buttons[index].setAttribute('aria-selected', String(option.selected));
-      });
-    }
-    function close() {
-      menu.hidden = true;
-      trigger.setAttribute('aria-expanded', 'false');
-    }
-    function open() {
-      compareSelects.forEach(entry => entry.close());
-      sync();
-      menu.hidden = false;
-      trigger.setAttribute('aria-expanded', 'true');
-    }
-    trigger.addEventListener('click', () => menu.hidden ? open() : close());
-    label.addEventListener('click', event => {
-      event.preventDefault();
-      trigger.focus();
-      menu.hidden ? open() : close();
-    });
-    control.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && !menu.hidden) {
-        event.preventDefault();
-        close();
-        trigger.focus();
-        return;
-      }
-      if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
-      if (event.target === trigger && menu.hidden) open();
-      if (menu.hidden) return;
-      event.preventDefault();
-      const enabled = buttons.filter(button => !button.disabled);
-      const current = enabled.indexOf(document.activeElement);
-      const next = event.key === 'Home' ? 0 : event.key === 'End' ? enabled.length - 1
-        : event.target === trigger ? enabled.findIndex(button => button.getAttribute('aria-selected') === 'true')
-        : (current + (event.key === 'ArrowDown' ? 1 : -1) + enabled.length) % enabled.length;
-      enabled[Math.max(0, next)]?.focus();
-    });
-    control.addEventListener('focusout', event => {
-      if (!control.contains(event.relatedTarget)) close();
-    });
-    select.addEventListener('change', sync);
-    select.hidden = true;
-    control.append(trigger, menu);
-    compareSelects.set(select, {control, sync, close});
-    sync();
+    upgradeStyledSelect(select, control, label);
   }
   function renderExtra() {
     if (!extra || !selected.length) return;
@@ -5357,7 +5377,7 @@ function setupCompare(data) {
     const dimensionSelect = document.getElementById('compare-breakdown-dimension');
     dimensionSelect.querySelector('[value="dialect"]').disabled = dataset === 'ftspeech';
     if (dataset === 'ftspeech') dimensionSelect.value = 'gender';
-    compareSelects.get(dimensionSelect)?.sync();
+    styledSelects.get(dimensionSelect)?.sync();
     const dimension = dimensionSelect.value;
     const groups = extra.groups?.[dataset]?.[dimension] || {};
     const target = document.getElementById('compare-breakdown');
@@ -5670,11 +5690,6 @@ function setupCompare(data) {
   document.getElementById('compare-example-next').addEventListener('click', () => { exampleIndex++; renderExample(); });
   ['compare-breakdown-dataset', 'compare-breakdown-dimension', 'compare-output-dataset']
     .forEach(id => upgradeCompareSelect(document.getElementById(id)));
-  document.addEventListener('click', event => {
-    compareSelects.forEach(entry => {
-      if (!entry.control.contains(event.target)) entry.close();
-    });
-  });
   copy.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(shareURL().href);
@@ -6050,6 +6065,7 @@ async function init() {
         SIZE_SELECTS.forEach(otherId => {
           const other = document.getElementById(otherId);
           other.value = e.target.value;
+          styledSelects.get(other)?.sync();
           other.dispatchEvent(new Event('input', { bubbles: true }));
         });
         applyWer();
