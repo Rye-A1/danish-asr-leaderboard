@@ -363,6 +363,8 @@
     .compare-hypotheses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .compare-hypothesis { padding: 16px; border: 1px solid var(--border); border-top: 3px solid var(--model-color); border-radius: var(--r); background: var(--surf); }
     .compare-hypothesis small { color: var(--model-color); }
+    .compare-word-change { border-radius: 3px; background: color-mix(in srgb, var(--link) 13%, transparent); box-shadow: inset 0 -1px var(--link); }
+    .compare-word-omitted { text-decoration: underline dotted var(--link) 2px; text-underline-offset: 3px; }
     .compare-help { margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
     @media (max-width: 650px) { .compare-hypotheses { grid-template-columns: 1fr; } .compare-controls label { flex: 1; } .compare-controls select { width: 100%; min-width: 0; } }
     @media (max-width: 720px) {
@@ -2467,7 +2469,7 @@
       <div id="compare-outputs-pane" hidden>
         <section class="compare-section">
           <h3>Compare transcripts</h3>
-          <p class="compare-note">Examples are drawn from clips where saved model transcripts differ most. They are for inspection, not a representative accuracy sample.</p>
+          <p class="compare-note">These high-disagreement clips are for inspection, not a representative accuracy sample. Highlighted words differ from the reference; dotted underlines mark words omitted by a shown model. Matching ignores case and surrounding punctuation.</p>
           <div class="compare-controls"><label>Test set<select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></label></div>
           <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
           <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
@@ -5295,6 +5297,61 @@ function setupCompare(data) {
     if (!target.childElementCount) target.textContent = 'No group labels are available for this test set.';
     renderExample();
   }
+  function compareWords(value) {
+    return [...value.matchAll(/[\p{L}\p{N}]+/gu)].map(match => ({
+      text: match[0].normalize('NFKC').toLocaleLowerCase('da-DK'),
+      start: match.index,
+      end: match.index + match[0].length
+    }));
+  }
+  function compareWordChanges(reference, hypothesis) {
+    const ref = compareWords(reference);
+    const hyp = compareWords(hypothesis);
+    const distances = Array.from({length: ref.length + 1}, () => new Uint32Array(hyp.length + 1));
+    for (let i = 0; i <= ref.length; i++) distances[i][0] = i;
+    for (let j = 0; j <= hyp.length; j++) distances[0][j] = j;
+    for (let i = 1; i <= ref.length; i++) {
+      for (let j = 1; j <= hyp.length; j++) {
+        distances[i][j] = Math.min(
+          distances[i - 1][j - 1] + (ref[i - 1].text === hyp[j - 1].text ? 0 : 1),
+          distances[i - 1][j] + 1,
+          distances[i][j - 1] + 1
+        );
+      }
+    }
+    const changed = new Set();
+    const omitted = new Set();
+    let i = ref.length, j = hyp.length;
+    while (i || j) {
+      if (i && j && distances[i][j] === distances[i - 1][j - 1]
+          + (ref[i - 1].text === hyp[j - 1].text ? 0 : 1)) {
+        if (ref[i - 1].text !== hyp[j - 1].text) changed.add(j - 1);
+        i--; j--;
+      } else if (j && distances[i][j] === distances[i][j - 1] + 1) {
+        changed.add(--j);
+      } else {
+        omitted.add(--i);
+      }
+    }
+    return {changed, omitted};
+  }
+  function appendMarkedWords(target, value, marked, className) {
+    const words = compareWords(value);
+    let end = 0;
+    words.forEach((word, index) => {
+      target.append(document.createTextNode(value.slice(end, word.start)));
+      if (marked.has(index)) {
+        const span = document.createElement('span');
+        span.className = className;
+        span.textContent = value.slice(word.start, word.end);
+        target.append(span);
+      } else {
+        target.append(document.createTextNode(value.slice(word.start, word.end)));
+      }
+      end = word.end;
+    });
+    target.append(document.createTextNode(value.slice(end)));
+  }
   function renderExample() {
     if (!extra || !selected.length) return;
     const dataset = document.getElementById('compare-output-dataset').value;
@@ -5323,7 +5380,7 @@ function setupCompare(data) {
     const refLabel = document.createElement('small');
     refLabel.textContent = `Reference · ${item.id}`;
     const refText = document.createElement('p');
-    refText.textContent = item.reference;
+    const refOmissions = new Set();
     reference.append(refLabel, refText);
     const columns = document.createElement('div');
     columns.className = 'compare-hypotheses';
@@ -5335,11 +5392,19 @@ function setupCompare(data) {
       label.textContent = model;
       const text = document.createElement('p');
       const slug = model.replace(/[^a-zA-Z0-9_-]/g, '__');
-      text.textContent = Object.hasOwn(item.hypotheses, slug)
-        ? (item.hypotheses[slug] || '(empty transcription)') : 'No saved output for this clip';
+      if (Object.hasOwn(item.hypotheses, slug)) {
+        const hypothesis = item.hypotheses[slug] || '';
+        const diff = compareWordChanges(item.reference, hypothesis);
+        diff.omitted.forEach(index => refOmissions.add(index));
+        if (hypothesis) appendMarkedWords(text, hypothesis, diff.changed, 'compare-word-change');
+        else text.textContent = '(empty transcription)';
+      } else {
+        text.textContent = 'No saved output for this clip';
+      }
       card.append(label, text);
       columns.appendChild(card);
     });
+    appendMarkedWords(refText, item.reference, refOmissions, 'compare-word-omitted');
     target.append(reference, columns);
   }
   function renderView() {
