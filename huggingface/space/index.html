@@ -375,6 +375,10 @@
     .compare-reference { padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf2); }
     .compare-reference small, .compare-hypothesis small { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
     .compare-reference p, .compare-hypothesis p { margin: 0; overflow-wrap: anywhere; line-height: 1.6; }
+    .compare-audio { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .compare-audio audio { display: block; width: min(100%, 380px); height: 36px; }
+    .compare-audio span { display: block; color: var(--muted); font-size: 12px; }
+    .compare-audio a { display: inline-block; margin-top: 5px; color: var(--link); font-size: 11px; }
     .compare-hypotheses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .compare-hypothesis { position: relative; display: flex; flex-direction: column; padding: 16px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf); }
     .compare-hypothesis::after { content: ""; position: absolute; top: 18px; right: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--model-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--model-color) 14%, transparent); }
@@ -2477,6 +2481,7 @@
       </section>
       <section class="compare-section">
         <h3>Results</h3>
+        <p class="compare-note" id="compare-caveat"></p>
         <p class="compare-scroll-hint">Swipe sideways to see the full table, if needed.</p>
         <div class="compare-scroll"><table class="compare-summary" id="compare-overall-summary"><thead><tr id="compare-overall-head"><th scope="col">Measure</th></tr></thead><tbody id="compare-overall-body"></tbody></table></div>
         <h4 class="compare-subheading">By test set</h4>
@@ -2489,7 +2494,6 @@
         <div class="compare-controls"><div class="compare-control"><label for="compare-breakdown-dataset">Test set</label><select id="compare-breakdown-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="ftspeech">FTSpeech</option></select></div><div class="compare-control"><label for="compare-breakdown-dimension">Group</label><select id="compare-breakdown-dimension"><option value="gender">Gender</option><option value="dialect">Dialect</option></select></div></div>
         <div id="compare-breakdown" aria-live="polite">Loading speaker breakdown…</div>
       </section>
-      <p class="compare-note" id="compare-caveat"></p>
       </div>
       <div id="compare-outputs-pane" hidden>
         <section class="compare-section">
@@ -5206,6 +5210,7 @@ function setupCompare(data) {
   let extra = null;
   let extraPromise = null;
   let exampleIndex = 0;
+  let fleursManifestPromise = null;
 
   const score = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : '—';
   const count = (row, suffix) => COMPARE_DATASETS.filter(([key]) =>
@@ -5544,6 +5549,72 @@ function setupCompare(data) {
     });
     appendMarkedWords(refText, item.reference, refOmissions, 'compare-word-omitted');
     target.append(reference, columns);
+    renderExampleAudio(reference, dataset, item);
+  }
+  async function renderExampleAudio(reference, dataset, item) {
+    const box = document.createElement('div');
+    box.className = 'compare-audio';
+    const message = document.createElement('span');
+    box.appendChild(message);
+    reference.appendChild(box);
+    const source = document.createElement('a');
+    source.target = '_blank';
+    source.rel = 'noopener noreferrer';
+    const available = (url, label) => {
+      if (!reference.isConnected) return;
+      const player = document.createElement('audio');
+      player.controls = true;
+      player.preload = 'metadata';
+      player.src = url;
+      player.setAttribute('aria-label', `Audio for ${item.id}`);
+      player.addEventListener('error', () => {
+        if (reference.isConnected) {
+          message.textContent = 'Audio unavailable from the source right now.';
+          player.replaceWith(message);
+        }
+      });
+      message.replaceWith(player);
+      source.textContent = label;
+      box.appendChild(source);
+    };
+    if (dataset === 'fleurs_da' && /^fleurs_da_\d{5}\.wav$/.test(item.id)) {
+      message.textContent = 'Loading audio…';
+      try {
+        fleursManifestPromise ||= fetch('audio/fleurs_da/manifest.json').then(response => {
+          if (!response.ok) throw new Error('FLEURS manifest unavailable');
+          return response.json();
+        });
+        const manifest = await fleursManifestPromise;
+        if (manifest.examples?.[item.id] !== item.reference) throw new Error('FLEURS reference mismatch');
+        const filename = item.id.replace(/\.wav$/, '.m4a');
+        source.href = 'https://huggingface.co/datasets/google/fleurs';
+        available(`audio/fleurs_da/${filename}`, 'FLEURS audio · CC BY 4.0');
+      } catch {
+        fleursManifestPromise = null;
+        if (reference.isConnected) message.textContent = 'Audio unavailable for this clip.';
+      }
+    } else if (dataset === 'ftspeech' && /^ftspeech_\d{5}\.wav$/.test(item.id)) {
+      message.textContent = 'Loading audio from FTSpeech…';
+      try {
+        const offset = Number(item.id.slice(9, 14));
+        const url = new URL('https://datasets-server.huggingface.co/rows');
+        url.search = new URLSearchParams({dataset: 'alexandrainst/ftspeech', config: 'default', split: 'test_balanced', offset: String(offset), length: '1'});
+        const response = await fetch(url, {credentials: 'omit'});
+        if (!response.ok) throw new Error('FTSpeech row unavailable');
+        const row = (await response.json()).rows?.[0]?.row;
+        const asset = row?.audio?.[0]?.src;
+        if (row?.sentence !== item.reference || !asset || new URL(asset).hostname !== 'datasets-server.huggingface.co') {
+          throw new Error('FTSpeech reference or audio mismatch');
+        }
+        source.href = 'https://huggingface.co/datasets/alexandrainst/ftspeech';
+        available(asset, 'Audio from FTSpeech');
+      } catch {
+        if (reference.isConnected) message.textContent = 'Audio unavailable from the source right now.';
+      }
+    } else {
+      message.textContent = dataset.startsWith('coral_')
+        ? 'CoRal audio requires gated access.' : 'Audio is unavailable for this test set.';
+    }
   }
   function renderView() {
     for (const name of ['scores', 'outputs']) {

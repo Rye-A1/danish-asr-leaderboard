@@ -1,5 +1,6 @@
 """Guard the published speaker breakdown against split or reference drift."""
 
+import json
 import sys
 from pathlib import Path
 
@@ -42,3 +43,17 @@ def test_example_scores_use_leaderboard_normalization():
     assert score_example("Jeg har 4 æbler.", "jeg har fire æbler") == {"wer": 0.0, "cer": 0.0}
     assert score_example("Hej verden", "") == {"wer": 100.0, "cer": 100.0}
     assert score_example("Hej verden", "Hej verden igen") == {"wer": 50.0, "cer": 50.0}
+
+
+def test_fleurs_playback_matches_published_examples():
+    space = Path(__file__).resolve().parent.parent / "huggingface" / "space"
+    examples = json.loads((space / "compare_data.json").read_text())["examples"]["fleurs_da"]
+    audio_dir = space / "audio" / "fleurs_da"
+    manifest = json.loads((audio_dir / "manifest.json").read_text())["examples"]
+    assert len(manifest) == len(examples)
+    for example in examples:
+        clip_id = example["id"]
+        assert manifest[clip_id] == example["reference"]
+        clip = audio_dir / clip_id.replace(".wav", ".m4a")
+        assert clip.is_file() and clip.stat().st_size > 1000
+        assert clip.read_bytes()[4:8] == b"ftyp"

@@ -895,6 +895,18 @@ def main() -> None:
         )
         print(f"  ✓ {name}")
 
+    audio_dir = SPACE_DIR / "audio" / "fleurs_da"
+    if audio_dir.is_dir():
+        api.upload_folder(
+            folder_path=str(audio_dir),
+            path_in_repo="audio/fleurs_da",
+            repo_id=SPACE_REPO_ID,
+            repo_type="space",
+            allow_patterns=["*.m4a", "manifest.json", "README.md"],
+            commit_message="Update FLEURS playback clips",
+        )
+        print("  ✓ FLEURS playback clips")
+
     print("\nRemoving obsolete gradio files …")
     space_files = set(api.list_repo_files(repo_id=SPACE_REPO_ID, repo_type="space"))
     for name in OBSOLETE:
