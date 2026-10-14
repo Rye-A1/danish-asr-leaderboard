@@ -381,7 +381,6 @@
     .compare-clip-score { margin-top: auto; padding-top: 10px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
     .compare-word-change { border-radius: 3px; background: color-mix(in srgb, var(--model-color) 16%, transparent); box-shadow: inset 0 -1px var(--model-color); }
     .compare-word-omitted { text-decoration: underline dotted var(--link) 2px; text-underline-offset: 3px; }
-    .compare-help { margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
     @media (max-width: 650px) { .compare-hypotheses { grid-template-columns: 1fr; } .compare-control { width: 100%; } }
     @media (max-width: 720px) {
       .compare-hero { padding: 8px 4px 20px; }
@@ -2485,9 +2484,9 @@
       </section>
       <section class="compare-section">
         <h3>By speaker group</h3>
+        <p class="compare-note">Corpus WER/CER on the same clips for each group. CoRal labels are self-reported; FTSpeech provides speaker gender. Many CoRal dialect groups contain only one speaker, so these scores are descriptive rather than population estimates.</p>
         <div class="compare-controls"><div class="compare-control"><label for="compare-breakdown-dataset">Test set</label><select id="compare-breakdown-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="ftspeech">FTSpeech</option></select></div><div class="compare-control"><label for="compare-breakdown-dimension">Group</label><select id="compare-breakdown-dimension"><option value="gender">Gender</option><option value="dialect">Dialect</option></select></div></div>
         <div id="compare-breakdown" aria-live="polite">Loading speaker breakdown…</div>
-        <p class="compare-help">Corpus WER/CER on the same clips for each group. CoRal labels are self-reported; FTSpeech provides speaker gender. Many CoRal dialect groups contain only one speaker, so these scores are descriptive rather than population estimates.</p>
       </section>
       <p class="compare-note" id="compare-caveat"></p>
       </div>
