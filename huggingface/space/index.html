@@ -361,10 +361,11 @@
     .compare-reference small, .compare-hypothesis small { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
     .compare-reference p, .compare-hypothesis p { margin: 0; overflow-wrap: anywhere; line-height: 1.6; }
     .compare-hypotheses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-    .compare-hypothesis { display: flex; flex-direction: column; padding: 16px; border: 1px solid var(--border); border-top: 3px solid var(--model-color); border-radius: var(--r); background: var(--surf); }
-    .compare-hypothesis small { color: var(--model-color); }
+    .compare-hypothesis { position: relative; display: flex; flex-direction: column; padding: 16px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf); }
+    .compare-hypothesis::after { content: ""; position: absolute; top: 18px; right: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--model-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--model-color) 14%, transparent); }
+    .compare-hypothesis small { max-width: calc(100% - 28px); color: var(--model-color); overflow-wrap: anywhere; }
     .compare-clip-score { margin-top: auto; padding-top: 10px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
-    .compare-word-change { border-radius: 3px; background: color-mix(in srgb, var(--link) 13%, transparent); box-shadow: inset 0 -1px var(--link); }
+    .compare-word-change { border-radius: 3px; background: color-mix(in srgb, var(--model-color) 16%, transparent); box-shadow: inset 0 -1px var(--model-color); }
     .compare-word-omitted { text-decoration: underline dotted var(--link) 2px; text-underline-offset: 3px; }
     .compare-help { margin: 12px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
     @media (max-width: 650px) { .compare-hypotheses { grid-template-columns: 1fr; } .compare-controls label { flex: 1; } .compare-controls select { width: 100%; min-width: 0; } }
