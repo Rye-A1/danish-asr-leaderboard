@@ -264,6 +264,28 @@ def test_frequency_names_match_abbreviations():
     assert normalise("2,4 gigahertz og 5 GHz") == normalise("2.4GHz og 5,0ghz")
 
 
+def test_three_place_decimal_needs_ghz_context():
+    assert normalise("2.400 GHz") == normalise("2,4ghz")
+    assert normalise("2.400") == normalise("2400")
+    assert normalise("2.400 kroner") != normalise("2,4 kroner")
+    assert normalise("2.400 MHz") != normalise("2,4 MHz")
+
+
+def test_clock_times_match_colon_dot_and_zero_minute_forms():
+    assert normalise("klokken 06:30") == normalise("kl. 6.30")
+    assert normalise("klokken 06:30 og 07:30") == normalise("kl. 6.30 og 7.30")
+    assert normalise("klokken 11:35 pm") == normalise("kl. 11.35 p.m.")
+    assert normalise("klokken 12:00") == normalise("kl. 12")
+    assert normalise("12:00") == normalise("12")
+
+
+def test_ratio_and_numeric_slash_never_glue_operands():
+    assert normalise("3:2") == normalise("3 til 2")
+    assert normalise("3:2") != normalise("32")
+    assert normalise("4/5") == normalise("4 5")
+    assert normalise("4/5") != normalise("45")
+
+
 def test_percent_symbol_matches_spoken_unit_in_issue_114():
     assert normalise("100% sikkerhed") == normalise("hundrede procents sikkerhed")
     assert normalise("15 % rabat") == normalise("femten procent rabat")

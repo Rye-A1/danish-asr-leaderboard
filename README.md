@@ -228,14 +228,16 @@ HF_TOKEN=hf_... python scripts/update_space.py
 The same transform is applied to references and hypotheses:
 
 1. Unicode NFKC compatibility folding.
-2. Thousands separators are removed (`1.234` → `1234`); decimals retain a marker (`3,14` / `3.14` → `3komma14`). Trailing decimal zeroes, frequency-unit spacing, and `%` / `procent` formatting are normalized.
+2. Thousands separators are removed (`1.234` → `1234`); decimals retain a marker (`3,14` / `3.14` → `3komma14`). Trailing decimal zeroes, frequency-unit spacing (including `2.400 GHz` → `2.4 GHz`), `%` / `procent`, clock times (`kl. 06:30` = `klokken 6.30`), and ratios (`3:2` = `3 til 2`) are normalized. Numeric slashes separate their operands instead of joining them.
 3. Lowercasing and punctuation/symbol removal, retaining apostrophes within words.
 4. Spoken Danish numerals → digits, then standalone integers → canonical Danish words.
 5. Danish hesitation filler removal and whitespace collapse.
 
 This treats digit-versus-word formatting as equivalent while preserving real
-orthographic differences such as `aa` versus `å`. Colons, slashes, and ordinals
-remain intentionally conservative because their spoken forms are ambiguous.
+orthographic differences such as `aa` versus `å`. Bare `2.400` still means
+`2400`; the decimal reading needs GHz context. Slashes are not assumed to be
+fractions or dates, and ordinals remain literal because their spoken forms are
+ambiguous.
 
 ### Metrics
 Corpus-level **WER** and **CER** (%), lower is better, computed with RapidFuzz

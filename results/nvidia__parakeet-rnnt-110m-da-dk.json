@@ -10,7 +10,7 @@
   "coral_conversation_cer": 34.87,
   "coral_read_aloud_cer": 4.35,
   "cv17_da_cer": 3.42,
-  "fleurs_da_cer": 3.85,
+  "fleurs_da_cer": 3.86,
   "ftspeech_cer": 10.42,
   "mean_cer": 11.38,
   "speed_x": 703.5,

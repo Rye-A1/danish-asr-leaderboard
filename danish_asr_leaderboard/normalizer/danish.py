@@ -17,8 +17,13 @@ Steps (in order):
      decimal values retain a ``komma`` marker: ``1.234`` -> ``1234`` and
      ``3.14`` / ``3,14`` -> ``3komma14``. Trailing decimal zeroes are dropped,
      so ``5.0`` and ``5.00`` match. Frequency units are separated from attached
-     numerals and compound suffixes (``2.4ghz`` -> ``2komma4 ghz``). A percent
-     sign after a numeral and the genitive ``procents`` both become ``procent``.
+     numerals and compound suffixes (``2.4ghz`` -> ``2komma4 ghz``); GHz
+     context also disambiguates three-place decimals (``2.400 GHz`` ->
+     ``2komma4 ghz``). A percent sign after a numeral and the genitive
+     ``procents`` both become ``procent``. Clock times are split into hours and
+     minutes (``kl. 06:30`` = ``klokken 6.30``), zero minutes are omitted, ratios
+     such as ``3:2`` become ``3 til 2``, and numeric slashes become boundaries
+     instead of gluing their operands into a different number.
   3. Lowercase
   4. Punctuation/symbol removal. Apostrophes *inside* a word (e.g. ``det's``) are
      preserved; all other punctuation and symbols are removed.
@@ -49,10 +54,10 @@ space in the punctuation strip, so ``1-3`` scores as two numbers rather than
 being glued into ``13`` -> ``tretten``. Deleting the dash produced references no
 correct transcription could match (the time range ``10 00-11 00`` became ``ti
 elleve nul``) and handed free matches to digit-emitting models. Colons and
-slashes are *not* yet handled the same way — ``10:00`` still glues to
-``ettusind`` and ``4/5`` to ``femogfyrre``; those need their own semantics
-(a slash may be a fraction, a date reads differently) and are tracked separately.
-Ordinals (``3.`` -> ``tredje``) were tested and rejected: most ``N.`` are
+slashes now have separate conservative rules. Clock notation requires a clock
+context for ambiguous single-digit hours, and numeric slashes become token
+boundaries rather than assumed fractions or dates. Ordinals (``3.`` ->
+``tredje``) were tested and rejected: most ``N.`` are
 sentence-final cardinals, not true ordinals. Other units remain literal.
 
 Step 7 (``filler_words``, **ON by default**) removes Danish hesitation fillers
@@ -97,8 +102,22 @@ _FREQUENCY_COMPOUND_RE = re.compile(
 _THOUSANDS_RE = re.compile(r"^\d{1,3}(?:[.,]\d{3})+$")
 _GROUPED_DECIMAL_RE = re.compile(r"^(\d{1,3}(?:[.,]\d{3})+)[.,](\d{1,2})$")
 _DECIMAL_RE = re.compile(r"^(\d+)[.,](\d{1,2})$")
+_GHZ_DECIMAL_RE = re.compile(r"^(\d{1,3})[.,](\d{3})$")
 _PERCENT_SYMBOL_RE = re.compile(r"(?<=\d)\s*%")
 _PERCENT_GENITIVE_RE = re.compile(r"\bprocents\b", re.IGNORECASE)
+_CLOCK_ABBREVIATION_RE = re.compile(
+    r"(?<!\w)kl\.?\s+(?=\d{1,2}(?:[.:]\d{2})?(?!\d))", re.IGNORECASE
+)
+_CLOCK_WITH_LABEL_RE = re.compile(
+    r"\bklokken\s+(\d{1,2})[.:]([0-5]\d)\b", re.IGNORECASE
+)
+_CLOCK_RANGE_RE = re.compile(
+    r"\bklokken\s+(\d{1,2})[.:]([0-5]\d)\s+(og|til)\s+"
+    r"(\d{1,2})[.:]([0-5]\d)\b", re.IGNORECASE
+)
+_BARE_CLOCK_RE = re.compile(r"(?<!\w)(\d{2}):([0-5]\d)\b")
+_RATIO_RE = re.compile(r"(?<!\w)(\d{1,2}):(\d{1,2})(?!\w)")
+_NUMERIC_SLASH_RE = re.compile(r"(?<!\w)(\d+)\s*/\s*(\d+)(?!\w)")
 
 # Unicode forms accepted by ``normalise``. NFKC is the published default; NFC is the
 # canonical-only variant. NFD/NFKD are decomposed forms, accepted for completeness
@@ -190,10 +209,16 @@ def _cardinal_words_da(token: str) -> str:
     return words
 
 
-def _canonical_number_da(value: str, *, embedded: bool = False) -> str:
+def _canonical_number_da(value: str, *, embedded: bool = False,
+                         ghz: bool = False) -> str:
     """Keep decimals distinct from integers without changing mixed identifiers."""
     if embedded:
         return value.replace(".", "").replace(",", "")
+    if ghz:
+        decimal = _GHZ_DECIMAL_RE.fullmatch(value)
+        if decimal:
+            fraction = decimal.group(2).rstrip("0")
+            return str(int(decimal.group(1))) + (f"komma{fraction}" if fraction else "")
     if _THOUSANDS_RE.fullmatch(value):
         return value.replace(".", "").replace(",", "")
     grouped = _GROUPED_DECIMAL_RE.fullmatch(value)
@@ -205,17 +230,57 @@ def _canonical_number_da(value: str, *, embedded: bool = False) -> str:
     return value.replace(".", "").replace(",", "")
 
 
-def normalize_numbers_da(text: str) -> str:
-    """Canonicalise Danish thousands, decimals and attached frequency units.
+def _clock_parts(hour_text: str, minute_text: str) -> str | None:
+    hour, minute = int(hour_text), int(minute_text)
+    if hour > 23:
+        return None
+    return f"{hour}" + (f" {minute}" if minute else "")
 
-    A separator followed by three digits is treated as a thousands separator;
-    one or two digits is a decimal. Bare ``802.11n`` stays an identifier rather
-    than a decimal because its numeric span is embedded in a non-unit word.
+
+def _clock_range(match: re.Match[str]) -> str:
+    first = _clock_parts(match.group(1), match.group(2))
+    second = _clock_parts(match.group(4), match.group(5))
+    if first is None or second is None:
+        return match.group(0)
+    return f"klokken {first} {match.group(3).lower()} {second}"
+
+
+def _labeled_clock(match: re.Match[str]) -> str:
+    value = _clock_parts(*match.groups())
+    return f"klokken {value}" if value is not None else match.group(0)
+
+
+def _bare_clock(match: re.Match[str]) -> str:
+    return _clock_parts(*match.groups()) or match.group(0)
+
+
+def _ratio(match: re.Match[str]) -> str:
+    if len(match.group(1)) == 1 or len(match.group(2)) == 1:
+        return f"{match.group(1)} til {match.group(2)}"
+    return match.group(0)
+
+
+def _frequency(match: re.Match[str]) -> str:
+    unit = match.group(2).lower()
+    value = _canonical_number_da(match.group(1), ghz=unit in ("ghz", "gigahertz"))
+    return f"{value} {_FREQUENCY_UNITS[unit]}"
+
+
+def normalize_numbers_da(text: str) -> str:
+    """Canonicalise Danish numbers, frequency units, times and ratios.
+
+    A separator followed by three digits is treated as a thousands separator
+    unless the unit is GHz; one or two digits is a decimal. Bare ``802.11n``
+    stays an identifier rather than a decimal because its numeric span is
+    embedded in a non-unit word.
     """
-    text = _FREQUENCY_RE.sub(
-        lambda m: f"{_canonical_number_da(m.group(1))} "
-                  f"{_FREQUENCY_UNITS[m.group(2).lower()]}", text
-    )
+    text = _CLOCK_ABBREVIATION_RE.sub("klokken ", text)
+    text = _CLOCK_RANGE_RE.sub(_clock_range, text)
+    text = _CLOCK_WITH_LABEL_RE.sub(_labeled_clock, text)
+    text = _BARE_CLOCK_RE.sub(_bare_clock, text)
+    text = _RATIO_RE.sub(_ratio, text)
+    text = _NUMERIC_SLASH_RE.sub(r"\1 \2", text)
+    text = _FREQUENCY_RE.sub(_frequency, text)
     text = _FREQUENCY_NAME_RE.sub(
         lambda m: _FREQUENCY_UNITS[m.group(1).lower()], text
     )

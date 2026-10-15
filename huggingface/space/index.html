@@ -2603,8 +2603,11 @@
       <li>Danish number canonicalisation — thousands separators are removed
         (<code>1.234</code> → <code>1234</code>), while decimals retain a marker
         (<code>3.14</code> / <code>3,14</code> → <code>3komma14</code>).
-        Trailing decimal zeroes, frequency-unit formatting, and
-        <code>%</code> / <code>procent</code> are normalized</li>
+        Trailing decimal zeroes, frequency-unit formatting (including
+        <code>2.400 GHz</code> = <code>2.4 GHz</code>),
+        <code>%</code> / <code>procent</code>, clock times and ratios are
+        normalized. Numeric slashes split numbers without assuming a fraction
+        or date</li>
       <li>Lowercase</li>
       <li>Strip punctuation — apostrophes <em>inside</em> a word
         (e.g. <code>det's</code>) are preserved; all other punctuation and
@@ -2631,12 +2634,11 @@
     and the time range <code>10 00-11 00</code> into <code>ti elleve nul</code>
     &mdash; references no correct transcription could match, which also handed
     free matches to models that emit digits.</p>
-    <p><strong>Known limitation:</strong> colons and slashes are not yet handled
-    the same way &mdash; <code>10:00</code> still collapses to
-    <code>ettusind</code> and <code>4/5</code> to <code>femogfyrre</code>. Each
-    needs its own reading rule (a slash may be a fraction; a date is spoken
-    differently again), so they are tracked separately. Ordinals written with a
-    full stop are likewise left alone (<code>3. plads</code> &rarr;
+    <p><strong>Known limitation:</strong> a bare <code>2.400</code> is read as
+    two thousand four hundred; GHz context is needed for the decimal reading.
+    A numeric slash separates its operands, but does not infer whether they
+    form a fraction or date. Ordinals written with a full stop are likewise
+    left alone (<code>3. plads</code> &rarr;
     <code>tre plads</code>): converting them to <code>tredje</code> was measured
     and rejected, since most <code>N.</code> here are sentence-final cardinals
     rather than true ordinals.</p>
