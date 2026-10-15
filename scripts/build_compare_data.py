@@ -237,6 +237,11 @@ def build(metadata_path: Path, outputs_dir: Path, cache_dir: Path, limit: int,
     }
     for items in examples.values():
         for example in items.values():
+            example["normalized_reference"] = normalise(example["reference"], **NORMALISE)
+            example["normalized_hypotheses"] = {
+                slug: normalise(hypothesis or "", **NORMALISE)
+                for slug, hypothesis in example["hypotheses"].items()
+            }
             example["scores"] = {slug: score_example(example["reference"], hypothesis)
                                  for slug, hypothesis in example["hypotheses"].items()}
     return {

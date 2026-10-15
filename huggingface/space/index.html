@@ -372,6 +372,10 @@
     .compare-group .compare-bars { max-width: 780px; }
     .compare-example-toolbar { display: flex; align-items: center; gap: 18px; margin: 16px 0; }
     .compare-example-toolbar .compare-controls, .compare-example-toolbar .compare-example-nav { margin: 0; }
+    .compare-text-mode { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid var(--border); border-radius: 9px; background: var(--surf2); }
+    .compare-text-mode button { min-height: 32px; padding: 5px 11px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font: inherit; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+    .compare-text-mode button[aria-pressed="true"] { background: var(--surf); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+    .compare-text-mode button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
     .compare-example-nav { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
     .compare-example-nav button { min-width: 36px; min-height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; cursor: pointer; }
     .compare-example-nav button:disabled { opacity: .4; cursor: default; }
@@ -397,6 +401,8 @@
     @media (max-width: 720px) {
       .compare-example-toolbar { flex-direction: column; align-items: stretch; gap: 14px; }
       .compare-example-toolbar .compare-controls, .compare-example-toolbar .compare-control { width: 100%; }
+      .compare-text-mode { display: flex; width: 100%; }
+      .compare-text-mode button { flex: 1; }
       .compare-hero { padding: 8px 4px 20px; }
       .compare-section { padding: 17px 14px; }
       .compare-section > h3 { font-size: 16px; }
@@ -2507,9 +2513,10 @@
       <div id="compare-outputs-pane" hidden>
         <section class="compare-section">
           <h3><span class="compare-section-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h9a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M10 9h5M10 13h5M10 17h3"/></svg></span>Compare transcripts</h3>
-          <p class="compare-note">Select a test set to inspect high-disagreement clips; these are not a representative accuracy sample. Highlights compare written words; dotted underlines mark omissions. WER/CER use normalized text, so highlighted formatting can still score as a match. Clip errors can exceed 100%.</p>
+          <p class="compare-note">Inspect high-disagreement clips, not a representative accuracy sample. Switch between original transcripts and the text used for scoring. Highlights show differences in the selected view; dotted underlines mark omissions. Clip WER/CER always use scored text and can exceed 100%.</p>
           <div class="compare-example-toolbar">
             <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset" hidden>Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
+            <div class="compare-text-mode" role="group" aria-label="Transcript display"><button id="compare-text-raw" type="button" aria-pressed="true">Original</button><button id="compare-text-normalized" type="button" aria-pressed="false">Scored text</button></div>
             <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
           </div>
           <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
@@ -5238,6 +5245,7 @@ function setupCompare(data) {
   const downloadCompare = document.getElementById('download-compare');
   let metric = new URL(window.location.href).searchParams.get('metric') === 'cer' ? 'cer' : 'wer';
   let view = new URL(window.location.href).searchParams.get('compare_mode') === 'outputs' ? 'outputs' : 'scores';
+  let transcriptMode = new URL(window.location.href).searchParams.get('transcript_text') === 'normalized' ? 'normalized' : 'raw';
   let extra = null;
   let extraPromise = null;
   let exampleIndex = 0;
@@ -5255,6 +5263,8 @@ function setupCompare(data) {
     else url.searchParams.delete('metric');
     if (view === 'outputs') url.searchParams.set('compare_mode', 'outputs');
     else url.searchParams.delete('compare_mode');
+    if (transcriptMode === 'normalized') url.searchParams.set('transcript_text', 'normalized');
+    else url.searchParams.delete('transcript_text');
     url.searchParams.delete('model');
     selected.forEach(name => url.searchParams.append('model', name));
     return url;
@@ -5465,7 +5475,7 @@ function setupCompare(data) {
     renderExample();
   }
   function compareWords(value) {
-    return [...value.matchAll(/[\p{L}\p{N}]+/gu)].map(match => ({
+    return [...value.matchAll(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu)].map(match => ({
       text: match[0].normalize('NFKC').toLocaleLowerCase('da-DK'),
       start: match.index,
       end: match.index + match[0].length
@@ -5542,6 +5552,12 @@ function setupCompare(data) {
     document.getElementById('compare-example-next').disabled = exampleIndex >= examples.length - 1;
     if (!examples.length) { target.textContent = 'No saved examples for this test set.'; return; }
     const item = examples[exampleIndex];
+    const normalized = transcriptMode === 'normalized';
+    if (normalized && typeof item.normalized_reference !== 'string') {
+      target.textContent = 'Scored text is unavailable for this clip. Reload the page to try again.';
+      return;
+    }
+    const displayedReference = normalized ? item.normalized_reference : item.reference;
     const reference = document.createElement('div');
     reference.className = 'compare-reference';
     const refHead = document.createElement('div');
@@ -5563,8 +5579,8 @@ function setupCompare(data) {
       const text = document.createElement('p');
       const slug = model.replace(/[^a-zA-Z0-9_-]/g, '__');
       if (Object.hasOwn(item.hypotheses, slug)) {
-        const hypothesis = item.hypotheses[slug] || '';
-        const diff = compareWordChanges(item.reference, hypothesis);
+        const hypothesis = (normalized ? item.normalized_hypotheses?.[slug] : item.hypotheses[slug]) || '';
+        const diff = compareWordChanges(displayedReference, hypothesis);
         diff.omitted.forEach(index => refOmissions.add(index));
         if (hypothesis) appendMarkedWords(text, hypothesis, diff.changed, 'compare-word-change');
         else text.textContent = '(empty transcription)';
@@ -5581,7 +5597,7 @@ function setupCompare(data) {
       }
       columns.appendChild(card);
     });
-    appendMarkedWords(refText, item.reference, refOmissions, 'compare-word-omitted');
+    appendMarkedWords(refText, displayedReference, refOmissions, 'compare-word-omitted');
     target.append(reference, columns);
     renderExampleAudio(reference, refHead, dataset, item);
   }
@@ -5793,6 +5809,18 @@ function setupCompare(data) {
   ['compare-breakdown-dataset', 'compare-breakdown-dimension'].forEach(id =>
     document.getElementById(id).addEventListener('change', renderExtra));
   document.getElementById('compare-output-dataset').addEventListener('change', () => { exampleIndex = 0; renderExample(); });
+  function updateTranscriptMode() {
+    document.getElementById('compare-text-raw').setAttribute('aria-pressed', String(transcriptMode === 'raw'));
+    document.getElementById('compare-text-normalized').setAttribute('aria-pressed', String(transcriptMode === 'normalized'));
+  }
+  ['raw', 'normalized'].forEach(mode => document.getElementById(`compare-text-${mode}`)
+    .addEventListener('click', () => {
+      transcriptMode = mode;
+      updateTranscriptMode();
+      syncURL();
+      renderExample();
+    }));
+  updateTranscriptMode();
   document.getElementById('compare-example-prev').addEventListener('click', () => { exampleIndex--; renderExample(); });
   document.getElementById('compare-example-next').addEventListener('click', () => { exampleIndex++; renderExample(); });
   ['compare-breakdown-dataset', 'compare-breakdown-dimension', 'compare-output-dataset']

@@ -9,6 +9,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
 from build_compare_data import metadata_groups, output_slugs, preserve_examples, score_example, score_groups
+from danish_asr_leaderboard.normalizer import normalise
 
 
 def test_breakdown_requires_exact_test_rows_and_references():
@@ -60,6 +61,19 @@ def test_example_scores_use_leaderboard_normalization():
     assert score_example("maaske lige dér", "måske lige der") == {"wer": 0.0, "cer": 0.0}
     assert score_example("Hej verden", "") == {"wer": 100.0, "cer": 100.0}
     assert score_example("Hej verden", "Hej verden igen") == {"wer": 50.0, "cer": 50.0}
+
+
+def test_saved_compare_example_can_show_what_was_scored():
+    space = Path(__file__).resolve().parent.parent / "huggingface" / "space"
+    examples = json.loads((space / "compare_data.json").read_text())["examples"]
+    for dataset, items in examples.items():
+        assert len(items) == 50, dataset
+        for example in items:
+            assert example["normalized_reference"] == normalise(example["reference"])
+            assert example["normalized_hypotheses"].keys() == example["hypotheses"].keys()
+            for slug, hypothesis in example["hypotheses"].items():
+                assert example["normalized_hypotheses"][slug] == normalise(hypothesis)
+                assert example["scores"][slug] == score_example(example["reference"], hypothesis)
 
 
 def test_fleurs_playback_matches_published_examples():
