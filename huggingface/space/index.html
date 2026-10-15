@@ -2599,7 +2599,13 @@
     <p>Applied identically to hypothesis and reference before scoring:</p>
     <ol>
       <li>Unicode NFKC — folds compatibility characters (ligatures, full-width
-        digits, <code>²</code>→<code>2</code>) so visually equivalent forms match</li>
+        digits, <code>²</code>→<code>2</code>) so visually equivalent forms match;
+        optional acute accents such as <code>dér</code>/<code>der</code> are ignored</li>
+      <li>Exact word equivalents — a short list of historical spellings
+        (<code>saa</code>/<code>så</code>) and abbreviations
+        (<code>km</code>/<code>kilometer</code>, <code>kr</code>/<code>kroner</code>,
+        <code>ca</code>/<code>cirka</code>, <code>pct</code>/<code>procent</code>)
+        are unified</li>
       <li>Danish number canonicalisation — thousands separators are removed
         (<code>1.234</code> → <code>1234</code>), while decimals retain a marker
         (<code>3.14</code> / <code>3,14</code> → <code>3komma14</code>).
@@ -2662,13 +2668,11 @@
       Verbatim scoring remains available offline via <code>--no-filler-words</code>.
     </blockquote>
     <blockquote>
-      <strong>Note:</strong> Danish orthographic variants
+      <strong>Note:</strong> General Danish spelling substitutions
       (<code>aa</code>↔<code>å</code>, <code>oe</code>↔<code>ø</code>,
-      <code>ae</code>↔<code>æ</code>) are <strong>not</strong> normalised — the
-      digraphs occur legitimately as letter sequences (<code>ekstraarbejde</code>,
-      place names like <code>Aarhus</code>), so a blind substitution would
-      introduce errors. Different Unicode encodings of the <em>same</em> letter
-      <em>are</em> unified by NFC.
+      <code>ae</code>↔<code>æ</code>) are <strong>not</strong> applied — these
+      letter sequences occur legitimately in names such as <code>Aarhus</code>.
+      Only a short, explicit list of historical words is folded.
     </blockquote>
     </section>
 
@@ -2773,6 +2777,13 @@
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
       <div class="changelog-body">
+        <h3>2026-10 — Transcript spelling</h3>
+        <ul>
+          <li>Optional acute accents, selected historical spellings and common
+            unit abbreviations now match their spoken forms. All 44 saved outputs
+            were re-scored: mean WER fell by 0.07–0.17 percentage points per model,
+            with no rank changes.</li>
+        </ul>
         <h3>2026-09 — Common Voice column relabelled</h3>
         <ul>
           <li><strong>The Common Voice column was always the Common Voice 25.0</strong>

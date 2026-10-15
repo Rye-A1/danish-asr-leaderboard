@@ -12,8 +12,13 @@ Steps (in order):
      near-no-op vs ``NFC`` (±0.01pp — these chars are rare in speech transcripts), but
      it is "more correct", future-proofs against such characters in new submissions,
      and matches the de-facto Danish standard (danish-speech-eval). Pass
-     ``unicode_form="NFC"`` for the older canonical-only behaviour.
-  2. Danish number canonicalisation — thousands separators are removed, while
+     ``unicode_form="NFC"`` for the older canonical-only behaviour. Optional acute
+     accents are removed without changing æ, ø, å or other diacritics.
+  2. Exact word and abbreviation equivalents — historical Danish words such as
+     ``saa``/``så``, ``km``/``kilometer``, ``kr``/``kroner``,
+     ``ca``/``cirka``, and ``pct``/``procent`` match on either side. General
+     ``aa``/``å`` replacement is deliberately avoided.
+  3. Danish number canonicalisation — thousands separators are removed, while
      decimal values retain a ``komma`` marker: ``1.234`` -> ``1234`` and
      ``3.14`` / ``3,14`` -> ``3komma14``. Trailing decimal zeroes are dropped,
      so ``5.0`` and ``5.00`` match. Frequency units are separated from attached
@@ -24,12 +29,13 @@ Steps (in order):
      minutes (``kl. 06:30`` = ``klokken 6.30``), zero minutes are omitted, ratios
      such as ``3:2`` become ``3 til 2``, and numeric slashes become boundaries
      instead of gluing their operands into a different number.
-  3. Lowercase
-  4. Punctuation/symbol removal. Apostrophes *inside* a word (e.g. ``det's``) are
+  4. Lowercase
+  5. Punctuation/symbol removal. Apostrophes *inside* a word (e.g. ``det's``) are
      preserved; all other punctuation and symbols are removed.
-  5. Whitespace collapse.
+  6. Spelled-out numerals to digits, then standalone integers to words.
+  7. Hesitation filler removal and whitespace collapse.
 
-Step 6 (``number_words``, **ON by default** — the published methodology) expands
+``number_words`` (**ON by default** — the published methodology) expands
 every *standalone integer token* to its Danish cardinal words via ``num2words``
 (``4`` -> ``fire``, ``24`` -> ``fireogtyve``), applied identically to reference and
 hypothesis. This folds the digit<->word formatting difference (e.g. ``"4"`` vs
@@ -58,9 +64,9 @@ slashes now have separate conservative rules. Clock notation requires a clock
 context for ambiguous single-digit hours, and numeric slashes become token
 boundaries rather than assumed fractions or dates. Ordinals (``3.`` ->
 ``tredje``) were tested and rejected: most ``N.`` are
-sentence-final cardinals, not true ordinals. Other units remain literal.
+sentence-final cardinals, not true ordinals. Other unit abbreviations remain literal.
 
-Step 7 (``filler_words``, **ON by default**) removes Danish hesitation fillers
+``filler_words`` (**ON by default**) removes Danish hesitation fillers
 (``øh``, ``hmm`` …) from reference and hypothesis alike, using the exact pattern
 from ``alexandrainst/coral``. Verbatim scoring measured transcription convention
 rather than accuracy: a model trained to omit disfluencies was penalised for a
@@ -105,6 +111,29 @@ _DECIMAL_RE = re.compile(r"^(\d+)[.,](\d{1,2})$")
 _GHZ_DECIMAL_RE = re.compile(r"^(\d{1,3})[.,](\d{3})$")
 _PERCENT_SYMBOL_RE = re.compile(r"(?<=\d)\s*%")
 _PERCENT_GENITIVE_RE = re.compile(r"\bprocents\b", re.IGNORECASE)
+_PERCENT_ABBREVIATION_RE = re.compile(r"(?<!\w)pct\.?(?!\w)", re.IGNORECASE)
+_UNIT_ABBREVIATION_RE = re.compile(
+    r"(?<!\w)(km|cm|kg)(?!\s*/\s*h\b)\.?(?!\w)", re.IGNORECASE
+)
+_KR_ABBREVIATION_RE = re.compile(
+    r"(?<!\w)(?<![ef]\.)kr\.?(?!\w)", re.IGNORECASE
+)
+# A bare capitalised "Ca" can be the chemical symbol for calcium. Uppercase
+# sentence-initial "Ca." is unambiguously the Danish approximation abbreviation.
+_CA_ABBREVIATION_RE = re.compile(r"(?<!\w)(?:ca\.?|Ca\.)(?!\w)")
+_UNIT_NAMES = {"km": "kilometer", "cm": "centimeter", "kg": "kilogram"}
+
+# These are exact historical Danish words found in the Common Voice references,
+# not general aa/ee/ei replacements. The latter would alter names and valid words.
+_HISTORICAL_WORDS = {
+    "saa": "så", "paa": "på", "ogsaa": "også", "saadan": "sådan",
+    "maa": "må", "maaske": "måske", "baade": "både", "naar": "når",
+    "haand": "hånd", "maatte": "måtte", "veed": "ved",
+    "deiligt": "dejligt",
+}
+_HISTORICAL_WORD_RE = re.compile(
+    r"\b(" + "|".join(_HISTORICAL_WORDS) + r")\b", re.IGNORECASE
+)
 _CLOCK_ABBREVIATION_RE = re.compile(
     r"(?<!\w)kl\.?\s+(?=\d{1,2}(?:[.:]\d{2})?(?!\d))", re.IGNORECASE
 )
@@ -167,9 +196,9 @@ def _spoken_to_digits_da(text: str) -> str:
         folded = alpha2digit(text, "da")
     except Exception:
         return text  # never let a conversion failure abort scoring
-    # Re-apply the numeral canonicalisation from step 2: alpha2digit can emit a
+    # Re-apply the numeral canonicalisation from step 3: alpha2digit can emit a
     # separator of its own ("tre komma fjorten" -> "3,14"), and that arrives after
-    # step 2 has already run, so without this a *spoken* decimal would no longer
+    # step 3 has already run, so without this a *spoken* decimal would no longer
     # fold onto the *written* one it is supposed to match.
     return normalize_numbers_da(folded)
 
@@ -328,6 +357,20 @@ def normalise(
             f"unicode_form must be one of {sorted(_VALID_UNICODE_FORMS)}, got {unicode_form!r}"
         )
     text = unicodedata.normalize(unicode_form, text)
+    # Danish acute accents are often optional in transcripts (dér/der, én/en).
+    # Remove only the acute mark; retain æ, ø, å and other diacritics.
+    text = unicodedata.normalize(
+        "NFC", unicodedata.normalize("NFD", text).replace("\u0301", "")
+    )
+    text = _HISTORICAL_WORD_RE.sub(
+        lambda match: _HISTORICAL_WORDS[match.group().lower()], text
+    )
+    text = _UNIT_ABBREVIATION_RE.sub(
+        lambda match: _UNIT_NAMES[match.group(1).lower()], text
+    )
+    text = _KR_ABBREVIATION_RE.sub("kroner", text)
+    text = _CA_ABBREVIATION_RE.sub("cirka", text)
+    text = _PERCENT_ABBREVIATION_RE.sub("procent", text)
     text = _PERCENT_SYMBOL_RE.sub(" procent", text)
     text = _PERCENT_GENITIVE_RE.sub("procent", text)
     text = normalize_numbers_da(text)

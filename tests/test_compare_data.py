@@ -56,6 +56,8 @@ def test_example_scores_use_leaderboard_normalization():
     assert score_example("hundrede procents sikkerhed", "100% sikkerhed") == {"wer": 0.0, "cer": 0.0}
     assert score_example("klokken 06:30", "kl. 6.30") == {"wer": 0.0, "cer": 0.0}
     assert score_example("formatet er 3:2", "formatet er 3 til 2") == {"wer": 0.0, "cer": 0.0}
+    assert score_example("næsten 11 km dyb", "næsten elleve kilometer dyb") == {"wer": 0.0, "cer": 0.0}
+    assert score_example("maaske lige dér", "måske lige der") == {"wer": 0.0, "cer": 0.0}
     assert score_example("Hej verden", "") == {"wer": 100.0, "cer": 100.0}
     assert score_example("Hej verden", "Hej verden igen") == {"wer": 50.0, "cer": 50.0}
 

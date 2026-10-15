@@ -292,6 +292,34 @@ def test_percent_symbol_matches_spoken_unit_in_issue_114():
     assert normalise("15% rabat") != normalise("15 rabat")
 
 
+@pytest.mark.parametrize("written,spoken", [
+    ("Marianergraven er næsten 11 km dyb", "Marianergraven er næsten elleve kilometer dyb"),
+    ("50 cm højt", "halvtreds centimeter højt"),
+    ("5 kg", "fem kilogram"),
+    ("300 kr. udbetalt", "trehundrede kroner udbetalt"),
+    ("ca 450 hyldemeter", "cirka 450 hyldemeter"),
+    ("7 pct", "syv procent"),
+    ("lige dér", "lige der"),
+    ("dét var én idé", "det var en ide"),
+    ("Vil De maaske være saa venlig", "Vil De måske være så venlig"),
+    ("Nu skulle han passe paa", "Nu skulle han passe på"),
+    ("han veed det", "han ved det"),
+])
+def test_audited_transcript_spellings_score_the_same(written, spoken):
+    assert normalise(written) == normalise(spoken)
+
+
+def test_new_rules_leave_unrelated_words_and_notation_untouched():
+    assert normalise("Aagaard") == "aagaard"
+    assert normalise("ei") == "ei"
+    assert normalise("Ca") == "ca"  # chemical symbol, without an abbreviation dot
+    assert normalise("Köln") == "köln"  # acute-only fold retains other marks
+    assert normalise("e.kr.") == "ekr"  # after Christ, not currency
+    assert normalise("f.Kr.") == "fkr"  # before Christ, not currency
+    assert normalise("km/h") == "kmh"  # unit rate needs its own contextual rule
+    assert normalise("Casper") == "casper"
+
+
 @pytest.mark.parametrize("text,expected", [
     ("1-3", "et tre"),
     ("side 4-5", "side fire fem"),
