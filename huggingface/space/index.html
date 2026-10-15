@@ -311,7 +311,7 @@
       letter-spacing: .02em;
     }
     .compare-section > h3::before { content: "0" counter(compare-section); }
-    #compare-outputs-pane .compare-section > h3::before { display: none; }
+    .compare-transcripts-section > h3::before { display: none; }
     .compare-section-glyph svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
     .compare-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r); }
     .compare-scroll-hint { display: none; margin: -5px 0 9px; color: var(--muted); font-size: 12px; }
@@ -343,10 +343,6 @@
     .compare-fill { height: 100%; border-radius: 99px; }
     .compare-bar-value { text-align: right; font-size: 12px; }
     .compare-winner-icon { width: 14px; height: 14px; flex: none; }
-    .compare-view-nav { display: inline-flex; gap: 4px; padding: 4px; margin: 0 0 18px; border: 1px solid var(--border); border-radius: 10px; background: var(--surf2); }
-    .compare-view-nav button { padding: 8px 17px; border: 0; border-radius: 7px; background: transparent; color: var(--muted); font: inherit; font-weight: 700; cursor: pointer; }
-    .compare-view-nav button.active { background: var(--surf); color: var(--text); box-shadow: 0 1px 5px rgba(0,0,0,.12); }
-    .compare-view-nav button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
     .compare-controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 14px; }
     .compare-control { position: relative; display: grid; gap: 5px; width: min(220px, 100%); }
     .compare-control:focus-within { z-index: 20; }
@@ -2487,8 +2483,6 @@
     </section>
     <div id="compare-empty" class="compare-empty">Add a model to see its results.</div>
     <div id="compare-results" hidden>
-      <nav class="compare-view-nav" aria-label="Comparison view"><button id="compare-view-scores" class="active" type="button" aria-pressed="true">Scores</button><button id="compare-view-outputs" type="button" aria-pressed="false">Outputs</button></nav>
-      <div id="compare-scores-pane">
       <section class="compare-section">
         <h3>Model attributes</h3>
         <p class="compare-scroll-hint">Swipe sideways to see the full table, if needed.</p>
@@ -2509,19 +2503,16 @@
         <div class="compare-controls"><div class="compare-control"><label for="compare-breakdown-dataset">Test set</label><select id="compare-breakdown-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="ftspeech">FTSpeech</option></select></div><div class="compare-control"><label for="compare-breakdown-dimension">Group</label><select id="compare-breakdown-dimension"><option value="gender">Gender</option><option value="dialect">Dialect</option></select></div></div>
         <div id="compare-breakdown" aria-live="polite">Loading speaker breakdown…</div>
       </section>
-      </div>
-      <div id="compare-outputs-pane" hidden>
-        <section class="compare-section">
-          <h3><span class="compare-section-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h9a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M10 9h5M10 13h5M10 17h3"/></svg></span>Compare transcripts</h3>
-          <p class="compare-note">Inspect high-disagreement clips, not a representative accuracy sample. Switch between original transcripts and the text used for scoring. Highlights show differences in the selected view; dotted underlines mark omissions. Clip WER/CER always use scored text and can exceed 100%.</p>
-          <div class="compare-example-toolbar">
-            <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset" hidden>Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
-            <div class="compare-text-mode" role="group" aria-label="Transcript display"><button id="compare-text-raw" type="button" aria-pressed="true">Original</button><button id="compare-text-normalized" type="button" aria-pressed="false">Scored text</button></div>
-            <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
-          </div>
-          <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
-        </section>
-      </div>
+      <section class="compare-section compare-transcripts-section">
+        <h3><span class="compare-section-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h9a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M10 9h5M10 13h5M10 17h3"/></svg></span>Compare transcripts</h3>
+        <p class="compare-note">Inspect high-disagreement clips, not a representative accuracy sample. Switch between original transcripts and the text used for scoring. Highlights show differences in the selected view; dotted underlines mark omissions. Clip WER/CER always use scored text and can exceed 100%.</p>
+        <div class="compare-example-toolbar">
+          <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset" hidden>Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
+          <div class="compare-text-mode" role="group" aria-label="Transcript display"><button id="compare-text-raw" type="button" aria-pressed="true">Original</button><button id="compare-text-normalized" type="button" aria-pressed="false">Scored text</button></div>
+          <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
+        </div>
+        <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
+      </section>
     </div>
   </div>
 
@@ -5244,7 +5235,6 @@ function setupCompare(data) {
   const clearAll = document.getElementById('compare-clear-all');
   const downloadCompare = document.getElementById('download-compare');
   let metric = new URL(window.location.href).searchParams.get('metric') === 'cer' ? 'cer' : 'wer';
-  let view = new URL(window.location.href).searchParams.get('compare_mode') === 'outputs' ? 'outputs' : 'scores';
   let transcriptMode = new URL(window.location.href).searchParams.get('transcript_text') === 'normalized' ? 'normalized' : 'raw';
   let extra = null;
   let extraPromise = null;
@@ -5261,8 +5251,7 @@ function setupCompare(data) {
     url.searchParams.set('view', 'compare');
     if (metric === 'cer') url.searchParams.set('metric', 'cer');
     else url.searchParams.delete('metric');
-    if (view === 'outputs') url.searchParams.set('compare_mode', 'outputs');
-    else url.searchParams.delete('compare_mode');
+    url.searchParams.delete('compare_mode'); // old links still open the combined view
     if (transcriptMode === 'normalized') url.searchParams.set('transcript_text', 'normalized');
     else url.searchParams.delete('transcript_text');
     url.searchParams.delete('model');
@@ -5668,15 +5657,6 @@ function setupCompare(data) {
       message.textContent = 'Playback audio is unavailable for this test set.';
     }
   }
-  function renderView() {
-    for (const name of ['scores', 'outputs']) {
-      const active = view === name;
-      const button = document.getElementById(`compare-view-${name}`);
-      button.classList.toggle('active', active);
-      button.setAttribute('aria-pressed', String(active));
-      document.getElementById(`compare-${name}-pane`).hidden = !active;
-    }
-  }
   function render() {
     selected.sort(compareNames);
     renderChips();
@@ -5684,7 +5664,6 @@ function setupCompare(data) {
     const ready = rows.length >= 1;
     document.getElementById('compare-empty').hidden = ready;
     document.getElementById('compare-results').hidden = !ready;
-    renderView();
     if (!ready) {
       document.getElementById('compare-empty').textContent = 'Add a model to see its results.';
       return;
@@ -5804,8 +5783,6 @@ function setupCompare(data) {
   });
   ['wer', 'cer'].forEach(key => document.getElementById(`compare-${key}`)
     .addEventListener('click', () => { metric = key; syncURL(); render(); }));
-  ['scores', 'outputs'].forEach(name => document.getElementById(`compare-view-${name}`)
-    .addEventListener('click', () => { view = name; syncURL(); renderView(); }));
   ['compare-breakdown-dataset', 'compare-breakdown-dimension'].forEach(id =>
     document.getElementById(id).addEventListener('change', renderExtra));
   document.getElementById('compare-output-dataset').addEventListener('change', () => { exampleIndex = 0; renderExample(); });
@@ -5845,6 +5822,7 @@ function setupCompare(data) {
     if (models.has(name) && !selected.includes(name)) selected.push(name);
   }
   render();
+  if (url.searchParams.has('compare_mode')) syncURL();
   if (url.searchParams.get('view') === 'compare')
     document.querySelector('[data-tab="compare"]').click();
 }
