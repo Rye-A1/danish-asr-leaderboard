@@ -2507,7 +2507,7 @@
       <div id="compare-outputs-pane" hidden>
         <section class="compare-section">
           <h3><span class="compare-section-glyph" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 4h9a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M10 9h5M10 13h5M10 17h3"/></svg></span>Compare transcripts</h3>
-          <p class="compare-note">Select a test set to inspect high-disagreement clips; these are not a representative accuracy sample. Highlighted words differ from the reference; dotted underlines mark omissions. Clip WER/CER use leaderboard normalization and can exceed 100%.</p>
+          <p class="compare-note">Select a test set to inspect high-disagreement clips; these are not a representative accuracy sample. Highlights compare written words; dotted underlines mark omissions. WER/CER use normalized text, so highlighted formatting can still score as a match. Clip errors can exceed 100%.</p>
           <div class="compare-example-toolbar">
             <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset" hidden>Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
             <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
@@ -2600,10 +2600,11 @@
     <ol>
       <li>Unicode NFKC — folds compatibility characters (ligatures, full-width
         digits, <code>²</code>→<code>2</code>) so visually equivalent forms match</li>
-      <li>Danish number canonicalisation — separators inside a numeral are
-        removed so formatting differences don't inflate WER. Thousands and
-        decimals are both stripped: <code>1.234</code> → <code>1234</code>,
-        and <code>3.14</code> / <code>3,14</code> → <code>314</code></li>
+      <li>Danish number canonicalisation — thousands separators are removed
+        (<code>1.234</code> → <code>1234</code>), while decimals retain a marker
+        (<code>3.14</code> / <code>3,14</code> → <code>3komma14</code>).
+        Trailing decimal zeroes, frequency-unit formatting, and
+        <code>%</code> / <code>procent</code> are normalized</li>
       <li>Lowercase</li>
       <li>Strip punctuation — apostrophes <em>inside</em> a word
         (e.g. <code>det's</code>) are preserved; all other punctuation and

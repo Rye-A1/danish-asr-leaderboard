@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-from build_compare_data import metadata_groups, output_slugs, score_example, score_groups
+from build_compare_data import metadata_groups, output_slugs, preserve_examples, score_example, score_groups
 
 
 def test_breakdown_requires_exact_test_rows_and_references():
@@ -39,8 +39,21 @@ def test_legacy_output_slug_uses_model_name(tmp_path):
     assert output_slugs(tmp_path)["short__model"] == "publisher__model"
 
 
+def test_preserve_examples_keeps_clip_selection_without_stale_scores(tmp_path):
+    path = tmp_path / "compare_data.json"
+    path.write_text(json.dumps({"examples": {"fleurs_da": [
+        {"id": "fleurs_da_00001.wav", "reference": "hej", "hypotheses": {"old": "wrong"},
+         "scores": {"old": {"wer": 100}}}
+    ]}}))
+    assert preserve_examples(path) == {"fleurs_da": {
+        "fleurs_da_00001.wav": {"id": "fleurs_da_00001.wav", "reference": "hej", "hypotheses": {}}
+    }}
+
+
 def test_example_scores_use_leaderboard_normalization():
     assert score_example("Jeg har 4 æbler.", "jeg har fire æbler") == {"wer": 0.0, "cer": 0.0}
+    assert score_example("2.4ghz- og 5.0ghz-frekvenserne", "2,4 GHz og 5,00 GHz frekvenserne") == {"wer": 0.0, "cer": 0.0}
+    assert score_example("hundrede procents sikkerhed", "100% sikkerhed") == {"wer": 0.0, "cer": 0.0}
     assert score_example("Hej verden", "") == {"wer": 100.0, "cer": 100.0}
     assert score_example("Hej verden", "Hej verden igen") == {"wer": 50.0, "cer": 50.0}
 

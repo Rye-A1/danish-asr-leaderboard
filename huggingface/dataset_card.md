@@ -78,11 +78,11 @@ Per-model configs (`outputs/<model-slug>`) — one row per utterance: `dataset`,
 Applied identically to hypothesis and reference before scoring, so WER/CER reflect recognition errors rather than formatting:
 
 1. **Unicode NFKC** — compatibility composition (folds ligatures, full-width digits, `²`→`2`, …). A near-no-op on Danish speech text, adopted for correctness and consistency with the Danish standard.
-2. **Danish number canonicalisation** — separators within a numeral are stripped (`1.234` → `1234`, `3,14` → `314`).
+2. **Danish number canonicalisation** — thousands separators are stripped (`1.234` → `1234`), while decimals retain a marker (`3,14` / `3.14` → `3komma14`). Trailing decimal zeroes are ignored (`5.0` = `5.00`); frequency units are separated from attached numerals and compound suffixes, and `%` / `procents` become `procent`.
 3. **Lowercase.**
 4. **Punctuation / symbol removal** — apostrophes inside a word (`det's`) are preserved; all other punctuation and symbols are removed.
 5. **Spelled-out numerals → digits** — words are folded to their digit form with `text2num`, so spelling and spacing variants collapse onto one value before step 6 expands them back (`otte og tredive` and `otteogtredive` → `38`; `hundrede` → `100`). Bare `en` / `et` are left as indefinite articles.
-6. **Numerals → words** — every standalone integer token is expanded to its Danish cardinal words via `num2words` (`4` → `fire`, `24` → `fireogtyve`), so digit-vs-word formatting (`"4"` vs `"fire"`) is not counted as an error. Only standalone integers are converted, so decades such as `1960'erne` keep their digits. Standalone symbol/unit expansion (`%` → `procent`) was tested and rejected as net-neutral-to-harmful.
+6. **Numerals → words** — every standalone integer token is expanded to its Danish cardinal words via `num2words` (`4` → `fire`, `24` → `fireogtyve`), so digit-vs-word formatting (`"4"` vs `"fire"`) is not counted as an error. Only standalone integers are converted, so decades such as `1960'erne` keep their digits.
 7. **Whitespace collapse.**
 
 A dash between two digits becomes a space in step 4 rather than being deleted, so `1-3` scores as two numbers. Deleting it glued the range into `13` → `tretten`, and the time range `10 00-11 00` into `ti elleve nul` — references no correct transcription could match, which also handed free matches to models that emit digits while penalising ones that spell the range out.

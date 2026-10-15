@@ -228,7 +228,7 @@ HF_TOKEN=hf_... python scripts/update_space.py
 The same transform is applied to references and hypotheses:
 
 1. Unicode NFKC compatibility folding.
-2. Danish numeral separator cleanup (`1.234` → `1234`, `3,14` → `314`).
+2. Thousands separators are removed (`1.234` → `1234`); decimals retain a marker (`3,14` / `3.14` → `3komma14`). Trailing decimal zeroes, frequency-unit spacing, and `%` / `procent` formatting are normalized.
 3. Lowercasing and punctuation/symbol removal, retaining apostrophes within words.
 4. Spoken Danish numerals → digits, then standalone integers → canonical Danish words.
 5. Danish hesitation filler removal and whitespace collapse.

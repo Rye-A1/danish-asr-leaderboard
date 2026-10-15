@@ -8,12 +8,12 @@ from danish_asr_leaderboard.normalizer.danish import normalise
     # NFC unification: a + combining ring above (U+030A) → å
     ("ånd", "ånd"),
 
-    # Number separator stripping
+    # Thousands separators are stripped; decimal value is preserved.
     ("1.234 kroner", "1234 kroner"),          # thousands dot
     ("1,234 kroner", "1234 kroner"),          # thousands comma
-    ("3,14", "314"),                          # decimal comma stripped
-    ("3.14", "314"),                          # decimal dot stripped
-    ("12.345,67", "1234567"),                 # combined
+    ("3,14", "3komma14"),                     # decimal comma
+    ("3.14", "3komma14"),                     # decimal dot
+    ("12.345,67", "12345komma67"),           # grouped decimal
     ("år 2025", "år 2025"),                   # non-numeric unchanged
 
     # Lowercase
@@ -242,8 +242,32 @@ def test_output_form_is_still_words_not_digits():
 
 
 def test_spoken_decimal_folds_onto_written_decimal():
-    """alpha2digit emits its own separator after step 2 has run; it must be re-stripped."""
+    """alpha2digit emits a separator after step 2, so canonicalise it again."""
     assert normalise("tre komma fjorten") == normalise("3,14") == normalise("3.14")
+
+
+def test_decimals_do_not_collide_with_integers_or_trailing_zeroes():
+    assert normalise("3,14") != normalise("314")
+    assert normalise("2,40") == normalise("2.4")
+    assert normalise("5.00") == normalise("5,0") == normalise("5")
+
+
+def test_frequency_units_in_issue_114_match_across_spacing_and_compounds():
+    reference = "standarden 802.11n opererer på både 2.4ghz- og 5.0ghz-frekvenserne"
+    brage = "Standarden 802.11n opererer på både 2,4 GHz og 5,0 GHz frekvenserne."
+    edda = "Standarden 802.11n opererer på både 2,4ghz og 5,00ghz frekvenserne."
+    assert normalise(reference) == normalise(brage) == normalise(edda)
+    assert normalise("802.11n") == "80211n"  # model identifier, not a decimal
+
+
+def test_frequency_names_match_abbreviations():
+    assert normalise("2,4 gigahertz og 5 GHz") == normalise("2.4GHz og 5,0ghz")
+
+
+def test_percent_symbol_matches_spoken_unit_in_issue_114():
+    assert normalise("100% sikkerhed") == normalise("hundrede procents sikkerhed")
+    assert normalise("15 % rabat") == normalise("femten procent rabat")
+    assert normalise("15% rabat") != normalise("15 rabat")
 
 
 @pytest.mark.parametrize("text,expected", [

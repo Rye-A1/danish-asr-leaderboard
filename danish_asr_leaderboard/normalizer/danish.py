@@ -13,12 +13,12 @@ Steps (in order):
      it is "more correct", future-proofs against such characters in new submissions,
      and matches the de-facto Danish standard (danish-speech-eval). Pass
      ``unicode_form="NFC"`` for the older canonical-only behaviour.
-  2. Danish number canonicalisation — separators *within* a numeral are removed so
-     that punctuation-only formatting differences don't inflate WER. Thousands and
-     decimals are both stripped: ``1.234`` and ``1,234`` -> ``1234``; ``3.14`` and
-     ``3,14`` -> ``314``. The decimal separator is not preserved, so ``3,14``
-     collides with the integer ``314`` — a negligible, symmetric edge case (the
-     same transform is applied to reference and hypothesis).
+  2. Danish number canonicalisation — thousands separators are removed, while
+     decimal values retain a ``komma`` marker: ``1.234`` -> ``1234`` and
+     ``3.14`` / ``3,14`` -> ``3komma14``. Trailing decimal zeroes are dropped,
+     so ``5.0`` and ``5.00`` match. Frequency units are separated from attached
+     numerals and compound suffixes (``2.4ghz`` -> ``2komma4 ghz``). A percent
+     sign after a numeral and the genitive ``procents`` both become ``procent``.
   3. Lowercase
   4. Punctuation/symbol removal. Apostrophes *inside* a word (e.g. ``det's``) are
      preserved; all other punctuation and symbols are removed.
@@ -51,10 +51,9 @@ correct transcription could match (the time range ``10 00-11 00`` became ``ti
 elleve nul``) and handed free matches to digit-emitting models. Colons and
 slashes are *not* yet handled the same way — ``10:00`` still glues to
 ``ettusind`` and ``4/5`` to ``femogfyrre``; those need their own semantics
-(a slash may be a fraction, a date reads differently) and are tracked separately. Ordinals (``3.`` ->
-``tredje``) and symbol/unit expansion (``%`` -> ``procent``) were likewise tested
-and rejected: ordinals net-hurt (most ``N.`` are sentence-final cardinals, not true
-ordinals) and symbols are too rare (~0.3%) to matter.
+(a slash may be a fraction, a date reads differently) and are tracked separately.
+Ordinals (``3.`` -> ``tredje``) were tested and rejected: most ``N.`` are
+sentence-final cardinals, not true ordinals. Other units remain literal.
 
 Step 7 (``filler_words``, **ON by default**) removes Danish hesitation fillers
 (``øh``, ``hmm`` …) from reference and hypothesis alike, using the exact pattern
@@ -81,6 +80,25 @@ import re
 import unicodedata
 
 _NUMBER_TOKEN_RE = re.compile(r"\d[\d.,]*")
+_FREQUENCY_UNITS = {
+    "gigahertz": "ghz", "megahertz": "mhz", "kilohertz": "khz",
+    "hertz": "hz", "ghz": "ghz", "mhz": "mhz", "khz": "khz", "hz": "hz",
+}
+_FREQUENCY_PATTERN = "|".join(_FREQUENCY_UNITS)
+_FREQUENCY_RE = re.compile(
+    rf"(?<!\w)(\d[\d.,]*)\s*({_FREQUENCY_PATTERN})\b", re.IGNORECASE
+)
+_FREQUENCY_NAME_RE = re.compile(
+    r"\b(gigahertz|megahertz|kilohertz|hertz)\b", re.IGNORECASE
+)
+_FREQUENCY_COMPOUND_RE = re.compile(
+    r"\b(ghz|mhz|khz|hz)[\-\u2010-\u2014](?=[^\W\d_])", re.IGNORECASE
+)
+_THOUSANDS_RE = re.compile(r"^\d{1,3}(?:[.,]\d{3})+$")
+_GROUPED_DECIMAL_RE = re.compile(r"^(\d{1,3}(?:[.,]\d{3})+)[.,](\d{1,2})$")
+_DECIMAL_RE = re.compile(r"^(\d+)[.,](\d{1,2})$")
+_PERCENT_SYMBOL_RE = re.compile(r"(?<=\d)\s*%")
+_PERCENT_GENITIVE_RE = re.compile(r"\bprocents\b", re.IGNORECASE)
 
 # Unicode forms accepted by ``normalise``. NFKC is the published default; NFC is the
 # canonical-only variant. NFD/NFKD are decomposed forms, accepted for completeness
@@ -172,17 +190,40 @@ def _cardinal_words_da(token: str) -> str:
     return words
 
 
-def normalize_numbers_da(text: str) -> str:
-    """Remove ``.`` / ``,`` separators within a numeral (``1.234`` -> ``1234``,
-    ``3,14`` -> ``314``).
+def _canonical_number_da(value: str, *, embedded: bool = False) -> str:
+    """Keep decimals distinct from integers without changing mixed identifiers."""
+    if embedded:
+        return value.replace(".", "").replace(",", "")
+    if _THOUSANDS_RE.fullmatch(value):
+        return value.replace(".", "").replace(",", "")
+    grouped = _GROUPED_DECIMAL_RE.fullmatch(value)
+    decimal = grouped or _DECIMAL_RE.fullmatch(value)
+    if decimal:
+        whole = decimal.group(1).replace(".", "").replace(",", "")
+        fraction = decimal.group(2).rstrip("0")
+        return str(int(whole)) + (f"komma{fraction}" if fraction else "")
+    return value.replace(".", "").replace(",", "")
 
-    Both thousand and decimal separators are stripped, so a numeral scores
-    identically regardless of formatting. (The downstream punctuation strip would
-    remove these characters anyway; this step makes the numeral handling explicit
-    and independent of that implementation.)
+
+def normalize_numbers_da(text: str) -> str:
+    """Canonicalise Danish thousands, decimals and attached frequency units.
+
+    A separator followed by three digits is treated as a thousands separator;
+    one or two digits is a decimal. Bare ``802.11n`` stays an identifier rather
+    than a decimal because its numeric span is embedded in a non-unit word.
     """
+    text = _FREQUENCY_RE.sub(
+        lambda m: f"{_canonical_number_da(m.group(1))} "
+                  f"{_FREQUENCY_UNITS[m.group(2).lower()]}", text
+    )
+    text = _FREQUENCY_NAME_RE.sub(
+        lambda m: _FREQUENCY_UNITS[m.group(1).lower()], text
+    )
+    text = _FREQUENCY_COMPOUND_RE.sub(r"\1 ", text)
     return _NUMBER_TOKEN_RE.sub(
-        lambda m: m.group(0).replace(".", "").replace(",", ""), text
+        lambda m: _canonical_number_da(
+            m.group(0), embedded=m.end() < len(text) and text[m.end()].isalpha()
+        ), text
     )
 
 
@@ -222,6 +263,8 @@ def normalise(
             f"unicode_form must be one of {sorted(_VALID_UNICODE_FORMS)}, got {unicode_form!r}"
         )
     text = unicodedata.normalize(unicode_form, text)
+    text = _PERCENT_SYMBOL_RE.sub(" procent", text)
+    text = _PERCENT_GENITIVE_RE.sub("procent", text)
     text = normalize_numbers_da(text)
     text = text.lower()
     # Remove punctuation/symbols, keeping apostrophes between two word characters.

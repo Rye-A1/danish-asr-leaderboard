@@ -144,6 +144,18 @@ def choose_examples(outputs: Path, limit: int):
     return chosen
 
 
+def preserve_examples(path: Path):
+    """Keep published clip IDs when re-scoring without replacing their audio assets."""
+    current = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        dataset: {
+            item["id"]: {"id": item["id"], "reference": item["reference"], "hypotheses": {}}
+            for item in items
+        }
+        for dataset, items in current["examples"].items()
+    }
+
+
 def score_example(reference: str, hypothesis: str) -> dict[str, float]:
     """Score one displayed clip using the published leaderboard normalization."""
     ref = normalise(reference, **NORMALISE)
@@ -181,10 +193,11 @@ def score_groups(frame: pd.DataFrame, dataset: str, metadata, groups):
     return result
 
 
-def build(metadata_path: Path, outputs_dir: Path, cache_dir: Path, limit: int):
+def build(metadata_path: Path, outputs_dir: Path, cache_dir: Path, limit: int,
+          examples_from: Path | None = None):
     metadata, revisions = load_metadata(metadata_path)
     groups = metadata_groups(metadata)
-    examples = choose_examples(outputs_dir, limit)
+    examples = preserve_examples(examples_from) if examples_from else choose_examples(outputs_dir, limit)
     aliases = output_slugs(outputs_dir)
     api = HfApi()
     info = api.repo_info(REPO, repo_type="dataset")
@@ -244,8 +257,11 @@ def main():
     parser.add_argument("--cache-dir", type=Path, required=True)
     parser.add_argument("--out", type=Path, default=ROOT / "huggingface/space/compare_data.json")
     parser.add_argument("--examples-per-dataset", type=int, default=50)
+    parser.add_argument("--preserve-examples-from", type=Path,
+                        help="Existing compare_data.json whose clip IDs should stay fixed while re-scoring")
     args = parser.parse_args()
-    data = build(args.metadata, args.outputs_dir, args.cache_dir, args.examples_per_dataset)
+    data = build(args.metadata, args.outputs_dir, args.cache_dir,
+                 args.examples_per_dataset, args.preserve_examples_from)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"Wrote {args.out}: {len(data['breakdown'])} models, "

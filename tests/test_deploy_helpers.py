@@ -251,7 +251,7 @@ def test_syv_history_keeps_one_current_leaderboard_row(monkeypatch):
     for table in ("wer", "cer"):
         assert len(data[table]) == 1
         row = data[table][0]
-        assert row["mean_wer"] == 9.79
+        assert row["mean_wer"] == current["mean_wer"]
         assert row["released"] == "2026-09-25"
         assert row["date_basis"] == "score"
         assert [(h["submitted"], h["mean_wer"]) for h in row["history"]] == [

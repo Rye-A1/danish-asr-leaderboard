@@ -30,9 +30,9 @@ def transcribe_dataset(
     rows: list[dict],
     *,
     batch_size: int = 16,
-    unicode_form: str = "NFC",
+    unicode_form: str = "NFKC",
     number_words: bool = True,
-    filler_words: bool = False,
+    filler_words: bool = True,
 ) -> tuple[list[str], list[str], float, float, list[dict]]:
     """Transcribe ``rows`` and return ``(refs, hyps, inference_secs, audio_secs, raw)``.
 
