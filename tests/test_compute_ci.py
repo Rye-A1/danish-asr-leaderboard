@@ -1,6 +1,10 @@
 """Confidence intervals must use the same normalizer as published scores."""
 
-from scripts.compute_ci import per_utterance_stats
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+from compute_ci import per_utterance_stats
 
 
 def test_ci_counts_ignore_fillers_and_match_decimal_units():

@@ -2,8 +2,11 @@
 
 import pandas as pd
 import pytest
+import sys
+from pathlib import Path
 
-from scripts.rescore_published import rescore_result
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+from rescore_published import rescore_result
 from danish_asr_leaderboard.datasets import CORE_COLUMNS
 
 
