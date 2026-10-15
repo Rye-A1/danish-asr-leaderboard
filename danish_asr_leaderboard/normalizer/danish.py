@@ -14,10 +14,12 @@ Steps (in order):
      and matches the de-facto Danish standard (danish-speech-eval). Pass
      ``unicode_form="NFC"`` for the older canonical-only behaviour. Optional acute
      accents are removed without changing æ, ø, å or other diacritics.
-  2. Exact word and abbreviation equivalents — historical Danish words such as
-     ``saa``/``så``, ``km``/``kilometer``, ``kr``/``kroner``,
-     ``ca``/``cirka``, and ``pct``/``procent`` match on either side. General
-     ``aa``/``å`` replacement is deliberately avoided.
+  2. Exact word and abbreviation equivalents — historical and joined spellings
+     (``saa``/``så``, ``afsted``/``af sted``), abbreviations
+     (``bl.a.``/``blandt andet``, ``fx``/``for eksempel``), units
+     (``km``/``kilometer``, numeric ``mm``/``millimeter``), and magnitudes
+     (``mio.``/``millioner``) match on either side. General ``aa``/``å``
+     replacement is deliberately avoided.
   3. Danish number canonicalisation — thousands separators are removed, while
      decimal values retain a ``komma`` marker: ``1.234`` -> ``1234`` and
      ``3.14`` / ``3,14`` -> ``3komma14``. Trailing decimal zeroes are dropped,
@@ -64,7 +66,9 @@ slashes now have separate conservative rules. Clock notation requires a clock
 context for ambiguous single-digit hours, and numeric slashes become token
 boundaries rather than assumed fractions or dates. Ordinals (``3.`` ->
 ``tredje``) were tested and rejected: most ``N.`` are
-sentence-final cardinals, not true ordinals. Other unit abbreviations remain literal.
+sentence-final cardinals, not true ordinals. Ambiguous bare units are left
+literal: ``mm`` without a number can be a sound, whereas dotted ``m.m.`` means
+``med mere``.
 
 ``filler_words`` (**ON by default**) removes Danish hesitation fillers
 (``øh``, ``hmm`` …) from reference and hypothesis alike, using the exact pattern
@@ -89,6 +93,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from decimal import Decimal
 
 _NUMBER_TOKEN_RE = re.compile(r"\d[\d.,]*")
 _FREQUENCY_UNITS = {
@@ -122,6 +127,71 @@ _KR_ABBREVIATION_RE = re.compile(
 # sentence-initial "Ca." is unambiguously the Danish approximation abbreviation.
 _CA_ABBREVIATION_RE = re.compile(r"(?<!\w)(?:ca\.?|Ca\.)(?!\w)")
 _UNIT_NAMES = {"km": "kilometer", "cm": "centimeter", "kg": "kilogram"}
+_UNIT_RATE_RE = re.compile(r"(?<![^\W\d_])km\s*/\s*[ht](?!\w)", re.IGNORECASE)
+_METER_RATE_RE = re.compile(r"(?<![^\W\d_])m\s*/\s*s(?!\w)", re.IGNORECASE)
+# A dimension needs a written quantity. Bare "mm" can be a hesitation sound,
+# and bare "m" can be a letter; neither should be expanded indiscriminately.
+_DIMENSION_RE = re.compile(
+    r"(?<!\w)(\d[\d.,]*)\s*(m2|mm|m)\.?(?!\w)(?!\s*/)",
+    re.IGNORECASE,
+)
+_DIMENSION_NAMES = {"m2": "kvadratmeter", "mm": "millimeter", "m": "meter"}
+_QUANTITY_RE = re.compile(
+    r"(?<!\w)(\d[\d.,]*)\s*(mio|mia)\.?(?!\w)", re.IGNORECASE
+)
+_DIGIT_MAGNITUDE_RE = re.compile(
+    r"(?<!\w)(\d[\d.,]*)\s+(million(?:er)?|milliard(?:er)?)\b", re.IGNORECASE
+)
+_ABBREVIATIONS = (
+    # Dotted forms must be handled before punctuation removal. In particular,
+    # m.m. is "med mere", whereas numeric mm is "millimeter".
+    (re.compile(r"(?<!\w)m\.m\.?(?!\w)", re.IGNORECASE), "med mere"),
+    (re.compile(r"(?<!\w)bl\.a\.?(?!\w)", re.IGNORECASE), "blandt andet"),
+    (re.compile(r"(?<!\w)f\.eks\.?(?!\w)", re.IGNORECASE), "for eksempel"),
+    (re.compile(r"(?<!\w)m\.fl\.?(?!\w)", re.IGNORECASE), "med flere"),
+    (re.compile(r"(?<!\w)fx\.?(?!\w)", re.IGNORECASE), "for eksempel"),
+    (re.compile(r"(?<!\w)osv\.?(?!\w)", re.IGNORECASE), "og så videre"),
+    (re.compile(r"(?<!\w)dvs\.?(?!\w)", re.IGNORECASE), "det vil sige"),
+    (re.compile(r"(?<!\w)mv\.?(?!\w)", re.IGNORECASE), "med videre"),
+    (re.compile(r"(?<!\w)evt\.?(?!\w)", re.IGNORECASE), "eventuelt"),
+    (re.compile(r"(?<!\w)inkl\.?(?!\w)", re.IGNORECASE), "inklusive"),
+    (re.compile(r"(?<!\w)ekskl\.?(?!\w)", re.IGNORECASE), "eksklusive"),
+)
+_JOINED_WORDS = {
+    "idag": "i dag", "igår": "i går", "ialt": "i alt",
+    "iøvrigt": "i øvrigt", "igang": "i gang", "afsted": "af sted",
+    "tilstede": "til stede",
+}
+_JOINED_WORD_RE = re.compile(
+    r"\b(" + "|".join(_JOINED_WORDS) + r")\b", re.IGNORECASE
+)
+
+
+def _quantity(match: re.Match[str]) -> str:
+    value, unit = match.group(1), match.group(2).lower()
+    singular = re.fullmatch(r"1(?:[.,]0+)?", value) is not None
+    word = ("million" if singular else "millioner") if unit == "mio" else (
+        "milliard" if singular else "milliarder"
+    )
+    return f"{value} {word}"
+
+
+def _digit_magnitude(match: re.Match[str]) -> str:
+    """Make digit + magnitude match both its abbreviation and spoken form."""
+    canonical = _canonical_number_da(match.group(1))
+    whole, sep, fraction = canonical.partition("komma")
+    try:
+        amount = Decimal(whole + ("." + fraction if sep else ""))
+    except ArithmeticError:
+        return match.group(0)
+    factor = 1_000_000_000 if match.group(2).lower().startswith("milliard") else 1_000_000
+    value = amount * factor
+    return str(int(value)) if value == int(value) else match.group(0)
+
+
+def _unit_rate(match: re.Match[str], name: str) -> str:
+    separator = " " if match.start() and match.string[match.start() - 1].isdigit() else ""
+    return separator + name
 
 # These are exact historical Danish words found in the Common Voice references,
 # not general aa/ee/ei replacements. The latter would alter names and valid words.
@@ -365,6 +435,19 @@ def normalise(
     text = _HISTORICAL_WORD_RE.sub(
         lambda match: _HISTORICAL_WORDS[match.group().lower()], text
     )
+    text = _JOINED_WORD_RE.sub(
+        lambda match: _JOINED_WORDS[match.group().lower()], text
+    )
+    for pattern, replacement in _ABBREVIATIONS:
+        text = pattern.sub(replacement, text)
+    text = _UNIT_RATE_RE.sub(lambda match: _unit_rate(match, "kilometer i timen"), text)
+    text = _METER_RATE_RE.sub(lambda match: _unit_rate(match, "meter i sekundet"), text)
+    text = _DIMENSION_RE.sub(
+        lambda match: f"{match.group(1)} {_DIMENSION_NAMES[match.group(2).lower()]}",
+        text,
+    )
+    text = _QUANTITY_RE.sub(_quantity, text)
+    text = _DIGIT_MAGNITUDE_RE.sub(_digit_magnitude, text)
     text = _UNIT_ABBREVIATION_RE.sub(
         lambda match: _UNIT_NAMES[match.group(1).lower()], text
     )

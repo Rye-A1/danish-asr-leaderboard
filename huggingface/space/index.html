@@ -2601,11 +2601,14 @@
       <li>Unicode NFKC — folds compatibility characters (ligatures, full-width
         digits, <code>²</code>→<code>2</code>) so visually equivalent forms match;
         optional acute accents such as <code>dér</code>/<code>der</code> are ignored</li>
-      <li>Exact word equivalents — a short list of historical spellings
-        (<code>saa</code>/<code>så</code>) and abbreviations
-        (<code>km</code>/<code>kilometer</code>, <code>kr</code>/<code>kroner</code>,
-        <code>ca</code>/<code>cirka</code>, <code>pct</code>/<code>procent</code>)
-        are unified</li>
+      <li>Exact word equivalents — selected historical and joined spellings
+        (<code>saa</code>/<code>så</code>, <code>afsted</code>/<code>af sted</code>),
+        abbreviations (<code>fx</code>/<code>for eksempel</code>,
+        <code>bl.a.</code>/<code>blandt andet</code>, <code>m.m.</code>/<code>med mere</code>),
+        units (<code>km</code>, <code>cm</code>, <code>kg</code>, <code>kr</code>,
+        <code>pct</code>, numeric <code>m</code>, <code>mm</code>, <code>m²</code>,
+        <code>km/h</code>, <code>km/t</code>, <code>m/s</code>), and numeric
+        <code>mio.</code>/<code>mia.</code> match their spoken forms</li>
       <li>Danish number canonicalisation — thousands separators are removed
         (<code>1.234</code> → <code>1234</code>), while decimals retain a marker
         (<code>3.14</code> / <code>3,14</code> → <code>3komma14</code>).
@@ -2783,6 +2786,9 @@
             unit abbreviations now match their spoken forms. All 44 saved outputs
             were re-scored: mean WER fell by 0.07–0.17 percentage points per model,
             with no rank changes.</li>
+          <li>Additional attested abbreviations, numeric units and joined/spaced
+            words now match. Re-scoring the same 44 outputs changed mean WER by
+            −0.09 to +0.01 percentage points, with no rank changes.</li>
         </ul>
         <h3>2026-09 — Common Voice column relabelled</h3>
         <ul>

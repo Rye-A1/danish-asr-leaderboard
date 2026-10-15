@@ -304,6 +304,34 @@ def test_percent_symbol_matches_spoken_unit_in_issue_114():
     ("Vil De maaske være saa venlig", "Vil De måske være så venlig"),
     ("Nu skulle han passe paa", "Nu skulle han passe på"),
     ("han veed det", "han ved det"),
+    ("Det skete idag", "Det skete i dag"),
+    ("det skete igår", "det skete i går"),
+    ("der er ialt tre", "der er i alt tre"),
+    ("iøvrigt er han her", "i øvrigt er han her"),
+    ("hun tog afsted", "hun tog af sted"),
+    ("han var tilstede", "han var til stede"),
+    ("nu går vi igang", "nu går vi i gang"),
+    ("bl.a. børn", "blandt andet børn"),
+    ("fx danske ord", "for eksempel danske ord"),
+    ("f.eks. danske ord", "for eksempel danske ord"),
+    ("osv.", "og så videre"),
+    ("dvs. i morgen", "det vil sige i morgen"),
+    ("m.m.", "med mere"),
+    ("m.fl.", "med flere"),
+    ("mv.", "med videre"),
+    ("evt.", "eventuelt"),
+    ("inkl.", "inklusive"),
+    ("ekskl.", "eksklusive"),
+    ("6 m", "seks meter"),
+    ("18 mm", "atten millimeter"),
+    ("7500 m²", "syvtusindefemhundrede kvadratmeter"),
+    ("80 km/t", "firs kilometer i timen"),
+    ("80 km/h", "firs kilometer i timen"),
+    ("80km/h", "firs kilometer i timen"),
+    ("5 m/s", "fem meter i sekundet"),
+    ("5m/s", "fem meter i sekundet"),
+    ("5 mio.", "fem millioner"),
+    ("2 mia.", "to milliarder"),
 ])
 def test_audited_transcript_spellings_score_the_same(written, spoken):
     assert normalise(written) == normalise(spoken)
@@ -316,8 +344,21 @@ def test_new_rules_leave_unrelated_words_and_notation_untouched():
     assert normalise("Köln") == "köln"  # acute-only fold retains other marks
     assert normalise("e.kr.") == "ekr"  # after Christ, not currency
     assert normalise("f.Kr.") == "fkr"  # before Christ, not currency
-    assert normalise("km/h") == "kmh"  # unit rate needs its own contextual rule
+    assert normalise("mm") == "mm"  # bare sound/letters, not millimetres
+    assert normalise("m") == "m"  # bare letter, not metres
+    assert normalise("m.m.") != normalise("mm")
+    assert normalise("kmm") == "kmm"  # not a unit abbreviation
+    assert normalise("model fx8") == "model fx8"  # embedded acronym
+    assert normalise("indag") == "indag"  # joined forms match only whole words
     assert normalise("Casper") == "casper"
+
+
+def test_magnitude_abbreviations_keep_the_amount():
+    assert normalise("1 mio.") == normalise("en million")
+    assert normalise("5 mio.") == normalise("fem millioner")
+    assert normalise("1 mia.") == normalise("en milliard")
+    assert normalise("2 mia.") == normalise("to milliarder")
+    assert normalise("5 mio.") != normalise("6 mio.")
 
 
 @pytest.mark.parametrize("text,expected", [
