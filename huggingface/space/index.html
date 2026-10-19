@@ -697,6 +697,12 @@
         background-color: var(--surf);
         box-shadow: 1px 0 var(--border);
       }
+      #tab-wer .table-scroll.is-scrolled #table-wer tr > :nth-child(2) {
+        box-shadow: 8px 0 12px -8px rgba(0, 0, 0, .5), 1px 0 var(--border);
+      }
+      :root[data-theme="light"] #tab-wer .table-scroll.is-scrolled #table-wer tr > :nth-child(2) {
+        box-shadow: 8px 0 12px -8px rgba(0, 0, 0, .22), 1px 0 var(--border);
+      }
       #table-wer thead tr > :nth-child(-n+2) {
         z-index: 3;
         background-color: var(--surf2);
@@ -4453,6 +4459,10 @@ function initChrome() {
   initThemeToggle();
   initFilterToggles();
   initTabFades();
+  const tableScroll = document.querySelector('#tab-wer .table-scroll');
+  const updateTableShadow = () => tableScroll.classList.toggle('is-scrolled', tableScroll.scrollLeft > 1);
+  tableScroll.addEventListener('scroll', updateTableShadow, { passive: true });
+  updateTableShadow();
 }
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initChrome);
