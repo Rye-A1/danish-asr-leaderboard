@@ -477,6 +477,9 @@
       background: var(--surf);
     }
     .entry-switch button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       padding: 5px 9px;
       border: 0;
       border-radius: 5px;
@@ -487,6 +490,7 @@
       font-weight: 650;
       cursor: pointer;
     }
+    .entry-switch .entry-kind-icon { width: 12px; height: 12px; flex: none; }
     .entry-switch button[aria-pressed="true"] {
       background: var(--surf2);
       color: var(--text);
@@ -820,6 +824,7 @@
       border-color: color-mix(in srgb, var(--muted) 26%, var(--border));
       background: color-mix(in srgb, var(--muted) 8%, var(--surf));
     }
+    .model-meta .m-entry .entry-kind-icon { width: 11px; height: 11px; flex: none; }
     .model-meta .m-frontier {
       color: var(--pareto-chip);
       border-color: color-mix(in srgb, var(--pareto-chip) 42%, var(--border));
@@ -3619,7 +3624,8 @@ function buildRow(row, cols, maxVals) {
       const entry = document.createElement('span');
       entry.className = 'm-entry';
       const kind = row.entry_kind === 'system' ? 'System' : 'Model';
-      entry.textContent = row.configuration ? `${kind} · ${row.configuration}` : kind;
+      entry.append(ICON_ENTRY_KIND(row.entry_kind),
+        row.configuration ? `${kind} · ${row.configuration}` : kind);
       entry.title = row.entry_kind === 'system'
         ? 'Uses extra decoding, multiple models, or a hosted API'
         : 'Single checkpoint with greedy decoding';
@@ -4064,7 +4070,8 @@ function initFilterToggles() {
       const choice = document.createElement('button');
       choice.type = 'button';
       choice.dataset.entryKind = kind;
-      choice.textContent = text;
+      if (kind !== 'all') choice.append(ICON_ENTRY_KIND(kind));
+      choice.append(text);
       choice.setAttribute('aria-pressed', String(kind === (paneFor?.id === 'tab-analysis' ? paretoEntryKind : entryKind)));
       choice.addEventListener('click', () => {
         if (paneFor?.id === 'tab-analysis') {
@@ -4178,6 +4185,10 @@ const LICENSE_PATHS = [
 const ICON_SIZE = () => _icon(WEIGHTS_PATHS, 'meta-icon');
 const ICON_LICENSE = () => _icon(LICENSE_PATHS, 'meta-icon');
 const ICON_SORT   = () => _icon(['M3 6h13', 'M3 12h9', 'M3 18h5'], 'ctl-icon');
+const MODEL_KIND_PATHS = ['M5 5h14v14H5z', 'M10 10h4v4h-4z'];
+const SYSTEM_KIND_PATHS = ['M2 5h7v7H2z', 'M15 12h7v7h-7z', 'M9 8.5h5v7h1'];
+const ICON_ENTRY_KIND = kind => _icon(
+  kind === 'system' ? SYSTEM_KIND_PATHS : MODEL_KIND_PATHS, 'entry-kind-icon');
 
 /* Openness criteria, in the order update_space.py emits them. */
 const OPENNESS = [
