@@ -514,6 +514,7 @@
     @media (max-width: 900px) {
       .filter-summary > .entry-switch { display: none; }
       .filters-current-entry { display: inline; color: var(--text); }
+      .filters-current-entry::before { content: '·'; margin-right: 7px; }
     }
     .period-toggle {
       display: inline-flex;
@@ -671,6 +672,9 @@
     }
     tbody tr.hidden { display: none; }
     tbody td { padding: 9px 10px; vertical-align: middle; }
+    @media (min-width: 701px) {
+      #table-wer tbody td { padding-block: 11px; }
+    }
 
     /* Alternating rows */
     tbody tr:nth-child(even) td { background-color: rgba(255,255,255,0.025); }
@@ -4056,7 +4060,7 @@ function initFilterToggles() {
       const n = activeCount();
       const selectedKind = paneFor?.id === 'tab-analysis' ? paretoEntryKind : entryKind;
       const selectedLabel = { all: 'All', model: 'Models', system: 'Systems' }[selectedKind];
-      currentEntry.textContent = `· ${selectedLabel}`;
+      currentEntry.textContent = selectedLabel;
       count.textContent = n ? String(n) : '';
       btn.classList.toggle('has-filters', n > 0);
       clear.hidden = n === 0;
