@@ -105,6 +105,16 @@
     "model_card": "https://huggingface.co/danish-foundation-models/edda-v0.2",
     "paper": null
   },
+  "danish-foundation-models/edda-v0.2-duo": {
+    "released": {
+      "date": "2026-10-10",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": "https://huggingface.co/danish-foundation-models/edda-v0.2-duo#training",
+    "model_card": "https://huggingface.co/danish-foundation-models/edda-v0.2-duo",
+    "paper": null
+  },
   "danish-foundation-models/edda-v0.2-large": {
     "released": {
       "date": "2026-10-10",

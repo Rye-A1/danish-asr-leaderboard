@@ -38,6 +38,8 @@ def parse_args() -> argparse.Namespace:
                     help="HF model id, local .nemo path, or API deployment/model name")
     ap.add_argument("--model-id", default="",
                     help="Override the id used for the result slug / leaderboard link")
+    ap.add_argument("--model-revision", default=None,
+                    help="Full Hub commit SHA required by transformers-remote")
     ap.add_argument("--backend", required=True, choices=available_backends())
     ap.add_argument("--nemo-model-type", default="canary", choices=["canary", "parakeet"],
                     help="NeMo model family (backend=nemo)")
@@ -114,6 +116,7 @@ def _options_from_args(args: argparse.Namespace) -> LoadOptions:
     return LoadOptions(
         device=args.device,
         compute_type=args.compute_type,
+        model_revision=args.model_revision,
         # NeMo
         nemo_model_type=args.nemo_model_type,
         nemo_beam_size=args.nemo_beam_size,
@@ -241,7 +244,7 @@ def main() -> None:
     out_path = write_result_json(result, Path(args.out_dir), model_id)
 
     if args.outputs_dir:
-        write_meta(args.outputs_dir, model_id, {
+        meta = {
             "model": model_id,
             "model_link": model_link(model_id),
             "params_b": params_b,
@@ -252,7 +255,10 @@ def main() -> None:
             "filler_words": args.filler_words,
             "speed_x": speed_x,
             "datasets": list(loaded.keys()),
-        })
+        }
+        if args.backend == "transformers-remote" and args.model_revision:
+            meta["model_revision"] = args.model_revision
+        write_meta(args.outputs_dir, model_id, meta)
 
     print("\n=== Results ===")
     for spec in DATASETS.values():
