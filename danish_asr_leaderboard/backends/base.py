@@ -23,6 +23,7 @@ class LoadOptions:
 
     device: str = "cuda"
     compute_type: str = "float16"
+    model_revision: str | None = None
     # NeMo
     nemo_model_type: str = "canary"   # "canary" | "parakeet"
     nemo_model_file: str | None = None  # pick one .nemo when a repo ships several
