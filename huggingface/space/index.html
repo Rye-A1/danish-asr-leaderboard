@@ -697,11 +697,18 @@
         background-color: var(--surf);
         box-shadow: 1px 0 var(--border);
       }
-      #tab-wer .table-scroll.is-scrolled #table-wer tr > :nth-child(2) {
-        box-shadow: 8px 0 12px -8px rgba(0, 0, 0, .5), 1px 0 var(--border);
+      #tab-wer .table-scroll.is-scrolled #table-wer tr > :nth-child(2)::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: -14px;
+        width: 14px;
+        pointer-events: none;
+        background: linear-gradient(to right, rgba(0, 0, 0, .5), transparent);
       }
-      :root[data-theme="light"] #tab-wer .table-scroll.is-scrolled #table-wer tr > :nth-child(2) {
-        box-shadow: 8px 0 12px -8px rgba(0, 0, 0, .22), 1px 0 var(--border);
+      :root[data-theme="light"] #tab-wer .table-scroll.is-scrolled #table-wer tr > :nth-child(2)::before {
+        background: linear-gradient(to right, rgba(0, 0, 0, .23), transparent);
       }
       #table-wer thead tr > :nth-child(-n+2) {
         z-index: 3;
