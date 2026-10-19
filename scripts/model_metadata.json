@@ -1,5 +1,6 @@
 {
   "3dio-ai/svale-110M": {
+    "entry_kind": "model",
     "license_evidence": "https://huggingface.co/3dio-ai/svale-110M#licence",
     "released": {
       "date": "2026-09-09",
@@ -11,6 +12,7 @@
     "paper": null
   },
   "3dio-ai/svale-600M": {
+    "entry_kind": "model",
     "license_evidence": "https://huggingface.co/3dio-ai/svale-600M#licence",
     "released": {
       "date": "2026-09-09",
@@ -22,6 +24,7 @@
     "paper": null
   },
   "capacit-ai/saga": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-03-30",
       "source": "huggingface"
@@ -32,6 +35,7 @@
     "paper": null
   },
   "capacit-ai/saga-2-m": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-09-13",
       "source": "huggingface"
@@ -42,6 +46,8 @@
     "paper": null
   },
   "CoRal-project/roest-v2-wav2vec2-1B": {
+    "entry_kind": "system",
+    "configuration": "Beam + LM",
     "license_evidence": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-1B#model-details",
     "released": {
       "date": "2025-04-25",
@@ -53,6 +59,8 @@
     "paper": null
   },
   "CoRal-project/roest-v2-wav2vec2-2B": {
+    "entry_kind": "system",
+    "configuration": "Beam + LM",
     "license_evidence": "https://huggingface.co/CoRal-project/roest-v2-wav2vec2-2B#model-details",
     "released": {
       "date": "2025-06-23",
@@ -64,6 +72,8 @@
     "paper": null
   },
   "CoRal-project/roest-v3-wav2vec2-315m": {
+    "entry_kind": "system",
+    "configuration": "Beam + LM",
     "license_evidence": "https://huggingface.co/CoRal-project/roest-v3-wav2vec2-315m#model-details",
     "released": {
       "date": "2025-12-22",
@@ -75,6 +85,7 @@
     "paper": null
   },
   "CoRal-project/roest-v3-whisper-1.5b": {
+    "entry_kind": "model",
     "license_evidence": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b#model-details",
     "released": {
       "date": "2026-01-11",
@@ -86,6 +97,7 @@
     "paper": null
   },
   "danish-foundation-models/edda-v0.1": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-09-24",
       "source": "huggingface"
@@ -96,6 +108,8 @@
     "paper": null
   },
   "danish-foundation-models/edda-v0.2": {
+    "entry_kind": "system",
+    "configuration": "Beam 5",
     "released": {
       "date": "2026-10-02",
       "source": "huggingface"
@@ -106,6 +120,8 @@
     "paper": null
   },
   "danish-foundation-models/edda-v0.2-duo": {
+    "entry_kind": "system",
+    "configuration": "Dual model",
     "released": {
       "date": "2026-10-10",
       "source": "huggingface"
@@ -116,6 +132,8 @@
     "paper": null
   },
   "danish-foundation-models/edda-v0.2-large": {
+    "entry_kind": "system",
+    "configuration": "Beam 5",
     "released": {
       "date": "2026-10-10",
       "source": "huggingface"
@@ -126,6 +144,7 @@
     "paper": null
   },
   "facebook/mms-1b-all": {
+    "entry_kind": "model",
     "released": {
       "date": "2023-05-27",
       "source": "huggingface"
@@ -136,6 +155,7 @@
     "paper": "https://arxiv.org/abs/2305.13516"
   },
   "facebook/seamless-m4t-v2-large": {
+    "entry_kind": "model",
     "released": {
       "date": "2023-11-29",
       "source": "huggingface"
@@ -146,6 +166,8 @@
     "paper": "https://arxiv.org/abs/2312.05187"
   },
   "gpt-4o-mini-transcribe": {
+    "entry_kind": "system",
+    "configuration": "Hosted API",
     "released": {
       "date": "2025-03-20",
       "source": "published",
@@ -158,6 +180,9 @@
     "paper": null
   },
   "gpt-4o-mini-transcribe-benchmark": {
+    "entry_kind": "system",
+    "base_model": "gpt-4o-mini-transcribe",
+    "configuration": "Hosted API",
     "released": {
       "date": "2025-03-20",
       "source": "published",
@@ -169,6 +194,8 @@
     "paper": null
   },
   "gpt-4o-transcribe": {
+    "entry_kind": "system",
+    "configuration": "Hosted API",
     "released": {
       "date": "2025-03-20",
       "source": "published",
@@ -181,6 +208,9 @@
     "paper": null
   },
   "gpt-4o-transcribe-benchmark": {
+    "entry_kind": "system",
+    "base_model": "gpt-4o-transcribe",
+    "configuration": "Hosted API",
     "released": {
       "date": "2025-03-20",
       "source": "published",
@@ -192,6 +222,8 @@
     "paper": null
   },
   "gpt-transcribe": {
+    "entry_kind": "system",
+    "configuration": "Hosted API",
     "released": {
       "date": "2026-07-29",
       "source": "published",
@@ -204,6 +236,7 @@
     "paper": null
   },
   "hinge/danstral-v1": {
+    "entry_kind": "model",
     "released": {
       "date": "2025-09-19",
       "source": "huggingface"
@@ -214,6 +247,8 @@
     "paper": null
   },
   "MediaCatch/xls-r-300m-danish-mc-v2": {
+    "entry_kind": "system",
+    "configuration": "Beam + LM",
     "released": {
       "date": "2025-09-29",
       "source": "huggingface"
@@ -224,6 +259,7 @@
     "paper": null
   },
   "microsoft/VibeVoice-ASR-HF": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-03-02",
       "source": "huggingface"
@@ -234,6 +270,7 @@
     "paper": "https://arxiv.org/abs/2601.18184"
   },
   "mistralai/Voxtral-Mini-3B-2507": {
+    "entry_kind": "model",
     "released": {
       "date": "2025-07-01",
       "source": "huggingface"
@@ -244,6 +281,7 @@
     "paper": "https://arxiv.org/abs/2507.13264"
   },
   "mistralai/Voxtral-Small-24B-2507": {
+    "entry_kind": "model",
     "released": {
       "date": "2025-07-01",
       "source": "huggingface"
@@ -254,6 +292,7 @@
     "paper": "https://arxiv.org/abs/2507.13264"
   },
   "nvidia/canary-1b-v2": {
+    "entry_kind": "model",
     "released": {
       "date": "2025-08-04",
       "source": "huggingface"
@@ -264,6 +303,7 @@
     "paper": "https://arxiv.org/abs/2509.14128"
   },
   "nvidia/parakeet-rnnt-110m-da-dk": {
+    "entry_kind": "model",
     "license_evidence": "https://www.nvidia.com/en-us/agreements/enterprise-software/nvidia-open-model-license/",
     "released": {
       "date": "2025-05-28",
@@ -275,6 +315,7 @@
     "paper": null
   },
   "nvidia/parakeet-tdt-0.6b-v3": {
+    "entry_kind": "model",
     "released": {
       "date": "2025-08-04",
       "source": "huggingface"
@@ -285,6 +326,7 @@
     "paper": "https://arxiv.org/abs/2509.14128"
   },
   "openai/whisper-base": {
+    "entry_kind": "model",
     "released": {
       "date": "2022-09-26",
       "source": "huggingface"
@@ -295,6 +337,7 @@
     "paper": "https://arxiv.org/abs/2212.04356"
   },
   "openai/whisper-large-v3": {
+    "entry_kind": "model",
     "released": {
       "date": "2023-11-07",
       "source": "huggingface"
@@ -305,6 +348,7 @@
     "paper": "https://arxiv.org/abs/2212.04356"
   },
   "openai/whisper-large-v3-turbo": {
+    "entry_kind": "model",
     "released": {
       "date": "2024-10-01",
       "source": "huggingface"
@@ -315,6 +359,7 @@
     "paper": "https://arxiv.org/abs/2212.04356"
   },
   "openai/whisper-small": {
+    "entry_kind": "model",
     "released": {
       "date": "2022-09-26",
       "source": "huggingface"
@@ -325,6 +370,7 @@
     "paper": "https://arxiv.org/abs/2212.04356"
   },
   "openai/whisper-tiny": {
+    "entry_kind": "model",
     "released": {
       "date": "2022-09-26",
       "source": "huggingface"
@@ -335,6 +381,8 @@
     "paper": "https://arxiv.org/abs/2212.04356"
   },
   "ordbogen/whisper": {
+    "entry_kind": "system",
+    "configuration": "Hosted API",
     "released": {
       "date": "2026-04-28",
       "source": "best guess",
@@ -346,6 +394,7 @@
     "paper": null
   },
   "pluttodk/milo-asr": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-02-09",
       "source": "huggingface"
@@ -356,6 +405,7 @@
     "paper": null
   },
   "Qwen/Qwen3-ASR-1.7B": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-01-28",
       "source": "huggingface"
@@ -366,6 +416,7 @@
     "paper": "https://arxiv.org/abs/2601.21337"
   },
   "RyeAI/ekko-v1-tiny": {
+    "entry_kind": "model",
     "license_evidence": "https://huggingface.co/RyeAI/ekko-v1-tiny/blob/main/MODEL_LICENSE.md",
     "released": {
       "date": "2026-10-09",
@@ -378,6 +429,8 @@
     "paper": null
   },
   "saga-2-l": {
+    "entry_kind": "system",
+    "configuration": "Hosted API",
     "released": {
       "date": "2026-09-29",
       "source": "best guess",
@@ -389,6 +442,8 @@
     "paper": null
   },
   "scribe_v2": {
+    "entry_kind": "system",
+    "configuration": "Hosted API",
     "released": {
       "date": "2026-01-09",
       "source": "published",
@@ -400,6 +455,8 @@
     "paper": null
   },
   "syv-transcribe": {
+    "entry_kind": "system",
+    "configuration": "Hosted API",
     "released": {
       "date": "2026-06-24",
       "source": "confirmed",
@@ -412,6 +469,7 @@
     "paper": null
   },
   "syvai/hviske-v3-conversation": {
+    "entry_kind": "model",
     "released": {
       "date": "2025-07-01",
       "source": "huggingface"
@@ -422,6 +480,7 @@
     "paper": null
   },
   "syvai/hviske-v5": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-04-11",
       "source": "huggingface"
@@ -432,6 +491,7 @@
     "paper": null
   },
   "syvai/hviske-v5-tiny": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-08-11",
       "source": "huggingface"
@@ -442,6 +502,7 @@
     "paper": null
   },
   "syvai/hviske-v5.1": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-04-23",
       "source": "huggingface"
@@ -452,6 +513,7 @@
     "paper": null
   },
   "syvai/hviske-v5.3": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-04-28",
       "source": "huggingface"
@@ -462,6 +524,7 @@
     "paper": null
   },
   "syvai/hviske-v6": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-09-22",
       "source": "huggingface"
@@ -472,6 +535,7 @@
     "paper": null
   },
   "thorhojhus/whisper-large-v3-turbo-danish": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-09-06",
       "source": "huggingface"
@@ -482,6 +546,7 @@
     "paper": null
   },
   "thorhojhus/whisper-small-danish": {
+    "entry_kind": "model",
     "released": {
       "date": "2026-09-14",
       "source": "huggingface"
@@ -492,6 +557,7 @@
     "paper": null
   },
   "nvidia/nemotron-3.5-asr-streaming-0.6b": {
+    "entry_kind": "model",
     "license_evidence": "https://openmdw.ai/license/1-1/",
     "released": {
       "date": "2026-05-15",
@@ -503,6 +569,8 @@
     "paper": null
   },
   "Harmonium/brage-v1": {
+    "entry_kind": "system",
+    "configuration": "Beam 5 + LMs",
     "released": {
       "date": "2026-10-05",
       "source": "huggingface"

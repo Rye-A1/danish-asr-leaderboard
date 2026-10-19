@@ -466,6 +466,32 @@
       min-width: 0;
       max-width: 300px;
     }
+    .entry-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surf);
+    }
+    .entry-switch button {
+      padding: 5px 9px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .entry-switch button[aria-pressed="true"] {
+      background: var(--surf2);
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+    .entry-switch button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
     .period-toggle {
       display: inline-flex;
       align-items: center;
@@ -757,6 +783,7 @@
     .model-meta {
       display: flex;
       align-items: center;
+      flex-wrap: wrap;
       gap: 6px;
       margin-top: 3px;
       font-size: 11px;
@@ -765,7 +792,9 @@
     }
     /* Size and licence render as one set of chips. */
     .model-meta .m-size,
-    .model-meta .m-license {
+    .model-meta .m-license,
+    .model-meta .m-entry,
+    .model-meta .m-frontier {
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -777,13 +806,24 @@
       white-space: nowrap;
     }
     .model-meta .m-size,
-    .model-meta .m-license {
+    .model-meta .m-license,
+    .model-meta .m-entry,
+    .model-meta .m-frontier {
       border: 1px solid var(--border);
       color: var(--muted);
     }
     .model-meta .m-size { font-variant-numeric: tabular-nums; }
     .model-meta .m-license { max-width: 150px; }
     .model-meta .m-license-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .model-meta .m-entry {
+      color: var(--link);
+      border-color: color-mix(in srgb, var(--link) 32%, var(--border));
+      background: color-mix(in srgb, var(--link) 7%, var(--surf));
+    }
+    .model-meta .m-frontier {
+      color: var(--link);
+      border-color: color-mix(in srgb, var(--link) 45%, var(--border));
+    }
     .meta-icon {
       width: 10px;
       height: 10px;
@@ -2344,7 +2384,7 @@
     <header class="page-hero">
       <p class="page-eyebrow">Model tradeoffs</p>
       <h2>Pareto frontier</h2>
-      <p class="page-intro">See how scores change with model size. Dark blue points mark open models on the frontier, with no smaller, better-scoring open alternative on the selected metric; lighter blue points fall below it.</p>
+      <p class="page-intro">See how scores change with model size. Models are shown by default; switch to Systems or All to explore other entries. System size may omit extra decoding components or hosted compute. Dark blue points mark open entries on the selected frontier.</p>
     <div class="toolbar">
       <div class="tog-wrap">
         <span class="tog-label">Metric</span>
@@ -2676,6 +2716,17 @@
     </section>
 
     <section class="method-card">
+    <h3>Models and systems</h3>
+    <p>The entry switch shows all results, single-checkpoint <strong>Models</strong>
+    decoded greedily, or <strong>Systems</strong> that use beam search, an extra
+    language model, multiple checkpoints, or a hosted API. The small label by each
+    name describes the submitted setup. A model may have one result of each type;
+    the two scores come from separate evaluations. The Pareto chip marks an open
+    entry with no smaller, better-scoring open alternative under the selected
+    metric, ranking method, and entry filter.</p>
+    </section>
+
+    <section class="method-card">
     <h3>Metric</h3>
     <p><strong>WER</strong> (Word Error Rate, %) and
     <strong>CER</strong> (Character Error Rate, %) — lower is better.</p>
@@ -2750,7 +2801,8 @@
         (<code>&lt;dataset&gt;.jsonl</code> + <code>meta.json</code>), one
         <code>{"id", "reference", "hypothesis"}</code> per line. Lets reviewers inspect actual
         transcriptions and enables re-scoring under future normalisers.</li>
-      <li>An entry in <code>scripts/model_metadata.json</code>: the release date, plus links to the
+      <li>An entry in <code>scripts/model_metadata.json</code>: the Model/System type,
+        release date, plus links to the
         training code, training data, model card and paper, or
         <code>null</code> where there is none
         (criteria in <a href="https://github.com/Rye-A1/danish-asr-leaderboard/blob/main/CONTRIBUTING.md#openness-annotations" target="_blank" rel="noopener">CONTRIBUTING.md</a>).</li>
@@ -2950,15 +3002,20 @@
 const MEDALS = ['🥇','🥈','🥉'];
 let showCI = false;
 let openOnly = false;   // hide hosted/API (proprietary) models — opt-in
+let entryKind = 'all';   // Leaderboard and Over Time share this selection
+let paretoEntryKind = 'model'; // size tradeoffs default to single-checkpoint models
 let maxSizeB = null;    // billions of parameters; null includes unknown sizes
 const requiredOpenness = new Set();
 let onOpennessFilterChanged = null;
+let onEntryKindChanged = null;
+let onParetoEntryKindChanged = null;
 
 // Rows for a tab, honouring the shared access, size, and openness filters.
 // A size limit excludes unknown sizes; openness requires linked evidence.
-function visible(rows) {
+function visible(rows, kind = entryKind) {
   return rows.filter(r => {
     if (openOnly && r.access === 'proprietary') return false;
+    if (kind !== 'all' && r.entry_kind !== kind) return false;
     if (maxSizeB != null) {
       const size = parseFloat(r.size);
       if (!Number.isFinite(size) || size > maxSizeB) return false;
@@ -3062,6 +3119,8 @@ const LEADERBOARD_CSV_FIELDS = [
   ['rank', 'rank'], ['rank_metric', 'rank_metric'], ['rank_method', 'rank_method'],
   ['rank_score', 'rank_score'],
   ['model', 'model'], ['model_url', 'url'], ['access', 'access'], ['license', 'license'],
+  ['entry_kind', 'entry_kind'], ['base_model', 'base_model'], ['configuration', 'configuration'],
+  ['pareto_optimal', 'pareto_optimal'],
   ['size_b', 'size_b'], ['mean_wer_percent', 'mean_wer'],
   ['mean_cer_percent', 'mean_cer'], ['speed_x', 'speed_x'],
   ['hf_downloads', 'hf_downloads'], ['openness_score', 'openness_score'],
@@ -3112,6 +3171,7 @@ function makeLeaderboardCsv(data, viewRows, metric, method) {
       rank_score: method === 'mean' ? rankingRow?.[`mean_${metric}`]
         : rankingRow?.[method === 'borda' ? 'borda_score' : 'bt_score'],
       model: name, size_b: Number.isFinite(size) ? size : null,
+      pareto_optimal: Boolean(rankingRow?.pareto_optimal),
       ...Object.fromEntries(Object.entries(model.openness || {})
         .map(([key, url]) => [`openness_${key}`, url])),
     };
@@ -3363,7 +3423,9 @@ function positionModelPreview(link) {
 
 function modelSummary(row) {
   const size = Number.parseFloat(row.size);
-  return (row.access === 'open' ? 'Open weights' : 'Hosted API')
+  const kind = row.entry_kind === 'system' ? 'System' : 'Model';
+  return kind + (row.configuration ? ` · ${row.configuration}` : '')
+    + ' · ' + (row.access === 'open' ? 'Open weights' : 'Hosted API')
     + (Number.isFinite(size) ? ` · ${row.size}B parameters` : '');
 }
 
@@ -3540,6 +3602,23 @@ function buildRow(row, cols, maxVals) {
         ? 'NVIDIA Open Model License; additional model terms apply'
         : 'Licence: ' + (row.license || 'not declared');
       meta.appendChild(lic);
+
+      const entry = document.createElement('span');
+      entry.className = 'm-entry';
+      const kind = row.entry_kind === 'system' ? 'System' : 'Model';
+      entry.textContent = row.configuration ? `${kind} · ${row.configuration}` : kind;
+      entry.title = row.entry_kind === 'system'
+        ? 'Uses extra decoding, multiple models, or a hosted API'
+        : 'Single checkpoint with greedy decoding';
+      meta.appendChild(entry);
+
+      if (row.pareto_optimal) {
+        const frontier = document.createElement('span');
+        frontier.className = 'm-frontier';
+        frontier.textContent = '✦ Pareto';
+        frontier.title = 'Open entry with no smaller, better-scoring open alternative in this view';
+        meta.appendChild(frontier);
+      }
 
       td.appendChild(meta);
 
@@ -3794,6 +3873,13 @@ const settingsLabels = [];
 function refreshSettingsButtons() {
   settingsLabels.forEach(label => label());
 }
+function syncEntrySwitches() {
+  document.querySelectorAll('.entry-switch button').forEach(button => {
+    const kind = button.closest('.tab-pane')?.id === 'tab-analysis' ? paretoEntryKind : entryKind;
+    button.setAttribute('aria-pressed', String(button.dataset.entryKind === kind));
+  });
+  refreshSettingsButtons();
+}
 function initFilterToggles() {
   for (const bar of document.querySelectorAll('.toolbar')) {
     // Scoped to the pane rather than previousElementSibling: the sort control
@@ -3864,6 +3950,7 @@ function initFilterToggles() {
         if (select.value !== (select.dataset.default ?? '')) n++;
       });
       if (requiredOpenness.size) n++;
+      if (paneFor?.id === 'tab-analysis' ? paretoEntryKind !== 'model' : entryKind !== 'all') n++;
       return n;
     };
 
@@ -3917,6 +4004,15 @@ function initFilterToggles() {
         syncOpennessFilterControls();
         onOpennessFilterChanged?.();
       }
+      if (paneFor?.id === 'tab-analysis' && paretoEntryKind !== 'model') {
+        paretoEntryKind = 'model';
+        syncEntrySwitches();
+        onParetoEntryKindChanged?.();
+      } else if (paneFor?.id !== 'tab-analysis' && entryKind !== 'all') {
+        entryKind = 'all';
+        syncEntrySwitches();
+        onEntryKindChanged?.();
+      }
       refreshSettingsButtons();
     });
     sheet.addEventListener('click', event => { if (event.target === sheet) sheet.close(); });
@@ -3933,6 +4029,31 @@ function initFilterToggles() {
     bar.addEventListener('click', () => setTimeout(label, 0));
 
     summary.append(btn);
+    const entrySwitch = document.createElement('div');
+    entrySwitch.className = 'entry-switch';
+    entrySwitch.setAttribute('role', 'group');
+    entrySwitch.setAttribute('aria-label', 'Entry type');
+    for (const [kind, text] of [['all', 'All'], ['model', 'Models'], ['system', 'Systems']]) {
+      const choice = document.createElement('button');
+      choice.type = 'button';
+      choice.dataset.entryKind = kind;
+      choice.textContent = text;
+      choice.setAttribute('aria-pressed', String(kind === (paneFor?.id === 'tab-analysis' ? paretoEntryKind : entryKind)));
+      choice.addEventListener('click', () => {
+        if (paneFor?.id === 'tab-analysis') {
+          if (paretoEntryKind === kind) return;
+          paretoEntryKind = kind;
+        } else {
+          if (entryKind === kind) return;
+          entryKind = kind;
+        }
+        syncEntrySwitches();
+        if (paneFor?.id === 'tab-analysis') onParetoEntryKindChanged?.();
+        else onEntryKindChanged?.();
+      });
+      entrySwitch.append(choice);
+    }
+    summary.append(entrySwitch);
     if (paneFor?.id === 'tab-time') summary.append(document.getElementById('time-period-toggle'));
     if (searchWrap) summary.append(searchWrap);
     const download = bar.querySelector('.download-csv');
@@ -4629,6 +4750,12 @@ function sizeChartPoints(rows, metric, method) {
   const key = chartScoreKey(metric, method);
   return rows.map(r => ({ r, sz: parseFloat(r.size), yv: r[key] }))
     .filter(({ sz, yv }) => Number.isFinite(sz) && sz > 0 && Number.isFinite(yv));
+}
+
+function markParetoRows(rows, metric, method) {
+  const points = sizeChartPoints(rows, metric, method).filter(p => p.r.access === 'open');
+  const frontier = new Set(computePareto(points, method === 'bt').map(p => p.r.name));
+  rows.forEach(row => { row.pareto_optimal = frontier.has(row.name); });
 }
 
 const PARETO_CSV_FIELDS = [
@@ -5669,6 +5796,9 @@ function setupCompare(data) {
 
     renderHeader('compare-head', rows);
     document.getElementById('compare-summary-body').replaceChildren();
+    addSummaryRow('compare-summary-body', 'Entry', rows.map(row =>
+      (row.entry_kind === 'system' ? 'System' : 'Model')
+      + (row.configuration ? ` · ${row.configuration}` : '')));
     addSummaryRow('compare-summary-body', 'Parameters', rows.map(row =>
       Number.isFinite(parseFloat(row.size)) ? `${row.size}B` : '—'));
     addSummaryRow('compare-summary-body', 'Weights', rows.map(row =>
@@ -5838,6 +5968,32 @@ async function init() {
     /* CER rows have per-dataset CER cols; copy their CI to WER rows by name */
     const cerCIMap = new Map(data.cer.map(r => [r.name, r.mean_cer_ci]));
     data.wer.forEach(r => { r.mean_cer_ci = cerCIMap.get(r.name) ?? null; });
+    const rankEntryPool = (rows, datasetCols, meanKey) => {
+      [...rows].sort((a, b) => (a[meanKey] ?? Infinity) - (b[meanKey] ?? Infinity))
+        .forEach((row, i) => { row.rank = i + 1; });
+      addBordaRanks(rows, datasetCols);
+      if (rows.length > 1) {
+        addBradleyTerry(rows, datasetCols);
+        addBootstrapCI(rows, datasetCols, meanKey);
+      } else if (rows.length === 1) {
+        rows[0].bt_score = null;
+        rows[0].bt_score_ci = null;
+        rows[0].bt_delta = null;
+      }
+    };
+    const analysisPoolCache = new Map();
+    const analysisPool = metric => {
+      const key = `${metric}:${paretoEntryKind}`;
+      if (!analysisPoolCache.has(key)) {
+        const isWer = metric === 'wer';
+        const rows = (isWer ? data.wer : data.cer)
+          .filter(r => paretoEntryKind === 'all' || r.entry_kind === paretoEntryKind)
+          .map(r => ({...r}));
+        rankEntryPool(rows, isWer ? WER_DS_COLS : CER_DS_COLS, isWer ? 'mean_wer' : 'mean_cer');
+        analysisPoolCache.set(key, rows);
+      }
+      return analysisPoolCache.get(key);
+    };
 
     const maxVals = {
       wer: Math.max(...data.wer.map(r => r.mean_wer || 0)),
@@ -6018,7 +6174,7 @@ async function init() {
       analysisMetric = metric;
       const isWer = metric === 'wer';
       const limit = werLimit(paretoWerLimit);
-      const rows = chartWerRows(isWer ? _chartState.wer.rows : _chartState.cer.rows, limit);
+      const rows = chartWerRows(visible(analysisPool(metric), paretoEntryKind), limit);
       document.getElementById('pareto-cutoff-note').textContent = Number.isFinite(limit)
         ? `Models above ${limit}% mean WER are omitted from this plot and its CSV; change the limit in Settings.`
         : 'No mean WER limit is applied to this plot or its CSV.';
@@ -6044,6 +6200,7 @@ async function init() {
                    : method === 'bt'    ? visible(data.wer).sort((a, b) => b.bt_score - a.bt_score)
                    :                     visible(data.wer).sort((a, b) => (a.mean_wer ?? Infinity) - (b.mean_wer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
+      markParetoRows(sorted, 'wer', method);
       renderSizeChart(sorted, method, 'wer');
       if (lbMetric === 'wer') {
         renderTable(werEl, sorted, getWerCols(method), maxVals);
@@ -6060,6 +6217,7 @@ async function init() {
                    : method === 'bt'    ? visible(data.cer).sort((a, b) => b.bt_score - a.bt_score)
                    :                     visible(data.cer).sort((a, b) => (a.mean_cer ?? Infinity) - (b.mean_cer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
+      markParetoRows(sorted, 'cer', method);
       renderSizeChart(sorted, method, 'cer');
       if (lbMetric === 'cer') {
         renderTable(werEl, sorted, getCerCols(method), maxVals);
@@ -6073,6 +6231,13 @@ async function init() {
       applyWer();
       applyCer();
     };
+    onEntryKindChanged = () => {
+      rankEntryPool(data.wer.filter(r => entryKind === 'all' || r.entry_kind === entryKind), WER_DS_COLS, 'mean_wer');
+      rankEntryPool(data.cer.filter(r => entryKind === 'all' || r.entry_kind === entryKind), CER_DS_COLS, 'mean_cer');
+      applyWer();
+      applyCer();
+    };
+    onParetoEntryKindChanged = () => applyAnalysis();
 
     /* Rank by: one group per tab, each acting on the metric that tab shows. The
        method is stored per metric, so a choice made on Pareto while it displays

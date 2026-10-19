@@ -22,6 +22,7 @@ import sys
 import tempfile
 from datetime import date, datetime
 from pathlib import Path
+from urllib.parse import urlparse
 
 import numpy as np
 import pandas as pd
@@ -411,6 +412,34 @@ def _parse_model(cell: str) -> tuple[str, str]:
     return cell, ""
 
 
+def validate_entry_profiles(df: pd.DataFrame) -> None:
+    """Require one Model and one System submission at most per base model."""
+    seen: dict[tuple[str, str], str] = {}
+    for cell in df["model"]:
+        name, url = _parse_model(cell)
+        profile = MODEL_METADATA.get(name)
+        if profile is None:
+            raise ValueError(f"{name}: missing entry in scripts/model_metadata.json")
+        kind = profile.get("entry_kind")
+        if kind not in {"model", "system"}:
+            raise ValueError(f"{name}: entry_kind must be model or system")
+        base = profile.get("base_model", name)
+        if not isinstance(base, str) or not base.strip():
+            raise ValueError(f"{name}: base_model must be a nonempty model id")
+        if url.startswith("https://huggingface.co/"):
+            linked_model = urlparse(url).path.strip("/")
+            if linked_model.casefold() != base.casefold():
+                raise ValueError(f"{name}: base_model must match its Hugging Face model link")
+        if kind == "system" and not profile.get("configuration"):
+            raise ValueError(f"{name}: system submissions need a configuration label")
+        key = (base.casefold(), kind)
+        if key in seen:
+            raise ValueError(
+                f"{name} and {seen[key]} both submit a {kind} result for {base}"
+            )
+        seen[key] = name
+
+
 def _is_hf_model_repo(name: str, url: str) -> bool:
     """Whether a leaderboard row points at a real HF model repository."""
     return bool(name and "/" in name and url.startswith("https://huggingface.co/"))
@@ -420,10 +449,10 @@ def build_models_py(data: dict) -> str:
     """Return the models.py content used by HF to backlink model cards."""
     model_names = sorted(
         {
-            row["name"]
+            name
             for row in data["wer"]
             for url in [row.get("url", "")]
-            for name in [row.get("name", "")]
+            for name in [row.get("base_model", row.get("name", ""))]
             if _is_hf_model_repo(name, url)
         },
         key=str.casefold,
@@ -489,13 +518,18 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 logo = _api_logo(name)
             submitted = row.get("submitted")
             submitted_date = str(submitted)[:10] if pd.notna(submitted) else ""
-            license = _model_license(name) if is_repo else ""
+            profile = MODEL_METADATA.get(name, {})
+            base_model = profile.get("base_model", name)
+            license = _model_license(base_model) if is_repo else ""
             openness = _openness(name, is_repo, access, license)
             plot_by_submission = (
                 MODEL_METADATA.get(name, {}).get("released", {}).get("plot_by") == "submitted")
             entry: dict = {
                 "rank": rank,
                 "name": name,
+                "entry_kind": profile.get("entry_kind", "model"),
+                "base_model": base_model,
+                "configuration": profile.get("configuration", ""),
                 "url": url,
                 "logo": logo,
                 "access": access,
@@ -504,9 +538,9 @@ def build_leaderboard_json(df: pd.DataFrame) -> dict:
                 "openness_score": sum(v is not None for v in openness.values()),
                 # Hugging Face reports a rolling 30-day download count. It is
                 # activity context, not a quality or historical trend metric.
-                "hf_downloads": _model_downloads(name) if is_repo else None,
-                "hf_download_history": list(_model_download_history(name)) if is_repo else [],
-                "size": _official_size(name, row.get("params_b")),
+                "hf_downloads": _model_downloads(base_model) if is_repo else None,
+                "hf_download_history": list(_model_download_history(base_model)) if is_repo else [],
+                "size": _official_size(base_model, row.get("params_b")),
                 "submitted": submitted_date,
                 "history": _score_history(name),
                 # A mutable API is plotted at each score's evaluation date;
@@ -845,6 +879,7 @@ def main() -> None:
 
     print("Building leaderboard.json …")
     df = load_leaderboard_df()
+    validate_entry_profiles(df)
     data = build_leaderboard_json(df)
     unannotated = [r["name"] for r in data["wer"]
                    if not all(k in MODEL_METADATA.get(r["name"], {})
