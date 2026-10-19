@@ -533,6 +533,7 @@
   },
   "syvai/hviske-v6": {
     "entry_kind": "model",
+    "configuration": "Beam 2",
     "released": {
       "date": "2026-09-22",
       "source": "huggingface"

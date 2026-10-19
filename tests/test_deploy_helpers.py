@@ -178,6 +178,7 @@ def test_published_entries_have_one_model_and_one_system_per_base():
     assert MODEL_METADATA["Harmonium/brage-v1"]["entry_kind"] == "system"
     assert MODEL_METADATA["danish-foundation-models/edda-v0.2-large"]["entry_kind"] == "model"
     assert MODEL_METADATA["danish-foundation-models/edda-v0.2-large"]["configuration"] == "Beam 5"
+    assert MODEL_METADATA["syvai/hviske-v6"]["configuration"] == "Beam 2"
     assert MODEL_METADATA["capacit-ai/saga-2-m"]["entry_kind"] == "model"
 
 
