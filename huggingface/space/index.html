@@ -4178,19 +4178,13 @@ const OPENNESS = [
      'M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z'], 'open-icon')],
 ];
 
-/* `dir` is the direction that puts the best model first, applied when the
-   field is picked; the arrow button flips it. `always` marks a field that is
-   sortable without being a visible column -- size never is, and win rate and
-   avg. rank only appear under their own ranking methods. Rank itself is gone:
-   under the default method it is just Mean WER order under another name. */
+/* `dir` puts the best model first. `always` marks a field only visible under
+   its ranking method. Rank itself is Mean WER under the default method. */
 const SORT_FIELDS = [
   { key: 'mean_wer',    label: 'Mean WER',  dir:  1 },
   { key: 'mean_cer',    label: 'Mean CER',  dir:  1 },
   { key: 'speed_x',     label: 'Speed',     dir: -1 },
   { key: 'hf_downloads', label: 'Popularity', dir: -1 },
-  { key: 'openness_score', label: 'Openness', dir: -1 },
-  { key: 'size',        label: 'Size',      dir: -1, always: true,
-    read: r => parseFloat(r.size) },
   { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt'    },
   { key: 'borda_score', label: 'Avg. Rank', dir:  1, always: true, method: 'borda' },
 ];
