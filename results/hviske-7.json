@@ -1,0 +1,19 @@
+{
+  "model": "Hviske 7",
+  "params_b": 1.12,
+  "coral_conversation_wer": 15.36,
+  "coral_read_aloud_wer": 1.32,
+  "cv17_da_wer": 5.36,
+  "fleurs_da_wer": 6.97,
+  "ftspeech_wer": 5.62,
+  "mean_wer": 6.93,
+  "coral_conversation_cer": 8.89,
+  "coral_read_aloud_cer": 0.78,
+  "cv17_da_cer": 1.82,
+  "fleurs_da_cer": 2.59,
+  "ftspeech_cer": 3.1,
+  "mean_cer": 3.44,
+  "speed_x": 91.0,
+  "submitted": "2026-10-19",
+  "access": "proprietary"
+}
