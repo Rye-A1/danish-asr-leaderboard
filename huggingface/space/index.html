@@ -679,6 +679,35 @@
     /* Alternating rows */
     tbody tr:nth-child(even) td { background-color: rgba(255,255,255,0.025); }
     :root[data-theme="light"] tbody tr:nth-child(even) td { background-color: rgba(0,0,0,0.03); }
+    @media (min-width: 701px) {
+      #table-wer { --rank-width: 52px; }
+      #table-wer tr > :first-child {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        width: var(--rank-width);
+        min-width: var(--rank-width);
+        max-width: var(--rank-width);
+        background-color: var(--surf);
+      }
+      #table-wer tr > :nth-child(2) {
+        position: sticky;
+        left: var(--rank-width);
+        z-index: 2;
+        background-color: var(--surf);
+        box-shadow: 1px 0 var(--border);
+      }
+      #table-wer thead tr > :nth-child(-n+2) {
+        z-index: 3;
+        background-color: var(--surf2);
+      }
+      #table-wer tbody tr:nth-child(even) > :nth-child(-n+2) {
+        background-color: color-mix(in srgb, var(--surf) 97.5%, white);
+      }
+      :root[data-theme="light"] #table-wer tbody tr:nth-child(even) > :nth-child(-n+2) {
+        background-color: color-mix(in srgb, var(--surf) 97%, black);
+      }
+    }
 
     /* Column classes */
     .c-rank { width: 52px; text-align: center; font-size: 17px; }
@@ -697,7 +726,7 @@
       font-variant-numeric: tabular-nums;
       line-height: 1;
     }
-    .c-submitted { width: 96px; white-space: nowrap; font-size: 12px; opacity: 0.6; }
+    .c-submitted { width: 96px; white-space: nowrap; font-size: 12px; }
     .c-model { min-width: 360px; max-width: 360px; }
     .c-model a {
       display: inline-flex;
@@ -2038,12 +2067,12 @@
         flex: 1 1 100%;
         display: none;
         font-size: 11px;
-        color: var(--muted);
+        color: var(--text);
       }
       tbody tr.expanded td[data-key="submitted"] { display: block; }
       tbody td[data-key="submitted"]::before {
         content: attr(data-label) ": ";
-        opacity: 0.7;
+        color: var(--muted);
       }
 
       /* 7 -- expand affordance. A pseudo-element rather than an extra cell,
