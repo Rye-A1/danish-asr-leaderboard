@@ -831,6 +831,8 @@
       background: color-mix(in srgb, var(--pareto-chip) 10%, var(--surf));
     }
     .model-meta .m-frontier::before { content: '★'; font-size: 9px; line-height: 1; }
+    .model-meta .meta-info-chip { font-family: inherit; line-height: 1; cursor: help; }
+    .model-meta .meta-info-chip:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
     .meta-icon {
       width: 10px;
       height: 10px;
@@ -1065,6 +1067,38 @@
       transition: opacity 0.12s;
     }
     #col-tip.show { opacity: 1; }
+    #col-tip.chip-tip {
+      width: min(280px, calc(100vw - 24px));
+      max-width: 280px;
+      padding: 0;
+      overflow: hidden;
+      background: var(--surf);
+      border-color: color-mix(in srgb, var(--link) 30%, var(--border));
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .2);
+    }
+    .chip-tip-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--brand-mesh), #09080d;
+      color: #fff;
+    }
+    .chip-tip-icon {
+      display: grid;
+      flex: 0 0 30px;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .14);
+      font-size: 18px;
+    }
+    .chip-tip-icon svg { width: 17px; height: 17px; }
+    .chip-tip-icon.pareto { color: #ffd25d; }
+    .chip-tip-title { display: block; font-size: 13px; font-weight: 700; }
+    .chip-tip-subtitle { display: block; margin-top: 2px; color: rgba(255, 255, 255, .72); font-size: 11px; }
+    .chip-tip-body { padding: 11px 14px; color: var(--text); }
     dialog.settings-sheet #col-tip { position: absolute; }
 
     /* ── Footer ─────────────────────────────────────────────────────── */
@@ -3005,7 +3039,7 @@
   </div>
 </footer>
 
-<div id="col-tip"></div>
+<div id="col-tip" role="tooltip"></div>
 <div id="chart-tip"></div>
 <div id="model-preview" class="model-preview" role="tooltip" hidden></div>
 <dialog id="openness-drawer" class="openness-drawer" aria-labelledby="openness-drawer-title">
@@ -3628,21 +3662,27 @@ function buildRow(row, cols, maxVals) {
         : 'Licence: ' + (row.license || 'not declared');
       meta.appendChild(lic);
 
-      const entry = document.createElement('span');
-      entry.className = 'm-entry';
+      const entry = document.createElement('button');
+      entry.type = 'button';
+      entry.className = 'm-entry meta-info-chip';
       const kind = row.entry_kind === 'system' ? 'System' : 'Model';
       entry.append(ICON_ENTRY_KIND(row.entry_kind),
         row.configuration ? `${kind} · ${row.configuration}` : kind);
-      entry.title = row.entry_kind === 'system'
-        ? 'Uses extra decoding, multiple models, or a hosted API'
-        : 'Single checkpoint with greedy decoding';
+      entry.dataset.chipKind = row.entry_kind === 'system' ? 'system' : 'model';
+      entry.dataset.chipSubtitle = row.configuration || 'Single checkpoint';
+      entry.dataset.tip = row.entry_kind === 'system'
+        ? 'A submitted setup using beam search, a language model, multiple checkpoints, or hosted API serving. The badge names this entry’s configuration.'
+        : 'A single checkpoint evaluated with greedy decoding, without an added language model or beam search.';
       meta.appendChild(entry);
 
       if (row.pareto_optimal) {
-        const frontier = document.createElement('span');
-        frontier.className = 'm-frontier';
+        const frontier = document.createElement('button');
+        frontier.type = 'button';
+        frontier.className = 'm-frontier meta-info-chip';
         frontier.textContent = 'Pareto';
-        frontier.title = 'Open entry with no smaller, better-scoring open alternative in this view';
+        frontier.dataset.chipKind = 'pareto';
+        frontier.dataset.chipSubtitle = 'Open · size vs. score';
+        frontier.dataset.tip = 'Among open entries in this view, no smaller entry matches or beats its score. This updates with the metric, ranking method, and filters. System sizes may omit extra components.';
         meta.appendChild(frontier);
       }
 
@@ -4351,7 +4391,7 @@ if (document.readyState === 'loading') {
 }
 document.addEventListener('click', ev => {
   if (!NARROW.matches) return;
-  if (ev.target.closest('a, .open-item')) return;
+  if (ev.target.closest('a, .open-item, .meta-info-chip')) return;
   const tr = ev.target.closest('tbody tr');
   if (!tr || !tr.closest('.table-scroll')) return;
   tr.classList.toggle('expanded');
@@ -6546,26 +6586,58 @@ function positionTip(clientX, clientY) {
   TIP.style.top = y + 'px';
 }
 
+function chipTooltip(el) {
+  const kind = el.dataset.chipKind;
+  const content = document.createElement('div');
+  content.className = 'chip-tip-content';
+  const head = document.createElement('div');
+  head.className = 'chip-tip-head';
+  const icon = document.createElement('span');
+  icon.className = 'chip-tip-icon' + (kind === 'pareto' ? ' pareto' : '');
+  icon.setAttribute('aria-hidden', 'true');
+  icon.append(kind === 'pareto' ? '★' : ICON_ENTRY_KIND(kind));
+  const heading = document.createElement('div');
+  const title = document.createElement('strong');
+  title.className = 'chip-tip-title';
+  title.textContent = kind === 'pareto' ? 'Pareto frontier' : kind === 'system' ? 'System' : 'Model';
+  const subtitle = document.createElement('span');
+  subtitle.className = 'chip-tip-subtitle';
+  subtitle.textContent = el.dataset.chipSubtitle;
+  heading.append(title, subtitle);
+  head.append(icon, heading);
+  const body = document.createElement('div');
+  body.className = 'chip-tip-body';
+  body.textContent = el.dataset.tip;
+  content.append(head, body);
+  return content;
+}
+
 function showTip(el, clientX, clientY, pinned = false) {
   clearTimeout(tipHideTimer);
+  if (tipOwner && tipOwner !== el) tipOwner.removeAttribute('aria-describedby');
   tipOwner = el;
   tipPinned = pinned;
   const openness = el.dataset.key === 'openness_score';
+  const chip = Boolean(el.dataset.chipKind);
   TIP.classList.toggle('open-tip', openness);
+  TIP.classList.toggle('chip-tip', chip);
   if (openness) {
     const td = el.closest('td[data-key="openness_score"]');
     TIP.replaceChildren(opennessLegend(td ? OPENNESS_ROWS.get(td) : null));
   }
+  else if (chip) TIP.replaceChildren(chipTooltip(el));
   else TIP.textContent = el.dataset.tip;
+  if (chip) el.setAttribute('aria-describedby', 'col-tip');
   TIP.classList.add('show');
   tipActive = true;
   const rect = el.getBoundingClientRect();
-  positionTip(clientX ?? rect.left + rect.width / 2,
-              clientY ?? rect.bottom);
+  positionTip(chip ? rect.left + rect.width / 2 : clientX ?? rect.left + rect.width / 2,
+              chip ? rect.bottom : clientY ?? rect.bottom);
 }
 
 function hideTip() {
   clearTimeout(tipHideTimer);
+  tipOwner?.removeAttribute('aria-describedby');
   TIP.classList.remove('show');
   tipActive = false;
   tipPinned = false;
@@ -6600,7 +6672,8 @@ document.addEventListener('mouseout', e => {
   }
 });
 document.addEventListener('mousemove', e => {
-  if (tipActive && !tipPinned && !TIP.classList.contains('open-tip')) positionTip(e.clientX, e.clientY);
+  if (tipActive && !tipPinned && !TIP.classList.contains('open-tip') &&
+      !TIP.classList.contains('chip-tip')) positionTip(e.clientX, e.clientY);
 });
 document.addEventListener('focusin', e => {
   const el = e.target.closest('[data-tip]');
@@ -6612,6 +6685,12 @@ document.addEventListener('focusout', e => {
   if (!tipPinned && TIP.contains(e.target) && !TIP.contains(e.relatedTarget)) hideTip();
 });
 document.addEventListener('click', e => {
+  const chip = e.target.closest('.meta-info-chip');
+  if (chip) {
+    if (tipPinned && tipOwner === chip) hideTip();
+    else showTip(chip, undefined, undefined, true);
+    return;
+  }
   const icon = e.target.closest('.open-item');
   if (icon && NARROW.matches) {
     e.preventDefault();
