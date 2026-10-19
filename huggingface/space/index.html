@@ -39,6 +39,7 @@
       --muted:   #8892aa;
       --accent:  #22c55e;
       --link:    #60a5fa;
+      --pareto-chip: #facc15;
       --pareto-below: #93c5fd;
       --red:     #c60c30;
       --r:       10px;
@@ -57,6 +58,7 @@
       --text:  #1e293b;
       --muted: #64748b;
       --link:  #2563eb;
+      --pareto-chip: #8f6000;
       --pareto-below: #60a5fa;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -460,11 +462,58 @@
       margin-bottom: 10px;
     }
     .filter-summary .filters-toggle { margin-bottom: 0; }
-    .filter-summary .sort-wrap { margin: 0; }
     .filter-summary .search-wrap {
       flex: 1 1 200px;
       min-width: 0;
       max-width: 300px;
+    }
+    .entry-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: 3px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surf);
+    }
+    .entry-switch button {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 9px;
+      border: 0;
+      border-radius: 5px;
+      background: transparent;
+      color: var(--muted);
+      font: inherit;
+      font-size: 12px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .entry-switch .entry-kind-icon { width: 12px; height: 12px; flex: none; }
+    .entry-switch button[aria-pressed="true"] {
+      background: var(--surf2);
+      color: var(--text);
+      box-shadow: inset 0 0 0 1px var(--border);
+    }
+    .entry-switch button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .filters-current-entry { display: none; }
+    .settings-sheet .entry-kind-filter {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surf2);
+    }
+    .settings-sheet .entry-switch { display: flex; width: 100%; }
+    .settings-sheet .entry-switch button { flex: 1; justify-content: center; }
+    @media (min-width: 901px) {
+      .settings-sheet .entry-kind-filter { display: none; }
+    }
+    @media (max-width: 900px) {
+      .filter-summary > .entry-switch { display: none; }
+      .filters-current-entry { display: inline; color: var(--text); }
     }
     .period-toggle {
       display: inline-flex;
@@ -645,7 +694,7 @@
       line-height: 1;
     }
     .c-submitted { width: 96px; white-space: nowrap; font-size: 12px; opacity: 0.6; }
-    .c-model { min-width: 220px; max-width: 360px; }
+    .c-model { min-width: 360px; max-width: 360px; }
     .c-model a {
       display: inline-flex;
       align-items: center;
@@ -757,6 +806,7 @@
     .model-meta {
       display: flex;
       align-items: center;
+      flex-wrap: nowrap;
       gap: 6px;
       margin-top: 3px;
       font-size: 11px;
@@ -765,7 +815,9 @@
     }
     /* Size and licence render as one set of chips. */
     .model-meta .m-size,
-    .model-meta .m-license {
+    .model-meta .m-license,
+    .model-meta .m-entry,
+    .model-meta .m-frontier {
       display: inline-flex;
       align-items: center;
       gap: 4px;
@@ -777,18 +829,40 @@
       white-space: nowrap;
     }
     .model-meta .m-size,
-    .model-meta .m-license {
+    .model-meta .m-license,
+    .model-meta .m-entry,
+    .model-meta .m-frontier {
       border: 1px solid var(--border);
       color: var(--muted);
     }
     .model-meta .m-size { font-variant-numeric: tabular-nums; }
     .model-meta .m-license { max-width: 150px; }
     .model-meta .m-license-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .model-meta .m-entry {
+      border-color: color-mix(in srgb, var(--muted) 26%, var(--border));
+      background: color-mix(in srgb, var(--muted) 8%, var(--surf));
+    }
+    .model-meta .m-entry .entry-kind-icon { width: 11px; height: 11px; flex: none; }
+    .model-meta .m-frontier {
+      color: var(--pareto-chip);
+      border-color: color-mix(in srgb, var(--pareto-chip) 42%, var(--border));
+      background: color-mix(in srgb, var(--pareto-chip) 10%, var(--surf));
+    }
+    .model-meta .m-frontier::before { content: '★'; font-size: 9px; line-height: 1; }
+    .model-meta .meta-info-chip { font-family: inherit; line-height: 1; cursor: help; }
+    .model-meta .meta-info-chip:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
     .meta-icon {
       width: 10px;
       height: 10px;
       flex: 0 0 auto;
       opacity: 0.8;
+    }
+    @media (min-width: 701px) {
+      .model-meta { gap: 4px; }
+      .model-meta .m-size,
+      .model-meta .m-license,
+      .model-meta .m-entry,
+      .model-meta .m-frontier { padding-inline: 5px; }
     }
 
 
@@ -1011,6 +1085,38 @@
       transition: opacity 0.12s;
     }
     #col-tip.show { opacity: 1; }
+    #col-tip.chip-tip {
+      width: min(280px, calc(100vw - 24px));
+      max-width: 280px;
+      padding: 0;
+      overflow: hidden;
+      background: var(--surf);
+      border-color: color-mix(in srgb, var(--link) 30%, var(--border));
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .2);
+    }
+    .chip-tip-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      background: var(--brand-mesh), #09080d;
+      color: #fff;
+    }
+    .chip-tip-icon {
+      display: grid;
+      flex: 0 0 30px;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, .14);
+      font-size: 18px;
+    }
+    .chip-tip-icon svg { width: 17px; height: 17px; }
+    .chip-tip-icon.pareto { color: #ffd25d; }
+    .chip-tip-title { display: block; font-size: 13px; font-weight: 700; }
+    .chip-tip-subtitle { display: block; margin-top: 2px; color: rgba(255, 255, 255, .72); font-size: 11px; }
+    .chip-tip-body { padding: 11px 14px; color: var(--text); }
     dialog.settings-sheet #col-tip { position: absolute; }
 
     /* ── Footer ─────────────────────────────────────────────────────── */
@@ -1948,53 +2054,64 @@
       }
       tbody tr.expanded::after { content: "Hide per-dataset scores \25B4"; }
 
-      /* Sort control, beside Settings. Sorting otherwise lives on the table
-         header, which the card layout hides. */
-      .sort-wrap {
-        display: inline-flex;
-        align-items: stretch;
-        margin: 0 0 10px 8px;
+      /* The card layout hides table headers, so sorting lives in Settings. */
+      .settings-sheet .sort-wrap {
+        display: block;
+        min-height: 0;
+        padding: 12px;
         border: 1px solid var(--border);
-        border-radius: 8px;
+        border-radius: 10px;
+        background: var(--surf2);
+      }
+      .sort-summary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        list-style: none;
+        cursor: pointer;
+      }
+      .sort-summary::-webkit-details-marker { display: none; }
+      .sort-summary .ctl-icon {
+        width: 17px;
+        height: 17px;
+        color: var(--link);
+      }
+      .sort-summary-value { margin-left: auto; color: var(--muted); font-size: 12px; }
+      .sort-summary-chevron { width: 15px; height: 15px; color: var(--muted); transition: transform .2s ease; }
+      .sort-wrap[open] .sort-summary-chevron { transform: rotate(180deg); }
+      .sort-content { display: grid; gap: 10px; margin-top: 12px; }
+      .sort-options, .sort-order {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .sort-order { padding-top: 10px; border-top: 1px solid var(--border); }
+      .sort-choice, .sort-order button {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        min-height: 34px;
+        padding: 6px 9px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
         background: var(--surf);
-        overflow: hidden;
-        vertical-align: top;
-      }
-      .ctl-icon {
-        width: 14px;
-        height: 14px;
-        flex: 0 0 auto;
-        opacity: 0.75;
-      }
-      .sort-wrap .ctl-icon {
-        align-self: center;
-        margin-left: 9px;
-        margin-right: -2px;
         color: var(--muted);
-      }
-      .sort-field {
-        height: 32px;
-        padding: 0 8px;
-        border: none;
-        background: none;
-        color: var(--muted);
-        font-size: 13px;
-        font-weight: 500;
-        font-family: inherit;
+        font: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        text-align: left;
         cursor: pointer;
-        -webkit-appearance: none;
-        appearance: none;
       }
-      .sort-field:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-      .sort-dir {
-        width: 30px;
-        border: none;
-        border-left: 1px solid var(--border);
-        background: none;
+      .sort-order button { justify-content: center; text-align: center; }
+      .sort-choice-icon { width: 14px; height: 14px; flex: none; }
+      .sort-choice[aria-pressed="true"], .sort-order button[aria-pressed="true"] {
+        border-color: color-mix(in srgb, var(--link) 45%, var(--border));
+        background: color-mix(in srgb, var(--link) 8%, var(--surf));
         color: var(--text);
-        font-size: 14px;
-        line-height: 1;
-        cursor: pointer;
+      }
+      .sort-summary:focus-visible, .sort-choice:focus-visible, .sort-order button:focus-visible {
+        outline: 2px solid var(--link);
+        outline-offset: 2px;
       }
 
       /* Confidence intervals go under the value, not beside it. */
@@ -2342,9 +2459,9 @@
   <!-- Analysis tab -->
   <div id="tab-analysis" class="tab-pane chart-page">
     <header class="page-hero">
-      <p class="page-eyebrow">Model tradeoffs</p>
+      <p class="page-eyebrow">Size tradeoffs</p>
       <h2>Pareto frontier</h2>
-      <p class="page-intro">See how scores change with model size. Dark blue points mark open models on the frontier, with no smaller, better-scoring open alternative on the selected metric; lighter blue points fall below it.</p>
+      <p class="page-intro">Compare score and size. Models appear by default. In All, the blue frontier spans Models and Systems; leaderboard Pareto badges compare each type separately. System size may omit extra components or hosted compute.</p>
     <div class="toolbar">
       <div class="tog-wrap">
         <span class="tog-label">Metric</span>
@@ -2358,8 +2475,8 @@
         <button class="tog-btn" id="tog-analysis-bt">Win Rate</button>
       </div>
       <button class="ci-btn" id="tog-ci-analysis" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
-      <button class="ci-btn" id="tog-open-analysis" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. The frontier is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
-      <label class="size-filter" title="Models without a published parameter count are hidden when a size limit is selected.">Max size
+      <button class="ci-btn" id="tog-open-analysis" type="button" aria-pressed="false" data-tip="Show only entries with downloadable weights. Hides hosted/API systems, which can change server-side and cannot be run locally. The frontier is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <label class="size-filter" title="Entries without a published parameter count are hidden when a size limit is selected.">Max size
         <select id="size-analysis" aria-label="Maximum model size">
           <option value="">All sizes</option>
           <option value="0.1">≤ 0.1B</option>
@@ -2383,8 +2500,8 @@
     </div>
     </header>
     <div class="chart-section">
-      <h3 id="analysis-chart-title"><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg></span><span class="chart-title-text">Performance vs. Model Size</span></h3>
-      <p class="chart-subtitle" id="pareto-cutoff-note">Models above 30% mean WER are omitted from this plot and its CSV; change the limit in Settings.</p>
+      <h3 id="analysis-chart-title"><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg></span><span class="chart-title-text">Performance vs. Size</span></h3>
+      <p class="chart-subtitle" id="pareto-cutoff-note">Entries above 30% mean WER are omitted from this plot and its CSV; change the limit in Settings.</p>
       <div class="chart-with-panel">
         <div id="size-chart-wrap-analysis" class="chart-plot-wrap">
           <svg id="size-chart-analysis" style="width:100%;display:block;overflow:visible"></svg>
@@ -2676,6 +2793,18 @@
     </section>
 
     <section class="method-card">
+    <h3>Models and systems</h3>
+    <p>The entry switch shows all results, single-checkpoint <strong>Models</strong>
+    decoded greedily or with plain beam search, or <strong>Systems</strong> that add
+    a language model or reranker, combine checkpoints, or use a hosted API.
+    The small label by each name describes the submitted setup. A model may have
+    one result of each type;
+    the two scores come from separate evaluations. The Pareto chip compares open
+    entries within their own category under the selected metric, ranking method,
+    and filters.</p>
+    </section>
+
+    <section class="method-card">
     <h3>Metric</h3>
     <p><strong>WER</strong> (Word Error Rate, %) and
     <strong>CER</strong> (Character Error Rate, %) — lower is better.</p>
@@ -2750,7 +2879,8 @@
         (<code>&lt;dataset&gt;.jsonl</code> + <code>meta.json</code>), one
         <code>{"id", "reference", "hypothesis"}</code> per line. Lets reviewers inspect actual
         transcriptions and enables re-scoring under future normalisers.</li>
-      <li>An entry in <code>scripts/model_metadata.json</code>: the release date, plus links to the
+      <li>An entry in <code>scripts/model_metadata.json</code>: the Model/System type,
+        release date, plus links to the
         training code, training data, model card and paper, or
         <code>null</code> where there is none
         (criteria in <a href="https://github.com/Rye-A1/danish-asr-leaderboard/blob/main/CONTRIBUTING.md#openness-annotations" target="_blank" rel="noopener">CONTRIBUTING.md</a>).</li>
@@ -2928,7 +3058,7 @@
   </div>
 </footer>
 
-<div id="col-tip"></div>
+<div id="col-tip" role="tooltip"></div>
 <div id="chart-tip"></div>
 <div id="model-preview" class="model-preview" role="tooltip" hidden></div>
 <dialog id="openness-drawer" class="openness-drawer" aria-labelledby="openness-drawer-title">
@@ -2950,15 +3080,20 @@
 const MEDALS = ['🥇','🥈','🥉'];
 let showCI = false;
 let openOnly = false;   // hide hosted/API (proprietary) models — opt-in
+let entryKind = 'all';   // Leaderboard and Over Time share this selection
+let paretoEntryKind = 'model'; // size tradeoffs default to single-checkpoint models
 let maxSizeB = null;    // billions of parameters; null includes unknown sizes
 const requiredOpenness = new Set();
 let onOpennessFilterChanged = null;
+let onEntryKindChanged = null;
+let onParetoEntryKindChanged = null;
 
 // Rows for a tab, honouring the shared access, size, and openness filters.
 // A size limit excludes unknown sizes; openness requires linked evidence.
-function visible(rows) {
+function visible(rows, kind = entryKind) {
   return rows.filter(r => {
     if (openOnly && r.access === 'proprietary') return false;
+    if (kind !== 'all' && r.entry_kind !== kind) return false;
     if (maxSizeB != null) {
       const size = parseFloat(r.size);
       if (!Number.isFinite(size) || size > maxSizeB) return false;
@@ -3062,6 +3197,8 @@ const LEADERBOARD_CSV_FIELDS = [
   ['rank', 'rank'], ['rank_metric', 'rank_metric'], ['rank_method', 'rank_method'],
   ['rank_score', 'rank_score'],
   ['model', 'model'], ['model_url', 'url'], ['access', 'access'], ['license', 'license'],
+  ['entry_kind', 'entry_kind'], ['base_model', 'base_model'], ['configuration', 'configuration'],
+  ['pareto_optimal', 'pareto_optimal'],
   ['size_b', 'size_b'], ['mean_wer_percent', 'mean_wer'],
   ['mean_cer_percent', 'mean_cer'], ['speed_x', 'speed_x'],
   ['hf_downloads', 'hf_downloads'], ['openness_score', 'openness_score'],
@@ -3112,6 +3249,7 @@ function makeLeaderboardCsv(data, viewRows, metric, method) {
       rank_score: method === 'mean' ? rankingRow?.[`mean_${metric}`]
         : rankingRow?.[method === 'borda' ? 'borda_score' : 'bt_score'],
       model: name, size_b: Number.isFinite(size) ? size : null,
+      pareto_optimal: Boolean(rankingRow?.pareto_optimal),
       ...Object.fromEntries(Object.entries(model.openness || {})
         .map(([key, url]) => [`openness_${key}`, url])),
     };
@@ -3363,7 +3501,9 @@ function positionModelPreview(link) {
 
 function modelSummary(row) {
   const size = Number.parseFloat(row.size);
-  return (row.access === 'open' ? 'Open weights' : 'Hosted API')
+  const kind = row.entry_kind === 'system' ? 'System' : 'Model';
+  return kind + (row.configuration ? ` · ${row.configuration}` : '')
+    + ' · ' + (row.access === 'open' ? 'Open weights' : 'Hosted API')
     + (Number.isFinite(size) ? ` · ${row.size}B parameters` : '');
 }
 
@@ -3540,6 +3680,33 @@ function buildRow(row, cols, maxVals) {
         ? 'NVIDIA Open Model License; additional model terms apply'
         : 'Licence: ' + (row.license || 'not declared');
       meta.appendChild(lic);
+
+      const entry = document.createElement('button');
+      entry.type = 'button';
+      entry.className = 'm-entry meta-info-chip';
+      const kind = row.entry_kind === 'system' ? 'System' : 'Model';
+      entry.append(ICON_ENTRY_KIND(row.entry_kind),
+        row.configuration ? `${kind} · ${row.configuration}` : kind);
+      entry.dataset.chipKind = row.entry_kind === 'system' ? 'system' : 'model';
+      entry.dataset.chipSubtitle = row.configuration || 'Single checkpoint';
+      entry.dataset.tip = row.entry_kind === 'system'
+        ? 'A setup with an added language model, multiple checkpoints, reranking, or hosted API serving.'
+        : 'A single checkpoint with greedy or plain beam decoding. The badge shows its decoder when known.';
+      meta.appendChild(entry);
+
+      if (row.pareto_optimal) {
+        const frontier = document.createElement('button');
+        frontier.type = 'button';
+        frontier.className = 'm-frontier meta-info-chip';
+        frontier.textContent = 'Pareto';
+        frontier.dataset.chipKind = 'pareto';
+        const group = row.entry_kind === 'system' ? 'system' : 'model';
+        frontier.dataset.chipTitle = `${kind} Pareto frontier`;
+        frontier.dataset.chipSubtitle = 'Open · size vs. score';
+        frontier.dataset.tip = `Compared only with open ${group}s, even in All. No smaller ${group} matches or beats its score. Updates with the metric, ranking method, and filters.`
+          + (group === 'system' ? ' Published size may omit extra components.' : '');
+        meta.appendChild(frontier);
+      }
 
       td.appendChild(meta);
 
@@ -3794,6 +3961,13 @@ const settingsLabels = [];
 function refreshSettingsButtons() {
   settingsLabels.forEach(label => label());
 }
+function syncEntrySwitches() {
+  document.querySelectorAll('.entry-switch button').forEach(button => {
+    const kind = button.closest('.tab-pane')?.id === 'tab-analysis' ? paretoEntryKind : entryKind;
+    button.setAttribute('aria-pressed', String(button.dataset.entryKind === kind));
+  });
+  refreshSettingsButtons();
+}
 function initFilterToggles() {
   for (const bar of document.querySelectorAll('.toolbar')) {
     // Scoped to the pane rather than previousElementSibling: the sort control
@@ -3809,7 +3983,9 @@ function initFilterToggles() {
     btn.className = 'filters-toggle';
     const count = document.createElement('span');
     count.className = 'filters-count';
-    btn.append(ICON_FILTER(), 'Settings', count);
+    const currentEntry = document.createElement('span');
+    currentEntry.className = 'filters-current-entry';
+    btn.append(ICON_FILTER(), 'Settings', currentEntry, count);
 
     const paneName = { wer: 'Leaderboard', analysis: 'Pareto', time: 'Over Time' }[paneFor?.id.replace('tab-', '')] || 'View';
     const sheet = document.createElement('dialog');
@@ -3863,7 +4039,14 @@ function initFilterToggles() {
       bar.querySelectorAll('.size-filter select').forEach(select => {
         if (select.value !== (select.dataset.default ?? '')) n++;
       });
+      if (paneFor?.id === 'tab-wer') {
+        const table = paneFor.querySelector('table');
+        const sort = table?.sortState?.();
+        const defaultDir = SORT_FIELDS.find(field => field.key === table?.defaultSortKey)?.dir ?? 1;
+        if (sort?.key && (sort.key !== table.defaultSortKey || sort.dir !== defaultDir)) n++;
+      }
       if (requiredOpenness.size) n++;
+      if (paneFor?.id === 'tab-analysis' ? paretoEntryKind !== 'model' : entryKind !== 'all') n++;
       return n;
     };
 
@@ -3871,11 +4054,14 @@ function initFilterToggles() {
       const open = sheet.open;
       btn.setAttribute('aria-expanded', String(open));
       const n = activeCount();
+      const selectedKind = paneFor?.id === 'tab-analysis' ? paretoEntryKind : entryKind;
+      const selectedLabel = { all: 'All', model: 'Models', system: 'Systems' }[selectedKind];
+      currentEntry.textContent = `· ${selectedLabel}`;
       count.textContent = n ? String(n) : '';
       btn.classList.toggle('has-filters', n > 0);
       clear.hidden = n === 0;
       btn.setAttribute('aria-label',
-        n ? 'Settings, ' + n + ' active' : 'Settings');
+        `Settings, ${selectedLabel}${n ? ', ' + n + ' active' : ''}`);
     };
 
     btn.addEventListener('click', () => {
@@ -3917,11 +4103,28 @@ function initFilterToggles() {
         syncOpennessFilterControls();
         onOpennessFilterChanged?.();
       }
+      if (paneFor?.id === 'tab-analysis' && paretoEntryKind !== 'model') {
+        paretoEntryKind = 'model';
+        syncEntrySwitches();
+        onParetoEntryKindChanged?.();
+      } else if (paneFor?.id !== 'tab-analysis' && entryKind !== 'all') {
+        entryKind = 'all';
+        syncEntrySwitches();
+        onEntryKindChanged?.();
+      }
+      if (paneFor?.id === 'tab-wer') {
+        const table = paneFor.querySelector('table');
+        const sort = table?.sortState?.();
+        const defaultDir = SORT_FIELDS.find(field => field.key === table?.defaultSortKey)?.dir ?? 1;
+        if (sort?.key && (sort.key !== table.defaultSortKey || sort.dir !== defaultDir))
+          bar.querySelector(`.sort-choice[data-sort-key="${table.defaultSortKey}"]`)?.click();
+      }
       refreshSettingsButtons();
     });
     sheet.addEventListener('click', event => { if (event.target === sheet) sheet.close(); });
     sheet.addEventListener('close', () => {
       sheet.querySelectorAll('.openness-filter details[open]').forEach(details => { details.open = false; });
+      sheet.querySelectorAll('.sort-wrap[open]').forEach(details => { details.open = false; });
       TIP.classList.remove('show');
       tipActive = false;
       document.body.append(TIP);
@@ -3933,6 +4136,42 @@ function initFilterToggles() {
     bar.addEventListener('click', () => setTimeout(label, 0));
 
     summary.append(btn);
+    const createEntrySwitch = () => {
+      const entrySwitch = document.createElement('div');
+      entrySwitch.className = 'entry-switch';
+      entrySwitch.setAttribute('role', 'group');
+      entrySwitch.setAttribute('aria-label', 'Entry type');
+      for (const [kind, text] of [['all', 'All'], ['model', 'Models'], ['system', 'Systems']]) {
+        const choice = document.createElement('button');
+        choice.type = 'button';
+        choice.dataset.entryKind = kind;
+        if (kind !== 'all') choice.append(ICON_ENTRY_KIND(kind));
+        choice.append(text);
+        choice.setAttribute('aria-pressed', String(kind === (paneFor?.id === 'tab-analysis' ? paretoEntryKind : entryKind)));
+        choice.addEventListener('click', () => {
+          if (paneFor?.id === 'tab-analysis') {
+            if (paretoEntryKind === kind) return;
+            paretoEntryKind = kind;
+          } else {
+            if (entryKind === kind) return;
+            entryKind = kind;
+          }
+          syncEntrySwitches();
+          if (paneFor?.id === 'tab-analysis') onParetoEntryKindChanged?.();
+          else onEntryKindChanged?.();
+        });
+        entrySwitch.append(choice);
+      }
+      return entrySwitch;
+    };
+    summary.append(createEntrySwitch());
+    const entryField = document.createElement('div');
+    entryField.className = 'entry-kind-filter';
+    const entryTitle = document.createElement('span');
+    entryTitle.className = 'settings-field-title';
+    entryTitle.append(_icon(SYSTEM_KIND_PATHS, 'settings-icon'), 'Entry type');
+    entryField.append(entryTitle, createEntrySwitch());
+    bar.prepend(entryField);
     if (paneFor?.id === 'tab-time') summary.append(document.getElementById('time-period-toggle'));
     if (searchWrap) summary.append(searchWrap);
     const download = bar.querySelector('.download-csv');
@@ -4030,6 +4269,10 @@ const LICENSE_PATHS = [
 const ICON_SIZE = () => _icon(WEIGHTS_PATHS, 'meta-icon');
 const ICON_LICENSE = () => _icon(LICENSE_PATHS, 'meta-icon');
 const ICON_SORT   = () => _icon(['M3 6h13', 'M3 12h9', 'M3 18h5'], 'ctl-icon');
+const MODEL_KIND_PATHS = ['M5 5h14v14H5z', 'M10 10h4v4h-4z'];
+const SYSTEM_KIND_PATHS = ['M2 5h7v7H2z', 'M15 12h7v7h-7z', 'M9 8.5h5v7h1'];
+const ICON_ENTRY_KIND = kind => _icon(
+  kind === 'system' ? SYSTEM_KIND_PATHS : MODEL_KIND_PATHS, 'entry-kind-icon');
 
 /* Openness criteria, in the order update_space.py emits them. */
 const OPENNESS = [
@@ -4048,103 +4291,100 @@ const OPENNESS = [
      'M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z'], 'open-icon')],
 ];
 
-/* `dir` is the direction that puts the best model first, applied when the
-   field is picked; the arrow button flips it. `always` marks a field that is
-   sortable without being a visible column -- size never is, and win rate and
-   avg. rank only appear under their own ranking methods. Rank itself is gone:
-   under the default method it is just Mean WER order under another name. */
+/* `dir` puts the best model first. `always` marks a field only visible under
+   its ranking method. Rank itself is Mean WER under the default method. */
 const SORT_FIELDS = [
-  { key: 'mean_wer',    label: 'Mean WER',  dir:  1 },
-  { key: 'mean_cer',    label: 'Mean CER',  dir:  1 },
-  { key: 'speed_x',     label: 'Speed',     dir: -1 },
-  { key: 'hf_downloads', label: 'Popularity', dir: -1 },
-  { key: 'openness_score', label: 'Openness', dir: -1 },
-  { key: 'size',        label: 'Size',      dir: -1, always: true,
-    read: r => parseFloat(r.size) },
-  { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt'    },
-  { key: 'borda_score', label: 'Avg. Rank', dir:  1, always: true, method: 'borda' },
+  { key: 'mean_wer',    label: 'Mean WER',  dir:  1, icon: ['M3 6h18', 'M3 12h13', 'M3 18h8'] },
+  { key: 'mean_cer',    label: 'Mean CER',  dir:  1, icon: ['M4 5h16v14H4z', 'M10 5v14', 'M15 5v14'] },
+  { key: 'speed_x',     label: 'Speed',     dir: -1, icon: ['M13 2 4 13h7l-1 9 10-12h-7l1-8z'] },
+  { key: 'hf_downloads', label: 'Popularity', dir: -1, icon: ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8', 'M22 21v-2a4 4 0 0 0-3-3.87'] },
+  { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt', icon: ['M8 21h8', 'M12 17v4', 'M7 4h10v5a5 5 0 0 1-10 0V4z', 'M5 6H3v2a4 4 0 0 0 4 4', 'M19 6h2v2a4 4 0 0 1-4 4'] },
+  { key: 'borda_score', label: 'Avg. Rank', dir:  1, always: true, method: 'borda', icon: ['M4 20v-7', 'M10 20V8', 'M16 20V4', 'M2 20h20'] },
 ];
 
 function initSortControls() {
   for (const bar of document.querySelectorAll('.toolbar')) {
     const pane = bar.closest('.tab-pane');
     const table = pane && pane.querySelector('table');
-    // Same reason as above -- find both by pane, not by sibling position.
-    const btn = pane && pane.querySelector('.filters-toggle');
-    if (!table || !btn || !table.sortBy) continue;
-    const existing = pane.querySelector('.sort-wrap');
-
-    const wrap = existing || document.createElement('div');
+    if (!table || !pane.querySelector('.filters-toggle') || !table.sortBy) continue;
+    const existing = bar.querySelector('.sort-wrap');
+    const wrap = document.createElement('details');
     wrap.className = 'sort-wrap';
-    wrap.textContent = '';
-
-    const sel = document.createElement('select');
-    sel.className = 'sort-field';
-    sel.setAttribute('aria-label', 'Sort by');
-    for (const f of SORT_FIELDS) {
-      if (!f.always && !table.querySelector(`thead th[data-key="${f.key}"]`)) continue;
-      const o = document.createElement('option');
-      o.value = f.key; o.textContent = f.label;
-      sel.appendChild(o);
+    wrap.open = existing?.open ?? false;
+    const summary = document.createElement('summary');
+    summary.className = 'sort-summary';
+    const title = document.createElement('span');
+    title.className = 'settings-field-title';
+    title.textContent = 'Sort by';
+    const summaryValue = document.createElement('span');
+    summaryValue.className = 'sort-summary-value';
+    summary.append(ICON_SORT(), title, summaryValue,
+      _icon(['m6 9 6 6 6-6'], 'sort-summary-chevron'));
+    const content = document.createElement('div');
+    content.className = 'sort-content';
+    const choices = document.createElement('div');
+    choices.className = 'sort-options';
+    choices.setAttribute('role', 'group');
+    choices.setAttribute('aria-label', 'Sort by');
+    const fields = SORT_FIELDS.filter(f => f.always || table.querySelector(`thead th[data-key="${f.key}"]`));
+    for (const f of fields) {
+      const choice = document.createElement('button');
+      choice.type = 'button';
+      choice.className = 'sort-choice';
+      choice.dataset.sortKey = f.key;
+      choice.append(_icon(f.icon, 'sort-choice-icon'), f.label);
+      choices.appendChild(choice);
     }
-
-    const dir = document.createElement('button');
-    dir.type = 'button';
-    dir.className = 'sort-dir';
+    const order = document.createElement('div');
+    order.className = 'sort-order';
+    order.setAttribute('role', 'group');
+    order.setAttribute('aria-label', 'Sort direction');
+    for (const [value, text] of [[1, 'Ascending ↑'], [-1, 'Descending ↓']]) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.sortDir = value;
+      button.textContent = text;
+      order.appendChild(button);
+    }
+    content.append(choices, order);
+    wrap.append(summary, content);
+    if (existing) existing.replaceWith(wrap);
+    else bar.prepend(wrap);
 
     const paneKey = pane.id.replace(/^tab-/, '');
     const field = k => SORT_FIELDS.find(f => f.key === k);
-    /* Switching ranking method re-renders the table, which rebuilds this very
-       control, so these are queried fresh rather than captured. The <table>
-       node itself survives -- renderTable only replaces its contents -- so
-       `table.sortBy` is always the current closure. */
-    const curSel = () => pane.querySelector('.sort-field');
-    const curDir = () => pane.querySelector('.sort-dir');
-    /* Read the direction off the table rather than off header classes: the
-       sorted field may have no header to read. Falls back to the field's own
-       preferred direction while some other field is the active sort. */
-    const state = k => {
+    const state = () => {
       const st = table.sortState();
-      return st.key === k ? st.dir : (field(k)?.dir ?? 1);
+      const key = fields.some(f => f.key === st.key) ? st.key : table.defaultSortKey;
+      return { key, dir: st.key === key ? st.dir : (field(key)?.dir ?? 1) };
     };
     const sync = () => {
-      const s = curSel(), d = curDir();
-      if (!s || !d) return;
-      const cur = state(s.value);
-      d.textContent = cur === -1 ? '↓' : '↑';
-      d.setAttribute('aria-label',
-        cur === -1 ? 'Sort descending, switch to ascending' : 'Sort ascending, switch to descending');
+      const current = state();
+      bar.querySelector('.sort-summary-value').textContent = `${field(current.key)?.label || 'Mean WER'} ${current.dir === 1 ? '↑' : '↓'}`;
+      pane.querySelectorAll('.sort-choice').forEach(button =>
+        button.setAttribute('aria-pressed', String(button.dataset.sortKey === current.key)));
+      pane.querySelectorAll('.sort-order button').forEach(button =>
+        button.setAttribute('aria-pressed', String(Number(button.dataset.sortDir) === current.dir)));
+      refreshSettingsButtons();
     };
     const applySort = (key, want) => {
       const f = field(key);
       if (!f) return;
-      /* Avg. Rank and Win Rate are ranking methods as well as sort keys, so
-         selecting one switches the table to that method. Two reasons: the
-         column becomes visible, instead of sorting by a number the reader
-         cannot see -- and this control can no longer disagree with the
-         "Rank by" toggle about which method is active. */
-      /* Switching method re-renders the table, which replaces this select --
-         taking the keyboard user's focus with it. Put it back. */
-      const hadFocus = document.activeElement === curSel();
+      /* These fields also switch ranking method so their score column is
+         visible. That re-renders the controls; query the new buttons in sync. */
       if (f.method) {
         const tog = document.getElementById(`tog-${paneKey}-${f.method}`);
         if (tog && !tog.classList.contains('active')) tog.click();
       }
-      const s = curSel();
-      if (s) {
-        s.value = key;
-        if (hadFocus && document.activeElement !== s) s.focus();
-      }
       table.sortBy(key, want, f.read);
       sync();
     };
-
-    /* Picking a field sorts best-first; the arrow flips whatever is current. */
-    sel.addEventListener('change', () => applySort(sel.value, field(sel.value)?.dir ?? 1));
-    dir.addEventListener('click', () => applySort(sel.value, state(sel.value) === 1 ? -1 : 1));
-
-    wrap.append(ICON_SORT(), sel, dir);
-    if (!existing) btn.parentNode.insertBefore(wrap, btn.nextSibling);
+    choices.querySelectorAll('.sort-choice').forEach(button => button.addEventListener('click', () => {
+      const key = button.dataset.sortKey;
+      applySort(key, field(key)?.dir ?? 1);
+    }));
+    order.querySelectorAll('button').forEach(button => button.addEventListener('click', () =>
+      applySort(state().key, Number(button.dataset.sortDir))));
     sync();
   }
 }
@@ -4188,7 +4428,7 @@ if (document.readyState === 'loading') {
 }
 document.addEventListener('click', ev => {
   if (!NARROW.matches) return;
-  if (ev.target.closest('a, .open-item')) return;
+  if (ev.target.closest('a, .open-item, .meta-info-chip')) return;
   const tr = ev.target.closest('tbody tr');
   if (!tr || !tr.closest('.table-scroll')) return;
   tr.classList.toggle('expanded');
@@ -4196,6 +4436,9 @@ document.addEventListener('click', ev => {
 
 function renderTable(el, rows, cols, maxVals) {
   el.innerHTML = '';
+  el.defaultSortKey = cols.some(col => col.key === 'bt_score') ? 'bt_score'
+    : cols.some(col => col.key === 'borda_score') ? 'borda_score'
+    : cols.find(col => col.key === 'mean_wer' || col.key === 'mean_cer')?.key;
   const thead = el.createTHead();
   thead.appendChild(buildHead(cols));
   const tbody = el.createTBody();
@@ -4631,6 +4874,16 @@ function sizeChartPoints(rows, metric, method) {
     .filter(({ sz, yv }) => Number.isFinite(sz) && sz > 0 && Number.isFinite(yv));
 }
 
+function markParetoRows(rows, metric, method) {
+  const points = sizeChartPoints(rows, metric, method).filter(p => p.r.access === 'open');
+  const frontier = new Set();
+  for (const kind of ['model', 'system']) {
+    const group = points.filter(p => (p.r.entry_kind === 'system' ? 'system' : 'model') === kind);
+    computePareto(group, method === 'bt').forEach(p => frontier.add(p.r));
+  }
+  rows.forEach(row => { row.pareto_optimal = frontier.has(row); });
+}
+
 const PARETO_CSV_FIELDS = [
   ['model', 'model'], ['model_url', 'url'], ['access', 'access'],
   ['size_b', 'size_b'], ['metric', 'metric'], ['rank_method', 'rank_method'],
@@ -4658,9 +4911,11 @@ function updateParetoPanel(pareto, tab, yLbl, method) {
   const panel = document.getElementById(`pareto-panel-${tab}`);
   if (!panel) return;
   const fmt = v => method === 'borda' ? v.toFixed(1) : method === 'bt' ? v.toFixed(1) + '%' : v.toFixed(2) + '%';
-  panel.innerHTML = `<div class="pareto-panel-title" data-tip="Open models on the Pareto frontier: no other open model is both smaller and better on the selected metric. Sorted by model size from smallest to largest.">Pareto Optimal <span class="i-icon" aria-hidden="true">i</span></div>`;
+  const kind = tab === 'analysis' ? paretoEntryKind : entryKind;
+  const group = kind === 'all' ? 'Models and Systems together' : kind === 'system' ? 'Systems only' : 'Models only';
+  panel.innerHTML = `<div class="pareto-panel-title" data-tip="One frontier compares open ${group}. No other open entry in this selection is both smaller and better on the selected metric. Sorted by size.">Pareto Optimal <span class="i-icon" aria-hidden="true">i</span></div>`;
   if (!pareto.length) {
-    panel.innerHTML += `<p style="color:var(--muted);font-size:11px;margin-top:4px">No open models with size data.</p>`;
+    panel.innerHTML += `<p style="color:var(--muted);font-size:11px;margin-top:4px">No open entries with size data.</p>`;
     return;
   }
   for (const p of pareto) {
@@ -4771,7 +5026,7 @@ function _drawChart(rows, method, tab) {
     }
   }
 
-  /* ── Pareto frontier (open models only) ── */
+  /* ── Pareto frontier (open entries in this chart's selected view) ── */
   const openPts = pts.filter(p => p.r.access === 'open');
   const pareto  = computePareto(openPts, yUp);
   const frontierPoints = new Set(pareto);
@@ -5669,6 +5924,9 @@ function setupCompare(data) {
 
     renderHeader('compare-head', rows);
     document.getElementById('compare-summary-body').replaceChildren();
+    addSummaryRow('compare-summary-body', 'Entry', rows.map(row =>
+      (row.entry_kind === 'system' ? 'System' : 'Model')
+      + (row.configuration ? ` · ${row.configuration}` : '')));
     addSummaryRow('compare-summary-body', 'Parameters', rows.map(row =>
       Number.isFinite(parseFloat(row.size)) ? `${row.size}B` : '—'));
     addSummaryRow('compare-summary-body', 'Weights', rows.map(row =>
@@ -5838,6 +6096,32 @@ async function init() {
     /* CER rows have per-dataset CER cols; copy their CI to WER rows by name */
     const cerCIMap = new Map(data.cer.map(r => [r.name, r.mean_cer_ci]));
     data.wer.forEach(r => { r.mean_cer_ci = cerCIMap.get(r.name) ?? null; });
+    const rankEntryPool = (rows, datasetCols, meanKey) => {
+      [...rows].sort((a, b) => (a[meanKey] ?? Infinity) - (b[meanKey] ?? Infinity))
+        .forEach((row, i) => { row.rank = i + 1; });
+      addBordaRanks(rows, datasetCols);
+      if (rows.length > 1) {
+        addBradleyTerry(rows, datasetCols);
+        addBootstrapCI(rows, datasetCols, meanKey);
+      } else if (rows.length === 1) {
+        rows[0].bt_score = null;
+        rows[0].bt_score_ci = null;
+        rows[0].bt_delta = null;
+      }
+    };
+    const analysisPoolCache = new Map();
+    const analysisPool = metric => {
+      const key = `${metric}:${paretoEntryKind}`;
+      if (!analysisPoolCache.has(key)) {
+        const isWer = metric === 'wer';
+        const rows = (isWer ? data.wer : data.cer)
+          .filter(r => paretoEntryKind === 'all' || r.entry_kind === paretoEntryKind)
+          .map(r => ({...r}));
+        rankEntryPool(rows, isWer ? WER_DS_COLS : CER_DS_COLS, isWer ? 'mean_wer' : 'mean_cer');
+        analysisPoolCache.set(key, rows);
+      }
+      return analysisPoolCache.get(key);
+    };
 
     const maxVals = {
       wer: Math.max(...data.wer.map(r => r.mean_wer || 0)),
@@ -6018,9 +6302,9 @@ async function init() {
       analysisMetric = metric;
       const isWer = metric === 'wer';
       const limit = werLimit(paretoWerLimit);
-      const rows = chartWerRows(isWer ? _chartState.wer.rows : _chartState.cer.rows, limit);
+      const rows = chartWerRows(visible(analysisPool(metric), paretoEntryKind), limit);
       document.getElementById('pareto-cutoff-note').textContent = Number.isFinite(limit)
-        ? `Models above ${limit}% mean WER are omitted from this plot and its CSV; change the limit in Settings.`
+        ? `Entries above ${limit}% mean WER are omitted from this plot and its CSV; change the limit in Settings.`
         : 'No mean WER limit is applied to this plot or its CSV.';
       _chartState.analysis = {
         ..._chartState.analysis,
@@ -6031,7 +6315,7 @@ async function init() {
       document.getElementById('tog-analysis-wer').classList.toggle('active', isWer);
       document.getElementById('tog-analysis-cer').classList.toggle('active', !isWer);
       document.querySelector('#analysis-chart-title .chart-title-text').textContent =
-        `Performance vs. Model Size (${isWer ? 'WER' : 'CER'})`;
+        `Performance vs. Size (${isWer ? 'WER' : 'CER'})`;
       document.getElementById('download-pareto').disabled =
         sizeChartPoints(rows, metric, methodFor(metric)).length < 2;
       renderSizeChart(rows, methodFor(metric), 'analysis');
@@ -6044,6 +6328,7 @@ async function init() {
                    : method === 'bt'    ? visible(data.wer).sort((a, b) => b.bt_score - a.bt_score)
                    :                     visible(data.wer).sort((a, b) => (a.mean_wer ?? Infinity) - (b.mean_wer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
+      markParetoRows(sorted, 'wer', method);
       renderSizeChart(sorted, method, 'wer');
       if (lbMetric === 'wer') {
         renderTable(werEl, sorted, getWerCols(method), maxVals);
@@ -6060,6 +6345,7 @@ async function init() {
                    : method === 'bt'    ? visible(data.cer).sort((a, b) => b.bt_score - a.bt_score)
                    :                     visible(data.cer).sort((a, b) => (a.mean_cer ?? Infinity) - (b.mean_cer ?? Infinity));
       sorted.forEach((r, i) => { r.rank = i + 1; });
+      markParetoRows(sorted, 'cer', method);
       renderSizeChart(sorted, method, 'cer');
       if (lbMetric === 'cer') {
         renderTable(werEl, sorted, getCerCols(method), maxVals);
@@ -6073,6 +6359,13 @@ async function init() {
       applyWer();
       applyCer();
     };
+    onEntryKindChanged = () => {
+      rankEntryPool(data.wer.filter(r => entryKind === 'all' || r.entry_kind === entryKind), WER_DS_COLS, 'mean_wer');
+      rankEntryPool(data.cer.filter(r => entryKind === 'all' || r.entry_kind === entryKind), CER_DS_COLS, 'mean_cer');
+      applyWer();
+      applyCer();
+    };
+    onParetoEntryKindChanged = () => applyAnalysis();
 
     /* Rank by: one group per tab, each acting on the metric that tab shows. The
        method is stored per metric, so a choice made on Pareto while it displays
@@ -6336,26 +6629,58 @@ function positionTip(clientX, clientY) {
   TIP.style.top = y + 'px';
 }
 
+function chipTooltip(el) {
+  const kind = el.dataset.chipKind;
+  const content = document.createElement('div');
+  content.className = 'chip-tip-content';
+  const head = document.createElement('div');
+  head.className = 'chip-tip-head';
+  const icon = document.createElement('span');
+  icon.className = 'chip-tip-icon' + (kind === 'pareto' ? ' pareto' : '');
+  icon.setAttribute('aria-hidden', 'true');
+  icon.append(kind === 'pareto' ? '★' : ICON_ENTRY_KIND(kind));
+  const heading = document.createElement('div');
+  const title = document.createElement('strong');
+  title.className = 'chip-tip-title';
+  title.textContent = kind === 'pareto' ? el.dataset.chipTitle : kind === 'system' ? 'System' : 'Model';
+  const subtitle = document.createElement('span');
+  subtitle.className = 'chip-tip-subtitle';
+  subtitle.textContent = el.dataset.chipSubtitle;
+  heading.append(title, subtitle);
+  head.append(icon, heading);
+  const body = document.createElement('div');
+  body.className = 'chip-tip-body';
+  body.textContent = el.dataset.tip;
+  content.append(head, body);
+  return content;
+}
+
 function showTip(el, clientX, clientY, pinned = false) {
   clearTimeout(tipHideTimer);
+  if (tipOwner && tipOwner !== el) tipOwner.removeAttribute('aria-describedby');
   tipOwner = el;
   tipPinned = pinned;
   const openness = el.dataset.key === 'openness_score';
+  const chip = Boolean(el.dataset.chipKind);
   TIP.classList.toggle('open-tip', openness);
+  TIP.classList.toggle('chip-tip', chip);
   if (openness) {
     const td = el.closest('td[data-key="openness_score"]');
     TIP.replaceChildren(opennessLegend(td ? OPENNESS_ROWS.get(td) : null));
   }
+  else if (chip) TIP.replaceChildren(chipTooltip(el));
   else TIP.textContent = el.dataset.tip;
+  if (chip) el.setAttribute('aria-describedby', 'col-tip');
   TIP.classList.add('show');
   tipActive = true;
   const rect = el.getBoundingClientRect();
-  positionTip(clientX ?? rect.left + rect.width / 2,
-              clientY ?? rect.bottom);
+  positionTip(chip ? rect.left + rect.width / 2 : clientX ?? rect.left + rect.width / 2,
+              chip ? rect.bottom : clientY ?? rect.bottom);
 }
 
 function hideTip() {
   clearTimeout(tipHideTimer);
+  tipOwner?.removeAttribute('aria-describedby');
   TIP.classList.remove('show');
   tipActive = false;
   tipPinned = false;
@@ -6390,7 +6715,8 @@ document.addEventListener('mouseout', e => {
   }
 });
 document.addEventListener('mousemove', e => {
-  if (tipActive && !tipPinned && !TIP.classList.contains('open-tip')) positionTip(e.clientX, e.clientY);
+  if (tipActive && !tipPinned && !TIP.classList.contains('open-tip') &&
+      !TIP.classList.contains('chip-tip')) positionTip(e.clientX, e.clientY);
 });
 document.addEventListener('focusin', e => {
   const el = e.target.closest('[data-tip]');
@@ -6402,6 +6728,12 @@ document.addEventListener('focusout', e => {
   if (!tipPinned && TIP.contains(e.target) && !TIP.contains(e.relatedTarget)) hideTip();
 });
 document.addEventListener('click', e => {
+  const chip = e.target.closest('.meta-info-chip');
+  if (chip) {
+    if (tipPinned && tipOwner === chip) hideTip();
+    else showTip(chip, undefined, undefined, true);
+    return;
+  }
   const icon = e.target.closest('.open-item');
   if (icon && NARROW.matches) {
     e.preventDefault();

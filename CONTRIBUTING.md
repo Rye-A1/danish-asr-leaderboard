@@ -25,10 +25,11 @@ id, backend, and where to find it. We'll run it through the harness and add it.
    - `outputs/<model-slug>/` — the raw per-dataset transcriptions
      (`<dataset>.jsonl` + `meta.json`)
 3. Add an entry for the model to `scripts/model_metadata.json`, keyed by the
-   model name as it appears on the board. It holds the model's release date and
-   its [openness annotations](#openness-annotations):
+   model name as it appears on the board. It holds the entry type, release date,
+   and [openness annotations](#openness-annotations):
    ```json
    "<model>": {
+     "entry_kind": "model",
      "released": {"date": "YYYY-MM-DD", "source": "huggingface"},
      "training_code": null,
      "training_data": "https://…",
@@ -58,6 +59,25 @@ A descriptive PR description is required for every model submission or update.
 Summarize the model, what changed, and the benchmark results. Include the exact
 evaluation command, relevant backend settings, hardware (for context on
 `speed_x`), and whether the model is `open` or `proprietary`.
+
+### Model and system entries
+
+Set `entry_kind` to `model` for one checkpoint with greedy or plain beam
+decoding. Show a non-greedy decoder in a short `configuration` label, such as
+`"Beam 5"`. Set it to `system` when the setup adds an external language model or
+LLM, combines checkpoints, adds a reranker, or uses a hosted API.
+System entries also need a short `configuration` label, such as
+`"Beam + n-gram LM"`. The leaderboard shows the label beside the name. Describe
+the actual decoding setup in the PR.
+
+The board accepts **at most one Model and one System result per underlying
+model**. If you submit both, give the entries distinct row names and set
+`"base_model": "<original model id>"` on the variant so they are grouped for
+this limit. For a Hugging Face variant, it must match the linked model repo.
+Use `--model-id` to give a second run its distinct row name. A new setup replaces
+the existing result in its category instead of adding another row. Greedy and
+beam-only runs are both Model results, so choose one configuration per checkpoint.
+Never relabel a saved score as a different decoding setup without rerunning inference.
 
 For results to be comparable, do **not** modify the normalisation or metrics —
 run the harness as-is.
