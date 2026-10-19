@@ -676,7 +676,7 @@
       line-height: 1;
     }
     .c-submitted { width: 96px; white-space: nowrap; font-size: 12px; opacity: 0.6; }
-    .c-model { min-width: 330px; max-width: 360px; }
+    .c-model { min-width: 360px; max-width: 360px; }
     .c-model a {
       display: inline-flex;
       align-items: center;
@@ -836,6 +836,13 @@
       height: 10px;
       flex: 0 0 auto;
       opacity: 0.8;
+    }
+    @media (min-width: 701px) {
+      .model-meta { gap: 4px; }
+      .model-meta .m-size,
+      .model-meta .m-license,
+      .model-meta .m-entry,
+      .model-meta .m-frontier { padding-inline: 5px; }
     }
 
 
