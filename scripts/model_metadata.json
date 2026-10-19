@@ -495,8 +495,8 @@
   "Hviske 7 Plus": {
     "released": {
       "date": "2026-10-19",
-      "source": "best guess",
-      "note": "TODO: replace with the announcement date and link"
+      "source": "published",
+      "note": "https://platform.syv.ai"
     },
     "training_code": null,
     "training_data": null,
@@ -506,8 +506,8 @@
   "Hviske 7": {
     "released": {
       "date": "2026-10-19",
-      "source": "best guess",
-      "note": "TODO: replace with the announcement date and link"
+      "source": "published",
+      "note": "https://platform.syv.ai"
     },
     "training_code": null,
     "training_data": null,
@@ -517,8 +517,8 @@
   "Hviske 7 hurtig": {
     "released": {
       "date": "2026-10-19",
-      "source": "best guess",
-      "note": "TODO: replace with the announcement date and link"
+      "source": "published",
+      "note": "https://platform.syv.ai"
     },
     "training_code": null,
     "training_data": null,
