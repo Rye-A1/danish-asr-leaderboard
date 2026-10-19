@@ -54,8 +54,10 @@ id, backend, and where to find it. We'll run it through the harness and add it.
    results to the Hugging Face dataset and redeploys the leaderboard
    automatically — no manual `push_results.py` / `push_outputs.py` step needed.
 
-Please include in the PR description: the exact command you ran, the hardware
-(for context on `speed_x`), and whether the model is `open` or `proprietary`.
+A descriptive PR description is required for every model submission or update.
+Summarize the model, what changed, and the benchmark results. Include the exact
+evaluation command, relevant backend settings, hardware (for context on
+`speed_x`), and whether the model is `open` or `proprietary`.
 
 For results to be comparable, do **not** modify the normalisation or metrics —
 run the harness as-is.
