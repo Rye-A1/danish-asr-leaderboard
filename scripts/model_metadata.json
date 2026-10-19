@@ -85,7 +85,7 @@
     "paper": null
   },
   "CoRal-project/roest-v3-whisper-1.5b": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "license_evidence": "https://huggingface.co/CoRal-project/roest-v3-whisper-1.5b#model-details",
     "released": {
@@ -98,7 +98,7 @@
     "paper": null
   },
   "danish-foundation-models/edda-v0.1": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2026-09-24",
@@ -110,7 +110,7 @@
     "paper": null
   },
   "danish-foundation-models/edda-v0.2": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2026-10-02",
@@ -134,7 +134,7 @@
     "paper": null
   },
   "danish-foundation-models/edda-v0.2-large": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2026-10-10",
@@ -328,7 +328,7 @@
     "paper": "https://arxiv.org/abs/2509.14128"
   },
   "openai/whisper-base": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2022-09-26",
@@ -340,7 +340,7 @@
     "paper": "https://arxiv.org/abs/2212.04356"
   },
   "openai/whisper-large-v3": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2023-11-07",
@@ -352,7 +352,7 @@
     "paper": "https://arxiv.org/abs/2212.04356"
   },
   "openai/whisper-large-v3-turbo": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2024-10-01",
@@ -364,7 +364,7 @@
     "paper": "https://arxiv.org/abs/2212.04356"
   },
   "openai/whisper-small": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2022-09-26",
@@ -376,7 +376,7 @@
     "paper": "https://arxiv.org/abs/2212.04356"
   },
   "openai/whisper-tiny": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2022-09-26",
@@ -476,7 +476,7 @@
     "paper": null
   },
   "syvai/hviske-v3-conversation": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2025-07-01",
@@ -543,7 +543,7 @@
     "paper": null
   },
   "thorhojhus/whisper-large-v3-turbo-danish": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2026-09-06",
@@ -555,7 +555,7 @@
     "paper": null
   },
   "thorhojhus/whisper-small-danish": {
-    "entry_kind": "system",
+    "entry_kind": "model",
     "configuration": "Beam 5",
     "released": {
       "date": "2026-09-14",

@@ -2777,9 +2777,10 @@
     <section class="method-card">
     <h3>Models and systems</h3>
     <p>The entry switch shows all results, single-checkpoint <strong>Models</strong>
-    decoded greedily, or <strong>Systems</strong> that use beam search, an extra
-    language model, multiple checkpoints, or a hosted API. The small label by each
-    name describes the submitted setup. A model may have one result of each type;
+    decoded greedily or with plain beam search, or <strong>Systems</strong> that add
+    a language model or reranker, combine checkpoints, or use a hosted API.
+    The small label by each name describes the submitted setup. A model may have
+    one result of each type;
     the two scores come from separate evaluations. The Pareto chip compares open
     entries within their own category under the selected metric, ranking method,
     and filters.</p>
@@ -3671,8 +3672,8 @@ function buildRow(row, cols, maxVals) {
       entry.dataset.chipKind = row.entry_kind === 'system' ? 'system' : 'model';
       entry.dataset.chipSubtitle = row.configuration || 'Single checkpoint';
       entry.dataset.tip = row.entry_kind === 'system'
-        ? 'A submitted setup using beam search, a language model, multiple checkpoints, or hosted API serving. The badge names this entry’s configuration.'
-        : 'A single checkpoint evaluated with greedy decoding, without an added language model or beam search.';
+        ? 'A setup with an added language model, multiple checkpoints, reranking, or hosted API serving.'
+        : 'A single checkpoint with greedy or plain beam decoding. The badge shows its decoder when known.';
       meta.appendChild(entry);
 
       if (row.pareto_optimal) {

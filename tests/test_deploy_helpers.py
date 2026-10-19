@@ -176,7 +176,8 @@ def test_published_entries_have_one_model_and_one_system_per_base():
              for path in results.glob("*.json")]
     validate_entry_profiles(pd.DataFrame({"model": names}))
     assert MODEL_METADATA["Harmonium/brage-v1"]["entry_kind"] == "system"
-    assert MODEL_METADATA["danish-foundation-models/edda-v0.2-large"]["entry_kind"] == "system"
+    assert MODEL_METADATA["danish-foundation-models/edda-v0.2-large"]["entry_kind"] == "model"
+    assert MODEL_METADATA["danish-foundation-models/edda-v0.2-large"]["configuration"] == "Beam 5"
     assert MODEL_METADATA["capacit-ai/saga-2-m"]["entry_kind"] == "model"
 
 
@@ -186,34 +187,38 @@ def test_entry_profile_rejects_second_submission_in_same_category(monkeypatch):
     metadata = {
         "example/asr": {"entry_kind": "model"},
         "example/asr+greedy": {"entry_kind": "model", "base_model": "example/asr"},
-        "example/asr+beam": {"entry_kind": "system", "base_model": "example/asr",
+        "example/asr+beam": {"entry_kind": "model", "base_model": "example/asr",
                               "configuration": "Beam 5"},
         "example/asr+lm": {"entry_kind": "system", "base_model": "example/asr",
                             "configuration": "Beam + LM"},
+        "example/asr+rerank": {"entry_kind": "system", "base_model": "example/asr",
+                                "configuration": "Reranked"},
     }
     monkeypatch.setattr(update_space, "MODEL_METADATA", metadata)
     with pytest.raises(ValueError, match="both submit a model result"):
         validate_entry_profiles(pd.DataFrame({"model": ["example/asr", "example/asr+greedy"]}))
-    validate_entry_profiles(pd.DataFrame({"model": ["example/asr", "example/asr+beam"]}))
+    with pytest.raises(ValueError, match="both submit a model result"):
+        validate_entry_profiles(pd.DataFrame({"model": ["example/asr", "example/asr+beam"]}))
+    validate_entry_profiles(pd.DataFrame({"model": ["example/asr+beam", "example/asr+lm"]}))
     with pytest.raises(ValueError, match="both submit a system result"):
-        validate_entry_profiles(pd.DataFrame({"model": ["example/asr+beam", "example/asr+lm"]}))
+        validate_entry_profiles(pd.DataFrame({"model": ["example/asr+lm", "example/asr+rerank"]}))
 
 
 def test_model_backlinks_use_base_checkpoint_for_system_variant():
-    data = {"wer": [{"name": "example/asr+beam", "base_model": "example/asr",
+    data = {"wer": [{"name": "example/asr+lm", "base_model": "example/asr",
                      "url": "https://huggingface.co/example/asr"}]}
     models_py = build_models_py(data)
     assert "'example/asr'" in models_py
-    assert "example/asr+beam" not in models_py
+    assert "example/asr+lm" not in models_py
 
 
 def test_huggingface_variant_must_name_its_linked_base(monkeypatch):
     import update_space
 
     monkeypatch.setattr(update_space, "MODEL_METADATA", {
-        "example/asr+beam": {"entry_kind": "system", "configuration": "Beam 5"},
+        "example/asr+lm": {"entry_kind": "system", "configuration": "Beam + LM"},
     })
-    linked = "[example/asr+beam](https://huggingface.co/example/asr)"
+    linked = "[example/asr+lm](https://huggingface.co/example/asr)"
     with pytest.raises(ValueError, match="base_model must match"):
         validate_entry_profiles(pd.DataFrame({"model": [linked]}))
 

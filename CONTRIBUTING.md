@@ -62,11 +62,12 @@ evaluation command, relevant backend settings, hardware (for context on
 
 ### Model and system entries
 
-Set `entry_kind` to `model` for a single checkpoint decoded greedily. Set it to
-`system` for beam search (including a checkpoint's default beam setting), an
-external language model or LLM, multiple checkpoints, or a hosted API. A system
-entry also needs a short `configuration` label, such as `"Beam 5"` or
-`"Beam + n-gram LM"`; the leaderboard shows it beside the model name. Describe
+Set `entry_kind` to `model` for one checkpoint with greedy or plain beam
+decoding. Show a non-greedy decoder in a short `configuration` label, such as
+`"Beam 5"`. Set it to `system` when the setup adds an external language model or
+LLM, combines checkpoints, adds a reranker, or uses a hosted API.
+System entries also need a short `configuration` label, such as
+`"Beam + n-gram LM"`. The leaderboard shows the label beside the name. Describe
 the actual decoding setup in the PR.
 
 The board accepts **at most one Model and one System result per underlying
@@ -74,9 +75,9 @@ model**. If you submit both, give the entries distinct row names and set
 `"base_model": "<original model id>"` on the variant so they are grouped for
 this limit. For a Hugging Face variant, it must match the linked model repo.
 Use `--model-id` to give a second run its distinct row name. A new setup replaces
-the existing result in its category instead of
-adding another row. Only report a greedy Model score after running that setup;
-do not reuse a System score for it.
+the existing result in its category instead of adding another row. Greedy and
+beam-only runs are both Model results, so choose one configuration per checkpoint.
+Never relabel a saved score as a different decoding setup without rerunning inference.
 
 For results to be comparable, do **not** modify the normalisation or metrics —
 run the harness as-is.
