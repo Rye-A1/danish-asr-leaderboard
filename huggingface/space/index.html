@@ -39,6 +39,7 @@
       --muted:   #8892aa;
       --accent:  #22c55e;
       --link:    #60a5fa;
+      --pareto-chip: #facc15;
       --pareto-below: #93c5fd;
       --red:     #c60c30;
       --r:       10px;
@@ -57,6 +58,7 @@
       --text:  #1e293b;
       --muted: #64748b;
       --link:  #2563eb;
+      --pareto-chip: #8f6000;
       --pareto-below: #60a5fa;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -815,14 +817,15 @@
     .model-meta .m-license { max-width: 150px; }
     .model-meta .m-license-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
     .model-meta .m-entry {
-      color: var(--link);
-      border-color: color-mix(in srgb, var(--link) 32%, var(--border));
-      background: color-mix(in srgb, var(--link) 7%, var(--surf));
+      border-color: color-mix(in srgb, var(--muted) 26%, var(--border));
+      background: color-mix(in srgb, var(--muted) 8%, var(--surf));
     }
     .model-meta .m-frontier {
-      color: var(--link);
-      border-color: color-mix(in srgb, var(--link) 45%, var(--border));
+      color: var(--pareto-chip);
+      border-color: color-mix(in srgb, var(--pareto-chip) 42%, var(--border));
+      background: color-mix(in srgb, var(--pareto-chip) 10%, var(--surf));
     }
+    .model-meta .m-frontier::before { content: '★'; font-size: 9px; line-height: 1; }
     .meta-icon {
       width: 10px;
       height: 10px;
@@ -3611,7 +3614,7 @@ function buildRow(row, cols, maxVals) {
       if (row.pareto_optimal) {
         const frontier = document.createElement('span');
         frontier.className = 'm-frontier';
-        frontier.textContent = '✦ Pareto';
+        frontier.textContent = 'Pareto';
         frontier.title = 'Open entry with no smaller, better-scoring open alternative in this view';
         meta.appendChild(frontier);
       }
