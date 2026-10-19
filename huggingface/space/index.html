@@ -2441,9 +2441,9 @@
   <!-- Analysis tab -->
   <div id="tab-analysis" class="tab-pane chart-page">
     <header class="page-hero">
-      <p class="page-eyebrow">Model tradeoffs</p>
+      <p class="page-eyebrow">Size tradeoffs</p>
       <h2>Pareto frontier</h2>
-      <p class="page-intro">See how scores change with model size. Models are shown by default; switch to Systems or All to explore other entries. System size may omit extra decoding components or hosted compute. Dark blue points mark open entries on the selected frontier.</p>
+      <p class="page-intro">Compare score and size. Models appear by default. In All, the blue frontier spans Models and Systems; leaderboard Pareto badges compare each type separately. System size may omit extra components or hosted compute.</p>
     <div class="toolbar">
       <div class="tog-wrap">
         <span class="tog-label">Metric</span>
@@ -2457,8 +2457,8 @@
         <button class="tog-btn" id="tog-analysis-bt">Win Rate</button>
       </div>
       <button class="ci-btn" id="tog-ci-analysis" type="button" aria-pressed="false" data-tip="95% bootstrap CI: utterances are resampled with replacement within each test set (1000 replicates), each set is re-scored, and the five are averaged. The interval shows where the metric would fall on a different random sample of speakers and utterances. Non-overlapping intervals mean the difference is larger than sampling noise."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">95% CI <span class="i-icon" aria-hidden="true">i</span></span></button>
-      <button class="ci-btn" id="tog-open-analysis" type="button" aria-pressed="false" data-tip="Show only models with downloadable weights. Hides hosted/API models (proprietary), which can change server-side without notice and cannot be run locally. The frontier is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
-      <label class="size-filter" title="Models without a published parameter count are hidden when a size limit is selected.">Max size
+      <button class="ci-btn" id="tog-open-analysis" type="button" aria-pressed="false" data-tip="Show only entries with downloadable weights. Hides hosted/API systems, which can change server-side and cannot be run locally. The frontier is recomputed over the filtered set."><span class="ci-switch" aria-hidden="true"></span><span class="ci-text">Open weights only <span class="i-icon" aria-hidden="true">i</span></span></button>
+      <label class="size-filter" title="Entries without a published parameter count are hidden when a size limit is selected.">Max size
         <select id="size-analysis" aria-label="Maximum model size">
           <option value="">All sizes</option>
           <option value="0.1">≤ 0.1B</option>
@@ -2482,8 +2482,8 @@
     </div>
     </header>
     <div class="chart-section">
-      <h3 id="analysis-chart-title"><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg></span><span class="chart-title-text">Performance vs. Model Size</span></h3>
-      <p class="chart-subtitle" id="pareto-cutoff-note">Models above 30% mean WER are omitted from this plot and its CSV; change the limit in Settings.</p>
+      <h3 id="analysis-chart-title"><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg></span><span class="chart-title-text">Performance vs. Size</span></h3>
+      <p class="chart-subtitle" id="pareto-cutoff-note">Entries above 30% mean WER are omitted from this plot and its CSV; change the limit in Settings.</p>
       <div class="chart-with-panel">
         <div id="size-chart-wrap-analysis" class="chart-plot-wrap">
           <svg id="size-chart-analysis" style="width:100%;display:block;overflow:visible"></svg>
@@ -3684,7 +3684,7 @@ function buildRow(row, cols, maxVals) {
         const group = row.entry_kind === 'system' ? 'system' : 'model';
         frontier.dataset.chipTitle = `${kind} Pareto frontier`;
         frontier.dataset.chipSubtitle = 'Open · size vs. score';
-        frontier.dataset.tip = `No smaller open ${group} in this view matches or beats its score. The frontier updates with the metric, ranking method, and filters.`
+        frontier.dataset.tip = `Compared only with open ${group}s, even in All. No smaller ${group} matches or beats its score. Updates with the metric, ranking method, and filters.`
           + (group === 'system' ? ' Published size may omit extra components.' : '');
         meta.appendChild(frontier);
       }
@@ -4877,9 +4877,11 @@ function updateParetoPanel(pareto, tab, yLbl, method) {
   const panel = document.getElementById(`pareto-panel-${tab}`);
   if (!panel) return;
   const fmt = v => method === 'borda' ? v.toFixed(1) : method === 'bt' ? v.toFixed(1) + '%' : v.toFixed(2) + '%';
-  panel.innerHTML = `<div class="pareto-panel-title" data-tip="Open models on the Pareto frontier: no other open model is both smaller and better on the selected metric. Sorted by model size from smallest to largest.">Pareto Optimal <span class="i-icon" aria-hidden="true">i</span></div>`;
+  const kind = tab === 'analysis' ? paretoEntryKind : entryKind;
+  const group = kind === 'all' ? 'Models and Systems together' : kind === 'system' ? 'Systems only' : 'Models only';
+  panel.innerHTML = `<div class="pareto-panel-title" data-tip="One frontier compares open ${group}. No other open entry in this selection is both smaller and better on the selected metric. Sorted by size.">Pareto Optimal <span class="i-icon" aria-hidden="true">i</span></div>`;
   if (!pareto.length) {
-    panel.innerHTML += `<p style="color:var(--muted);font-size:11px;margin-top:4px">No open models with size data.</p>`;
+    panel.innerHTML += `<p style="color:var(--muted);font-size:11px;margin-top:4px">No open entries with size data.</p>`;
     return;
   }
   for (const p of pareto) {
@@ -4990,7 +4992,7 @@ function _drawChart(rows, method, tab) {
     }
   }
 
-  /* ── Pareto frontier (open models only) ── */
+  /* ── Pareto frontier (open entries in this chart's selected view) ── */
   const openPts = pts.filter(p => p.r.access === 'open');
   const pareto  = computePareto(openPts, yUp);
   const frontierPoints = new Set(pareto);
@@ -6268,7 +6270,7 @@ async function init() {
       const limit = werLimit(paretoWerLimit);
       const rows = chartWerRows(visible(analysisPool(metric), paretoEntryKind), limit);
       document.getElementById('pareto-cutoff-note').textContent = Number.isFinite(limit)
-        ? `Models above ${limit}% mean WER are omitted from this plot and its CSV; change the limit in Settings.`
+        ? `Entries above ${limit}% mean WER are omitted from this plot and its CSV; change the limit in Settings.`
         : 'No mean WER limit is applied to this plot or its CSV.';
       _chartState.analysis = {
         ..._chartState.analysis,
@@ -6279,7 +6281,7 @@ async function init() {
       document.getElementById('tog-analysis-wer').classList.toggle('active', isWer);
       document.getElementById('tog-analysis-cer').classList.toggle('active', !isWer);
       document.querySelector('#analysis-chart-title .chart-title-text').textContent =
-        `Performance vs. Model Size (${isWer ? 'WER' : 'CER'})`;
+        `Performance vs. Size (${isWer ? 'WER' : 'CER'})`;
       document.getElementById('download-pareto').disabled =
         sizeChartPoints(rows, metric, methodFor(metric)).length < 2;
       renderSizeChart(rows, methodFor(metric), 'analysis');
