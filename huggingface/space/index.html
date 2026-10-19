@@ -497,6 +497,24 @@
       box-shadow: inset 0 0 0 1px var(--border);
     }
     .entry-switch button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .filters-current-entry { display: none; }
+    .settings-sheet .entry-kind-filter {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--surf2);
+    }
+    .settings-sheet .entry-switch { display: flex; width: 100%; }
+    .settings-sheet .entry-switch button { flex: 1; justify-content: center; }
+    @media (min-width: 901px) {
+      .settings-sheet .entry-kind-filter { display: none; }
+    }
+    @media (max-width: 900px) {
+      .filter-summary > .entry-switch { display: none; }
+      .filters-current-entry { display: inline; color: var(--text); }
+    }
     .period-toggle {
       display: inline-flex;
       align-items: center;
@@ -3965,7 +3983,9 @@ function initFilterToggles() {
     btn.className = 'filters-toggle';
     const count = document.createElement('span');
     count.className = 'filters-count';
-    btn.append(ICON_FILTER(), 'Settings', count);
+    const currentEntry = document.createElement('span');
+    currentEntry.className = 'filters-current-entry';
+    btn.append(ICON_FILTER(), 'Settings', currentEntry, count);
 
     const paneName = { wer: 'Leaderboard', analysis: 'Pareto', time: 'Over Time' }[paneFor?.id.replace('tab-', '')] || 'View';
     const sheet = document.createElement('dialog');
@@ -4034,11 +4054,14 @@ function initFilterToggles() {
       const open = sheet.open;
       btn.setAttribute('aria-expanded', String(open));
       const n = activeCount();
+      const selectedKind = paneFor?.id === 'tab-analysis' ? paretoEntryKind : entryKind;
+      const selectedLabel = { all: 'All', model: 'Models', system: 'Systems' }[selectedKind];
+      currentEntry.textContent = `· ${selectedLabel}`;
       count.textContent = n ? String(n) : '';
       btn.classList.toggle('has-filters', n > 0);
       clear.hidden = n === 0;
       btn.setAttribute('aria-label',
-        n ? 'Settings, ' + n + ' active' : 'Settings');
+        `Settings, ${selectedLabel}${n ? ', ' + n + ' active' : ''}`);
     };
 
     btn.addEventListener('click', () => {
@@ -4113,32 +4136,42 @@ function initFilterToggles() {
     bar.addEventListener('click', () => setTimeout(label, 0));
 
     summary.append(btn);
-    const entrySwitch = document.createElement('div');
-    entrySwitch.className = 'entry-switch';
-    entrySwitch.setAttribute('role', 'group');
-    entrySwitch.setAttribute('aria-label', 'Entry type');
-    for (const [kind, text] of [['all', 'All'], ['model', 'Models'], ['system', 'Systems']]) {
-      const choice = document.createElement('button');
-      choice.type = 'button';
-      choice.dataset.entryKind = kind;
-      if (kind !== 'all') choice.append(ICON_ENTRY_KIND(kind));
-      choice.append(text);
-      choice.setAttribute('aria-pressed', String(kind === (paneFor?.id === 'tab-analysis' ? paretoEntryKind : entryKind)));
-      choice.addEventListener('click', () => {
-        if (paneFor?.id === 'tab-analysis') {
-          if (paretoEntryKind === kind) return;
-          paretoEntryKind = kind;
-        } else {
-          if (entryKind === kind) return;
-          entryKind = kind;
-        }
-        syncEntrySwitches();
-        if (paneFor?.id === 'tab-analysis') onParetoEntryKindChanged?.();
-        else onEntryKindChanged?.();
-      });
-      entrySwitch.append(choice);
-    }
-    summary.append(entrySwitch);
+    const createEntrySwitch = () => {
+      const entrySwitch = document.createElement('div');
+      entrySwitch.className = 'entry-switch';
+      entrySwitch.setAttribute('role', 'group');
+      entrySwitch.setAttribute('aria-label', 'Entry type');
+      for (const [kind, text] of [['all', 'All'], ['model', 'Models'], ['system', 'Systems']]) {
+        const choice = document.createElement('button');
+        choice.type = 'button';
+        choice.dataset.entryKind = kind;
+        if (kind !== 'all') choice.append(ICON_ENTRY_KIND(kind));
+        choice.append(text);
+        choice.setAttribute('aria-pressed', String(kind === (paneFor?.id === 'tab-analysis' ? paretoEntryKind : entryKind)));
+        choice.addEventListener('click', () => {
+          if (paneFor?.id === 'tab-analysis') {
+            if (paretoEntryKind === kind) return;
+            paretoEntryKind = kind;
+          } else {
+            if (entryKind === kind) return;
+            entryKind = kind;
+          }
+          syncEntrySwitches();
+          if (paneFor?.id === 'tab-analysis') onParetoEntryKindChanged?.();
+          else onEntryKindChanged?.();
+        });
+        entrySwitch.append(choice);
+      }
+      return entrySwitch;
+    };
+    summary.append(createEntrySwitch());
+    const entryField = document.createElement('div');
+    entryField.className = 'entry-kind-filter';
+    const entryTitle = document.createElement('span');
+    entryTitle.className = 'settings-field-title';
+    entryTitle.append(_icon(SYSTEM_KIND_PATHS, 'settings-icon'), 'Entry type');
+    entryField.append(entryTitle, createEntrySwitch());
+    bar.prepend(entryField);
     if (paneFor?.id === 'tab-time') summary.append(document.getElementById('time-period-toggle'));
     if (searchWrap) summary.append(searchWrap);
     const download = bar.querySelector('.download-csv');
