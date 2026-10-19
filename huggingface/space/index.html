@@ -2780,9 +2780,9 @@
     decoded greedily, or <strong>Systems</strong> that use beam search, an extra
     language model, multiple checkpoints, or a hosted API. The small label by each
     name describes the submitted setup. A model may have one result of each type;
-    the two scores come from separate evaluations. The Pareto chip marks an open
-    entry with no smaller, better-scoring open alternative under the selected
-    metric, ranking method, and entry filter.</p>
+    the two scores come from separate evaluations. The Pareto chip compares open
+    entries within their own category under the selected metric, ranking method,
+    and filters.</p>
     </section>
 
     <section class="method-card">
@@ -3681,8 +3681,11 @@ function buildRow(row, cols, maxVals) {
         frontier.className = 'm-frontier meta-info-chip';
         frontier.textContent = 'Pareto';
         frontier.dataset.chipKind = 'pareto';
+        const group = row.entry_kind === 'system' ? 'system' : 'model';
+        frontier.dataset.chipTitle = `${kind} Pareto frontier`;
         frontier.dataset.chipSubtitle = 'Open · size vs. score';
-        frontier.dataset.tip = 'Among open entries in this view, no smaller entry matches or beats its score. This updates with the metric, ranking method, and filters. System sizes may omit extra components.';
+        frontier.dataset.tip = `No smaller open ${group} in this view matches or beats its score. The frontier updates with the metric, ranking method, and filters.`
+          + (group === 'system' ? ' Published size may omit extra components.' : '');
         meta.appendChild(frontier);
       }
 
@@ -4839,8 +4842,12 @@ function sizeChartPoints(rows, metric, method) {
 
 function markParetoRows(rows, metric, method) {
   const points = sizeChartPoints(rows, metric, method).filter(p => p.r.access === 'open');
-  const frontier = new Set(computePareto(points, method === 'bt').map(p => p.r.name));
-  rows.forEach(row => { row.pareto_optimal = frontier.has(row.name); });
+  const frontier = new Set();
+  for (const kind of ['model', 'system']) {
+    const group = points.filter(p => (p.r.entry_kind === 'system' ? 'system' : 'model') === kind);
+    computePareto(group, method === 'bt').forEach(p => frontier.add(p.r));
+  }
+  rows.forEach(row => { row.pareto_optimal = frontier.has(row); });
 }
 
 const PARETO_CSV_FIELDS = [
@@ -6599,7 +6606,7 @@ function chipTooltip(el) {
   const heading = document.createElement('div');
   const title = document.createElement('strong');
   title.className = 'chip-tip-title';
-  title.textContent = kind === 'pareto' ? 'Pareto frontier' : kind === 'system' ? 'System' : 'Model';
+  title.textContent = kind === 'pareto' ? el.dataset.chipTitle : kind === 'system' ? 'System' : 'Model';
   const subtitle = document.createElement('span');
   subtitle.className = 'chip-tip-subtitle';
   subtitle.textContent = el.dataset.chipSubtitle;
