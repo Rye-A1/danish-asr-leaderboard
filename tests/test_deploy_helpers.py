@@ -252,10 +252,11 @@ def test_syv_history_keeps_one_current_leaderboard_row(monkeypatch):
         assert len(data[table]) == 1
         row = data[table][0]
         assert row["mean_wer"] == current["mean_wer"]
-        assert row["released"] == "2026-09-25"
+        assert row["released"] == "2026-10-14"
         assert row["date_basis"] == "score"
-        assert [(h["submitted"], h["mean_wer"]) for h in row["history"]] == [
-            ("2026-06-23", 10.97)
+        assert sorted((h["submitted"], h["mean_wer"]) for h in row["history"]) == [
+            ("2026-06-23", 10.97),
+            ("2026-09-25", 9.79),
         ]
 
 
