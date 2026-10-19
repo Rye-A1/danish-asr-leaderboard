@@ -46,12 +46,11 @@ DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 OUT_PATH = Path("data/ci.json")
 # Resample in blocks so the index matrix stays small for a 27k-utterance dataset.
 BLOCK = 100
-# The published methodology, stated explicitly rather than inherited from a
-# default (scoring.py and normalise disagree on unicode_form).
+# The published methodology, stated explicitly so CI and point scores stay aligned.
 UNICODE_FORM = "NFKC"
 NUMBER_WORDS = True
 SPOKEN_NUMBERS = True
-FILLER_WORDS = False
+FILLER_WORDS = True
 
 
 def per_utterance_stats(refs: list[str], hyps: list[str]):

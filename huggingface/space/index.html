@@ -284,8 +284,9 @@
     .compare-clear-all:hover, .compare-copy:hover { border-color: var(--link); }
     .compare-copy:disabled { opacity: .45; cursor: not-allowed; }
     .compare-note { color: var(--muted); font-size: 12px; }
+    .compare-section > .compare-note + .compare-controls { margin-top: 14px; }
     .compare-empty { margin-top: 15px; padding: 48px 18px; border: 1px dashed var(--border); border-radius: var(--r); color: var(--muted); text-align: center; }
-    #compare-results { counter-reset: compare-section; }
+    #compare-results { padding-top: 18px; counter-reset: compare-section; }
     .compare-section {
       counter-increment: compare-section;
       margin: 15px 0;
@@ -296,7 +297,6 @@
     }
     .compare-section > h3 { display: flex; align-items: center; gap: 12px; margin: 0 0 16px; font-size: 17px; font-weight: 750; }
     .compare-section > h3::before {
-      content: "0" counter(compare-section);
       flex: none;
       display: inline-grid;
       place-items: center;
@@ -310,6 +310,7 @@
       font-weight: 800;
       letter-spacing: .02em;
     }
+    .compare-section > h3::before { content: "0" counter(compare-section); }
     .compare-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--r); }
     .compare-scroll-hint { display: none; margin: -5px 0 9px; color: var(--muted); font-size: 12px; }
     @media (max-width: 1100px) { .compare-scroll-hint { display: block; } }
@@ -340,7 +341,62 @@
     .compare-fill { height: 100%; border-radius: 99px; }
     .compare-bar-value { text-align: right; font-size: 12px; }
     .compare-winner-icon { width: 14px; height: 14px; flex: none; }
+    .compare-controls { display: flex; gap: 10px; flex-wrap: wrap; margin: 0 0 14px; }
+    .compare-control { position: relative; display: grid; gap: 5px; width: min(220px, 100%); }
+    .compare-control:focus-within { z-index: 20; }
+    .compare-control label { color: var(--muted); font-size: 12px; font-weight: 700; }
+    .compare-control select, .compare-select-trigger { min-height: 38px; width: 100%; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; font-size: 13px; font-weight: 650; }
+    .compare-select-trigger { display: flex; align-items: center; justify-content: space-between; gap: 12px; text-align: left; cursor: pointer; }
+    .compare-select-trigger:hover, .compare-select-trigger[aria-expanded="true"] { border-color: var(--link); }
+    .compare-select-trigger:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .compare-select-trigger svg { width: 15px; height: 15px; flex: none; stroke: var(--muted); transition: transform .15s ease; }
+    .compare-select-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+    .compare-select-menu { position: absolute; z-index: 25; top: calc(100% + 5px); left: 0; right: 0; display: grid; gap: 3px; max-height: min(280px, 45vh); overflow-y: auto; padding: 5px; border: 1px solid var(--border); border-radius: 10px; background: var(--surf); box-shadow: 0 16px 35px rgba(0,0,0,.22); }
+    .compare-select-menu[hidden] { display: none; }
+    .compare-select-option { width: 100%; min-height: 36px; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--text); text-align: left; font: inherit; font-size: 13px; cursor: pointer; }
+    .compare-select-option:hover, .compare-select-option:focus-visible { background: var(--surf2); outline: none; }
+    .compare-select-option[aria-selected="true"] { background: color-mix(in srgb, var(--link) 12%, var(--surf)); color: var(--link); font-weight: 700; }
+    .compare-select-option[aria-selected="true"]::after { content: "✓"; float: right; margin-left: 8px; }
+    .compare-select-option:disabled { color: var(--muted); opacity: .45; cursor: not-allowed; }
+    .compare-group { padding: 14px 0; border-top: 1px solid var(--border); }
+    .compare-group:first-child { border-top: 0; }
+    .compare-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+    .compare-group-head strong { font-size: 14px; }
+    .compare-group-head span { color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .compare-group .compare-bars { max-width: 780px; }
+    .compare-example-toolbar { display: flex; align-items: center; gap: 18px; margin: 16px 0; }
+    .compare-example-toolbar .compare-controls, .compare-example-toolbar .compare-example-nav { margin: 0; }
+    .compare-text-mode { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid var(--border); border-radius: 9px; background: var(--surf2); }
+    .compare-text-mode button { min-height: 32px; padding: 5px 11px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font: inherit; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
+    .compare-text-mode button[aria-pressed="true"] { background: var(--surf); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+    .compare-text-mode button:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
+    .compare-example-nav { display: flex; align-items: center; gap: 12px; white-space: nowrap; }
+    .compare-example-nav button { min-width: 36px; min-height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; cursor: pointer; }
+    .compare-example-nav button:disabled { opacity: .4; cursor: default; }
+    .compare-example-nav span { color: var(--muted); font-size: 12px; }
+    .compare-reference { padding: 16px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf2); }
+    .compare-reference-head { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 5px 12px; margin-bottom: 7px; }
+    .compare-reference small, .compare-hypothesis small { display: block; margin-bottom: 7px; color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+    .compare-reference-head small { margin-bottom: 0; }
+    .compare-source { color: var(--muted); font-size: 11px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+    .compare-source:hover, .compare-source:focus-visible { color: var(--link); text-decoration: underline; }
+    .compare-reference p, .compare-hypothesis p { margin: 0; overflow-wrap: anywhere; line-height: 1.6; }
+    .compare-audio { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .compare-audio audio { display: block; width: min(100%, 380px); height: 36px; }
+    .compare-audio span { display: block; color: var(--muted); font-size: 12px; }
+    .compare-hypotheses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .compare-hypothesis { position: relative; display: flex; flex-direction: column; padding: 16px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf); }
+    .compare-hypothesis::after { content: ""; position: absolute; top: 18px; right: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--model-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--model-color) 14%, transparent); }
+    .compare-hypothesis small { max-width: calc(100% - 28px); color: var(--model-color); overflow-wrap: anywhere; }
+    .compare-clip-score { margin-top: auto; padding-top: 10px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+    .compare-word-change { border-radius: 3px; background: color-mix(in srgb, var(--model-color) 16%, transparent); box-shadow: inset 0 -1px var(--model-color); }
+    .compare-word-omitted { text-decoration: underline dotted var(--link) 2px; text-underline-offset: 3px; }
+    @media (max-width: 650px) { .compare-hypotheses { grid-template-columns: 1fr; } .compare-control { width: 100%; } }
     @media (max-width: 720px) {
+      .compare-example-toolbar { flex-direction: column; align-items: stretch; gap: 14px; }
+      .compare-example-toolbar .compare-controls, .compare-example-toolbar .compare-control { width: 100%; }
+      .compare-text-mode { display: flex; width: 100%; }
+      .compare-text-mode button { flex: 1; }
       .compare-hero { padding: 8px 4px 20px; }
       .compare-section { padding: 17px 14px; }
       .compare-section > h3 { font-size: 16px; }
@@ -2063,6 +2119,7 @@
       box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--link) 35%, var(--border));
     }
     .settings-sheet .size-filter {
+      position: relative;
       display: flex;
       flex-direction: column;
       align-items: stretch;
@@ -2081,6 +2138,14 @@
       border-radius: 6px;
       background: var(--surf);
     }
+    .settings-sheet .size-filter .compare-select-trigger { width: 100%; }
+    .settings-sheet .size-filter .compare-select-menu {
+      position: static;
+      max-height: 250px;
+      margin-top: 2px;
+      box-shadow: none;
+    }
+    .settings-sheet .size-filter:has(.compare-select-menu:not([hidden])) { min-height: 350px; }
     .openness-filter details { display: block; width: 100%; }
     .openness-filter summary {
       display: flex; align-items: center; gap: 8px;
@@ -2405,7 +2470,7 @@
     <section class="page-hero compare-hero" aria-labelledby="compare-title">
       <p class="page-eyebrow">Side by side</p>
       <h2 id="compare-title">Compare models</h2>
-      <p class="page-intro compare-intro">Compare up to four models on the same Danish test sets, ordered by Mean WER leaderboard rank. Lower WER and CER are better.</p>
+      <p class="page-intro compare-intro">Compare up to four models on the same test sets, including speaker groups and divergent transcripts. Replay audio where available.</p>
       <div class="compare-pickers" id="compare-pickers">
         <div class="compare-picker" id="compare-picker">
           <button id="compare-add" class="compare-add" type="button" aria-haspopup="listbox" aria-controls="compare-options" aria-expanded="false">+ Add model</button>
@@ -2423,13 +2488,29 @@
       </section>
       <section class="compare-section">
         <h3>Results</h3>
+        <p class="compare-note" id="compare-caveat"></p>
         <p class="compare-scroll-hint">Swipe sideways to see the full table, if needed.</p>
         <div class="compare-scroll"><table class="compare-summary" id="compare-overall-summary"><thead><tr id="compare-overall-head"><th scope="col">Measure</th></tr></thead><tbody id="compare-overall-body"></tbody></table></div>
         <h4 class="compare-subheading">By test set</h4>
         <div class="compare-metric" aria-label="Comparison metric"><button id="compare-wer" class="active" type="button" aria-pressed="true">WER</button><button id="compare-cer" type="button" aria-pressed="false">CER</button></div>
         <div id="compare-datasets"></div>
       </section>
-      <p class="compare-note" id="compare-caveat"></p>
+      <section class="compare-section">
+        <h3>By speaker group</h3>
+        <p class="compare-note">Corpus WER/CER on the same clips for each group. CoRal labels are self-reported; FTSpeech provides speaker gender. Many CoRal dialect groups contain only one speaker, so these scores are descriptive rather than population estimates.</p>
+        <div class="compare-controls"><div class="compare-control"><label for="compare-breakdown-dataset">Test set</label><select id="compare-breakdown-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="ftspeech">FTSpeech</option></select></div><div class="compare-control"><label for="compare-breakdown-dimension">Group</label><select id="compare-breakdown-dimension"><option value="gender">Gender</option><option value="dialect">Dialect</option></select></div></div>
+        <div id="compare-breakdown" aria-live="polite">Loading speaker breakdown…</div>
+      </section>
+      <section class="compare-section compare-transcripts-section">
+        <h3>Compare transcripts</h3>
+        <p class="compare-note">Inspect high-disagreement clips, not a representative accuracy sample. Switch between original transcripts and the text used for scoring. Highlights show differences in the selected view; dotted underlines mark omissions. Clip WER/CER always use scored text and can exceed 100%.</p>
+        <div class="compare-example-toolbar">
+          <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset" hidden>Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
+          <div class="compare-text-mode" role="group" aria-label="Transcript display"><button id="compare-text-raw" type="button" aria-pressed="true">Original</button><button id="compare-text-normalized" type="button" aria-pressed="false">Scored text</button></div>
+          <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
+        </div>
+        <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
+      </section>
     </div>
   </div>
 
@@ -2514,11 +2595,24 @@
     <p>Applied identically to hypothesis and reference before scoring:</p>
     <ol>
       <li>Unicode NFKC — folds compatibility characters (ligatures, full-width
-        digits, <code>²</code>→<code>2</code>) so visually equivalent forms match</li>
-      <li>Danish number canonicalisation — separators inside a numeral are
-        removed so formatting differences don't inflate WER. Thousands and
-        decimals are both stripped: <code>1.234</code> → <code>1234</code>,
-        and <code>3.14</code> / <code>3,14</code> → <code>314</code></li>
+        digits, <code>²</code>→<code>2</code>) so visually equivalent forms match;
+        optional acute accents such as <code>dér</code>/<code>der</code> are ignored</li>
+      <li>Exact word equivalents — selected historical and joined spellings
+        (<code>saa</code>/<code>så</code>, <code>afsted</code>/<code>af sted</code>),
+        abbreviations (<code>fx</code>/<code>for eksempel</code>,
+        <code>bl.a.</code>/<code>blandt andet</code>, <code>m.m.</code>/<code>med mere</code>),
+        units (<code>km</code>, <code>cm</code>, <code>kg</code>, <code>kr</code>,
+        <code>pct</code>, numeric <code>m</code>, <code>mm</code>, <code>m²</code>,
+        <code>km/h</code>, <code>km/t</code>, <code>m/s</code>), and numeric
+        <code>mio.</code>/<code>mia.</code> match their spoken forms</li>
+      <li>Danish number canonicalisation — thousands separators are removed
+        (<code>1.234</code> → <code>1234</code>), while decimals retain a marker
+        (<code>3.14</code> / <code>3,14</code> → <code>3komma14</code>).
+        Trailing decimal zeroes, frequency-unit formatting (including
+        <code>2.400 GHz</code> = <code>2.4 GHz</code>),
+        <code>%</code> / <code>procent</code>, clock times and ratios are
+        normalized. Numeric slashes split numbers without assuming a fraction
+        or date</li>
       <li>Lowercase</li>
       <li>Strip punctuation — apostrophes <em>inside</em> a word
         (e.g. <code>det's</code>) are preserved; all other punctuation and
@@ -2545,12 +2639,11 @@
     and the time range <code>10 00-11 00</code> into <code>ti elleve nul</code>
     &mdash; references no correct transcription could match, which also handed
     free matches to models that emit digits.</p>
-    <p><strong>Known limitation:</strong> colons and slashes are not yet handled
-    the same way &mdash; <code>10:00</code> still collapses to
-    <code>ettusind</code> and <code>4/5</code> to <code>femogfyrre</code>. Each
-    needs its own reading rule (a slash may be a fraction; a date is spoken
-    differently again), so they are tracked separately. Ordinals written with a
-    full stop are likewise left alone (<code>3. plads</code> &rarr;
+    <p><strong>Known limitation:</strong> a bare <code>2.400</code> is read as
+    two thousand four hundred; GHz context is needed for the decimal reading.
+    A numeric slash separates its operands, but does not infer whether they
+    form a fraction or date. Ordinals written with a full stop are likewise
+    left alone (<code>3. plads</code> &rarr;
     <code>tre plads</code>): converting them to <code>tredje</code> was measured
     and rejected, since most <code>N.</code> here are sentence-final cardinals
     rather than true ordinals.</p>
@@ -2574,13 +2667,11 @@
       Verbatim scoring remains available offline via <code>--no-filler-words</code>.
     </blockquote>
     <blockquote>
-      <strong>Note:</strong> Danish orthographic variants
+      <strong>Note:</strong> General Danish spelling substitutions
       (<code>aa</code>↔<code>å</code>, <code>oe</code>↔<code>ø</code>,
-      <code>ae</code>↔<code>æ</code>) are <strong>not</strong> normalised — the
-      digraphs occur legitimately as letter sequences (<code>ekstraarbejde</code>,
-      place names like <code>Aarhus</code>), so a blind substitution would
-      introduce errors. Different Unicode encodings of the <em>same</em> letter
-      <em>are</em> unified by NFC.
+      <code>ae</code>↔<code>æ</code>) are <strong>not</strong> applied — these
+      letter sequences occur legitimately in names such as <code>Aarhus</code>.
+      Only a short, explicit list of historical words is folded.
     </blockquote>
     </section>
 
@@ -2685,6 +2776,16 @@
     <details class="changelog">
       <summary>Methodology &amp; data changes</summary>
       <div class="changelog-body">
+        <h3>2026-10 — Transcript spelling</h3>
+        <ul>
+          <li>Optional acute accents, selected historical spellings and common
+            unit abbreviations now match their spoken forms. All 44 saved outputs
+            were re-scored: mean WER fell by 0.07–0.17 percentage points per model,
+            with no rank changes.</li>
+          <li>Additional attested abbreviations, numeric units and joined/spaced
+            words now match. Re-scoring the same 44 outputs changed mean WER by
+            −0.09 to +0.01 percentage points, with no rank changes.</li>
+        </ul>
         <h3>2026-09 — Common Voice column relabelled</h3>
         <ul>
           <li><strong>The Common Voice column was always the Common Voice 25.0</strong>
@@ -3506,8 +3607,107 @@ window.addEventListener('resize', () => {
   fitTimer = setTimeout(fitModelNames, 150);
 });
 
-/* Give each setting a distinct outline icon without changing the existing
-   controls or their event handlers. */
+/* Keep the native select as the source of truth while giving Compare and
+   Settings the same keyboard-friendly menu. */
+const styledSelects = new Map();
+function upgradeStyledSelect(select, control, label) {
+  label.id = `${select.id}-label`;
+  const trigger = document.createElement('button');
+  trigger.type = 'button';
+  trigger.className = 'compare-select-trigger';
+  trigger.setAttribute('aria-haspopup', 'listbox');
+  trigger.setAttribute('aria-expanded', 'false');
+  trigger.setAttribute('aria-controls', `${select.id}-menu`);
+  const value = document.createElement('span');
+  value.id = `${select.id}-value`;
+  trigger.setAttribute('aria-labelledby', `${label.id} ${value.id}`);
+  const chevron = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  chevron.setAttribute('viewBox', '0 0 24 24');
+  chevron.setAttribute('fill', 'none');
+  chevron.setAttribute('stroke-width', '2');
+  chevron.setAttribute('stroke-linecap', 'round');
+  chevron.setAttribute('aria-hidden', 'true');
+  chevron.innerHTML = '<path d="m6 9 6 6 6-6"/>';
+  trigger.append(value, chevron);
+  const menu = document.createElement('div');
+  menu.id = `${select.id}-menu`;
+  menu.className = 'compare-select-menu';
+  menu.setAttribute('role', 'listbox');
+  menu.setAttribute('aria-labelledby', label.id);
+  menu.hidden = true;
+  const buttons = [...select.options].map(option => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'compare-select-option';
+    button.setAttribute('role', 'option');
+    button.textContent = option.textContent;
+    button.addEventListener('click', () => {
+      if (option.disabled) return;
+      select.value = option.value;
+      select.dispatchEvent(new Event('change', {bubbles: true}));
+      close();
+      trigger.focus();
+    });
+    menu.appendChild(button);
+    return button;
+  });
+  function sync() {
+    value.textContent = select.selectedOptions[0]?.textContent || '';
+    [...select.options].forEach((option, index) => {
+      buttons[index].disabled = option.disabled;
+      buttons[index].setAttribute('aria-selected', String(option.selected));
+    });
+  }
+  function close() {
+    menu.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+  }
+  function open() {
+    styledSelects.forEach(entry => entry.close());
+    sync();
+    menu.hidden = false;
+    trigger.setAttribute('aria-expanded', 'true');
+  }
+  trigger.addEventListener('click', () => menu.hidden ? open() : close());
+  label.addEventListener('click', event => {
+    event.preventDefault();
+    trigger.focus();
+    menu.hidden ? open() : close();
+  });
+  control.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !menu.hidden) {
+      event.preventDefault();
+      close();
+      trigger.focus();
+      return;
+    }
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) return;
+    if (event.target === trigger && menu.hidden) open();
+    if (menu.hidden) return;
+    event.preventDefault();
+    const enabled = buttons.filter(button => !button.disabled);
+    const current = enabled.indexOf(document.activeElement);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? enabled.length - 1
+      : event.target === trigger ? enabled.findIndex(button => button.getAttribute('aria-selected') === 'true')
+      : (current + (event.key === 'ArrowDown' ? 1 : -1) + enabled.length) % enabled.length;
+    enabled[Math.max(0, next)]?.focus();
+  });
+  control.addEventListener('focusout', event => {
+    if (!control.contains(event.relatedTarget)) close();
+  });
+  select.addEventListener('change', sync);
+  select.hidden = true;
+  control.append(trigger, menu);
+  styledSelects.set(select, {control, sync, close});
+  sync();
+}
+document.addEventListener('click', event => {
+  styledSelects.forEach(entry => {
+    if (!entry.control.contains(event.target)) entry.close();
+  });
+});
+
+/* Give each setting a distinct outline icon without changing its handlers. */
 function decorateSettings(bar) {
   const glyphs = {
     metric: ['M3 17l5-5 4 3 8-9', 'M3 3v18h18'],
@@ -3532,6 +3732,7 @@ function decorateSettings(bar) {
     title.className = 'settings-field-title';
     title.append(icon(field.querySelector('select')?.id.startsWith('wer-limit-') ? 'limit' : 'size'), textNode.textContent.trim());
     textNode.replaceWith(title);
+    upgradeStyledSelect(field.querySelector('select'), field, title);
   });
   const field = document.createElement('div');
   field.className = 'openness-filter';
@@ -5032,6 +5233,11 @@ function setupCompare(data) {
   const clearAll = document.getElementById('compare-clear-all');
   const downloadCompare = document.getElementById('download-compare');
   let metric = new URL(window.location.href).searchParams.get('metric') === 'cer' ? 'cer' : 'wer';
+  let transcriptMode = new URL(window.location.href).searchParams.get('transcript_text') === 'normalized' ? 'normalized' : 'raw';
+  let extra = null;
+  let extraPromise = null;
+  let exampleIndex = 0;
+  let fleursManifestPromise = null;
 
   const score = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : '—';
   const count = (row, suffix) => COMPARE_DATASETS.filter(([key]) =>
@@ -5043,6 +5249,9 @@ function setupCompare(data) {
     url.searchParams.set('view', 'compare');
     if (metric === 'cer') url.searchParams.set('metric', 'cer');
     else url.searchParams.delete('metric');
+    url.searchParams.delete('compare_mode'); // old links still open the combined view
+    if (transcriptMode === 'normalized') url.searchParams.set('transcript_text', 'normalized');
+    else url.searchParams.delete('transcript_text');
     url.searchParams.delete('model');
     selected.forEach(name => url.searchParams.append('model', name));
     return url;
@@ -5180,6 +5389,272 @@ function setupCompare(data) {
     });
     document.getElementById(bodyId).appendChild(tr);
   }
+  function loadExtra() {
+    if (extraPromise) return;
+    extraPromise = fetch('compare_data.json', {cache: 'no-cache'})
+      .then(response => { if (!response.ok) throw new Error(`HTTP ${response.status}`); return response.json(); })
+      .then(data => { extra = data; renderExtra(); })
+      .catch(() => {
+        document.getElementById('compare-breakdown').textContent = 'Speaker breakdown is temporarily unavailable.';
+        document.getElementById('compare-example').textContent = 'Saved transcript examples are temporarily unavailable.';
+      });
+  }
+  function upgradeCompareSelect(select) {
+    const control = select.closest('.compare-control');
+    const label = control.querySelector('label');
+    upgradeStyledSelect(select, control, label);
+  }
+  function renderExtra() {
+    if (!extra || !selected.length) return;
+    const dataset = document.getElementById('compare-breakdown-dataset').value;
+    const dimensionSelect = document.getElementById('compare-breakdown-dimension');
+    dimensionSelect.querySelector('[value="dialect"]').disabled = dataset === 'ftspeech';
+    if (dataset === 'ftspeech') dimensionSelect.value = 'gender';
+    styledSelects.get(dimensionSelect)?.sync();
+    const dimension = dimensionSelect.value;
+    const groups = extra.groups?.[dataset]?.[dimension] || {};
+    const target = document.getElementById('compare-breakdown');
+    target.replaceChildren();
+    for (const [label, group] of Object.entries(groups)) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'compare-group';
+      const heading = document.createElement('div');
+      heading.className = 'compare-group-head';
+      const name = document.createElement('strong');
+      name.textContent = label;
+      const count = document.createElement('span');
+      count.textContent = `${group.clips.toLocaleString()} clips · ${group.speakers} ${group.speakers === 1 ? 'speaker' : 'speakers'}`;
+      heading.append(name, count);
+      const bars = document.createElement('div');
+      bars.className = 'compare-bars';
+      const values = selected.map(model => extra.breakdown?.[model.replace(/[^a-zA-Z0-9_-]/g, '__')]?.[dataset]?.[dimension]?.[label]?.[metric]);
+      const finite = values.filter(Number.isFinite);
+      const max = Math.max(1, ...finite);
+      selected.forEach((model, i) => {
+        const line = document.createElement('div');
+        line.className = 'compare-bar';
+        const tag = document.createElement('span');
+        tag.className = 'compare-bar-tag';
+        tag.style.color = colors[i];
+        const modelName = document.createElement('span');
+        modelName.className = 'compare-bar-label';
+        modelName.textContent = shortName(model);
+        tag.appendChild(modelName);
+        const track = document.createElement('div');
+        track.className = 'compare-track';
+        if (Number.isFinite(values[i])) {
+          const fill = document.createElement('div');
+          fill.className = 'compare-fill';
+          fill.style.width = `${Math.max(0, Math.min(100, values[i] / max * 100))}%`;
+          fill.style.background = colors[i];
+          track.appendChild(fill);
+        }
+        const number = document.createElement('span');
+        number.className = 'compare-bar-value';
+        number.textContent = score(values[i]);
+        line.append(tag, track, number);
+        bars.appendChild(line);
+      });
+      wrapper.append(heading, bars);
+      target.appendChild(wrapper);
+    }
+    if (!target.childElementCount) target.textContent = 'No group labels are available for this test set.';
+    renderExample();
+  }
+  function compareWords(value) {
+    return [...value.matchAll(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu)].map(match => ({
+      text: match[0].normalize('NFKC').toLocaleLowerCase('da-DK'),
+      start: match.index,
+      end: match.index + match[0].length
+    }));
+  }
+  function compareWordChanges(reference, hypothesis) {
+    const ref = compareWords(reference);
+    const hyp = compareWords(hypothesis);
+    const distances = Array.from({length: ref.length + 1}, () => new Uint32Array(hyp.length + 1));
+    for (let i = 0; i <= ref.length; i++) distances[i][0] = i;
+    for (let j = 0; j <= hyp.length; j++) distances[0][j] = j;
+    for (let i = 1; i <= ref.length; i++) {
+      for (let j = 1; j <= hyp.length; j++) {
+        distances[i][j] = Math.min(
+          distances[i - 1][j - 1] + (ref[i - 1].text === hyp[j - 1].text ? 0 : 1),
+          distances[i - 1][j] + 1,
+          distances[i][j - 1] + 1
+        );
+      }
+    }
+    const changed = new Set();
+    const omitted = new Set();
+    let i = ref.length, j = hyp.length;
+    while (i || j) {
+      if (i && j && distances[i][j] === distances[i - 1][j - 1]
+          + (ref[i - 1].text === hyp[j - 1].text ? 0 : 1)) {
+        if (ref[i - 1].text !== hyp[j - 1].text) changed.add(j - 1);
+        i--; j--;
+      } else if (j && distances[i][j] === distances[i][j - 1] + 1) {
+        changed.add(--j);
+      } else {
+        omitted.add(--i);
+      }
+    }
+    return {changed, omitted};
+  }
+  function appendMarkedWords(target, value, marked, className) {
+    const words = compareWords(value);
+    let end = 0;
+    words.forEach((word, index) => {
+      target.append(document.createTextNode(value.slice(end, word.start)));
+      if (marked.has(index)) {
+        const span = document.createElement('span');
+        span.className = className;
+        span.textContent = value.slice(word.start, word.end);
+        target.append(span);
+      } else {
+        target.append(document.createTextNode(value.slice(word.start, word.end)));
+      }
+      end = word.end;
+    });
+    target.append(document.createTextNode(value.slice(end)));
+  }
+  function renderExample() {
+    if (!extra || !selected.length) return;
+    const dataset = document.getElementById('compare-output-dataset').value;
+    const candidates = extra.examples?.[dataset] || [];
+    const comparable = candidates.map((item, index) => {
+      const hypotheses = selected.map(model => item.hypotheses[model.replace(/[^a-zA-Z0-9_-]/g, '__')])
+        .filter(value => typeof value === 'string')
+        .map(value => value.normalize('NFKC').toLocaleLowerCase('da-DK').replace(/[^\p{L}\p{N}]+/gu, ' ').trim());
+      return {item, index, diversity: new Set(hypotheses).size};
+    });
+    const differing = selected.length > 1 ? comparable.filter(row => row.diversity > 1) : comparable;
+    const examples = (differing.length ? differing : comparable)
+      .sort((a, b) => b.diversity - a.diversity || a.index - b.index)
+      .map(row => row.item);
+    exampleIndex = Math.max(0, Math.min(exampleIndex, examples.length - 1));
+    const target = document.getElementById('compare-example');
+    target.replaceChildren();
+    document.getElementById('compare-example-count').textContent = examples.length
+      ? `Clip ${exampleIndex + 1} of ${examples.length}` : 'No examples';
+    document.getElementById('compare-example-prev').disabled = exampleIndex === 0;
+    document.getElementById('compare-example-next').disabled = exampleIndex >= examples.length - 1;
+    if (!examples.length) { target.textContent = 'No saved examples for this test set.'; return; }
+    const item = examples[exampleIndex];
+    const normalized = transcriptMode === 'normalized';
+    if (normalized && typeof item.normalized_reference !== 'string') {
+      target.textContent = 'Scored text is unavailable for this clip. Reload the page to try again.';
+      return;
+    }
+    const displayedReference = normalized ? item.normalized_reference : item.reference;
+    const reference = document.createElement('div');
+    reference.className = 'compare-reference';
+    const refHead = document.createElement('div');
+    refHead.className = 'compare-reference-head';
+    const refLabel = document.createElement('small');
+    refLabel.textContent = `Reference · ${item.id}`;
+    refHead.appendChild(refLabel);
+    const refText = document.createElement('p');
+    const refOmissions = new Set();
+    reference.append(refHead, refText);
+    const columns = document.createElement('div');
+    columns.className = 'compare-hypotheses';
+    selected.forEach((model, i) => {
+      const card = document.createElement('div');
+      card.className = 'compare-hypothesis';
+      card.style.setProperty('--model-color', colors[i]);
+      const label = document.createElement('small');
+      label.textContent = model;
+      const text = document.createElement('p');
+      const slug = model.replace(/[^a-zA-Z0-9_-]/g, '__');
+      if (Object.hasOwn(item.hypotheses, slug)) {
+        const hypothesis = (normalized ? item.normalized_hypotheses?.[slug] : item.hypotheses[slug]) || '';
+        const diff = compareWordChanges(displayedReference, hypothesis);
+        diff.omitted.forEach(index => refOmissions.add(index));
+        if (hypothesis) appendMarkedWords(text, hypothesis, diff.changed, 'compare-word-change');
+        else text.textContent = '(empty transcription)';
+      } else {
+        text.textContent = 'No saved output for this clip';
+      }
+      card.append(label, text);
+      const clipScore = item.scores?.[slug];
+      if (clipScore && Number.isFinite(clipScore.wer) && Number.isFinite(clipScore.cer)) {
+        const metrics = document.createElement('span');
+        metrics.className = 'compare-clip-score';
+        metrics.textContent = `WER ${clipScore.wer.toFixed(1)}% · CER ${clipScore.cer.toFixed(1)}%`;
+        card.appendChild(metrics);
+      }
+      columns.appendChild(card);
+    });
+    appendMarkedWords(refText, displayedReference, refOmissions, 'compare-word-omitted');
+    target.append(reference, columns);
+    renderExampleAudio(reference, refHead, dataset, item);
+  }
+  async function renderExampleAudio(reference, refHead, dataset, item) {
+    const box = document.createElement('div');
+    box.className = 'compare-audio';
+    const message = document.createElement('span');
+    box.appendChild(message);
+    reference.appendChild(box);
+    const source = document.createElement('a');
+    source.className = 'compare-source';
+    source.target = '_blank';
+    source.rel = 'noopener noreferrer';
+    const available = url => {
+      if (!reference.isConnected) return;
+      const player = document.createElement('audio');
+      player.controls = true;
+      player.preload = 'metadata';
+      player.src = url;
+      player.setAttribute('aria-label', `Audio for ${item.id}`);
+      player.addEventListener('error', () => {
+        if (reference.isConnected) {
+          message.textContent = 'Audio unavailable from the source right now.';
+          player.replaceWith(message);
+        }
+      });
+      message.replaceWith(player);
+    };
+    if (dataset === 'fleurs_da' && /^fleurs_da_\d{5}\.wav$/.test(item.id)) {
+      source.href = 'https://huggingface.co/datasets/google/fleurs';
+      source.textContent = 'FLEURS · CC BY 4.0 ↗';
+      refHead.appendChild(source);
+      message.textContent = 'Loading audio…';
+      try {
+        fleursManifestPromise ||= fetch('audio/fleurs_da/manifest.json').then(response => {
+          if (!response.ok) throw new Error('FLEURS manifest unavailable');
+          return response.json();
+        });
+        const manifest = await fleursManifestPromise;
+        if (manifest.examples?.[item.id] !== item.reference) throw new Error('FLEURS reference mismatch');
+        const filename = item.id.replace(/\.wav$/, '.m4a');
+        available(`audio/fleurs_da/${filename}`);
+      } catch {
+        fleursManifestPromise = null;
+        if (reference.isConnected) message.textContent = 'Audio unavailable for this clip.';
+      }
+    } else if (dataset === 'ftspeech' && /^ftspeech_\d{5}\.wav$/.test(item.id)) {
+      source.href = 'https://huggingface.co/datasets/alexandrainst/ftspeech';
+      source.textContent = 'FTSpeech source ↗';
+      refHead.appendChild(source);
+      message.textContent = 'Loading audio from FTSpeech…';
+      try {
+        const offset = Number(item.id.slice(9, 14));
+        const url = new URL('https://datasets-server.huggingface.co/rows');
+        url.search = new URLSearchParams({dataset: 'alexandrainst/ftspeech', config: 'default', split: 'test_balanced', offset: String(offset), length: '1'});
+        const response = await fetch(url, {credentials: 'omit'});
+        if (!response.ok) throw new Error('FTSpeech row unavailable');
+        const row = (await response.json()).rows?.[0]?.row;
+        const asset = row?.audio?.[0]?.src;
+        if (row?.sentence !== item.reference || !asset || new URL(asset).hostname !== 'datasets-server.huggingface.co') {
+          throw new Error('FTSpeech reference or audio mismatch');
+        }
+        available(asset);
+      } catch {
+        if (reference.isConnected) message.textContent = 'Audio unavailable from the source right now.';
+      }
+    } else {
+      message.textContent = 'Playback audio is unavailable for this test set.';
+    }
+  }
   function render() {
     selected.sort(compareNames);
     renderChips();
@@ -5282,6 +5757,8 @@ function setupCompare(data) {
       (rows.some(row => count(row, metric) < 5)
         ? 'Mean scores with fewer than five test sets are not directly comparable. ' : '') +
       'Speed reflects the measured hardware and serving stack; compare it with that context in mind.';
+    if (extra) renderExtra();
+    else loadExtra();
   }
 
   add.addEventListener('click', () => list.hidden ? showOptions() : hideOptions());
@@ -5304,6 +5781,25 @@ function setupCompare(data) {
   });
   ['wer', 'cer'].forEach(key => document.getElementById(`compare-${key}`)
     .addEventListener('click', () => { metric = key; syncURL(); render(); }));
+  ['compare-breakdown-dataset', 'compare-breakdown-dimension'].forEach(id =>
+    document.getElementById(id).addEventListener('change', renderExtra));
+  document.getElementById('compare-output-dataset').addEventListener('change', () => { exampleIndex = 0; renderExample(); });
+  function updateTranscriptMode() {
+    document.getElementById('compare-text-raw').setAttribute('aria-pressed', String(transcriptMode === 'raw'));
+    document.getElementById('compare-text-normalized').setAttribute('aria-pressed', String(transcriptMode === 'normalized'));
+  }
+  ['raw', 'normalized'].forEach(mode => document.getElementById(`compare-text-${mode}`)
+    .addEventListener('click', () => {
+      transcriptMode = mode;
+      updateTranscriptMode();
+      syncURL();
+      renderExample();
+    }));
+  updateTranscriptMode();
+  document.getElementById('compare-example-prev').addEventListener('click', () => { exampleIndex--; renderExample(); });
+  document.getElementById('compare-example-next').addEventListener('click', () => { exampleIndex++; renderExample(); });
+  ['compare-breakdown-dataset', 'compare-breakdown-dimension', 'compare-output-dataset']
+    .forEach(id => upgradeCompareSelect(document.getElementById(id)));
   copy.addEventListener('click', async () => {
     try {
       await navigator.clipboard.writeText(shareURL().href);
@@ -5324,6 +5820,7 @@ function setupCompare(data) {
     if (models.has(name) && !selected.includes(name)) selected.push(name);
   }
   render();
+  if (url.searchParams.has('compare_mode')) syncURL();
   if (url.searchParams.get('view') === 'compare')
     document.querySelector('[data-tab="compare"]').click();
 }
@@ -5679,6 +6176,7 @@ async function init() {
         SIZE_SELECTS.forEach(otherId => {
           const other = document.getElementById(otherId);
           other.value = e.target.value;
+          styledSelects.get(other)?.sync();
           other.dispatchEvent(new Event('input', { bubbles: true }));
         });
         applyWer();

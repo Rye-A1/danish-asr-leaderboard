@@ -8,12 +8,12 @@ from danish_asr_leaderboard.normalizer.danish import normalise
     # NFC unification: a + combining ring above (U+030A) → å
     ("ånd", "ånd"),
 
-    # Number separator stripping
+    # Thousands separators are stripped; decimal value is preserved.
     ("1.234 kroner", "1234 kroner"),          # thousands dot
     ("1,234 kroner", "1234 kroner"),          # thousands comma
-    ("3,14", "314"),                          # decimal comma stripped
-    ("3.14", "314"),                          # decimal dot stripped
-    ("12.345,67", "1234567"),                 # combined
+    ("3,14", "3komma14"),                     # decimal comma
+    ("3.14", "3komma14"),                     # decimal dot
+    ("12.345,67", "12345komma67"),           # grouped decimal
     ("år 2025", "år 2025"),                   # non-numeric unchanged
 
     # Lowercase
@@ -242,8 +242,123 @@ def test_output_form_is_still_words_not_digits():
 
 
 def test_spoken_decimal_folds_onto_written_decimal():
-    """alpha2digit emits its own separator after step 2 has run; it must be re-stripped."""
+    """alpha2digit emits a separator after step 2, so canonicalise it again."""
     assert normalise("tre komma fjorten") == normalise("3,14") == normalise("3.14")
+
+
+def test_decimals_do_not_collide_with_integers_or_trailing_zeroes():
+    assert normalise("3,14") != normalise("314")
+    assert normalise("2,40") == normalise("2.4")
+    assert normalise("5.00") == normalise("5,0") == normalise("5")
+
+
+def test_frequency_units_in_issue_114_match_across_spacing_and_compounds():
+    reference = "standarden 802.11n opererer på både 2.4ghz- og 5.0ghz-frekvenserne"
+    brage = "Standarden 802.11n opererer på både 2,4 GHz og 5,0 GHz frekvenserne."
+    edda = "Standarden 802.11n opererer på både 2,4ghz og 5,00ghz frekvenserne."
+    assert normalise(reference) == normalise(brage) == normalise(edda)
+    assert normalise("802.11n") == "80211n"  # model identifier, not a decimal
+
+
+def test_frequency_names_match_abbreviations():
+    assert normalise("2,4 gigahertz og 5 GHz") == normalise("2.4GHz og 5,0ghz")
+
+
+def test_three_place_decimal_needs_ghz_context():
+    assert normalise("2.400 GHz") == normalise("2,4ghz")
+    assert normalise("2.400") == normalise("2400")
+    assert normalise("2.400 kroner") != normalise("2,4 kroner")
+    assert normalise("2.400 MHz") != normalise("2,4 MHz")
+
+
+def test_clock_times_match_colon_dot_and_zero_minute_forms():
+    assert normalise("klokken 06:30") == normalise("kl. 6.30")
+    assert normalise("klokken 06:30 og 07:30") == normalise("kl. 6.30 og 7.30")
+    assert normalise("klokken 11:35 pm") == normalise("kl. 11.35 p.m.")
+    assert normalise("klokken 12:00") == normalise("kl. 12")
+    assert normalise("12:00") == normalise("12")
+
+
+def test_ratio_and_numeric_slash_never_glue_operands():
+    assert normalise("3:2") == normalise("3 til 2")
+    assert normalise("3:2") != normalise("32")
+    assert normalise("4/5") == normalise("4 5")
+    assert normalise("4/5") != normalise("45")
+
+
+def test_percent_symbol_matches_spoken_unit_in_issue_114():
+    assert normalise("100% sikkerhed") == normalise("hundrede procents sikkerhed")
+    assert normalise("15 % rabat") == normalise("femten procent rabat")
+    assert normalise("15% rabat") != normalise("15 rabat")
+
+
+@pytest.mark.parametrize("written,spoken", [
+    ("Marianergraven er næsten 11 km dyb", "Marianergraven er næsten elleve kilometer dyb"),
+    ("50 cm højt", "halvtreds centimeter højt"),
+    ("5 kg", "fem kilogram"),
+    ("300 kr. udbetalt", "trehundrede kroner udbetalt"),
+    ("ca 450 hyldemeter", "cirka 450 hyldemeter"),
+    ("7 pct", "syv procent"),
+    ("lige dér", "lige der"),
+    ("dét var én idé", "det var en ide"),
+    ("Vil De maaske være saa venlig", "Vil De måske være så venlig"),
+    ("Nu skulle han passe paa", "Nu skulle han passe på"),
+    ("han veed det", "han ved det"),
+    ("Det skete idag", "Det skete i dag"),
+    ("det skete igår", "det skete i går"),
+    ("der er ialt tre", "der er i alt tre"),
+    ("iøvrigt er han her", "i øvrigt er han her"),
+    ("hun tog afsted", "hun tog af sted"),
+    ("han var tilstede", "han var til stede"),
+    ("nu går vi igang", "nu går vi i gang"),
+    ("bl.a. børn", "blandt andet børn"),
+    ("fx danske ord", "for eksempel danske ord"),
+    ("f.eks. danske ord", "for eksempel danske ord"),
+    ("osv.", "og så videre"),
+    ("dvs. i morgen", "det vil sige i morgen"),
+    ("m.m.", "med mere"),
+    ("m.fl.", "med flere"),
+    ("mv.", "med videre"),
+    ("evt.", "eventuelt"),
+    ("inkl.", "inklusive"),
+    ("ekskl.", "eksklusive"),
+    ("6 m", "seks meter"),
+    ("18 mm", "atten millimeter"),
+    ("7500 m²", "syvtusindefemhundrede kvadratmeter"),
+    ("80 km/t", "firs kilometer i timen"),
+    ("80 km/h", "firs kilometer i timen"),
+    ("80km/h", "firs kilometer i timen"),
+    ("5 m/s", "fem meter i sekundet"),
+    ("5m/s", "fem meter i sekundet"),
+    ("5 mio.", "fem millioner"),
+    ("2 mia.", "to milliarder"),
+])
+def test_audited_transcript_spellings_score_the_same(written, spoken):
+    assert normalise(written) == normalise(spoken)
+
+
+def test_new_rules_leave_unrelated_words_and_notation_untouched():
+    assert normalise("Aagaard") == "aagaard"
+    assert normalise("ei") == "ei"
+    assert normalise("Ca") == "ca"  # chemical symbol, without an abbreviation dot
+    assert normalise("Köln") == "köln"  # acute-only fold retains other marks
+    assert normalise("e.kr.") == "ekr"  # after Christ, not currency
+    assert normalise("f.Kr.") == "fkr"  # before Christ, not currency
+    assert normalise("mm") == "mm"  # bare sound/letters, not millimetres
+    assert normalise("m") == "m"  # bare letter, not metres
+    assert normalise("m.m.") != normalise("mm")
+    assert normalise("kmm") == "kmm"  # not a unit abbreviation
+    assert normalise("model fx8") == "model fx8"  # embedded acronym
+    assert normalise("indag") == "indag"  # joined forms match only whole words
+    assert normalise("Casper") == "casper"
+
+
+def test_magnitude_abbreviations_keep_the_amount():
+    assert normalise("1 mio.") == normalise("en million")
+    assert normalise("5 mio.") == normalise("fem millioner")
+    assert normalise("1 mia.") == normalise("en milliard")
+    assert normalise("2 mia.") == normalise("to milliarder")
+    assert normalise("5 mio.") != normalise("6 mio.")
 
 
 @pytest.mark.parametrize("text,expected", [

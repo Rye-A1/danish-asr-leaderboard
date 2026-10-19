@@ -45,7 +45,7 @@ ALL_COLUMNS = [spec.column for spec in DATASETS.values()]
 
 def _score_column(
     jsonl_path: Path, unicode_form: str,
-    number_words: bool = True, filler_words: bool = False,
+    number_words: bool = True, filler_words: bool = True,
     spoken_numbers: bool = True,
 ) -> tuple[float, float]:
     records = read_dataset_outputs(jsonl_path)
@@ -58,7 +58,7 @@ def _score_column(
 
 def rescore_model(
     model_dir: Path, unicode_form: str,
-    number_words: bool = True, filler_words: bool = False,
+    number_words: bool = True, filler_words: bool = True,
     spoken_numbers: bool = True,
 ) -> tuple[dict, dict, dict]:
     """Return (wer, cer, meta) for one model directory."""

@@ -77,21 +77,22 @@ Per-model configs (`outputs/<model-slug>`) — one row per utterance: `dataset`,
 
 Applied identically to hypothesis and reference before scoring, so WER/CER reflect recognition errors rather than formatting:
 
-1. **Unicode NFKC** — compatibility composition (folds ligatures, full-width digits, `²`→`2`, …). A near-no-op on Danish speech text, adopted for correctness and consistency with the Danish standard.
-2. **Danish number canonicalisation** — separators within a numeral are stripped (`1.234` → `1234`, `3,14` → `314`).
-3. **Lowercase.**
-4. **Punctuation / symbol removal** — apostrophes inside a word (`det's`) are preserved; all other punctuation and symbols are removed.
-5. **Spelled-out numerals → digits** — words are folded to their digit form with `text2num`, so spelling and spacing variants collapse onto one value before step 6 expands them back (`otte og tredive` and `otteogtredive` → `38`; `hundrede` → `100`). Bare `en` / `et` are left as indefinite articles.
-6. **Numerals → words** — every standalone integer token is expanded to its Danish cardinal words via `num2words` (`4` → `fire`, `24` → `fireogtyve`), so digit-vs-word formatting (`"4"` vs `"fire"`) is not counted as an error. Only standalone integers are converted, so decades such as `1960'erne` keep their digits. Standalone symbol/unit expansion (`%` → `procent`) was tested and rejected as net-neutral-to-harmful.
-7. **Whitespace collapse.**
+1. **Unicode NFKC** — folds compatibility characters; optional acute accents (`dér` / `der`) are ignored while other Danish letters are preserved.
+2. **Exact word equivalents** — selected historical and joined spellings (`saa` / `så`; `idag`, `igår`, `ialt`, `iøvrigt`, `igang`, `afsted`, `tilstede` and their spaced forms) are unified. Attested abbreviations (`bl.a.`, `ca`, `dvs.`, `evt.`, `f.eks.`, `fx`, `inkl.`, `ekskl.`, `m.fl.`, `m.m.`, `mv.`, `osv.`, `pct.`) and units (`km`, `cm`, `kg`, `kr`, numeric `m`, `mm`, `m²`, `km/h`, `km/t`, `m/s`) match their spoken forms. Numeric `mio.` and `mia.` match the corresponding number of millions or billions.
+3. **Danish number canonicalisation** — thousands separators are stripped (`1.234` → `1234`), while decimals retain a marker (`3,14` / `3.14` → `3komma14`). Trailing decimal zeroes are ignored (`5.0` = `5.00`); frequency units are separated from attached numerals and compound suffixes (`2.400 GHz` = `2.4 GHz`), and `%` / `procents` become `procent`. Clock times (`kl. 06:30` = `klokken 6.30`) and ratios (`3:2` = `3 til 2`) are canonicalised; numeric slashes become boundaries.
+4. **Lowercase and punctuation removal** — apostrophes inside a word (`det's`) are preserved; other punctuation and symbols are removed.
+5. **Spelled-out numerals → digits** — `text2num` folds spelling and spacing variants (`otte og tredive` and `otteogtredive` → `38`; `hundrede` → `100`). Bare `en` / `et` remain indefinite articles.
+6. **Numerals → words** — standalone integers become Danish cardinal words via `num2words` (`4` → `fire`, `24` → `fireogtyve`); embedded digits such as `1960'erne` are left alone.
+7. **Hesitation filler removal and whitespace collapse.**
 
 A dash between two digits becomes a space in step 4 rather than being deleted, so `1-3` scores as two numbers. Deleting it glued the range into `13` → `tretten`, and the time range `10 00-11 00` into `ti elleve nul` — references no correct transcription could match, which also handed free matches to models that emit digits while penalising ones that spell the range out.
 
-**Known limitation.** Colons and slashes are not yet treated the same way: `10:00` still collapses to `ettusind` and `4/5` to `femogfyrre`. Both need their own reading rule — a slash may be a fraction, a date is spoken differently again — so they are tracked separately rather than folded into the dash rule. Ordinals written with a full stop are also left alone (`3. plads` → `tre plads`); converting them to `tredje` was measured and rejected as net-harmful, because most `N.` in these references are sentence-final cardinals rather than true ordinals.
+**Known limitation.** A bare three-digit separator (`2.400`) is treated as thousands; GHz context is needed for the decimal reading. Numeric slashes only separate numbers: `4/5` matches `4 5`, but is not assumed to mean a fraction or a date. Ordinals written with a full stop are also left alone (`3. plads` → `tre plads`); converting them to `tredje` was measured and rejected as net-harmful, because most `N.` in these references are sentence-final cardinals rather than true ordinals.
+Bare `mm` also remains literal because it can be a hesitation sound; dotted `m.m.` is handled separately as `med mere`.
 
 Danish hesitation fillers (`øh`, `hmm`, …) are **removed**, from reference and hypothesis alike, using the same pattern as [`alexandrainst/coral`](https://github.com/alexandrainst/coral). Scoring them verbatim measured transcription *convention* rather than accuracy — a model trained to omit disfluencies was penalised for a style choice. Pass `--no-filler-words` to `scripts/rescore.py` to recover verbatim scoring from the saved raw outputs.
 
-Danish orthographic variants (`aa`↔`å`, `oe`↔`ø`, `ae`↔`æ`) are **not** normalised — the digraphs occur legitimately as letter sequences. Because the normaliser is parameterised, [`scripts/rescore.py`](https://github.com/Rye-A1/danish-asr-leaderboard) can re-derive WER/CER from the saved raw outputs under any configuration without re-running inference.
+General Danish orthographic replacements (`aa`↔`å`, `oe`↔`ø`, `ae`↔`æ`) are **not** applied — the digraphs occur legitimately as letter sequences. The exact historical words in step 2 are the only exceptions. [`scripts/rescore.py`](https://github.com/Rye-A1/danish-asr-leaderboard) can re-derive WER/CER from saved raw outputs without re-running inference.
 
 ## Adding a model
 
