@@ -1992,20 +1992,30 @@
 
       /* The card layout hides table headers, so sorting lives in Settings. */
       .settings-sheet .sort-wrap {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
+        display: block;
         min-height: 0;
         padding: 12px;
         border: 1px solid var(--border);
         border-radius: 10px;
         background: var(--surf2);
       }
-      .sort-wrap .settings-field-title .ctl-icon {
+      .sort-summary {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        list-style: none;
+        cursor: pointer;
+      }
+      .sort-summary::-webkit-details-marker { display: none; }
+      .sort-summary .ctl-icon {
         width: 17px;
         height: 17px;
         color: var(--link);
       }
+      .sort-summary-value { margin-left: auto; color: var(--muted); font-size: 12px; }
+      .sort-summary-chevron { width: 15px; height: 15px; color: var(--muted); transition: transform .2s ease; }
+      .sort-wrap[open] .sort-summary-chevron { transform: rotate(180deg); }
+      .sort-content { display: grid; gap: 10px; margin-top: 12px; }
       .sort-options, .sort-order {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2013,6 +2023,9 @@
       }
       .sort-order { padding-top: 10px; border-top: 1px solid var(--border); }
       .sort-choice, .sort-order button {
+        display: flex;
+        align-items: center;
+        gap: 7px;
         min-height: 34px;
         padding: 6px 9px;
         border: 1px solid var(--border);
@@ -2025,13 +2038,14 @@
         text-align: left;
         cursor: pointer;
       }
-      .sort-order button { text-align: center; }
+      .sort-order button { justify-content: center; text-align: center; }
+      .sort-choice-icon { width: 14px; height: 14px; flex: none; }
       .sort-choice[aria-pressed="true"], .sort-order button[aria-pressed="true"] {
         border-color: color-mix(in srgb, var(--link) 45%, var(--border));
         background: color-mix(in srgb, var(--link) 8%, var(--surf));
         color: var(--text);
       }
-      .sort-choice:focus-visible, .sort-order button:focus-visible {
+      .sort-summary:focus-visible, .sort-choice:focus-visible, .sort-order button:focus-visible {
         outline: 2px solid var(--link);
         outline-offset: 2px;
       }
@@ -4030,6 +4044,7 @@ function initFilterToggles() {
     sheet.addEventListener('click', event => { if (event.target === sheet) sheet.close(); });
     sheet.addEventListener('close', () => {
       sheet.querySelectorAll('.openness-filter details[open]').forEach(details => { details.open = false; });
+      sheet.querySelectorAll('.sort-wrap[open]').forEach(details => { details.open = false; });
       TIP.classList.remove('show');
       tipActive = false;
       document.body.append(TIP);
@@ -4184,12 +4199,12 @@ const OPENNESS = [
 /* `dir` puts the best model first. `always` marks a field only visible under
    its ranking method. Rank itself is Mean WER under the default method. */
 const SORT_FIELDS = [
-  { key: 'mean_wer',    label: 'Mean WER',  dir:  1 },
-  { key: 'mean_cer',    label: 'Mean CER',  dir:  1 },
-  { key: 'speed_x',     label: 'Speed',     dir: -1 },
-  { key: 'hf_downloads', label: 'Popularity', dir: -1 },
-  { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt'    },
-  { key: 'borda_score', label: 'Avg. Rank', dir:  1, always: true, method: 'borda' },
+  { key: 'mean_wer',    label: 'Mean WER',  dir:  1, icon: ['M3 6h18', 'M3 12h13', 'M3 18h8'] },
+  { key: 'mean_cer',    label: 'Mean CER',  dir:  1, icon: ['M4 5h16v14H4z', 'M10 5v14', 'M15 5v14'] },
+  { key: 'speed_x',     label: 'Speed',     dir: -1, icon: ['M13 2 4 13h7l-1 9 10-12h-7l1-8z'] },
+  { key: 'hf_downloads', label: 'Popularity', dir: -1, icon: ['M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2', 'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8', 'M22 21v-2a4 4 0 0 0-3-3.87'] },
+  { key: 'bt_score',    label: 'Win Rate',  dir: -1, always: true, method: 'bt', icon: ['M8 21h8', 'M12 17v4', 'M7 4h10v5a5 5 0 0 1-10 0V4z', 'M5 6H3v2a4 4 0 0 0 4 4', 'M19 6h2v2a4 4 0 0 1-4 4'] },
+  { key: 'borda_score', label: 'Avg. Rank', dir:  1, always: true, method: 'borda', icon: ['M4 20v-7', 'M10 20V8', 'M16 20V4', 'M2 20h20'] },
 ];
 
 function initSortControls() {
@@ -4198,11 +4213,20 @@ function initSortControls() {
     const table = pane && pane.querySelector('table');
     if (!table || !pane.querySelector('.filters-toggle') || !table.sortBy) continue;
     const existing = bar.querySelector('.sort-wrap');
-    const wrap = document.createElement('section');
+    const wrap = document.createElement('details');
     wrap.className = 'sort-wrap';
+    wrap.open = existing?.open ?? false;
+    const summary = document.createElement('summary');
+    summary.className = 'sort-summary';
     const title = document.createElement('span');
     title.className = 'settings-field-title';
-    title.append(ICON_SORT(), 'Sort by');
+    title.textContent = 'Sort by';
+    const summaryValue = document.createElement('span');
+    summaryValue.className = 'sort-summary-value';
+    summary.append(ICON_SORT(), title, summaryValue,
+      _icon(['m6 9 6 6 6-6'], 'sort-summary-chevron'));
+    const content = document.createElement('div');
+    content.className = 'sort-content';
     const choices = document.createElement('div');
     choices.className = 'sort-options';
     choices.setAttribute('role', 'group');
@@ -4213,7 +4237,7 @@ function initSortControls() {
       choice.type = 'button';
       choice.className = 'sort-choice';
       choice.dataset.sortKey = f.key;
-      choice.textContent = f.label;
+      choice.append(_icon(f.icon, 'sort-choice-icon'), f.label);
       choices.appendChild(choice);
     }
     const order = document.createElement('div');
@@ -4227,7 +4251,8 @@ function initSortControls() {
       button.textContent = text;
       order.appendChild(button);
     }
-    wrap.append(title, choices, order);
+    content.append(choices, order);
+    wrap.append(summary, content);
     if (existing) existing.replaceWith(wrap);
     else bar.prepend(wrap);
 
@@ -4240,6 +4265,7 @@ function initSortControls() {
     };
     const sync = () => {
       const current = state();
+      bar.querySelector('.sort-summary-value').textContent = `${field(current.key)?.label || 'Mean WER'} ${current.dir === 1 ? '↑' : '↓'}`;
       pane.querySelectorAll('.sort-choice').forEach(button =>
         button.setAttribute('aria-pressed', String(button.dataset.sortKey === current.key)));
       pane.querySelectorAll('.sort-order button').forEach(button =>
