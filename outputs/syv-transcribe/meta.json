@@ -1,13 +1,13 @@
 {
   "model": "syv-transcribe",
-  "model_link": "[syv-transcribe](https://syv.ai)",
-  "params_b": 2.047,
+  "model_link": "[syv-transcribe](https://platform.syv.ai)",
+  "params_b": 0.0,
   "access": "proprietary",
-  "submitted": "2026-09-25",
+  "submitted": "2026-10-14",
   "unicode_form": "NFKC",
   "number_words": true,
   "filler_words": true,
-  "speed_x": 15.7,
+  "speed_x": null,
   "datasets": [
     "coral_conversation",
     "coral_read_aloud",
