@@ -102,6 +102,27 @@ def test_materialise_reuses_manifest_without_loading(tmp_path):
     assert out == [{"audio_path": str(audio), "reference_text": "cached"}]
 
 
+def test_capped_pilot_reuses_full_manifest_without_loading(tmp_path):
+    paths = []
+    for i in range(3):
+        audio = tmp_path / f"{i}.wav"
+        audio.write_bytes(b"RIFF\x00\x00")
+        paths.append(audio)
+    (tmp_path / "demo.manifest.jsonl").write_text("".join(
+        json.dumps({"audio_path": str(path), "reference_text": str(i)}) + "\n"
+        for i, path in enumerate(paths)
+    ))
+
+    def _boom():
+        raise AssertionError("a capped run should reuse existing audio")
+
+    out = _materialise(
+        slug="demo", label="Demo", audio_dir=tmp_path,
+        load_ds=_boom, text_keys=("text",), max_samples=2,
+    )
+    assert [row["reference_text"] for row in out] == ["0", "1"]
+
+
 def _cv_manifest(tmp_path, sentences):
     cv = tmp_path / "cv"
     (cv / "test").mkdir(parents=True)

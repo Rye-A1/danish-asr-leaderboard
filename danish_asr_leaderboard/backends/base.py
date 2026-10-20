@@ -54,6 +54,10 @@ class LoadOptions:
     syv_api_key: str | None = None
     syv_concurrency: int = 8
     syv_cache: str | None = None
+    # Mistral hosted transcription
+    mistral_cache: str | None = None
+    mistral_concurrency: int = 4
+    mistral_rpm: int = 60
 
 
 class Backend(ABC):

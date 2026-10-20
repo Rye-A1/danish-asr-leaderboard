@@ -63,11 +63,13 @@ def _materialise(
     ``Audio(decode=False)``. ``text_keys`` are tried in order for the transcript.
     """
     manifest_path = audio_dir / f"{slug}.manifest.jsonl"
-    if manifest_path.exists() and max_samples == 0:
-        print(f"\n--- Loading {label} (from manifest) ---")
+    if manifest_path.exists():
         rows = _read_manifest(manifest_path)
-        print(f"  {label}: {len(rows)} usable samples (manifest)")
-        return rows
+        if max_samples == 0 or len(rows) >= max_samples:
+            selected = rows[:max_samples] if max_samples > 0 else rows
+            print(f"\n--- Loading {label} (from manifest) ---")
+            print(f"  {label}: {len(selected)} usable samples (manifest)")
+            return selected
 
     print(f"\n--- Loading {label} ---")
     ds = load_ds()
