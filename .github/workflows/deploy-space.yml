@@ -14,6 +14,8 @@ on:
       - 'assets/fonts/**'
       - 'scripts/push_results.py'
       - 'scripts/push_outputs.py'
+      - 'scripts/extract_compare_metadata.py'
+      - 'scripts/build_compare_data.py'
       - 'scripts/update_dataset_card.py'
       - '.github/workflows/deploy-space.yml'
   workflow_dispatch:
@@ -38,7 +40,6 @@ jobs:
 
       - name: Push outputs to HF dataset
         run: uv run --no-project --with pandas --with pyarrow --with huggingface_hub python scripts/push_outputs.py
-        continue-on-error: true
 
       - name: Push results to HF dataset
         run: uv run --no-project --with pandas --with pyarrow --with huggingface_hub python scripts/push_results.py
@@ -69,6 +70,17 @@ jobs:
 
       - name: Refresh dataset viewer configs
         run: uv run --no-project --with huggingface_hub --with pyyaml python scripts/update_dataset_card.py
+
+      - name: Rebuild Compare data
+        # CoRal speaker labels are gated. HF_TOKEN needs read access; the
+        # clip-level metadata stays in the runner's temporary directory.
+        run: |
+          python scripts/extract_compare_metadata.py --out "$RUNNER_TEMP/compare-metadata.jsonl"
+          python scripts/build_compare_data.py \
+            --metadata "$RUNNER_TEMP/compare-metadata.jsonl" \
+            --cache-dir "$RUNNER_TEMP/compare-hf" \
+            --preserve-examples-from huggingface/space/compare_data.json \
+            --require-results-dir results
 
       - name: Deploy Space
         run: uv run --no-project --with pandas --with pyarrow --with requests --with huggingface_hub --with pillow --with numpy python scripts/update_space.py

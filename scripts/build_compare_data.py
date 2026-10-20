@@ -25,6 +25,7 @@ from rapidfuzz.distance import Levenshtein
 
 from danish_asr_leaderboard.metrics import compute_cer, compute_wer
 from danish_asr_leaderboard.normalizer import normalise
+from danish_asr_leaderboard.results import slugify
 
 REPO = "RyeAI/danish-asr-leaderboard"
 DATASETS = ("coral_conversation", "coral_read_aloud", "cv17_da", "fleurs_da", "ftspeech")
@@ -41,7 +42,7 @@ def output_slugs(outputs_dir: Path):
         if model_dir.is_dir() and meta.is_file():
             name = json.loads(meta.read_text(encoding="utf-8")).get("model", "")
             if name:
-                aliases[model_dir.name] = re.sub(r"[^a-zA-Z0-9_-]", "__", name.strip("/"))
+                aliases[model_dir.name] = slugify(name)
     return aliases
 def clip_id(value: str) -> str:
     return Path(str(value)).name
@@ -193,6 +194,33 @@ def score_groups(frame: pd.DataFrame, dataset: str, metadata, groups):
     return result
 
 
+def require_result_coverage(data: dict, results_dir: Path) -> None:
+    """Do not deploy a score whose Compare examples or speaker scores are missing."""
+    missing = []
+    for dataset in DATASETS:
+        if not data["examples"].get(dataset):
+            missing.append(f"{dataset}: no examples")
+    for result in sorted(results_dir.glob("*.json")):
+        if result.name.startswith("._"):
+            continue
+        model = json.loads(result.read_text(encoding="utf-8"))["model"]
+        linked = re.fullmatch(r"\[([^]]+)\]\(https?://[^)]+\)", model)
+        slug = slugify(linked.group(1) if linked else model)
+        groups = data["breakdown"].get(slug, {})
+        for dataset in DEMOGRAPHIC_DATASETS:
+            if dataset not in groups:
+                missing.append(f"{slug}: {dataset} speaker scores")
+        for dataset in DATASETS:
+            examples = data["examples"].get(dataset, [])
+            if not examples:
+                continue
+            count = sum(slug in example["hypotheses"] for example in examples)
+            if count != len(examples):
+                missing.append(f"{slug}: {dataset} examples ({count}/{len(examples)})")
+    if missing:
+        raise ValueError("Compare data is incomplete:\n" + "\n".join(missing))
+
+
 def build(metadata_path: Path, outputs_dir: Path, cache_dir: Path, limit: int,
           examples_from: Path | None = None):
     metadata, revisions = load_metadata(metadata_path)
@@ -264,9 +292,13 @@ def main():
     parser.add_argument("--examples-per-dataset", type=int, default=50)
     parser.add_argument("--preserve-examples-from", type=Path,
                         help="Existing compare_data.json whose clip IDs should stay fixed while re-scoring")
+    parser.add_argument("--require-results-dir", type=Path,
+                        help="Fail if a result lacks examples or speaker scores")
     args = parser.parse_args()
     data = build(args.metadata, args.outputs_dir, args.cache_dir,
                  args.examples_per_dataset, args.preserve_examples_from)
+    if args.require_results_dir:
+        require_result_coverage(data, args.require_results_dir)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"Wrote {args.out}: {len(data['breakdown'])} models, "
