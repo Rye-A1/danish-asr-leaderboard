@@ -52,8 +52,9 @@ id, backend, and where to find it. We'll run it through the harness and add it.
    top-level fields remain the latest leaderboard result. Older evaluations
    appear in the Over Time mean WER/CER plots, not as extra leaderboard rows.
 4. Commit **all of it** and open a pull request. On merge, CI publishes the
-   results to the Hugging Face dataset and redeploys the leaderboard
-   automatically — no manual `push_results.py` / `push_outputs.py` step needed.
+   results and raw outputs to the Hugging Face dataset, refreshes Compare
+   examples and speaker scores, and redeploys the leaderboard automatically —
+   no manual publication step needed.
 
 A descriptive PR description is required for every model submission or update.
 Summarize the model, what changed, and the benchmark results. Include the exact

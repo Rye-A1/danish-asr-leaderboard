@@ -8,7 +8,8 @@ import pandas as pd
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
-from build_compare_data import metadata_groups, output_slugs, preserve_examples, score_example, score_groups
+from build_compare_data import (DATASETS, metadata_groups, output_slugs, preserve_examples,
+                                require_result_coverage, score_example, score_groups)
 from danish_asr_leaderboard.normalizer import normalise
 
 
@@ -49,6 +50,23 @@ def test_preserve_examples_keeps_clip_selection_without_stale_scores(tmp_path):
     assert preserve_examples(path) == {"fleurs_da": {
         "fleurs_da_00001.wav": {"id": "fleurs_da_00001.wav", "reference": "hej", "hypotheses": {}}
     }}
+
+
+def test_deploy_requires_examples_and_speaker_scores_for_each_result(tmp_path):
+    (tmp_path / "short-name.json").write_text(json.dumps({"model": "[new-model](https://example.com)"}))
+    data = {
+        "breakdown": {"new-model": {dataset: {} for dataset in
+                                    ("coral_conversation", "coral_read_aloud", "ftspeech")}},
+        "examples": {dataset: [{"hypotheses": {"new-model": "hej"}}] for dataset in DATASETS},
+    }
+    require_result_coverage(data, tmp_path)
+    data["examples"]["fleurs_da"][0]["hypotheses"].clear()
+    with pytest.raises(ValueError, match="fleurs_da examples"):
+        require_result_coverage(data, tmp_path)
+    data["examples"]["fleurs_da"][0]["hypotheses"]["new-model"] = "hej"
+    del data["breakdown"]["new-model"]["ftspeech"]
+    with pytest.raises(ValueError, match="ftspeech speaker scores"):
+        require_result_coverage(data, tmp_path)
 
 
 def test_example_scores_use_leaderboard_normalization():
