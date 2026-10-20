@@ -39,7 +39,9 @@
       --muted:   #8892aa;
       --accent:  #22c55e;
       --link:    #60a5fa;
-      --pareto-chip: #facc15;
+      --pareto-chip: #f0e5ff;
+      --pareto-chip-border: #8b6ba9;
+      --pareto-chip-fill: linear-gradient(115deg, #3a2c57, #654077 58%, #773b73);
       --pareto-below: #93c5fd;
       --red:     #c60c30;
       --r:       10px;
@@ -58,7 +60,9 @@
       --text:  #1e293b;
       --muted: #64748b;
       --link:  #2563eb;
-      --pareto-chip: #8f6000;
+      --pareto-chip: #633d82;
+      --pareto-chip-border: #c4a6dc;
+      --pareto-chip-fill: linear-gradient(115deg, #f5edff, #e9ddfa 58%, #f0dff2);
       --pareto-below: #60a5fa;
     }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -891,8 +895,12 @@
     .model-meta .m-entry .entry-kind-icon { width: 11px; height: 11px; flex: none; }
     .model-meta .m-frontier {
       color: var(--pareto-chip);
-      border-color: color-mix(in srgb, var(--pareto-chip) 42%, var(--border));
-      background: color-mix(in srgb, var(--pareto-chip) 10%, var(--surf));
+      border-color: var(--pareto-chip-border);
+      background-image:
+        url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27180%27%20height%3D%27180%27%3E%3Cfilter%20id%3D%27n%27%3E%3CfeTurbulence%20type%3D%27fractalNoise%27%20baseFrequency%3D%270.85%27%20numOctaves%3D%273%27%20stitchTiles%3D%27stitch%27%2F%3E%3CfeColorMatrix%20type%3D%27saturate%27%20values%3D%270%27%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%27180%27%20height%3D%27180%27%20filter%3D%27url%28%23n%29%27%20opacity%3D%270.55%27%2F%3E%3C%2Fsvg%3E"),
+        var(--pareto-chip-fill);
+      background-blend-mode: soft-light, normal;
+      background-size: 90px 90px, auto;
     }
     .model-meta .m-frontier::before { content: '★'; font-size: 9px; line-height: 1; }
     .model-meta .meta-info-chip { font-family: inherit; line-height: 1; cursor: help; }
@@ -1159,7 +1167,7 @@
       font-size: 18px;
     }
     .chip-tip-icon svg { width: 17px; height: 17px; }
-    .chip-tip-icon.pareto { color: #ffd25d; }
+    .chip-tip-icon.pareto { color: #e9d5ff; }
     .chip-tip-title { display: block; font-size: 13px; font-weight: 700; }
     .chip-tip-subtitle { display: block; margin-top: 2px; color: rgba(255, 255, 255, .72); font-size: 11px; }
     .chip-tip-body { padding: 11px 14px; color: var(--text); }
