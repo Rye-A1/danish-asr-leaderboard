@@ -1,0 +1,23 @@
+{
+  "model": "Hviske 7 Plus",
+  "model_link": "[Hviske 7 Plus](https://platform.syv.ai)",
+  "params_b": 2.66,
+  "access": "proprietary",
+  "submitted": "2026-10-19",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "spoken_numbers": true,
+  "filler_words": true,
+  "speed_x": 75.4,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "speed_hardware": "NVIDIA GeForce RTX 3090",
+  "speed_audio_seconds": 150792.35,
+  "speed_inference_seconds": 2000.11,
+  "batch_size": 16
+}

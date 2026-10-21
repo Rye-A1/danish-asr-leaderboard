@@ -590,5 +590,38 @@
     "training_data": "https://huggingface.co/Harmonium/brage-v1#training-data",
     "model_card": "https://huggingface.co/Harmonium/brage-v1",
     "paper": null
+  },
+  "Hviske 7 Plus": {
+    "released": {
+      "date": "2026-10-19",
+      "source": "published",
+      "note": "https://platform.syv.ai"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": null,
+    "paper": null
+  },
+  "Hviske 7": {
+    "released": {
+      "date": "2026-10-19",
+      "source": "published",
+      "note": "https://platform.syv.ai"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": null,
+    "paper": null
+  },
+  "Hviske 7 hurtig": {
+    "released": {
+      "date": "2026-10-19",
+      "source": "published",
+      "note": "https://platform.syv.ai"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": null,
+    "paper": null
   }
 }

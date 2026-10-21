@@ -1,0 +1,19 @@
+{
+  "model": "[Hviske 7 Plus](https://platform.syv.ai)",
+  "params_b": 2.66,
+  "coral_conversation_wer": 14.42,
+  "coral_read_aloud_wer": 1.63,
+  "cv17_da_wer": 4.9,
+  "fleurs_da_wer": 5.99,
+  "ftspeech_wer": 5.41,
+  "mean_wer": 6.47,
+  "coral_conversation_cer": 8.33,
+  "coral_read_aloud_cer": 0.81,
+  "cv17_da_cer": 1.64,
+  "fleurs_da_cer": 2.23,
+  "ftspeech_cer": 3.0,
+  "mean_cer": 3.2,
+  "speed_x": 75.4,
+  "submitted": "2026-10-19",
+  "access": "proprietary"
+}
