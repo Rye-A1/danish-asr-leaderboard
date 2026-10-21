@@ -168,7 +168,7 @@ def main() -> None:
     args = ap.parse_args()
 
     import pandas as pd
-    from huggingface_hub import CommitOperationAdd, HfApi
+    from huggingface_hub import CommitOperationAdd, HfApi, hf_hub_download
 
     api = HfApi()
     info = api.repo_info(DATASET_REPO_ID, repo_type="dataset", files_metadata=True)
@@ -199,9 +199,10 @@ def main() -> None:
                 and reusable(slug, file, fingerprints[file], signature,
                              old_manifest, published)):
             continue
-        url = f"https://huggingface.co/datasets/{DATASET_REPO_ID}/resolve/{info.sha}/{file}"
         try:
-            df = pd.read_parquet(url)
+            path = hf_hub_download(DATASET_REPO_ID, file, repo_type="dataset",
+                                   revision=info.sha)
+            df = pd.read_parquet(path)
         except Exception as exc:
             raise RuntimeError(f"Could not read {slug} outputs") from exc
 
