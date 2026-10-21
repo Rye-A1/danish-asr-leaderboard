@@ -26,12 +26,58 @@ from rapidfuzz.distance import Levenshtein
 from danish_asr_leaderboard.metrics import compute_cer, compute_wer
 from danish_asr_leaderboard.normalizer import normalise
 from danish_asr_leaderboard.results import slugify
+from build_cache import output_fingerprints, reusable, source_signature
 
 REPO = "RyeAI/danish-asr-leaderboard"
 DATASETS = ("coral_conversation", "coral_read_aloud", "cv17_da", "fleurs_da", "ftspeech")
 DEMOGRAPHIC_DATASETS = ("coral_conversation", "coral_read_aloud", "ftspeech")
 ROOT = Path(__file__).resolve().parent.parent
 NORMALISE = dict(unicode_form="NFKC", number_words=True, spoken_numbers=True, filler_words=True)
+SOURCE_REPOS = {"coral_conversation": "CoRal-project/coral-v3",
+                "coral_read_aloud": "CoRal-project/coral-v3",
+                "ftspeech": "alexandrainst/ftspeech"}
+
+
+def compare_signature(limit: int) -> str:
+    return source_signature("scripts/build_compare_data.py", "danish_asr_leaderboard/results.py",
+                            options={"examples_per_dataset": limit})
+
+
+def published_compare_data() -> dict | None:
+    """Use the deployed asset as the cache, not a possibly older Git checkout."""
+    try:
+        path = hf_hub_download(REPO, "compare_data.json", repo_type="space")
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except Exception as exc:
+        print(f"No published Compare cache ({exc}); rebuilding", flush=True)
+        return None
+
+
+def same_examples(old: dict, selected: dict) -> bool:
+    return all([(set(selected.get(dataset, {})) ==
+                 {item["id"] for item in old.get("examples", {}).get(dataset, [])})
+                and all(selected[dataset][item["id"]]["reference"] == item["reference"]
+                        for item in old.get("examples", {}).get(dataset, []))
+                for dataset in DATASETS])
+
+
+def cache_matches(old: dict | None, fingerprints: dict, signature: str,
+                  revisions: dict, selected: dict, aliases: dict) -> bool:
+    if not old or old.get("metadata_revisions") != revisions or not same_examples(old, selected):
+        return False
+    manifest = old.get("cache", {})
+    if manifest.get("aliases") != aliases:
+        return False
+    return bool(fingerprints and all(
+        reusable(aliases.get(Path(file).stem, Path(file).stem), file, sha,
+                 signature, manifest, old.get("breakdown", {}))
+        for file, sha in fingerprints.items()))
+
+
+def remote_metadata_revisions(api: HfApi) -> dict:
+    shas = {repo: api.repo_info(repo, repo_type="dataset").sha
+            for repo in set(SOURCE_REPOS.values())}
+    return {dataset: shas[repo] for dataset, repo in SOURCE_REPOS.items()}
 
 
 def output_slugs(outputs_dir: Path):
@@ -222,20 +268,41 @@ def require_result_coverage(data: dict, results_dir: Path) -> None:
 
 
 def build(metadata_path: Path, outputs_dir: Path, cache_dir: Path, limit: int,
-          examples_from: Path | None = None):
+          examples_from: Path | None = None, cached: dict | None = None):
     metadata, revisions = load_metadata(metadata_path)
     groups = metadata_groups(metadata)
     examples = preserve_examples(examples_from) if examples_from else choose_examples(outputs_dir, limit)
     aliases = output_slugs(outputs_dir)
     api = HfApi()
-    info = api.repo_info(REPO, repo_type="dataset")
-    files = sorted(x.rfilename for x in info.siblings
-                   if x.rfilename.startswith("outputs/") and x.rfilename.endswith(".parquet"))
+    info = api.repo_info(REPO, repo_type="dataset", files_metadata=True)
+    fingerprints = output_fingerprints(info.siblings)
+    files = sorted(fingerprints)
+    signature = compare_signature(limit)
+    use_cache = bool(cached and cached.get("metadata_revisions") == revisions
+                     and same_examples(cached, examples)
+                     and cached.get("cache", {}).get("signature") == signature)
+    cached_examples = ({dataset: {item["id"]: item for item in items}
+                        for dataset, items in cached["examples"].items()}
+                       if use_cache else {})
     breakdown = {}
     coverage = {}
     for n, file in enumerate(files, 1):
         source_slug = Path(file).stem
         slug = aliases.get(source_slug, source_slug)
+        old_manifest = cached.get("cache", {}) if use_cache else {}
+        old_breakdown = cached.get("breakdown", {}) if use_cache else {}
+        old_hypotheses = all(
+            slug in cached_examples.get(dataset, {}).get(key, {}).get("hypotheses", {})
+            for dataset, items in examples.items() for key in items)
+        if old_hypotheses and reusable(slug, file, fingerprints[file], signature,
+                                        old_manifest, old_breakdown):
+            breakdown[slug] = old_breakdown[slug]
+            for dataset, items in examples.items():
+                for key, example in items.items():
+                    example["hypotheses"][slug] = cached_examples[dataset][key]["hypotheses"][slug]
+            coverage[slug] = sorted(breakdown[slug])
+            print(f"[{n}/{len(files)}] {slug}: reused", flush=True)
+            continue
         path = hf_hub_download(REPO, file, repo_type="dataset", revision=info.sha,
                                local_dir=cache_dir)
         frame = pd.read_parquet(path, columns=["dataset", "id", "reference", "hypothesis"])
@@ -280,23 +347,55 @@ def build(metadata_path: Path, outputs_dir: Path, cache_dir: Path, limit: int,
         "groups": public_groups,
         "breakdown": breakdown,
         "examples": {dataset: list(items.values()) for dataset, items in examples.items()},
+        "cache": {"signature": signature, "outputs": fingerprints, "aliases": aliases},
     }
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--metadata", type=Path, required=True, help="Local gated/public test metadata JSONL")
+    parser.add_argument("--metadata", type=Path, help="Local gated/public test metadata JSONL")
     parser.add_argument("--outputs-dir", type=Path, default=ROOT / "outputs")
-    parser.add_argument("--cache-dir", type=Path, required=True)
+    parser.add_argument("--cache-dir", type=Path)
     parser.add_argument("--out", type=Path, default=ROOT / "huggingface/space/compare_data.json")
     parser.add_argument("--examples-per-dataset", type=int, default=50)
     parser.add_argument("--preserve-examples-from", type=Path,
                         help="Existing compare_data.json whose clip IDs should stay fixed while re-scoring")
     parser.add_argument("--require-results-dir", type=Path,
                         help="Fail if a result lacks examples or speaker scores")
+    parser.add_argument("--reuse-published", action="store_true",
+                        help="Reuse unchanged models from the deployed Compare asset")
+    parser.add_argument("--check-only", action="store_true",
+                        help="Exit 0 if deployed Compare data is current, 2 if rebuild is needed")
     args = parser.parse_args()
+    cached = published_compare_data() if args.reuse_published or args.check_only else None
+    if args.check_only:
+        if not args.preserve_examples_from:
+            parser.error("--check-only needs --preserve-examples-from")
+        api = HfApi()
+        info = api.repo_info(REPO, repo_type="dataset", files_metadata=True)
+        selected = preserve_examples(args.preserve_examples_from)
+        if cache_matches(cached, output_fingerprints(info.siblings),
+                         compare_signature(args.examples_per_dataset),
+                         remote_metadata_revisions(api), selected,
+                         output_slugs(args.outputs_dir)):
+            if args.require_results_dir:
+                try:
+                    require_result_coverage(cached, args.require_results_dir)
+                except ValueError:
+                    print("Compare coverage changed; rebuilding", flush=True)
+                    raise SystemExit(2)
+            # update_space.py uploads this path even when the rebuild is skipped.
+            args.out.parent.mkdir(parents=True, exist_ok=True)
+            args.out.write_text(json.dumps(cached, ensure_ascii=False, separators=(",", ":")) + "\n",
+                                encoding="utf-8")
+            print("Published Compare data is current; skipping metadata extraction and rebuild.")
+            return
+        print("Compare inputs changed; rebuilding.")
+        raise SystemExit(2)
+    if not args.metadata or not args.cache_dir:
+        parser.error("--metadata and --cache-dir are required for a rebuild")
     data = build(args.metadata, args.outputs_dir, args.cache_dir,
-                 args.examples_per_dataset, args.preserve_examples_from)
+                 args.examples_per_dataset, args.preserve_examples_from, cached)
     if args.require_results_dir:
         require_result_coverage(data, args.require_results_dir)
     args.out.parent.mkdir(parents=True, exist_ok=True)

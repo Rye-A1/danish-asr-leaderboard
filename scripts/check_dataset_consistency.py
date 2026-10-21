@@ -72,8 +72,8 @@ def main() -> None:
 
     missing_outputs = sorted(results - outputs)
     orphan_outputs = sorted(outputs - results)
-    # CIs are regenerated on every deploy, so a gap here is informational: it
-    # means the next deploy still has work to do, not that anything is broken.
+    # Missing intervals are computed on deploy; unchanged published intervals
+    # are reused when their output and scoring fingerprints still match.
     missing_ci = sorted(results & outputs - cis)
 
     print(f"results: {len(results)} | dataset outputs: {len(outputs)} | "
