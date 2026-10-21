@@ -55,11 +55,10 @@ jobs:
           pip install -e . huggingface_hub
           python scripts/check_dataset_consistency.py
 
-      - name: Recompute confidence intervals
-        # Must run after the outputs push (it reads outputs/*.parquet back from the
-        # dataset) and before the Space deploy, so published scores can never sit
-        # outside their published intervals — which is what happened when this was
-        # a manual step that could be forgotten.
+      - name: Update confidence intervals
+        # Must run after the outputs push and before the Space deploy. Unchanged
+        # output hashes reuse published intervals; new or changed models are
+        # recomputed and the manifest is uploaded with the interval file.
         #
         # Unlike the steps around it, compute_ci.py imports danish_asr_leaderboard
         # (metrics + normalizer), so the package has to be installed rather than run
@@ -71,7 +70,26 @@ jobs:
       - name: Refresh dataset viewer configs
         run: uv run --no-project --with huggingface_hub --with pyyaml python scripts/update_dataset_card.py
 
+      - name: Check Compare cache
+        id: compare_cache
+        run: |
+          set +e
+          python scripts/build_compare_data.py \
+            --check-only \
+            --preserve-examples-from huggingface/space/compare_data.json \
+            --require-results-dir results
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "rebuild=false" >> "$GITHUB_OUTPUT"
+          elif [ "$status" -eq 2 ]; then
+            echo "rebuild=true" >> "$GITHUB_OUTPUT"
+          else
+            exit "$status"
+          fi
+
       - name: Rebuild Compare data
+        if: steps.compare_cache.outputs.rebuild == 'true'
         # CoRal speaker labels are gated. HF_TOKEN needs read access; the
         # clip-level metadata stays in the runner's temporary directory.
         run: |
@@ -80,6 +98,7 @@ jobs:
             --metadata "$RUNNER_TEMP/compare-metadata.jsonl" \
             --cache-dir "$RUNNER_TEMP/compare-hf" \
             --preserve-examples-from huggingface/space/compare_data.json \
+            --reuse-published \
             --require-results-dir results
 
       - name: Deploy Space

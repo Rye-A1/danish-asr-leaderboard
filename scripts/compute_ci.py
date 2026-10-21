@@ -41,9 +41,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from danish_asr_leaderboard.datasets import CORE_COLUMNS
 from danish_asr_leaderboard.metrics import corpus_rate, per_utterance_counts
 from danish_asr_leaderboard.normalizer import normalise
+from build_cache import output_fingerprints, reusable, source_signature
 
 DATASET_REPO_ID = "RyeAI/danish-asr-leaderboard"
 OUT_PATH = Path("data/ci.json")
+MANIFEST_PATH = Path("data/ci_manifest.json")
 # Resample in blocks so the index matrix stays small for a 27k-utterance dataset.
 BLOCK = 100
 # The published methodology, stated explicitly so CI and point scores stay aligned.
@@ -141,6 +143,19 @@ def _fetch_published_ci() -> dict:
         return {}
 
 
+def _fetch_published_manifest() -> dict:
+    import urllib.request
+
+    url = (f"https://huggingface.co/datasets/{DATASET_REPO_ID}"
+           "/resolve/main/data/ci_manifest.json")
+    try:
+        with urllib.request.urlopen(url, timeout=30) as resp:
+            data = json.loads(resp.read())
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Sample-level bootstrap CIs from raw outputs")
     ap.add_argument("-B", "--replicates", type=int, default=1000)
@@ -153,10 +168,12 @@ def main() -> None:
     args = ap.parse_args()
 
     import pandas as pd
-    from huggingface_hub import HfApi
+    from huggingface_hub import CommitOperationAdd, HfApi, hf_hub_download
 
     api = HfApi()
-    files = api.list_repo_files(DATASET_REPO_ID, repo_type="dataset")
+    info = api.repo_info(DATASET_REPO_ID, repo_type="dataset", files_metadata=True)
+    fingerprints = output_fingerprints(info.siblings)
+    files = fingerprints
     slugs = sorted(f[len("outputs/"):-len(".parquet")]
                    for f in files
                    if f.startswith("outputs/") and f.endswith(".parquet"))
@@ -166,14 +183,28 @@ def main() -> None:
             print(f"ERROR: no outputs parquet for {args.model!r}", file=sys.stderr)
             sys.exit(1)
 
+    signature = source_signature("scripts/compute_ci.py", "danish_asr_leaderboard/datasets.py",
+                                 options={"replicates": args.replicates, "seed": args.seed})
+    published = {} if args.prune else _fetch_published_ci()
+    old_manifest = {} if args.prune else _fetch_published_manifest()
+    manifest_outputs = (dict(old_manifest.get("outputs", {}))
+                        if old_manifest.get("signature") == signature else {})
     out: dict[str, dict] = {}
     for slug in slugs:
-        url = f"https://huggingface.co/datasets/{DATASET_REPO_ID}/resolve/main/outputs/{slug}.parquet"
-        try:
-            df = pd.read_parquet(url)
-        except Exception as exc:
-            print(f"  SKIP {slug}: {exc}", file=sys.stderr)
+        file = f"outputs/{slug}.parquet"
+        if (not args.prune and not args.model
+                and isinstance(published.get(slug), dict)
+                and published[slug].get("mean_wer_ci")
+                and published[slug].get("mean_cer_ci")
+                and reusable(slug, file, fingerprints[file], signature,
+                             old_manifest, published)):
             continue
+        try:
+            path = hf_hub_download(DATASET_REPO_ID, file, repo_type="dataset",
+                                   revision=info.sha)
+            df = pd.read_parquet(path)
+        except Exception as exc:
+            raise RuntimeError(f"Could not read {slug} outputs") from exc
 
         wer_stats: dict[str, tuple] = {}
         cer_stats: dict[str, tuple] = {}
@@ -223,47 +254,60 @@ def main() -> None:
         if not (lo <= point_wer <= hi):
             print(f"  WARNING: {slug} point estimate {point_wer} outside CI "
                   f"[{lo}, {hi}]", file=sys.stderr)
-        published = _published_mean(slug)
-        drift = "" if published is None or round(abs(published - point_wer), 2) <= 0.01 \
-            else f"  ** differs from published {published} **"
+        published_mean = _published_mean(slug)
+        drift = "" if published_mean is None or round(abs(published_mean - point_wer), 2) <= 0.01 \
+            else f"  ** differs from published {published_mean} **"
         out[slug] = entry
+        if fingerprints[file]:
+            manifest_outputs[file] = fingerprints[file]
         print(f"  {slug:42} mean_wer {point_wer:6.2f}  95% CI [{lo:.2f}, {hi:.2f}]"
               f"  (width {hi - lo:.2f}){drift}")
 
-    if not out:
-        print("Nothing computed.", file=sys.stderr)
-        sys.exit(1)
+    if not out and not published:
+        raise RuntimeError("No published intervals or newly computed intervals")
 
     # Merge into whatever is already published rather than replacing it.
     # `--model` exists precisely so one re-run model can be recomputed cheaply,
     # and writing only that model would delete every other model's interval on
     # upload — a silent data loss from an operation that looks routine.
     # data/ci.json is not tracked in git, so the dataset copy is the base.
-    merged: dict[str, dict] = {}
+    merged: dict[str, dict] = published
     if not args.prune:
-        merged = _fetch_published_ci()
         kept = [s for s in merged if s not in out]
         if kept:
             print(f"\nMerging into {len(merged)} published entr(ies); "
                   f"keeping {len(kept)} untouched")
     merged.update(out)
+    missing = sorted(set(slugs) - merged.keys())
+    if missing:
+        raise RuntimeError(f"Missing confidence intervals for: {', '.join(missing)}")
+
+    if not out:
+        print(f"All {len(slugs)} confidence intervals are current; skipping upload.")
+        return
 
     OUT_PATH.parent.mkdir(parents=True, exist_ok=True)
     OUT_PATH.write_text(json.dumps(merged, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    manifest = {"signature": signature, "outputs": manifest_outputs}
+    MANIFEST_PATH.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n",
+                             encoding="utf-8")
     print(f"\nWrote {OUT_PATH} ({len(out)} recomputed, {len(merged)} total, "
           f"B={args.replicates})")
 
     if args.no_upload:
         return
-    api.upload_file(
-        path_or_fileobj=str(OUT_PATH),
-        path_in_repo="data/ci.json",
+    api.create_commit(
         repo_id=DATASET_REPO_ID,
         repo_type="dataset",
         commit_message=f"Update sample-level bootstrap CIs ({len(out)} recomputed, "
                        f"{len(merged)} total)",
+        operations=[
+            CommitOperationAdd(path_in_repo="data/ci.json", path_or_fileobj=str(OUT_PATH)),
+            CommitOperationAdd(path_in_repo="data/ci_manifest.json",
+                               path_or_fileobj=str(MANIFEST_PATH)),
+        ],
     )
-    print("Uploaded data/ci.json")
+    print("Uploaded data/ci.json and data/ci_manifest.json")
 
 
 if __name__ == "__main__":
