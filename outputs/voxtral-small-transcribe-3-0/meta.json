@@ -1,0 +1,18 @@
+{
+  "model": "voxtral-small-transcribe-3-0",
+  "model_link": "[voxtral-small-transcribe-3-0](https://docs.mistral.ai/models/voxtral-small-transcribe-3-0)",
+  "params_b": 0.0,
+  "access": "proprietary",
+  "submitted": "2026-10-21",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 5.7,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ]
+}

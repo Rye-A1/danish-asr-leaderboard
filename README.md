@@ -58,11 +58,12 @@ uv pip install -e ".[elevenlabs]"      # API backends
 uv pip install -e ".[azure-openai]"
 uv pip install -e ".[google-chirp]"
 uv pip install -e ".[soniox]"
+uv pip install -e ".[mistral]"        # hosted Voxtral Transcribe 3
 ```
 
 Available extras match the `--backend` names: `transformers`, `transformers-remote`, `wav2vec2`,
 `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemotron-asr`, `voxtral`, `danstral`, `seamless`, `cohere-asr`,
-`vibevoice`, `brage`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`, `syv`.
+`vibevoice`, `brage`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`, `syv`, `mistral`.
 
 > **NeMo note:** install `nemo_toolkit[asr]` *first* to avoid
 > dependency-resolver conflicts: `uv pip install "nemo_toolkit[asr]"` then
@@ -119,7 +120,7 @@ danish-asr-eval --model nvidia/nemotron-3.5-asr-streaming-0.6b --backend nemotro
 # Qwen3-ASR / fine-tunes
 danish-asr-eval --model Qwen/Qwen3-ASR-1.7B --backend qwen-asr
 
-# Voxtral
+# Open-weight Voxtral (local inference)
 danish-asr-eval --model mistralai/Voxtral-Mini-3B-2507 --backend voxtral
 
 # Saga 2 (inference package is loaded from the model repo itself)
@@ -142,6 +143,13 @@ danish-asr-eval --model danish-foundation-models/edda-v0.2-duo --backend transfo
 # API backends (params not applicable → defaults to 0.0)
 danish-asr-eval --model chirp_3 --backend google-chirp --google-cloud-project my-gcp-project
 danish-asr-eval --model soniox-v1 --backend soniox --soniox-api-key "$SONIOX_API_KEY"
+
+# Hosted Voxtral 3: export MISTRAL_API_KEY privately in the shell first.
+# The cache is required; an interrupted run reuses completed transcripts.
+danish-asr-eval --model voxtral-mini-transcribe-3-0 --backend mistral \
+  --mistral-cache eval_audio_cache/mistral-mini-3.jsonl \
+  --max-samples 20 --out-dir eval_audio_cache/mistral-pilot-results \
+  --outputs-dir eval_audio_cache/mistral-pilot-outputs
 
 # Quick smoke test (cap samples per dataset)
 danish-asr-eval --model openai/whisper-large-v3 --backend transformers --max-samples 100
@@ -172,7 +180,7 @@ per-API credentials, `--access open|proprietary`, …). Available backends:
 
 `transformers`, `transformers-remote`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`, `nemotron-asr`,
 `voxtral`, `danstral`, `seamless`, `cohere-asr`, `vibevoice`, `brage`, `elevenlabs`,
-`azure-openai`, `google-chirp`, `soniox`, `syv`.
+`azure-openai`, `google-chirp`, `soniox`, `syv`, `mistral`.
 
 Each run writes `results/<model-slug>.json` with per-dataset WER/CER, the core
 means, speed, and metadata. It also persists the **raw, un-normalised** per-sample

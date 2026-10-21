@@ -590,5 +590,33 @@
     "training_data": "https://huggingface.co/Harmonium/brage-v1#training-data",
     "model_card": "https://huggingface.co/Harmonium/brage-v1",
     "paper": null
+  },
+  "voxtral-mini-transcribe-3-0": {
+    "entry_kind": "system",
+    "configuration": "Hosted API",
+    "released": {
+      "date": "2026-10-20",
+      "source": "published",
+      "note": "https://mistral.ai/news/voxtral-3/",
+      "plot_by": "submitted"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://docs.mistral.ai/models/voxtral-mini-transcribe-3-0",
+    "paper": null
+  },
+  "voxtral-small-transcribe-3-0": {
+    "entry_kind": "system",
+    "configuration": "Hosted API",
+    "released": {
+      "date": "2026-10-20",
+      "source": "published",
+      "note": "https://mistral.ai/news/voxtral-3/",
+      "plot_by": "submitted"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://docs.mistral.ai/models/voxtral-small-transcribe-3-0",
+    "paper": null
   }
 }

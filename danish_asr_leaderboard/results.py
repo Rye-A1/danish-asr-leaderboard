@@ -50,6 +50,8 @@ def model_link(model_id: str) -> str:
     in the display name but stripped from the URL, since the variant shares the
     base model's HF repo and ``+`` is not a legal character in a repo id.
     """
+    if model_id in {"voxtral-mini-transcribe-3-0", "voxtral-small-transcribe-3-0"}:
+        return f"[{model_id}](https://docs.mistral.ai/models/{model_id})"
     if model_id.startswith("/") or Path(model_id).exists():
         return model_id
     clean = model_id.rstrip("/")

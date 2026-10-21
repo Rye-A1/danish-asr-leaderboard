@@ -147,6 +147,8 @@ def test_official_size_api_model():
     ("chirp_3",                        "cloud.google.com"),
     ("soniox-v1",                      "soniox.com"),
     ("azure-da-speech",                "microsoft.com"),
+    ("voxtral-mini-transcribe-3-0",   "docs.mistral.ai"),
+    ("voxtral-small-transcribe-3-0",  "docs.mistral.ai"),
     # "transcribe" alone should NOT match the scribe_v key
     ("some-transcribe-model",          ""),
 ])

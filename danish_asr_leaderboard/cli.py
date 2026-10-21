@@ -19,7 +19,7 @@ from danish_asr_leaderboard.results import (
 )
 from danish_asr_leaderboard.scoring import transcribe_dataset
 
-API_BACKENDS = {"elevenlabs", "azure-openai", "google-chirp", "soniox", "ordbogen", "syv"}
+API_BACKENDS = {"elevenlabs", "azure-openai", "google-chirp", "soniox", "ordbogen", "syv", "mistral"}
 
 
 def _notify(msg: str) -> None:
@@ -109,6 +109,12 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--syv-concurrency", type=int, default=8)
     ap.add_argument("--syv-cache", default=None,
                     help="JSONL of transcripts received; a rerun only requests clips missing from it")
+    # Mistral
+    ap.add_argument("--mistral-cache", default=None,
+                    help="Required JSONL transcript cache for paid Mistral requests")
+    ap.add_argument("--mistral-concurrency", type=int, default=4)
+    ap.add_argument("--mistral-rpm", type=int, default=60,
+                    help="Maximum Mistral request starts per minute (0 disables pacing)")
     return ap.parse_args()
 
 
@@ -148,6 +154,10 @@ def _options_from_args(args: argparse.Namespace) -> LoadOptions:
         syv_api_key=args.syv_api_key,
         syv_concurrency=args.syv_concurrency,
         syv_cache=args.syv_cache,
+        # Mistral
+        mistral_cache=args.mistral_cache,
+        mistral_concurrency=args.mistral_concurrency,
+        mistral_rpm=args.mistral_rpm,
     )
 
 
@@ -229,6 +239,7 @@ def main() -> None:
 
     speed_x = round(total_audio / total_infer, 1) if total_infer > 0 else None
 
+    access = "proprietary" if args.backend == "mistral" else args.access
     result = EvalResult(
         model=model_link(model_id),
         params_b=params_b,
@@ -236,7 +247,7 @@ def main() -> None:
         mean_cer=mean([cer[f"{c}_cer"] for c in CORE_COLUMNS]),
         speed_x=speed_x,
         submitted=today_iso(),
-        access=args.access,
+        access=access,
         **wer,
         **cer,
     )
@@ -248,7 +259,7 @@ def main() -> None:
             "model": model_id,
             "model_link": model_link(model_id),
             "params_b": params_b,
-            "access": args.access,
+            "access": access,
             "submitted": result.submitted,
             "unicode_form": args.unicode_form,
             "number_words": args.number_words,
