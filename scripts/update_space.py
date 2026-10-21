@@ -71,6 +71,8 @@ PROVIDER_DOCS = {
     # with its own docs page, and its name contains no "gpt-4o" substring, so
     # without this entry it would render with no link and no logo at all.
     "gpt-transcribe": "https://developers.openai.com/api/docs/models/gpt-transcribe",
+    "voxtral-mini-transcribe-3-0": "https://docs.mistral.ai/models/voxtral-mini-transcribe-3-0",
+    "voxtral-small-transcribe-3-0": "https://docs.mistral.ai/models/voxtral-small-transcribe-3-0",
 }
 
 # Logos for hosted/API models (no HF avatar). Same substring keys as PROVIDER_DOCS.
@@ -83,6 +85,8 @@ PROVIDER_LOGO = {
     # open-weights repos, and the blue mark is how the product presents itself.
     "gpt-4o": "https://developers.openai.com/favicon.png",
     "gpt-transcribe": "https://developers.openai.com/favicon.png",
+    "voxtral-mini-transcribe-3-0": "https://mistral.ai/favicon.ico",
+    "voxtral-small-transcribe-3-0": "https://mistral.ai/favicon.ico",
 }
 
 # API models that have an HF org — fall back to that org's avatar when there is

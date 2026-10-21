@@ -1,0 +1,19 @@
+{
+  "model": "[voxtral-mini-transcribe-3-0](https://docs.mistral.ai/models/voxtral-mini-transcribe-3-0)",
+  "params_b": 0.0,
+  "coral_conversation_wer": 35.1,
+  "coral_read_aloud_wer": 21.25,
+  "cv17_da_wer": 10.45,
+  "fleurs_da_wer": 5.88,
+  "ftspeech_wer": 12.2,
+  "mean_wer": 16.98,
+  "coral_conversation_cer": 22.35,
+  "coral_read_aloud_cer": 8.44,
+  "cv17_da_cer": 3.84,
+  "fleurs_da_cer": 2.19,
+  "ftspeech_cer": 6.84,
+  "mean_cer": 8.73,
+  "speed_x": 5.8,
+  "submitted": "2026-10-21",
+  "access": "proprietary"
+}
