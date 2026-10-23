@@ -189,6 +189,26 @@ hypothesis}` per line, plus a `meta.json`). Because the raw output is saved, any
 normalisation change can be evaluated **offline** — see *Re-scoring* below — without
 re-running the model. Disable with `--outputs-dir ""`.
 
+### Private datasets
+
+Create a UTF-8 `test.csv` with `audio_path` and `reference_text` columns.
+Audio paths are relative to the CSV. Register it in `custom_datasets.py` in the
+directory where you run the command:
+
+```python
+from danish_asr_leaderboard import DatasetConfig
+
+MY_DATASET = DatasetConfig(name="my-dataset", source={"test": "test.csv"})
+```
+
+```bash
+danish-asr-eval --model openai/whisper-small --backend transformers --dataset my-dataset
+```
+
+The CSV and audio are checked before loading the model. Scores and transcripts
+are saved under `results/private/` and `outputs/private/`, separate from public
+leaderboard results.
+
 ## Re-scoring (offline normalisation experiments)
 
 The normaliser is parameterised, and `scripts/rescore.py` recomputes WER/CER
