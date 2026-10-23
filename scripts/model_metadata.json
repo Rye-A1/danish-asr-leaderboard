@@ -618,5 +618,19 @@
     "training_data": null,
     "model_card": "https://docs.mistral.ai/models/voxtral-small-transcribe-3-0",
     "paper": null
+  },
+  "soniox-stt-async-v5": {
+    "entry_kind": "system",
+    "configuration": "Hosted async API; Danish hint",
+    "released": {
+      "date": "2026-06-11",
+      "source": "published",
+      "note": "https://soniox.com/docs/stt/models#june-11-2026",
+      "plot_by": "submitted"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://soniox.com/docs/stt/models#june-11-2026",
+    "paper": null
   }
 }
