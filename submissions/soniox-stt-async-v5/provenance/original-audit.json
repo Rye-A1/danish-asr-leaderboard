@@ -1,0 +1,225 @@
+{
+  "audited_at": "2026-10-23T15:35:57.451447+00:00",
+  "complete": true,
+  "missing_datasets": [],
+  "evaluation_started_at": "2026-10-23T10:34:14.641149+00:00",
+  "evaluation_completed_at": "2026-10-23T15:33:00.661135+00:00",
+  "settings": {
+    "model": {
+      "provider": "soniox",
+      "id": "stt-async-v5",
+      "revision": null,
+      "revision_note": "Hosted API; immutable weight revision unavailable"
+    },
+    "base_url": "https://api.soniox.com/v1",
+    "request_settings": {
+      "model": "stt-async-v5",
+      "language_hints": [
+        "da"
+      ],
+      "language_hints_strict": false,
+      "enable_speaker_diarization": false,
+      "enable_language_identification": false
+    },
+    "translation": null,
+    "context": null,
+    "harness_revision": "dff9607fe1a84a7f1a64a0bb2ec75e7885568ebc",
+    "normalization": {
+      "unicode_form": "NFKC",
+      "number_words": true,
+      "filler_words": true
+    },
+    "max_samples": 0,
+    "workers": 32,
+    "baseline_sha256": "8b0adfb331e5af63acfed11e1c6f493d642900beb9262654afa16327d56b7f21",
+    "timing": "API upload/create/poll/download wall time; excludes local data preparation",
+    "environment": {
+      "python": "3.11.7",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "packages": {
+        "danish-asr-leaderboard": "0.1.0",
+        "datasets": "3.6.0"
+      },
+      "ffmpeg": "ffmpeg version 4.2.2 Copyright (c) 2000-2019 the FFmpeg developers"
+    },
+    "code_sha256": {
+      "soniox.py": "741ff4e2b0b02020f0475acd6e2719ccdde1b75f7df2e3f124b3cafce5f52c5c",
+      "soniox_evaluation.py": "446fab577eff0f1e1091c04637d2ac68cb4454923b1a8cd26346f3cb53132732",
+      "data.py": "fdeae6152f3678dc71508bd9446b1785eb148511e922e109b0ade0d1ce9942dc",
+      "results.py": "d8eff96ae44f9d274338442f435bef839c98d82b9de1beb93b965e09323ab0fa"
+    }
+  },
+  "datasets": {
+    "fleurs": {
+      "repo": "google/fleurs",
+      "revision": "168de341b3db6859a9bac1c50a2ef5e3b47647e0",
+      "config": "da_dk",
+      "split": "test",
+      "expected_rows": 930,
+      "samples": 930,
+      "manifest_sha256": "6663084b51e2dc63f15ab75cdbb2710deec6c680eb78339f9ad52062d9a34b22"
+    },
+    "coral_conversation": {
+      "repo": "CoRal-project/coral-v3",
+      "revision": "01f7c93c21fc9dec87fe9f7149c79569cc433f08",
+      "config": "conversation",
+      "split": "test",
+      "expected_rows": 8438,
+      "samples": 8438,
+      "manifest_sha256": "52a0bd1333c4a2c97f02d21b7c0a654e7d1a49abf9290499898ce12229726d89"
+    },
+    "coral_read_aloud": {
+      "repo": "CoRal-project/coral-v3",
+      "revision": "01f7c93c21fc9dec87fe9f7149c79569cc433f08",
+      "config": "read_aloud",
+      "split": "test",
+      "expected_rows": 9122,
+      "samples": 9122,
+      "manifest_sha256": "0dfe8867f3d168b0393abe615407d4acc32487a95cf997460cc58f7a923e737e"
+    },
+    "ftspeech": {
+      "repo": "alexandrainst/ftspeech",
+      "revision": "e1b7096db63c7d996a8220b13780a547a88a9af0",
+      "config": null,
+      "split": "test_balanced",
+      "expected_rows": 5534,
+      "samples": 5534,
+      "manifest_sha256": "f1db0bc9427ba0602bc4985ef978eb3bdf8298eb829f30bf40b871b172aa33f6"
+    },
+    "cv17": {
+      "repo": "Mozilla Common Voice 27.0 Danish",
+      "revision": "cmu5unqiw008jnq079btgdfgm",
+      "split": "Rye fixed CV25 test clips",
+      "expected_rows": 2756,
+      "samples": 2756,
+      "manifest_sha256": "997927dce88d5ab1cbd14ce220a23df8c03f132f88a0d8cc88e6242a95bb4a61"
+    }
+  },
+  "models": {
+    "soniox-stt-async-v5": {
+      "provider": "soniox",
+      "id": "stt-async-v5",
+      "revision": null,
+      "revision_note": "Hosted API; immutable weight revision unavailable",
+      "datasets": {
+        "fleurs": {
+          "wer": 6.777981469553584,
+          "cer": 2.7731993407050615,
+          "samples": 930,
+          "empty_normalized_references": 0,
+          "audio_seconds": 10579.140000000018,
+          "inference_seconds": 6554.182999997633,
+          "rtf": 0.6195383556695178
+        },
+        "coral_conversation": {
+          "wer": 33.1896186440678,
+          "cer": 21.367051658588444,
+          "samples": 8438,
+          "empty_normalized_references": 11,
+          "audio_seconds": 28884.763999999937,
+          "inference_seconds": 93340.4510000028,
+          "rtf": 3.231477016741525
+        },
+        "coral_read_aloud": {
+          "wer": 21.960215922921837,
+          "cer": 9.127609832365978,
+          "samples": 9122,
+          "empty_normalized_references": 0,
+          "audio_seconds": 62358.07000000022,
+          "inference_seconds": 98494.3809999848,
+          "rtf": 1.5794969440199875
+        },
+        "ftspeech": {
+          "wer": 11.481678935389285,
+          "cer": 6.166479142190878,
+          "samples": 5534,
+          "empty_normalized_references": 0,
+          "audio_seconds": 36176.40643749984,
+          "inference_seconds": 61214.23800000362,
+          "rtf": 1.692103888366037
+        },
+        "cv17": {
+          "wer": 8.988102745196956,
+          "cer": 3.2076452899014942,
+          "samples": 2756,
+          "empty_normalized_references": 0,
+          "audio_seconds": 12793.967999999983,
+          "inference_seconds": 29803.64200000814,
+          "rtf": 2.3295073115712173
+        }
+      },
+      "core5_mean": {
+        "wer": 16.47951954342589,
+        "cer": 8.528397052750371
+      },
+      "transcript_sha256": {
+        "fleurs": "180e6cde89f5fff37e32255aa02852a47d66e6396f1a41e59b5b9e2ee306d428",
+        "coral_conversation": "cf5c5062f16aba1f4f7a6571f7e4c97e5f02cc6f3dbbecd2f0c18af18719be11",
+        "coral_read_aloud": "525a9b690e222cb43dfe3943b75fb90f6b9deaf403c8bd64fcc5bcda4426df3c",
+        "ftspeech": "ca5cebe75bc01429fbce9a41581e63f51d67c4059e325bf9ea1fa7cb627dfcc9",
+        "cv17": "92493f177c5deb135e66fb1f8767b05d4df5a43f11a953d98b6d3de84df350cf"
+      },
+      "raw_jobs_sha256": {
+        "fleurs": "f92164333dc0516bc217ba677c26b319bad822e11427ca1508e9e687b0a3e1f6",
+        "coral_conversation": "ea1a5c5f3a775198ddefbd8621c37275818efdcf0a4ab99cd9855643273c2085",
+        "coral_read_aloud": "310a9b05c06ab17d4f0839b926df5e525310d7f7b487bea737d0f38b492e3326",
+        "ftspeech": "23854514dbe1cc832895d1f592efcddfbabd1b264d623be8e6a06577ba058be8",
+        "cv17": "b1bd744e860b3f6e1affbfd69c2b1d47fefd1b8af05ef2bafba9c1a5beac16bf"
+      }
+    }
+  },
+  "config_sha256": "b169231c2a305d722f3d40b1861d67b86fe3c20247a4c7b43f790eaeb8044c6f",
+  "summary_sha256": "d9a83958e16b332ac4f771aeb07ffde9adf0f954757b2df10605df90f7431b6e",
+  "api_preflight_sha256": "4ba8a0af1107c96bbd5e2cb77946bf3295bd751d6b7632d2f6a40823326753f0",
+  "audit_source_sha256": "113269d1d172746b5aec82fb42b2cdbe69bf5c0c8e001943a4d96f28538806fe",
+  "lockfile_sha256": "be9dfdafb3c9ea001401066dc69363b34ef84dbc36755de19bae9b7caa643c2c",
+  "execution_history": [
+    {
+      "changed_at": "2026-10-23T10:52:11.839337+00:00",
+      "reason": "Increase independent clip concurrency",
+      "previous_workers": 8,
+      "new_workers": 32,
+      "previous_config_file": "execution-config-000.json",
+      "previous_config_sha256": "260df417c92fa2f6f8910ba5468b472a005e6aa64e9b80b2552584b574f642a1",
+      "completed_sets_before_change": {
+        "fleurs": {
+          "wer": 6.777981469553584,
+          "cer": 2.7731993407050615,
+          "samples": 930,
+          "empty_normalized_references": 0,
+          "audio_seconds": 10579.140000000018,
+          "inference_seconds": 6554.182999997633,
+          "rtf": 0.6195383556695178
+        }
+      },
+      "previous_source_dir": "client-phase-001/source"
+    },
+    {
+      "changed_at": "2026-10-23T11:06:52.298651+00:00",
+      "reason": "Reuse HTTPS connections and refill a bounded rolling worker window",
+      "previous_workers": 32,
+      "new_workers": 64,
+      "previous_config_file": "client-phase-001/config.json",
+      "previous_config_sha256": "2514467c904bb7b74470fc59d732df610a20e04d1d34eda0c94f40a15453afb3",
+      "previous_source_dir": "client-phase-001/source",
+      "receipt_sha256": "0b2dda40964df4622d2855663c5db47ed1fa554928acab71932c8e31d448db16",
+      "transport_packages": {
+        "requests": "2.34.2"
+      }
+    },
+    {
+      "changed_at": "2026-10-23T11:13:58.773236+00:00",
+      "reason": "Client transport/scheduling update; recognition and data/scoring unchanged",
+      "previous_workers": 64,
+      "new_workers": 32,
+      "previous_config_file": "client-phase-002/config.json",
+      "previous_config_sha256": "079dc39d7949341044e417d1352f67ba93bdd4e28327b4641b3643b47b697b10",
+      "previous_source_dir": "client-phase-002/source",
+      "receipt_sha256": "987bde6872f7fa771c4f3294809c3a79ac0c1a86334711e0e01030b1354ddc93",
+      "transport_packages": {
+        "requests": "2.34.2"
+      },
+      "initial_max_requests_per_second": 12
+    }
+  ]
+}

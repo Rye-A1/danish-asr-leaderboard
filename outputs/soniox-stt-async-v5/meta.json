@@ -1,0 +1,37 @@
+{
+  "model": "soniox-stt-async-v5",
+  "model_link": "[soniox-stt-async-v5](https://soniox.com/docs/stt/models#june-11-2026)",
+  "params_b": 0.0,
+  "access": "proprietary",
+  "submitted": "2026-10-23",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "spoken_numbers": true,
+  "filler_words": true,
+  "speed_x": null,
+  "datasets": [
+    "fleurs_da",
+    "coral_conversation",
+    "coral_read_aloud",
+    "ftspeech",
+    "cv17_da"
+  ],
+  "model_revision": null,
+  "api_model": "stt-async-v5",
+  "endpoint": "https://api.soniox.com/v1",
+  "request_settings": {
+    "model": "stt-async-v5",
+    "language_hints": [
+      "da"
+    ],
+    "language_hints_strict": false,
+    "enable_speaker_diarization": false,
+    "enable_language_identification": false
+  },
+  "translation": null,
+  "context": null,
+  "inference_harness_revision": "dff9607fe1a84a7f1a64a0bb2ec75e7885568ebc",
+  "scoring_harness_revision": "1de3f8ad2724c363c1c93349f48337792d15bf12",
+  "timing_note": "Speed omitted: archived timing sums concurrent per-clip API latencies.",
+  "hardware": "Hosted Soniox service; server hardware undisclosed. Local Windows CPU client; no local GPU inference."
+}
