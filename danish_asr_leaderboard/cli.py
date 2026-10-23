@@ -8,6 +8,7 @@ from pathlib import Path
 from danish_asr_leaderboard.backends import LoadOptions, available_backends, load_backend
 from danish_asr_leaderboard.datasets import CORE_COLUMNS, DATASETS, DEFAULT_DATASETS
 from danish_asr_leaderboard.metrics import compute_cer, compute_wer
+from danish_asr_leaderboard.private_dataset import evaluate_private
 from danish_asr_leaderboard.raw_outputs import write_dataset_outputs, write_meta
 from danish_asr_leaderboard.results import (
     EvalResult,
@@ -48,8 +49,11 @@ def parse_args() -> argparse.Namespace:
     ap.add_argument("--device", default="cuda", choices=["cuda", "cpu"])
     ap.add_argument("--compute-type", default="float16",
                     help="faster-whisper compute type (e.g. float16, int8)")
-    ap.add_argument("--datasets", default=DEFAULT_DATASETS,
+    data = ap.add_mutually_exclusive_group()
+    data.add_argument("--datasets", default=DEFAULT_DATASETS,
                     help=f"Comma-separated test sets to run. Available: {DEFAULT_DATASETS}")
+    data.add_argument("--dataset",
+                      help="Public dataset name or a local name defined in custom_datasets.py")
     ap.add_argument("--max-samples", type=int, default=0,
                     help="Cap samples per dataset (0 = all). Use for smoke tests.")
     ap.add_argument("--audio-cache-dir", default="eval_audio_cache")
@@ -163,8 +167,12 @@ def _options_from_args(args: argparse.Namespace) -> LoadOptions:
 
 def main() -> None:
     args = parse_args()
+    if args.dataset and args.dataset not in DATASETS:
+        evaluate_private(args, _options_from_args(args))
+        return
     model_id = args.model_id or args.model
-    selectors = [s.strip() for s in args.datasets.split(",") if s.strip()]
+    selectors = ([args.dataset] if args.dataset else
+                 [s.strip() for s in args.datasets.split(",") if s.strip()])
     unknown = [s for s in selectors if s not in DATASETS]
     if unknown:
         print(f"ERROR: unknown dataset(s): {', '.join(unknown)}. "
