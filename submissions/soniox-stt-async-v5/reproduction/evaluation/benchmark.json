@@ -1,0 +1,371 @@
+{
+  "audited_at": "2026-09-25T09:10:55.946891+00:00",
+  "settings": {
+    "harness_revision": "dff9607fe1a84a7f1a64a0bb2ec75e7885568ebc",
+    "normalization": {
+      "unicode_form": "NFKC",
+      "number_words": true,
+      "filler_words": true
+    },
+    "seed": 0,
+    "beam_size": 1,
+    "dtype": "float32",
+    "device": "cuda",
+    "batch_size": 8,
+    "language": "<dan>",
+    "task": "<asr>",
+    "ctc_weight": 0.0,
+    "seq2seq_window_seconds": 30,
+    "ctc_context_seconds": 4,
+    "maxlenratio": 1.0,
+    "max_samples": 0,
+    "environment": {
+      "python": "3.11.7",
+      "platform": "Windows-10-10.0.26200-SP0",
+      "packages": {
+        "torch": "2.9.1+cu126",
+        "torchaudio": "2.9.1+cu126",
+        "espnet": "202511",
+        "datasets": "3.6.0",
+        "danish-asr-leaderboard": "0.1.0"
+      },
+      "cuda": "12.6",
+      "gpu": "NVIDIA GeForce RTX 3090",
+      "ffmpeg": "ffmpeg version 4.2.2 Copyright (c) 2000-2019 the FFmpeg developers"
+    }
+  },
+  "datasets": {
+    "fleurs": {
+      "repo": "google/fleurs",
+      "revision": "168de341b3db6859a9bac1c50a2ef5e3b47647e0",
+      "config": "da_dk",
+      "split": "test",
+      "expected_rows": 930,
+      "samples": 930,
+      "manifest_sha256": "6663084b51e2dc63f15ab75cdbb2710deec6c680eb78339f9ad52062d9a34b22"
+    },
+    "coral_conversation": {
+      "repo": "CoRal-project/coral-v3",
+      "revision": "01f7c93c21fc9dec87fe9f7149c79569cc433f08",
+      "config": "conversation",
+      "split": "test",
+      "expected_rows": 8438,
+      "samples": 8438,
+      "manifest_sha256": "52a0bd1333c4a2c97f02d21b7c0a654e7d1a49abf9290499898ce12229726d89"
+    },
+    "coral_read_aloud": {
+      "repo": "CoRal-project/coral-v3",
+      "revision": "01f7c93c21fc9dec87fe9f7149c79569cc433f08",
+      "config": "read_aloud",
+      "split": "test",
+      "expected_rows": 9122,
+      "samples": 9122,
+      "manifest_sha256": "0dfe8867f3d168b0393abe615407d4acc32487a95cf997460cc58f7a923e737e"
+    },
+    "ftspeech": {
+      "repo": "alexandrainst/ftspeech",
+      "revision": "e1b7096db63c7d996a8220b13780a547a88a9af0",
+      "config": null,
+      "split": "test_balanced",
+      "expected_rows": 5534,
+      "samples": 5534,
+      "manifest_sha256": "f1db0bc9427ba0602bc4985ef978eb3bdf8298eb829f30bf40b871b172aa33f6"
+    },
+    "cv17": {
+      "repo": "Mozilla Common Voice 27.0 Danish",
+      "revision": "cmu5unqiw008jnq079btgdfgm",
+      "split": "Rye fixed CV25 test clips",
+      "expected_rows": 2756,
+      "samples": 2756,
+      "manifest_sha256": "997927dce88d5ab1cbd14ce220a23df8c03f132f88a0d8cc88e6242a95bb4a61"
+    }
+  },
+  "models": {
+    "base": {
+      "repo": "espnet/owsm_v4_base_102M",
+      "revision": "96dbb52dba9e173a0a433b9adda6b52da71a53e4",
+      "kind": "seq2seq",
+      "sha256": {
+        "model": "4702713d44ab3e239101f09182903cd28f7b51e565bb632008af12beefb37752",
+        "config": "25b198e615d9a15276b123bb003328bdf5ccbb940d83f7af26fae4d8468a428e",
+        "bpe": "7ddb01f03dab493c18ab69391e98744c090f897890d8b529b30cae52a8d9eef4",
+        "stats": "00c22dba27594df8f1d8f74a491b20c6e6e8c17e92159f81dfd634f98c098654"
+      },
+      "datasets": {
+        "fleurs": {
+          "wer": 94.52509537729773,
+          "cer": 46.80994063145093,
+          "samples": 930,
+          "empty_normalized_references": 0,
+          "audio_seconds": 10579.140000000018,
+          "inference_seconds": 621.5828804998891,
+          "rtf": 0.05875552081737156
+        },
+        "coral_conversation": {
+          "wer": 183.47457627118644,
+          "cer": 193.58547000846863,
+          "samples": 8438,
+          "empty_normalized_references": 11,
+          "audio_seconds": 28884.763999999937,
+          "inference_seconds": 7734.294044798355,
+          "rtf": 0.2677637956397487
+        },
+        "coral_read_aloud": {
+          "wer": 109.65613995967705,
+          "cer": 59.62077688376244,
+          "samples": 9122,
+          "empty_normalized_references": 0,
+          "audio_seconds": 62358.07000000022,
+          "inference_seconds": 3841.9109198014485,
+          "rtf": 0.061610484734396606
+        },
+        "ftspeech": {
+          "wer": 133.2834382497078,
+          "cer": 80.0582804774598,
+          "samples": 5534,
+          "empty_normalized_references": 0,
+          "audio_seconds": 36176.40643749984,
+          "inference_seconds": 4767.49650850089,
+          "rtf": 0.1317846900226935
+        },
+        "cv17": {
+          "wer": 89.76752007399,
+          "cer": 47.892344912309795,
+          "samples": 2756,
+          "empty_normalized_references": 0,
+          "audio_seconds": 12793.967999999983,
+          "inference_seconds": 669.8026787003037,
+          "rtf": 0.05235300562736319
+        }
+      },
+      "core5_mean": {
+        "wer": 122.14135398637181,
+        "cer": 85.59336258269032
+      },
+      "transcript_sha256": {
+        "fleurs": "6040846dfadb2ce9c335e10b5d3c71d895d84831a9ee3563d8b9109ade043692",
+        "coral_conversation": "9f3eded1b5ab2eff418961387fafebc5049c6d45e9548c3feb1190bb94b7283d",
+        "coral_read_aloud": "5880631d784d9848fa6e747b7810d40dc9677354a21902671dfbc446c0dc9e7b",
+        "ftspeech": "2a59f6c8183c912ca3b54ae6064aaa7aaa6b8e97b5824ec097b99e30dff15aad",
+        "cv17": "1dd308d48490816419b49cbcfcf342c4a604446beae5ae27aaac535e97aa2d9a"
+      }
+    },
+    "small": {
+      "repo": "espnet/owsm_v4_small_370M",
+      "revision": "adf541c613f1a2c90fdf972875c82d76888b099a",
+      "kind": "seq2seq",
+      "sha256": {
+        "model": "ae83197c66c2d8f5fbd45ec7fa845fbee3e62a708c5f3612f2b5e42dc719c564",
+        "config": "1095ffdafba02a80fa9cd0033fd8e7545f74abbc666b753fabbc0e64e4eb4221",
+        "bpe": "7ddb01f03dab493c18ab69391e98744c090f897890d8b529b30cae52a8d9eef4",
+        "stats": "00c22dba27594df8f1d8f74a491b20c6e6e8c17e92159f81dfd634f98c098654"
+      },
+      "datasets": {
+        "fleurs": {
+          "wer": 66.10018332259823,
+          "cer": 26.278184058504422,
+          "samples": 930,
+          "empty_normalized_references": 0,
+          "audio_seconds": 10579.140000000018,
+          "inference_seconds": 1245.0853886991972,
+          "rtf": 0.1176924956753758
+        },
+        "coral_conversation": {
+          "wer": 114.89936440677965,
+          "cer": 73.91597145894521,
+          "samples": 8438,
+          "empty_normalized_references": 11,
+          "audio_seconds": 28884.763999999937,
+          "inference_seconds": 3752.074922199012,
+          "rtf": 0.12989806398276338
+        },
+        "coral_read_aloud": {
+          "wer": 79.80228744506694,
+          "cer": 32.994181115544315,
+          "samples": 9122,
+          "empty_normalized_references": 0,
+          "audio_seconds": 62358.07000000022,
+          "inference_seconds": 3228.6174351004884,
+          "rtf": 0.05177545480641843
+        },
+        "ftspeech": {
+          "wer": 75.37985195513544,
+          "cer": 34.77697601698013,
+          "samples": 5534,
+          "empty_normalized_references": 0,
+          "audio_seconds": 36176.40643749984,
+          "inference_seconds": 2815.3685571969263,
+          "rtf": 0.07782333389196346
+        },
+        "cv17": {
+          "wer": 65.45592130155127,
+          "cer": 25.381548502822515,
+          "samples": 2756,
+          "empty_normalized_references": 0,
+          "audio_seconds": 12793.967999999983,
+          "inference_seconds": 671.6577304000966,
+          "rtf": 0.052497999869946334
+        }
+      },
+      "core5_mean": {
+        "wer": 80.3275216862263,
+        "cer": 38.66937223055932
+      },
+      "transcript_sha256": {
+        "fleurs": "374adaeb12953a2385a2fb8c10609e67942808792befa7c799c85d2d04cdcfe5",
+        "coral_conversation": "9358597a7c1a9bf43c2f42c90c8577042b66c987885c03955eb3fc579b30dbbc",
+        "coral_read_aloud": "ca10e7a527a983b710ae8421db0ee8adce6a992f0ff87fc24d108663ac44d625",
+        "ftspeech": "9b0e13a049f3063de5e502dd6ab95276ab63d838de3572b5f0fa1067e48c5d51",
+        "cv17": "c7b532fd729c87fbd229508f00bc021be6e4cc287c20571d3ac2584482d73528"
+      }
+    },
+    "medium": {
+      "repo": "espnet/owsm_v4_medium_1B",
+      "revision": "2e27c99d9be596ce188997d80d0e50408cae54a7",
+      "kind": "seq2seq",
+      "sha256": {
+        "model": "b02d79f29a4daa31dd49ce145d9bb4cda0a1b68cdad91ae0af170ec3a4e92e09",
+        "config": "34dba381140233785acc29323158a7246cf8f1174d961872e36876915e97ec0a",
+        "bpe": "7ddb01f03dab493c18ab69391e98744c090f897890d8b529b30cae52a8d9eef4",
+        "stats": "00c22dba27594df8f1d8f74a491b20c6e6e8c17e92159f81dfd634f98c098654"
+      },
+      "datasets": {
+        "fleurs": {
+          "wer": 57.6970717930932,
+          "cer": 22.394424797170792,
+          "samples": 930,
+          "empty_normalized_references": 0,
+          "audio_seconds": 10579.140000000018,
+          "inference_seconds": 1276.270189799834,
+          "rtf": 0.12064025901914824
+        },
+        "coral_conversation": {
+          "wer": 124.56885593220339,
+          "cer": 86.21101281104164,
+          "samples": 8438,
+          "empty_normalized_references": 11,
+          "audio_seconds": 28884.763999999937,
+          "inference_seconds": 6902.403986301622,
+          "rtf": 0.23896348906647247
+        },
+        "coral_read_aloud": {
+          "wer": 69.96590201707687,
+          "cer": 28.81372932231015,
+          "samples": 9122,
+          "empty_normalized_references": 0,
+          "audio_seconds": 62358.07000000022,
+          "inference_seconds": 5879.431152800797,
+          "rtf": 0.09428500838465295
+        },
+        "ftspeech": {
+          "wer": 69.4918903401751,
+          "cer": 33.93968219038052,
+          "samples": 5534,
+          "empty_normalized_references": 0,
+          "audio_seconds": 36176.40643749984,
+          "inference_seconds": 5248.877556700494,
+          "rtf": 0.14509118161774073
+        },
+        "cv17": {
+          "wer": 52.764114852650614,
+          "cer": 19.66717665413052,
+          "samples": 2756,
+          "empty_normalized_references": 0,
+          "audio_seconds": 12793.967999999983,
+          "inference_seconds": 1255.991144600208,
+          "rtf": 0.09817057105350034
+        }
+      },
+      "core5_mean": {
+        "wer": 74.89756698703984,
+        "cer": 38.20520515500672
+      },
+      "transcript_sha256": {
+        "fleurs": "a874e16a89afdc0f78782bd066744700fe3eba9e7349014117a388041afacfb1",
+        "coral_conversation": "effe0ed810c34c6ab699765616e61c0ca62f477ad3b34bc2b2bc889f9ce5184e",
+        "coral_read_aloud": "089aa2d0abd0ba1e0ce9808f8c8f2aaa8c92baa3d4d4b88fbd569e657b393542",
+        "ftspeech": "566053c188176d2194f87f08754375ea96af3aa89fba86cd1bc42e45ce7e6d4a",
+        "cv17": "89f2ba8d1bd08bb40ef177aaaa97cb5c7f7cc2940025ce5c0d892977b9fcc714"
+      }
+    },
+    "ctc": {
+      "repo": "espnet/owsm_ctc_v4_1B",
+      "revision": "5f526a73d919afd1bf51ab425909c8ab18801670",
+      "kind": "ctc",
+      "sha256": {
+        "model": "10f28cd40ee38582f68131f6502f306762183bf0e85fdc238ea401bd0e863ae4",
+        "config": "17f10d2d1d2fd4cc643c394cbb3e1ccbf2e8233f4ec1a4a7b70605b86a6d6e3e",
+        "bpe": "71278ea470760e4a9c903242cabda668a846307761c8b947976113970a394795",
+        "stats": "00c22dba27594df8f1d8f74a491b20c6e6e8c17e92159f81dfd634f98c098654"
+      },
+      "datasets": {
+        "fleurs": {
+          "wer": 59.589753753158604,
+          "cer": 23.304955913651565,
+          "samples": 930,
+          "empty_normalized_references": 0,
+          "audio_seconds": 10579.140000000018,
+          "inference_seconds": 92.4582769999979,
+          "rtf": 0.00873967798894785
+        },
+        "coral_conversation": {
+          "wer": 73.52012711864407,
+          "cer": 43.92939512423647,
+          "samples": 8438,
+          "empty_normalized_references": 11,
+          "audio_seconds": 28884.763999999937,
+          "inference_seconds": 830.7555701000383,
+          "rtf": 0.028761030213023037
+        },
+        "coral_read_aloud": {
+          "wer": 66.87757244659996,
+          "cer": 27.422359561334286,
+          "samples": 9122,
+          "empty_normalized_references": 0,
+          "audio_seconds": 62358.07000000022,
+          "inference_seconds": 865.4344901980367,
+          "rtf": 0.013878468178986835
+        },
+        "ftspeech": {
+          "wer": 58.00918616334146,
+          "cer": 24.7007002885629,
+          "samples": 5534,
+          "empty_normalized_references": 0,
+          "audio_seconds": 36176.40643749984,
+          "inference_seconds": 557.6961854993131,
+          "rtf": 0.015416019456294443
+        },
+        "cv17": {
+          "wer": 53.55446252154539,
+          "cer": 19.71465824559288,
+          "samples": 2756,
+          "empty_normalized_references": 0,
+          "audio_seconds": 12793.967999999983,
+          "inference_seconds": 274.08189280191436,
+          "rtf": 0.021422743342949954
+        }
+      },
+      "core5_mean": {
+        "wer": 62.3102204006579,
+        "cer": 27.81441382667562
+      },
+      "transcript_sha256": {
+        "fleurs": "9de62b37ad2b7a6472ceb7e8a3e44fac20158b530045e4f2b5179e4e3a1145ae",
+        "coral_conversation": "e65503649b9767fced91e62200b4aaba79f4c698539bb5a53ae1699a8e0d65bf",
+        "coral_read_aloud": "f695567441fdd40cbad70cd2f8fd8ffd0ecfc020d2c5be9bcdceb12ba049e5d8",
+        "ftspeech": "1daaa0ea0904ee9d578aca0dffa45b3703e440f2f3e5b48289962c4be12c5b74",
+        "cv17": "5c36973e7da8bafed22c5183fdbf38c66b81cfa3120e92c62e3a75c878c57039"
+      }
+    }
+  },
+  "source_sha256": {
+    "__init__.py": "83ba07ef63fffd25bd58580afbbba029e9d6ab085d98b8813faf81f4d3c188cb",
+    "checkpoints.py": "3aac614c1d0bff3f2134f1c649d058d1c5b4ce0c85a2157e245572a3af25c990",
+    "data.py": "fdeae6152f3678dc71508bd9446b1785eb148511e922e109b0ade0d1ce9942dc",
+    "evaluation.py": "12a818d840a0d5a1c8e69c3a2a85ba42789d1d009a79822e2159b5bfc0357130",
+    "owsm.py": "e48d2773ae7a0a5fc40469faa63a946573dfa1d79b31076c6dfd5d0dd45c62e8",
+    "report.py": "ed097f74ca9a31b5baa6acfca847dce0d4bc4e792caa2610d259340d6fb7fb14",
+    "results.py": "d8eff96ae44f9d274338442f435bef839c98d82b9de1beb93b965e09323ab0fa"
+  },
+  "lockfile_sha256": "c14f6844976fbf467ce711475f71e616ca04625aaa3cc8633513a47fd0a7846e"
+}

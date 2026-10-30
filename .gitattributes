@@ -1,0 +1,5 @@
+
+# Preserve byte hashes recorded by the audited Soniox submission.
+/outputs/soniox-stt-async-v5/** -text whitespace=cr-at-eol
+/results/soniox-stt-async-v5.json -text whitespace=cr-at-eol
+/submissions/soniox-stt-async-v5/** -text whitespace=cr-at-eol
