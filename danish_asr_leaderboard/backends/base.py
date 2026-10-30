@@ -60,6 +60,10 @@ class LoadOptions:
     mistral_rpm: int = 60
 
 
+class TranscriptionError(RuntimeError):
+    """A clip failed during a run that requires complete transcripts."""
+
+
 class Backend(ABC):
     """Base class for all ASR backends."""
 
@@ -68,6 +72,7 @@ class Backend(ABC):
     def __init__(self, model: object, *, options: LoadOptions | None = None) -> None:
         self.model = model
         self.options = options or LoadOptions()
+        self.fail_on_error = False
 
     @abstractmethod
     def transcribe_one(self, audio_path: str) -> str:
@@ -84,6 +89,8 @@ class Backend(ABC):
         """Public entry point with a batch->sequential error fallback."""
         try:
             return self.transcribe_batch(audio_paths, batch_size=batch_size)
+        except TranscriptionError:
+            raise
         except Exception as exc:  # noqa: BLE001 - intentional broad fallback
             print(
                 f"  WARNING: batch transcription failed ({exc}), falling back to sequential...",
@@ -99,6 +106,8 @@ class Backend(ABC):
             try:
                 hyps.append(self.transcribe_one(audio_path))
             except Exception as exc:  # noqa: BLE001
+                if self.fail_on_error:
+                    raise TranscriptionError(f"transcription failed for {audio_path}: {exc}") from exc
                 failures += 1
                 if first_error is None:
                     first_error = exc

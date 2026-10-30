@@ -32,7 +32,7 @@ import time
 from abc import abstractmethod
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from danish_asr_leaderboard.backends.base import Backend
+from danish_asr_leaderboard.backends.base import Backend, TranscriptionError
 
 # 429 is the throttle; the 5xx family and 408 are transient and worth another
 # attempt over a multi-hour run. Anything else (401, 400, 404) is a
@@ -158,6 +158,12 @@ class ApiBackend(Backend):
                 try:
                     results[i] = future.result()
                 except Exception as exc:  # noqa: BLE001 - per-file tolerance
+                    if self.fail_on_error:
+                        for pending in futures:
+                            pending.cancel()
+                        raise TranscriptionError(
+                            f"transcription failed for {audio_paths[i]}: {exc}"
+                        ) from exc
                     failures += 1
                     if first_error is None:
                         first_error = exc
