@@ -297,6 +297,17 @@ def test_leaderboard_json_includes_hf_downloads(monkeypatch):
         assert by_name["hosted-api-model"]["hf_downloads"] is None
 
 
+def test_soniox_result_includes_provider_icon(monkeypatch):
+    import update_space
+
+    monkeypatch.setattr(update_space, "_bootstrap_cis", lambda: {})
+    result = json.loads((Path(__file__).resolve().parent.parent
+                         / "results/soniox-stt-async-v5.json").read_text(encoding="utf-8"))
+    data = build_leaderboard_json(pd.DataFrame([result]))
+    for table in ("wer", "cer"):
+        assert data[table][0]["logo"] == "https://soniox.com/icons/favicon-96x96.png"
+
+
 def test_syv_history_keeps_one_current_leaderboard_row(monkeypatch):
     import update_space
 
