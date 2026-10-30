@@ -1,0 +1,19 @@
+{
+  "model": "[soniox-stt-async-v5](https://soniox.com/docs/stt/models#june-11-2026)",
+  "params_b": 0.0,
+  "coral_conversation_wer": 32.92,
+  "coral_read_aloud_wer": 21.82,
+  "cv17_da_wer": 8.65,
+  "fleurs_da_wer": 6.4,
+  "ftspeech_wer": 11.26,
+  "mean_wer": 16.21,
+  "coral_conversation_cer": 21.25,
+  "coral_read_aloud_cer": 9.04,
+  "cv17_da_cer": 3.09,
+  "fleurs_da_cer": 2.5,
+  "ftspeech_cer": 6.03,
+  "mean_cer": 8.38,
+  "speed_x": null,
+  "submitted": "2026-10-23",
+  "access": "proprietary"
+}

@@ -1,0 +1,61 @@
+{
+  "harness": "dff9607fe1a84a7f1a64a0bb2ec75e7885568ebc",
+  "models": {
+    "base": {
+      "repo": "espnet/owsm_v4_base_102M",
+      "revision": "96dbb52dba9e173a0a433b9adda6b52da71a53e4",
+      "kind": "seq2seq"
+    },
+    "small": {
+      "repo": "espnet/owsm_v4_small_370M",
+      "revision": "adf541c613f1a2c90fdf972875c82d76888b099a",
+      "kind": "seq2seq"
+    },
+    "medium": {
+      "repo": "espnet/owsm_v4_medium_1B",
+      "revision": "2e27c99d9be596ce188997d80d0e50408cae54a7",
+      "kind": "seq2seq"
+    },
+    "ctc": {
+      "repo": "espnet/owsm_ctc_v4_1B",
+      "revision": "5f526a73d919afd1bf51ab425909c8ab18801670",
+      "kind": "ctc"
+    }
+  },
+  "datasets": {
+    "fleurs": {
+      "repo": "google/fleurs",
+      "revision": "168de341b3db6859a9bac1c50a2ef5e3b47647e0",
+      "config": "da_dk",
+      "split": "test",
+      "expected_rows": 930
+    },
+    "coral_conversation": {
+      "repo": "CoRal-project/coral-v3",
+      "revision": "01f7c93c21fc9dec87fe9f7149c79569cc433f08",
+      "config": "conversation",
+      "split": "test",
+      "expected_rows": 8438
+    },
+    "coral_read_aloud": {
+      "repo": "CoRal-project/coral-v3",
+      "revision": "01f7c93c21fc9dec87fe9f7149c79569cc433f08",
+      "config": "read_aloud",
+      "split": "test",
+      "expected_rows": 9122
+    },
+    "ftspeech": {
+      "repo": "alexandrainst/ftspeech",
+      "revision": "e1b7096db63c7d996a8220b13780a547a88a9af0",
+      "config": null,
+      "split": "test_balanced",
+      "expected_rows": 5534
+    },
+    "cv17": {
+      "repo": "Mozilla Common Voice 27.0 Danish",
+      "revision": "cmu5unqiw008jnq079btgdfgm",
+      "split": "Rye fixed CV25 test clips",
+      "expected_rows": 2756
+    }
+  }
+}

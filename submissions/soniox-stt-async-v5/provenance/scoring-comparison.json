@@ -1,0 +1,85 @@
+{
+  "original_harness_revision": "dff9607fe1a84a7f1a64a0bb2ec75e7885568ebc",
+  "submission_harness_revision": "1de3f8ad2724c363c1c93349f48337792d15bf12",
+  "original_scores": {
+    "fleurs": {
+      "wer": 6.777981469553584,
+      "cer": 2.7731993407050615,
+      "samples": 930,
+      "empty_normalized_references": 0,
+      "audio_seconds": 10579.140000000018,
+      "inference_seconds": 6554.182999997633,
+      "rtf": 0.6195383556695178
+    },
+    "coral_conversation": {
+      "wer": 33.1896186440678,
+      "cer": 21.367051658588444,
+      "samples": 8438,
+      "empty_normalized_references": 11,
+      "audio_seconds": 28884.763999999937,
+      "inference_seconds": 93340.4510000028,
+      "rtf": 3.231477016741525
+    },
+    "coral_read_aloud": {
+      "wer": 21.960215922921837,
+      "cer": 9.127609832365978,
+      "samples": 9122,
+      "empty_normalized_references": 0,
+      "audio_seconds": 62358.07000000022,
+      "inference_seconds": 98494.3809999848,
+      "rtf": 1.5794969440199875
+    },
+    "ftspeech": {
+      "wer": 11.481678935389285,
+      "cer": 6.166479142190878,
+      "samples": 5534,
+      "empty_normalized_references": 0,
+      "audio_seconds": 36176.40643749984,
+      "inference_seconds": 61214.23800000362,
+      "rtf": 1.692103888366037
+    },
+    "cv17": {
+      "wer": 8.988102745196956,
+      "cer": 3.2076452899014942,
+      "samples": 2756,
+      "empty_normalized_references": 0,
+      "audio_seconds": 12793.967999999983,
+      "inference_seconds": 29803.64200000814,
+      "rtf": 2.3295073115712173
+    }
+  },
+  "original_mean": {
+    "wer": 16.47951954342589,
+    "cer": 8.528397052750371
+  },
+  "submission_result": {
+    "model": "[soniox-stt-async-v5](https://soniox.com/docs/stt/models#june-11-2026)",
+    "params_b": 0.0,
+    "coral_conversation_wer": 32.92,
+    "coral_read_aloud_wer": 21.82,
+    "cv17_da_wer": 8.65,
+    "fleurs_da_wer": 6.4,
+    "ftspeech_wer": 11.26,
+    "mean_wer": 16.21,
+    "coral_conversation_cer": 21.25,
+    "coral_read_aloud_cer": 9.04,
+    "cv17_da_cer": 3.09,
+    "fleurs_da_cer": 2.5,
+    "ftspeech_cer": 6.03,
+    "mean_cer": 8.38,
+    "speed_x": null,
+    "submitted": "2026-10-23",
+    "access": "proprietary"
+  },
+  "packages": {
+    "text2num": "3.1.0",
+    "num2words": "0.5.14",
+    "rapidfuzz": "3.14.6"
+  },
+  "upstream_source_sha256": {
+    "scripts\\rescore.py": "c1ed3208f7dbeb2ce4040da1bc06450b11a13ff503dbaf064b7f5c2fbcef140d",
+    "danish_asr_leaderboard\\metrics.py": "2677e7104d1a77b15cd333bf88d4ae741d375f8f9096738f577923b619d6e898",
+    "danish_asr_leaderboard\\normalizer\\__init__.py": "1d67d2c1e589fd0765716dada344268a03206377a6f0442d42ab3f87aac5c29e",
+    "danish_asr_leaderboard\\normalizer\\danish.py": "73d12857954eabc0bb2f9a2f070bf1b85cff7f25ba31f2359d48d7dc4f9d5fe7"
+  }
+}
