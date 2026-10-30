@@ -11,9 +11,10 @@ env/
 
 # Eval artifacts
 eval_audio_cache/
-results/private/
-outputs/private/
-/custom_datasets.py
+private-data/
+**/results/private/
+**/outputs/private/
+custom_datasets.py
 *.manifest.jsonl
 results_rescored*/
 

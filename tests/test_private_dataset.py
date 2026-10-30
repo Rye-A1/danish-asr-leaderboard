@@ -1,7 +1,10 @@
 """Private evaluation contract, using synthetic audio and a local fake backend."""
 import csv
+import hashlib
 import json
+import os
 import shutil
+import stat
 import sys
 import wave
 from pathlib import Path
@@ -11,6 +14,8 @@ from unittest.mock import Mock
 import pytest
 
 from danish_asr_leaderboard import cli, private_dataset
+from danish_asr_leaderboard.backends.api._base import ApiBackend
+from danish_asr_leaderboard.backends.base import Backend, TranscriptionError
 from danish_asr_leaderboard.custom_datasets import load_config
 
 
@@ -177,3 +182,99 @@ def test_incomplete_transcription_fails_and_releases(local_data, tmp_path, monke
         cli.main()
     backend.release.assert_called_once()
     assert not (tmp_path / "results").exists()
+
+
+def two_clips(local_data, tmp_path):
+    audio = tmp_path / "second.wav"
+    with wave.open(str(audio), "wb") as wav:
+        wav.setparams((1, 2, 16000, 0, "NONE", "not compressed"))
+        wav.writeframes(b"\x02\x00" * 160)
+    with local_data.open("a", encoding="utf-8") as stream:
+        stream.write("second.wav,Hej med dig\n")
+    return hashlib.sha256(audio.read_bytes()).hexdigest() + ".wav"
+
+
+@pytest.mark.parametrize("concurrent", [False, True])
+def test_partial_transcription_failure_does_not_save_a_score(
+    local_data, tmp_path, monkeypatch, concurrent,
+):
+    failed_name = two_clips(local_data, tmp_path)
+
+    class Local(Backend):
+        def transcribe_one(self, path):
+            calls.append(path)
+            if Path(path).name == failed_name:
+                raise RuntimeError("failed clip")
+            return "hej med dig"
+
+    class Hosted(ApiBackend):
+        concurrency = 2
+
+        def _call(self, path):
+            calls.append(path)
+            if Path(path).name == failed_name:
+                raise RuntimeError("failed clip")
+            return "hej med dig"
+
+    calls = []
+    backend = (Hosted if concurrent else Local)(None)
+    backend.release = Mock()
+    arguments(monkeypatch)
+    monkeypatch.setattr(private_dataset, "load_backend", lambda *args: backend)
+    with pytest.raises(TranscriptionError, match="failed clip"):
+        cli.main()
+    backend.release.assert_called_once()
+    assert len(calls) == len(set(calls))  # no paid retry after a per-clip failure
+    assert not (tmp_path / "results").exists()
+    assert not (tmp_path / "outputs").exists()
+
+
+def test_private_allows_empty_transcripts_and_batch_fallback(local_data, tmp_path, monkeypatch):
+    two_clips(local_data, tmp_path)
+
+    class BatchFallback(Backend):
+        def transcribe_batch(self, paths, *, batch_size):
+            raise RuntimeError("batch failed")
+
+        def transcribe_one(self, path):
+            return "" if Path(path).name == failed_name else "hej med dig"
+
+        def release(self):
+            pass
+
+    failed_name = hashlib.sha256((tmp_path / "second.wav").read_bytes()).hexdigest() + ".wav"
+    backend = BatchFallback(None)
+    arguments(monkeypatch)
+    monkeypatch.setattr(private_dataset, "load_backend", lambda *args: backend)
+    cli.main()
+    result = json.loads(next((tmp_path / "results").rglob("*.json")).read_text())
+    assert result["samples"] == 2
+    assert result["wer"] == 50.0
+
+
+@pytest.mark.skipif(os.name != "posix", reason="Unix permission bits")
+@pytest.mark.parametrize("provider", ["mistral", "syv"])
+def test_private_files_and_existing_cache_are_owner_only(
+    local_data, tmp_path, monkeypatch, provider,
+):
+    for parent in ("eval_audio_cache/private", "results/private", "outputs/private"):
+        path = tmp_path / parent
+        path.mkdir(parents=True)
+        path.chmod(0o755)
+    cache = tmp_path / "provider-cache.jsonl"
+    cache.write_text("", encoding="utf-8")
+    cache.chmod(0o644)
+    arguments(monkeypatch, "--backend", provider, f"--{provider}-cache", str(cache))
+    backend = Mock()
+    backend.transcribe.return_value = ["hej med dig"]
+    monkeypatch.setattr(private_dataset, "load_backend", lambda *args: backend)
+    old_umask = os.umask(0o022)
+    try:
+        cli.main()
+    finally:
+        os.umask(old_umask)
+    for parent in ("eval_audio_cache/private", "results/private", "outputs/private"):
+        assert stat.S_IMODE((tmp_path / parent).stat().st_mode) == 0o700
+    for path in [cache, *tmp_path.rglob("*.jsonl"), *tmp_path.rglob("*.json"),
+                 *(tmp_path / "eval_audio_cache/private").glob("*.wav")]:
+        assert stat.S_IMODE(path.stat().st_mode) == 0o600

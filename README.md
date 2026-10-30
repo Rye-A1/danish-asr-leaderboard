@@ -191,14 +191,16 @@ re-running the model. Disable with `--outputs-dir ""`.
 
 ### Private datasets
 
-Create a UTF-8 `test.csv` with `audio_path` and `reference_text` columns.
+Put the private audio and a UTF-8 `test.csv` with `audio_path` and `reference_text`
+columns in `private-data/`, which Git ignores, or outside the repository. Restrict
+access to that input directory (for example, `chmod 700 private-data` on Unix).
 Audio paths are relative to the CSV. Register it in `custom_datasets.py` in the
 directory where you run the command:
 
 ```python
 from danish_asr_leaderboard import DatasetConfig
 
-MY_DATASET = DatasetConfig(name="my-dataset", source={"test": "test.csv"})
+MY_DATASET = DatasetConfig(name="my-dataset", source={"test": "private-data/test.csv"})
 ```
 
 ```bash
@@ -207,7 +209,12 @@ danish-asr-eval --model openai/whisper-small --backend transformers --dataset my
 
 The CSV and audio are checked before loading the model. Scores and transcripts
 are saved under `results/private/` and `outputs/private/`, separate from public
-leaderboard results.
+leaderboard results. Generated private directories and files are owner-only on
+Unix; check access controls on other systems. If using `--syv-cache` or
+`--mistral-cache`, place the cache in `private-data/` or outside the repository.
+The same applies to custom output directories passed through command-line options.
+A failed transcription stops the run without writing a score. Hosted backends
+send the audio to their provider; use them only when that is appropriate for the data.
 
 ## Re-scoring (offline normalisation experiments)
 

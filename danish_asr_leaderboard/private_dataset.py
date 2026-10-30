@@ -18,6 +18,13 @@ from danish_asr_leaderboard.results import slugify, today_iso
 from danish_asr_leaderboard.scoring import transcribe_dataset
 
 
+def private_dir(path: Path) -> Path:
+    """Keep generated private data inaccessible to other local users."""
+    path.mkdir(parents=True, exist_ok=True, mode=0o700)
+    path.chmod(0o700)
+    return path
+
+
 def load_local_dataset(source_csv: Path, audio_dir: Path, max_samples: int = 0):
     """Validate selected rows and transcode local audio; never silently drop clips."""
     if max_samples < 0:
@@ -29,8 +36,7 @@ def load_local_dataset(source_csv: Path, audio_dir: Path, max_samples: int = 0):
     header = reader.fieldnames or []
     if not all(key in header for key in columns) or len(header) != len(set(header)):
         raise ValueError(f"{source_csv.name}: expected unique CSV columns {columns}")
-    cache = audio_dir / "private"
-    cache.mkdir(parents=True, exist_ok=True)
+    cache = private_dir(audio_dir / "private")
     rows = []
     for entry in islice(reader, max_samples or None):
         location = f"{source_csv.name}:{reader.line_num}"
@@ -51,6 +57,7 @@ def load_local_dataset(source_csv: Path, audio_dir: Path, max_samples: int = 0):
         if not wav.exists() and not audio_to_wav(source, wav):
             wav.unlink(missing_ok=True)
             raise ValueError(f"{location}: audio conversion failed")
+        wav.chmod(0o600)
         if wav_duration(str(wav)) <= 0:
             raise ValueError(f"{location}: audio is empty or unreadable")
         rows.append({"audio_path": str(wav.resolve()), "reference_text": entry["reference_text"]})
@@ -67,7 +74,16 @@ def evaluate_private(args, options) -> None:
     rows, dataset_sha = load_local_dataset(
         source_csv, Path(args.audio_cache_dir), args.max_samples,
     )
+    if args.backend in ("mistral", "syv"):
+        cache_path = getattr(options, f"{args.backend}_cache")
+        if cache_path:
+            cache = Path(cache_path)
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            if not cache.exists():
+                cache.touch(mode=0o600)
+            cache.chmod(0o600)
     backend = load_backend(args.backend, args.model, options)
+    backend.fail_on_error = True
     try:
         refs, hyps, infer_s, audio_s, raw = transcribe_dataset(
             backend, rows, batch_size=args.batch_size,
@@ -109,9 +125,13 @@ def evaluate_private(args, options) -> None:
     run = f"smoke-{args.max_samples}" if args.max_samples else "full"
     suffix = Path("private") / dataset_sha / run
     if args.outputs_dir:
-        write_dataset_outputs(Path(args.outputs_dir) / suffix, model_id, "private", raw)
+        private_dir(Path(args.outputs_dir) / "private")
+        output = write_dataset_outputs(Path(args.outputs_dir) / suffix, model_id, "private", raw)
+        output.chmod(0o600)
+    private_dir(Path(args.out_dir) / "private")
     out_path = Path(args.out_dir) / suffix / f"{slugify(model_id)}.json"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    out_path.chmod(0o600)
     print(f"Private dataset WER: {result['wer']:.2f}% | CER: {result['cer']:.2f}%")
     print(f"Saved: {out_path}")
