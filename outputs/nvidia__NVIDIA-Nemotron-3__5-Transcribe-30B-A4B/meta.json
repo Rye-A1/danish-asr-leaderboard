@@ -1,0 +1,28 @@
+{
+  "model": "nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B",
+  "model_link": "[nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B)",
+  "params_b": 33.698,
+  "access": "open",
+  "submitted": "2026-10-30",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 11.2,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "model_revision": "c17667641642c4265ff2b7037dd101b7d4567634",
+  "transcription_prompt": "Audio transcription. Language: Danish. Wording: verbatim, including fillers and repetitions. Formatting: punctuation and capitalization. Output: transcript only.",
+  "max_new_tokens": 1024,
+  "batch_size": 4,
+  "decoding": "greedy",
+  "speed_hardware": "NVIDIA A100 80GB PCIe",
+  "torch_version": "2.11.0+cu130",
+  "transformers_version": "5.23.0.dev0",
+  "transformers_revision": "27ae491eb2c5ed86ef5de6a74a53a11ef91d7c5d",
+  "speed_implementation": "Transformers with reference PyTorch kernels"
+}

@@ -60,6 +60,9 @@ hviske-v6      = ["torch>=2.4", "transformers>=4.51,<5", "librosa>=0.10",
 nemo           = ["torch>=2.0.0", "nemo_toolkit[asr]>=2.4.0"]
 # nvidia/nemotron-3.5-asr-*: native transformers port, no NeMo needed.
 nemotron-asr   = ["torch>=2.0.0", "transformers>=5.13.0", "librosa>=0.10", "soundfile>=0.12.1"]
+# Transformers source revision used for the Nemotron 3.5 Transcribe evaluation.
+nemotron-transcribe = ["torch>=2.11.0", "accelerate>=1.12.0", "librosa>=0.10",
+                      "transformers @ git+https://github.com/huggingface/transformers.git@27ae491eb2c5ed86ef5de6a74a53a11ef91d7c5d"]
 voxtral        = ["torch>=2.0.0", "transformers>=4.54.0", "mistral-common[audio]>=1.8.1"]
 # hinge/danstral-v1: LoRA on Voxtral-Small with a CoRal Whisper encoder swapped in.
 danstral       = ["torch>=2.0.0", "transformers>=4.54.0", "mistral-common[audio]>=1.8.1",

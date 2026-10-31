@@ -275,8 +275,20 @@ def main() -> None:
             "speed_x": speed_x,
             "datasets": list(loaded.keys()),
         }
-        if args.backend == "transformers-remote" and args.model_revision:
+        if args.backend in {"transformers-remote", "nemotron-transcribe"} and args.model_revision:
             meta["model_revision"] = args.model_revision
+        if args.backend == "nemotron-transcribe":
+            from danish_asr_leaderboard.backends.nemotron_transcribe_backend import (
+                MAX_NEW_TOKENS, TRANSCRIPTION_PROMPT,
+            )
+            meta["transcription_prompt"] = TRANSCRIPTION_PROMPT
+            meta["max_new_tokens"] = MAX_NEW_TOKENS
+            meta["batch_size"] = args.batch_size
+            meta["decoding"] = "greedy"
+            if args.device == "cuda":
+                import torch
+                if torch.cuda.is_available():
+                    meta["speed_hardware"] = torch.cuda.get_device_name(0)
         write_meta(args.outputs_dir, model_id, meta)
 
     print("\n=== Results ===")

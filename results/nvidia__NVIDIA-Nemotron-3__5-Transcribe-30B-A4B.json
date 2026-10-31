@@ -1,0 +1,19 @@
+{
+  "model": "[nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B)",
+  "params_b": 33.698,
+  "coral_conversation_wer": 49.61,
+  "coral_read_aloud_wer": 31.1,
+  "cv17_da_wer": 13.7,
+  "fleurs_da_wer": 9.4,
+  "ftspeech_wer": 23.8,
+  "mean_wer": 25.52,
+  "coral_conversation_cer": 32.53,
+  "coral_read_aloud_cer": 14.81,
+  "cv17_da_cer": 5.42,
+  "fleurs_da_cer": 4.46,
+  "ftspeech_cer": 13.97,
+  "mean_cer": 14.24,
+  "speed_x": 11.2,
+  "submitted": "2026-10-30",
+  "access": "open"
+}

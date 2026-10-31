@@ -579,6 +579,18 @@
     "model_card": "https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b",
     "paper": null
   },
+  "nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B": {
+    "entry_kind": "model",
+    "license_evidence": "https://openmdw.ai/license/1-1/",
+    "released": {
+      "date": "2026-10-07",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B",
+    "paper": "https://research.nvidia.com/labs/nemotron/files/NVIDIA-Nemotron-3.5-Transcribe-Technical-Report.pdf"
+  },
   "Harmonium/brage-v1": {
     "entry_kind": "system",
     "configuration": "Beam 5 + LMs",
