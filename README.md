@@ -49,6 +49,7 @@ uv pip install -e ".[transformers]"    # Whisper, Røst, hviske, …
 uv pip install -e ".[transformers-remote]"  # models shipping their own code (trust_remote_code)
 uv pip install -e ".[nemo]"            # Canary / Parakeet / SALM
 uv pip install -e ".[nemotron-asr]"    # Nemotron 3.5 ASR (transformers, no NeMo)
+uv pip install -e ".[nemotron-transcribe]"  # Nemotron 3.5 Transcribe
 uv pip install -e ".[faster-whisper]"
 uv pip install -e ".[qwen-asr]"
 uv pip install -e ".[saga2]"           # capacit-ai/saga-2-*
@@ -62,7 +63,7 @@ uv pip install -e ".[mistral]"        # hosted Voxtral Transcribe 3
 ```
 
 Available extras match the `--backend` names: `transformers`, `transformers-remote`, `wav2vec2`,
-`faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemotron-asr`, `voxtral`, `danstral`, `seamless`, `cohere-asr`,
+`faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemotron-asr`, `nemotron-transcribe`, `voxtral`, `danstral`, `seamless`, `cohere-asr`,
 `vibevoice`, `brage`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`, `syv`, `mistral`.
 
 > **NeMo note:** install `nemo_toolkit[asr]` *first* to avoid
@@ -116,6 +117,11 @@ danish-asr-eval --model nvidia/parakeet-tdt-0.6b-v3 --backend nemo --nemo-model-
 
 # Nemotron 3.5 ASR (Danish language prompt, native transformers)
 danish-asr-eval --model nvidia/nemotron-3.5-asr-streaming-0.6b --backend nemotron-asr
+
+# Nemotron 3.5 Transcribe (BF16, requires an 80 GB GPU)
+danish-asr-eval --model nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B \
+  --backend nemotron-transcribe --batch-size 4 --params-b 33.698 \
+  --model-revision c17667641642c4265ff2b7037dd101b7d4567634
 
 # Qwen3-ASR / fine-tunes
 danish-asr-eval --model Qwen/Qwen3-ASR-1.7B --backend qwen-asr
@@ -178,7 +184,7 @@ no-op when unconfigured.
 Run `danish-asr-eval --help` for all options (device, batch size, beam/KenLM,
 per-API credentials, `--access open|proprietary`, …). Available backends:
 
-`transformers`, `transformers-remote`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`, `nemotron-asr`,
+`transformers`, `transformers-remote`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`, `nemotron-asr`, `nemotron-transcribe`,
 `voxtral`, `danstral`, `seamless`, `cohere-asr`, `vibevoice`, `brage`, `elevenlabs`,
 `azure-openai`, `google-chirp`, `soniox`, `syv`, `mistral`.
 

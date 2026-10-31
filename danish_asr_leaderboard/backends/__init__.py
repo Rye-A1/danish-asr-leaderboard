@@ -19,6 +19,7 @@ from danish_asr_leaderboard.backends import (  # noqa: F401,E402
     faster_whisper_backend,
     nemo_backend,
     nemotron_asr_backend,
+    nemotron_transcribe_backend,
     qwen_asr_backend,
     hviske_v6_backend,
     saga2_backend,
