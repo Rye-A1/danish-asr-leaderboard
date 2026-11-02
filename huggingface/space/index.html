@@ -4724,12 +4724,19 @@ function addBootstrapCI(rows, datasetCols, meanKey, B=1000) {
   const meanS = Array.from({length: nM}, () => []);
   const bordaS = Array.from({length: nM}, () => []);
   const btS = Array.from({length: nM}, () => []);
+  const btCache = new Map();
 
   for (let b = 0; b < B; b++) {
     const bootCols = Array.from({length: K}, () => datasetCols[Math.floor(Math.random() * K)]);
     const mv = _meanFn(rows, bootCols);
     const bv = _bordaFn(rows, bootCols);
-    const tv = _btFn(rows, bootCols);
+    // Bradley-Terry depends on the datasets drawn, not their order.
+    const key = [...bootCols].sort().join('|');
+    let tv = btCache.get(key);
+    if (tv === undefined) {
+      tv = _btFn(rows, bootCols);
+      btCache.set(key, tv);
+    }
     for (let i = 0; i < nM; i++) {
       if (mv[i] != null) meanS[i].push(mv[i]);
       if (bv[i] != null) bordaS[i].push(bv[i]);

@@ -62,4 +62,7 @@ jobs:
 
       - name: Refresh Space
         if: steps.snapshot.outputs.changed == 'true'
-        run: uv run --no-project --with pandas --with pyarrow --with requests --with huggingface_hub --with pillow --with numpy python scripts/update_space.py
+        run: |
+          # Keep the deployed Compare data; the checkout copy can be stale.
+          rm -f huggingface/space/compare_data.json
+          uv run --no-project --with pandas --with pyarrow --with requests --with huggingface_hub --with pillow --with numpy python scripts/update_space.py
