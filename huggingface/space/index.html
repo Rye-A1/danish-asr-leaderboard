@@ -3558,7 +3558,7 @@ function modelSummary(row) {
   const kind = row.entry_kind === 'system' ? 'System' : 'Model';
   return kind + (row.configuration ? ` · ${row.configuration}` : '')
     + ' · ' + (row.access === 'open' ? 'Open weights' : 'Hosted API')
-    + (Number.isFinite(size) ? ` · ${row.size}B parameters` : '');
+    + (Number.isFinite(size) ? ` · ${row.size}B total parameters` : '');
 }
 
 function modelAvatar(row) {
@@ -3721,7 +3721,7 @@ function buildRow(row, cols, maxVals) {
       // alone would render "—B" for hosted API models.
       const hasSize = isFinite(parseFloat(row.size));
       sz.append(ICON_SIZE(), hasSize ? row.size + 'B' : '—');
-      sz.title = hasSize ? row.size + ' billion parameters' : 'Parameter count not published';
+      sz.title = hasSize ? row.size + ' billion total parameters' : 'Parameter count not published';
       meta.appendChild(sz);
 
       const lic = document.createElement('span');
@@ -5124,7 +5124,7 @@ function _drawChart(rows, method, tab) {
     }
 
     const tipHTML = `<strong>${r.name}</strong>`
-      + tipRow('Parameters', `${r.size}B`)
+      + tipRow('Total parameters', `${r.size}B`)
       + tipMetricRows(r, meanKey, meanLbl);
 
     const circ = mk('circle', {
@@ -5985,7 +5985,7 @@ function setupCompare(data) {
     addSummaryRow('compare-summary-body', 'Entry', rows.map(row =>
       (row.entry_kind === 'system' ? 'System' : 'Model')
       + (row.configuration ? ` · ${row.configuration}` : '')));
-    addSummaryRow('compare-summary-body', 'Parameters', rows.map(row =>
+    addSummaryRow('compare-summary-body', 'Total parameters', rows.map(row =>
       Number.isFinite(parseFloat(row.size)) ? `${row.size}B` : '—'));
     addSummaryRow('compare-summary-body', 'Weights', rows.map(row =>
       row.access === 'open' ? 'Open' : row.access === 'proprietary' ? 'Proprietary API' : '—'));

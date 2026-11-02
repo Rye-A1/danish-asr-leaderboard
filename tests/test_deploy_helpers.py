@@ -100,6 +100,11 @@ def test_fmt_size(val, expected):
     ("mistralai/Voxtral-Small-24B-2507",    24.0),
     ("mistralai/Voxtral-Mini-3B-2507",       3.0),
     ("Qwen/Qwen3-ASR-1.7B",                  1.7),
+    ("nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B", 30.0),
+    ("Qwen/Qwen3-30B-A3B",                  30.0),
+    ("example/model-30B-a3.5B",             30.0),
+    ("example/model-A4B",                    None),
+    ("example/saga2B",                       2.0),
     ("nvidia/parakeet-tdt-0.6b-v3",          0.6),
     ("CoRal-project/roest-v3-wav2vec2-315m", 0.315),
     ("CoRal-project/roest-v2-wav2vec2-2B",   2.0),
@@ -124,6 +129,11 @@ def test_official_size_from_name():
     # Size in model name beats safetensors count
     result = _official_size("mistralai/Voxtral-Small-24B-2507", 24.3)
     assert result == "24.0"
+
+
+def test_official_size_uses_total_parameters_for_moe_models():
+    assert _official_size("nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B", 33.698) == "30.0"
+    assert _official_size("example/model-A4B", 30.0) == "30.0"
 
 
 def test_official_size_fallback_to_params():
@@ -295,6 +305,22 @@ def test_leaderboard_json_includes_hf_downloads(monkeypatch):
         assert by_name["example/asr"]["hf_downloads"] == 1_234
         assert by_name["example/asr"]["hf_download_history"] == []
         assert by_name["hosted-api-model"]["hf_downloads"] is None
+
+
+def test_nemotron_total_size_reaches_leaderboard_data(monkeypatch):
+    import update_space
+
+    monkeypatch.setattr(update_space, "_model_metadata", lambda _model: {})
+    monkeypatch.setattr(update_space, "_provider_logo", lambda _org: "")
+    monkeypatch.setattr(update_space, "_model_license", lambda _model: "")
+    monkeypatch.setattr(update_space, "_model_downloads", lambda _model: None)
+    monkeypatch.setattr(update_space, "_model_download_history", lambda _model: ())
+    monkeypatch.setattr(update_space, "_bootstrap_cis", lambda: {})
+    result = json.loads((Path(__file__).resolve().parent.parent
+                         / "results/nvidia__NVIDIA-Nemotron-3__5-Transcribe-30B-A4B.json").read_text())
+    data = build_leaderboard_json(pd.DataFrame([result]))
+    assert result["params_b"] == 33.698
+    assert data["wer"][0]["size"] == data["cer"][0]["size"] == "30.0"
 
 
 def test_soniox_result_includes_provider_icon(monkeypatch):

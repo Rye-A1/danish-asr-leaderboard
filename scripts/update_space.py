@@ -359,7 +359,9 @@ def _size_from_name(name: str) -> float | None:
     e.g. ``Voxtral-Small-24B`` -> 24.0, ``Qwen3-ASR-1.7B`` -> 1.7,
     ``roest-v3-wav2vec2-315m`` -> 0.315. ``m``/``M`` is treated as millions.
     """
-    matches = _SIZE_IN_NAME.findall(name)
+    # MoE names such as 30B-A4B use the A-prefixed size for active parameters.
+    matches = [match.groups() for match in _SIZE_IN_NAME.finditer(name)
+               if not re.search(r"(?:^|[-_/])[aA]\s*$", name[:match.start()])]
     if not matches:
         return None
     num, unit = matches[-1]
