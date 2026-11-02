@@ -1,0 +1,19 @@
+{
+  "model": "[nvidia/nemotron-labs-unified-asr-0.6b](https://huggingface.co/nvidia/nemotron-labs-unified-asr-0.6b)",
+  "params_b": 0.6,
+  "coral_conversation_wer": 50.22,
+  "coral_read_aloud_wer": 39.99,
+  "cv17_da_wer": 19.57,
+  "fleurs_da_wer": 17.35,
+  "ftspeech_wer": 18.79,
+  "mean_wer": 29.18,
+  "coral_conversation_cer": 36.11,
+  "coral_read_aloud_cer": 16.98,
+  "cv17_da_cer": 7.27,
+  "fleurs_da_cer": 5.99,
+  "ftspeech_cer": 9.61,
+  "mean_cer": 15.19,
+  "speed_x": 157.3,
+  "submitted": "2026-11-02",
+  "access": "open"
+}

@@ -127,7 +127,7 @@ danish-asr-eval --model nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B \
 
 # Nemotron Unified (full-context greedy decoding, Danish prompt checked on every batch)
 danish-asr-eval --model nvidia/nemotron-labs-unified-asr-0.6b \
-  --backend nemotron-unified-da --batch-size 1 --params-b 0.6 \
+  --backend nemotron-unified-da --batch-size 4 --params-b 0.6 \
   --model-revision 023ce907267a09a308a5cb69239447cb3d0c1597
 
 # TranscribePsy (the six non-English adapters are applied for Danish)
