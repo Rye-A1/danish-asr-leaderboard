@@ -1,0 +1,27 @@
+{
+  "model": "nvidia/nemotron-labs-unified-asr-0.6b",
+  "model_link": "[nvidia/nemotron-labs-unified-asr-0.6b](https://huggingface.co/nvidia/nemotron-labs-unified-asr-0.6b)",
+  "params_b": 0.6,
+  "access": "open",
+  "submitted": "2026-11-02",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 157.3,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "language_prompt": "da (checked for every batch; language-tagged manifest)",
+  "nemo_version": "3.0.0",
+  "model_revision": "023ce907267a09a308a5cb69239447cb3d0c1597",
+  "backend": "nemotron-unified-da",
+  "decoding": "greedy_batch",
+  "dtype": "float32",
+  "batch_size": 4,
+  "speed_hardware": "NVIDIA A100 80GB PCIe",
+  "target_language": "da"
+}

@@ -1,0 +1,19 @@
+{
+  "model": "[LiquidAI/LFM3-Audio-2B](https://huggingface.co/LiquidAI/LFM3-Audio-2B)",
+  "params_b": 2.0,
+  "coral_conversation_wer": 57.86,
+  "coral_read_aloud_wer": 49.35,
+  "cv17_da_wer": 31.71,
+  "fleurs_da_wer": 28.24,
+  "ftspeech_wer": 25.04,
+  "mean_wer": 38.44,
+  "coral_conversation_cer": 37.97,
+  "coral_read_aloud_cer": 22.33,
+  "cv17_da_cer": 13.79,
+  "fleurs_da_cer": 12.48,
+  "ftspeech_cer": 13.78,
+  "mean_cer": 20.07,
+  "speed_x": 8.2,
+  "submitted": "2026-11-01",
+  "access": "open"
+}

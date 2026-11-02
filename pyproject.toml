@@ -58,6 +58,11 @@ saga2          = ["torch>=2.4", "transformers>=4.51,<5", "librosa>=0.10",
 hviske-v6      = ["torch>=2.4", "transformers>=4.51,<5", "librosa>=0.10",
                   "soundfile>=0.12.1", "safetensors", "huggingface_hub>=0.30"]
 nemo           = ["torch>=2.0.0", "nemo_toolkit[asr]>=2.4.0"]
+# Versions used for the Nemotron Unified and TranscribePsy evaluations.
+nemo-vendor    = ["torch>=2.0.0", "nemo_toolkit[asr]>=3.0.0", "safetensors"]
+# Transformers source revision used for the LFM3 Audio evaluation.
+lfm3-audio     = ["torch>=2.11.0", "accelerate>=1.12.0", "librosa>=0.10",
+                  "transformers @ git+https://github.com/huggingface/transformers.git@27ae491eb2c5ed86ef5de6a74a53a11ef91d7c5d"]
 # nvidia/nemotron-3.5-asr-*: native transformers port, no NeMo needed.
 nemotron-asr   = ["torch>=2.0.0", "transformers>=5.13.0", "librosa>=0.10", "soundfile>=0.12.1"]
 # Transformers source revision used for the Nemotron 3.5 Transcribe evaluation.

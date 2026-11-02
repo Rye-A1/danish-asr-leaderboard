@@ -18,6 +18,8 @@ from danish_asr_leaderboard.backends import (  # noqa: F401,E402
     danstral_backend,
     faster_whisper_backend,
     nemo_backend,
+    nemo_vendor_backend,
+    lfm3_audio_backend,
     nemotron_asr_backend,
     nemotron_transcribe_backend,
     qwen_asr_backend,

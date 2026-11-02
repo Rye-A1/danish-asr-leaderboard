@@ -644,5 +644,39 @@
     "training_data": null,
     "model_card": "https://soniox.com/docs/stt/models#june-11-2026",
     "paper": null
+  },
+  "LiquidAI/LFM3-Audio-2B": {
+    "entry_kind": "model",
+    "released": {
+      "date": "2026-09-08",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/LiquidAI/LFM3-Audio-2B",
+    "paper": null
+  },
+  "qvac/TranscribePsy-250M-EU": {
+    "entry_kind": "model",
+    "released": {
+      "date": "2026-09-30",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/qvac/TranscribePsy-250M-EU",
+    "paper": "https://arxiv.org/abs/2610.19134"
+  },
+  "nvidia/nemotron-labs-unified-asr-0.6b": {
+    "entry_kind": "model",
+    "released": {
+      "date": "2026-08-21",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/nvidia/nemotron-labs-unified-asr-0.6b",
+    "paper": null,
+    "license_evidence": "https://openmdw.ai/license/1-1/"
   }
 }
