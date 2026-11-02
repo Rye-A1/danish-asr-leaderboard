@@ -1,0 +1,29 @@
+{
+  "model": "LiquidAI/LFM3-Audio-2B",
+  "model_link": "[LiquidAI/LFM3-Audio-2B](https://huggingface.co/LiquidAI/LFM3-Audio-2B)",
+  "params_b": 2.0,
+  "access": "open",
+  "submitted": "2026-11-01",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 8.2,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "model_revision": "0295e4130594c06800fd25451d97139ac2da1aff",
+  "transcription_prompt": "Perform ASR in Danish.",
+  "max_new_tokens": 1024,
+  "batch_size": 1,
+  "decoding": "greedy",
+  "speed_hardware": "NVIDIA A100 80GB PCIe",
+  "backend": "lfm3-audio",
+  "dtype": "bfloat16",
+  "target_language": "da",
+  "transformers_revision": "27ae491eb2c5ed86ef5de6a74a53a11ef91d7c5d",
+  "torch_version": "2.11.0"
+}

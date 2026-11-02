@@ -275,7 +275,8 @@ def main() -> None:
             "speed_x": speed_x,
             "datasets": list(loaded.keys()),
         }
-        if args.backend in {"transformers-remote", "nemotron-transcribe"} and args.model_revision:
+        if args.backend in {"transformers-remote", "nemotron-transcribe", "lfm3-audio",
+                            "nemotron-unified-da", "transcribepsy-da"} and args.model_revision:
             meta["model_revision"] = args.model_revision
         if args.backend == "nemotron-transcribe":
             from danish_asr_leaderboard.backends.nemotron_transcribe_backend import (
@@ -285,6 +286,20 @@ def main() -> None:
             meta["max_new_tokens"] = MAX_NEW_TOKENS
             meta["batch_size"] = args.batch_size
             meta["decoding"] = "greedy"
+            if args.device == "cuda":
+                import torch
+                if torch.cuda.is_available():
+                    meta["speed_hardware"] = torch.cuda.get_device_name(0)
+        if args.backend in {"lfm3-audio", "nemotron-unified-da", "transcribepsy-da"}:
+            meta.update({"backend": args.backend, "batch_size": args.batch_size,
+                         "decoding": "greedy", "target_language": "da"})
+            if args.backend == "lfm3-audio":
+                from danish_asr_leaderboard.backends.lfm3_audio_backend import ASR_PROMPT, MAX_NEW_TOKENS
+                meta.update({"transcription_prompt": ASR_PROMPT, "max_new_tokens": MAX_NEW_TOKENS})
+            elif args.backend == "nemotron-unified-da":
+                meta["language_prompt"] = "da (checked for every batch; language-tagged manifest)"
+            else:
+                meta["language_route"] = "other (six non-English adapters)"
             if args.device == "cuda":
                 import torch
                 if torch.cuda.is_available():

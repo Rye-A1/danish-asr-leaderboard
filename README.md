@@ -50,6 +50,8 @@ uv pip install -e ".[transformers-remote]"  # models shipping their own code (tr
 uv pip install -e ".[nemo]"            # Canary / Parakeet / SALM
 uv pip install -e ".[nemotron-asr]"    # Nemotron 3.5 ASR (transformers, no NeMo)
 uv pip install -e ".[nemotron-transcribe]"  # Nemotron 3.5 Transcribe
+uv pip install -e ".[nemo-vendor]"      # Nemotron Unified and TranscribePsy
+uv pip install -e ".[lfm3-audio]"      # Liquid LFM3 Audio
 uv pip install -e ".[faster-whisper]"
 uv pip install -e ".[qwen-asr]"
 uv pip install -e ".[saga2]"           # capacit-ai/saga-2-*
@@ -62,9 +64,9 @@ uv pip install -e ".[soniox]"
 uv pip install -e ".[mistral]"        # hosted Voxtral Transcribe 3
 ```
 
-Available extras match the `--backend` names: `transformers`, `transformers-remote`, `wav2vec2`,
+Available extras: `transformers`, `transformers-remote`, `wav2vec2`,
 `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemotron-asr`, `nemotron-transcribe`, `voxtral`, `danstral`, `seamless`, `cohere-asr`,
-`vibevoice`, `brage`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`, `syv`, `mistral`.
+`vibevoice`, `brage`, `nemo-vendor`, `lfm3-audio`, `elevenlabs`, `azure-openai`, `google-chirp`, `soniox`, `syv`, `mistral`.
 
 > **NeMo note:** install `nemo_toolkit[asr]` *first* to avoid
 > dependency-resolver conflicts: `uv pip install "nemo_toolkit[asr]"` then
@@ -122,6 +124,22 @@ danish-asr-eval --model nvidia/nemotron-3.5-asr-streaming-0.6b --backend nemotro
 danish-asr-eval --model nvidia/NVIDIA-Nemotron-3.5-Transcribe-30B-A4B \
   --backend nemotron-transcribe --batch-size 4 --params-b 33.698 \
   --model-revision c17667641642c4265ff2b7037dd101b7d4567634
+
+# Nemotron Unified (full-context greedy decoding, Danish prompt checked on every batch)
+danish-asr-eval --model nvidia/nemotron-labs-unified-asr-0.6b \
+  --backend nemotron-unified-da --batch-size 1 --params-b 0.6 \
+  --model-revision 023ce907267a09a308a5cb69239447cb3d0c1597
+
+# TranscribePsy (the six non-English adapters are applied for Danish)
+# This executes inference.py from the pinned model repository.
+danish-asr-eval --model qvac/TranscribePsy-250M-EU \
+  --backend transcribepsy-da --batch-size 1 --params-b 0.25445 \
+  --model-revision c164037673b1db4e8203bfb700d6a9db14e1b665
+
+# Liquid LFM3 Audio (Danish ASR prompt, greedy decoding)
+danish-asr-eval --model LiquidAI/LFM3-Audio-2B \
+  --backend lfm3-audio --batch-size 1 --params-b 2 \
+  --model-revision 0295e4130594c06800fd25451d97139ac2da1aff
 
 # Qwen3-ASR / fine-tunes
 danish-asr-eval --model Qwen/Qwen3-ASR-1.7B --backend qwen-asr
@@ -184,7 +202,7 @@ no-op when unconfigured.
 Run `danish-asr-eval --help` for all options (device, batch size, beam/KenLM,
 per-API credentials, `--access open|proprietary`, …). Available backends:
 
-`transformers`, `transformers-remote`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`, `nemotron-asr`, `nemotron-transcribe`,
+`transformers`, `transformers-remote`, `wav2vec2`, `faster-whisper`, `qwen-asr`, `saga2`, `nemo`, `nemo-salm`, `nemotron-asr`, `nemotron-transcribe`, `nemotron-unified-da`, `transcribepsy-da`, `lfm3-audio`,
 `voxtral`, `danstral`, `seamless`, `cohere-asr`, `vibevoice`, `brage`, `elevenlabs`,
 `azure-openai`, `google-chirp`, `soniox`, `syv`, `mistral`.
 

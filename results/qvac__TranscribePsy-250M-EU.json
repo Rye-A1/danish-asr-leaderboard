@@ -1,0 +1,19 @@
+{
+  "model": "[qvac/TranscribePsy-250M-EU](https://huggingface.co/qvac/TranscribePsy-250M-EU)",
+  "params_b": 0.25445,
+  "coral_conversation_wer": 55.58,
+  "coral_read_aloud_wer": 45.77,
+  "cv17_da_wer": 22.2,
+  "fleurs_da_wer": 20.57,
+  "ftspeech_wer": 26.78,
+  "mean_wer": 34.18,
+  "coral_conversation_cer": 38.01,
+  "coral_read_aloud_cer": 19.07,
+  "cv17_da_cer": 7.99,
+  "fleurs_da_cer": 7.49,
+  "ftspeech_cer": 18.65,
+  "mean_cer": 18.24,
+  "speed_x": 70.5,
+  "submitted": "2026-11-01",
+  "access": "open"
+}

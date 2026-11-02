@@ -1,0 +1,27 @@
+{
+  "model": "qvac/TranscribePsy-250M-EU",
+  "model_link": "[qvac/TranscribePsy-250M-EU](https://huggingface.co/qvac/TranscribePsy-250M-EU)",
+  "params_b": 0.25445,
+  "access": "open",
+  "submitted": "2026-11-01",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 70.5,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "model_revision": "c164037673b1db4e8203bfb700d6a9db14e1b665",
+  "backend": "transcribepsy-da",
+  "decoding": "greedy_batch",
+  "dtype": "bfloat16",
+  "batch_size": 1,
+  "speed_hardware": "NVIDIA A100 80GB PCIe",
+  "target_language": "da",
+  "language_route": "other (six non-English adapters)",
+  "nemo_version": "3.0.0"
+}
