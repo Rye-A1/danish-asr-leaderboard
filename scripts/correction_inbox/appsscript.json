@@ -1,0 +1,7 @@
+{
+  "timeZone": "Europe/Copenhagen",
+  "dependencies": {},
+  "oauthScopes": ["openid", "https://www.googleapis.com/auth/script.external_request"],
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8"
+}

@@ -230,6 +230,47 @@
     .tab-btn:focus-visible { outline: 2px solid var(--link); outline-offset: -2px; }
     .tab-pane { display: none; }
     .tab-pane.active { display: block; }
+    #tab-explore { --page-accent: #f47a91; }
+    :root[data-theme="light"] #tab-explore { --page-accent: #aa2140; }
+    .explore-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 20px 0; }
+    .explore-card { min-width: 0; padding: 20px 22px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf); }
+    .explore-card h3 { display: flex; align-items: center; gap: 10px; margin: 0 0 5px; font-size: 16px; }
+    .explore-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .explore-list { list-style: none; margin: 12px 0 0; padding: 0; }
+    .explore-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 60px; box-sizing: border-box; padding: 10px 0; border-top: 1px solid var(--border); }
+    .explore-identity { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+    .explore-avatar { flex: 0 0 32px; }
+    .explore-avatar .model-preview-logo, .explore-avatar .model-preview-mark { width: 32px; height: 32px; background: var(--surf2); color: var(--text); }
+    .explore-avatar .model-preview-logo { box-sizing: border-box; padding: 2px; background: #fff; object-fit: contain; }
+    .explore-details { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .explore-list a { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--link); font-weight: 650; text-decoration: none; }
+    .explore-list a:hover, .score-samples:hover { text-decoration: underline; }
+    .explore-list span { color: var(--muted); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .explore-list .explore-date, .explore-list .explore-caption { font-size: 10px; }
+    .explore-metrics { display: flex; align-items: center; justify-content: flex-end; gap: 12px; flex: none; }
+    .explore-stat { display: grid; justify-items: end; gap: 3px; }
+    .explore-list .explore-value { color: var(--text); font-weight: 700; }
+    .explore-trend { width: 132px; text-align: center; }
+    .explore-trend .download-wrap { width: 100%; }
+    .explore-trend .download-spark { width: 100%; height: 30px; }
+    .explore-trend .download-num { display: inline-flex; align-items: center; gap: 5px; }
+    .explore-list .explore-download-count { color: var(--text); font-size: 12px; font-weight: 700; }
+    .explore-list .explore-growth { padding: 2px 4px; border: 1px solid color-mix(in srgb, var(--link) 24%, var(--border)); border-radius: 5px; background: color-mix(in srgb, var(--link) 12%, var(--surf)); color: var(--link); font-size: 10px; font-weight: 700; line-height: 1; }
+    @media (max-width: 400px) { .explore-trend { width: 120px; } .explore-metrics { gap: 8px; } }
+    .explore-samples { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+    .explore-samples button { flex: none; padding: 9px 13px; border: 1px solid var(--border); border-radius: 999px; background: var(--surf2); color: var(--text); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .explore-samples button:hover { border-color: var(--link); }
+    .score-samples { color: inherit; text-decoration: none; text-underline-offset: 4px; }
+    .score-samples:focus-visible, .explore-list a:focus-visible, .explore-samples button:focus-visible { outline: 2px solid var(--link); outline-offset: 3px; border-radius: 2px; }
+    .explore-time { position: relative; overflow: hidden; }
+    .explore-time > :not(.explore-time-graph) { position: relative; z-index: 1; }
+    .explore-time-graph { position: absolute; right: 0; bottom: 0; width: min(42%, 340px); height: 100%; opacity: .24; pointer-events: none; }
+    .explore-time-graph .download-spark { width: 100%; height: 100%; }
+    .explore-time-graph .download-spark path[stroke] { vector-effect: non-scaling-stroke; }
+    .explore-time-graph .download-spark circle { display: none; }
+    #tab-time { grid-column: 1 / -1; margin: 0; min-width: 0; }
+    #tab-time[hidden] { display: none; }
+    @media (max-width: 720px) { .explore-grid { grid-template-columns: 1fr; } .explore-card { padding: 18px 16px; } .explore-list a { overflow: visible; white-space: normal; overflow-wrap: anywhere; line-height: 1.3; } .explore-samples { grid-column: auto; align-items: flex-start; flex-direction: column; } }
     .info-nav {
       display: inline-flex;
       gap: 4px;
@@ -370,7 +411,12 @@
     .compare-group-head strong { font-size: 14px; }
     .compare-group-head span { color: var(--muted); font-size: 12px; white-space: nowrap; }
     .compare-group .compare-bars { max-width: 780px; }
-    .compare-example-toolbar { display: flex; align-items: center; gap: 18px; margin: 16px 0; }
+    .compare-example-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+    .compare-clip-search { display: flex; align-items: center; gap: 8px; margin: 0 0 16px; }
+    .compare-clip-search[hidden] { display: none; }
+    .compare-clip-search input { min-width: 0; width: 260px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; font-size: 12px; }
+    .compare-clip-search button { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; font-size: 12px; cursor: pointer; }
+    .compare-clip-search span { color: var(--muted); font-size: 12px; }
     .compare-example-toolbar .compare-controls, .compare-example-toolbar .compare-example-nav { margin: 0; }
     .compare-text-mode { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid var(--border); border-radius: 9px; background: var(--surf2); }
     .compare-text-mode button { min-height: 32px; padding: 5px 11px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); font: inherit; font-size: 12px; font-weight: 700; white-space: nowrap; cursor: pointer; }
@@ -386,14 +432,39 @@
     .compare-reference-head small { margin-bottom: 0; }
     .compare-source { color: var(--muted); font-size: 11px; font-weight: 600; text-decoration: none; white-space: nowrap; }
     .compare-source:hover, .compare-source:focus-visible { color: var(--link); text-decoration: underline; }
+    .compare-report { display: inline-block; margin-top: 12px; color: var(--link); font-size: 12px; font-weight: 650; text-underline-offset: 2px; }
+    .correction-preview { display: block; color: var(--text); }
+    .correction-toggle { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; font-weight: 650; cursor: pointer; }
+    .correction-toggle:hover { border-color: var(--muted); }
+    .correction-toggle svg { width: 15px; height: 15px; flex: none; }
+    .correction-chevron { transition: transform .15s ease; }
+    .correction-toggle[aria-expanded="true"] .correction-chevron { transform: rotate(180deg); }
+    .correction-preview label { display: block; margin: 14px 0 6px; font-weight: 700; }
+    .correction-preview textarea { display: block; box-sizing: border-box; width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; resize: vertical; }
+    .correction-preview p { margin: 8px 0; color: var(--muted); font-size: 12px; }
+    .correction-send { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; color: var(--text); background: var(--surf); font: inherit; cursor: pointer; }
+    .correction-send:disabled { opacity: .5; cursor: default; }
+    .correction-send[aria-busy="true"]::before { content: ''; display: inline-block; width: .8em; height: .8em; margin-right: 8px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; vertical-align: -.15em; animation: correction-spin .7s linear infinite; }
+    @keyframes correction-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .correction-send[aria-busy="true"]::before { animation: none; } }
+    .correction-honeypot { position: absolute; left: -10000px; }
+    .correction-preview a { color: var(--link); }
     .compare-reference p, .compare-hypothesis p { margin: 0; overflow-wrap: anywhere; line-height: 1.6; }
     .compare-audio { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border); }
+    .coral-audio-consent { margin-top: 10px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .coral-audio-consent a { color: var(--link); }
+    .coral-audio-consent button { display: block; margin-top: 8px; padding: 7px 11px; border: 1px solid var(--border); border-radius: 8px; background: var(--surf); color: var(--text); font: inherit; font-weight: 700; cursor: pointer; }
     .compare-audio audio { display: block; width: min(100%, 380px); height: 36px; }
     .compare-audio span { display: block; color: var(--muted); font-size: 12px; }
     .compare-hypotheses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .compare-hypothesis { position: relative; display: flex; flex-direction: column; padding: 16px; border: 1px solid var(--border); border-radius: var(--r); background: var(--surf); }
     .compare-hypothesis::after { content: ""; position: absolute; top: 18px; right: 18px; width: 10px; height: 10px; border-radius: 50%; background: var(--model-color); box-shadow: 0 0 0 4px color-mix(in srgb, var(--model-color) 14%, transparent); }
     .compare-hypothesis small { max-width: calc(100% - 28px); color: var(--model-color); overflow-wrap: anywhere; }
+    .compare-hypothesis.compare-change-models { flex-direction: row; align-items: center; justify-content: center; gap: 8px; min-height: 90px; border-style: dashed; color: var(--muted); font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .compare-hypothesis.compare-change-models::after { display: none; }
+    .compare-change-models svg { width: 18px; height: 18px; }
+    .compare-change-models:hover { border-color: var(--link); color: var(--link); }
+    .compare-change-models:focus-visible { outline: 2px solid var(--link); outline-offset: 2px; }
     .compare-clip-score { margin-top: auto; padding-top: 10px; color: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
     .compare-word-change { border-radius: 3px; background: color-mix(in srgb, var(--model-color) 16%, transparent); box-shadow: inset 0 -1px var(--model-color); }
     .compare-word-omitted { text-decoration: underline dotted var(--link) 2px; text-underline-offset: 3px; }
@@ -2461,7 +2532,7 @@
    <div class="tab-nav-scroll">
     <button class="tab-btn active" data-tab="wer"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4Z"/><path d="M5 6H3v2a4 4 0 0 0 4 4M19 6h2v2a4 4 0 0 1-4 4"/></svg>Leaderboard</button>
     <button class="tab-btn" data-tab="analysis"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg>Pareto</button>
-    <button class="tab-btn" data-tab="time"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Over Time</button>
+    <button class="tab-btn" data-tab="explore"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/></svg>Explore</button>
     <button class="tab-btn" data-tab="compare"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16M9 4v16M15 4v16"/></svg>Compare</button>
     <button class="tab-btn" data-tab="info"><svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Info</button>
    </div>
@@ -2565,8 +2636,24 @@
     </div>
   </div>
 
-  <!-- Over Time tab -->
-  <div id="tab-time" class="tab-pane chart-page">
+  <!-- Explore tab -->
+  <div id="tab-explore" class="tab-pane">
+    <header class="page-hero">
+      <p class="page-eyebrow">Discover the benchmark</p>
+      <h2>Explore</h2>
+      <p class="page-intro">Discover models, inspect transcript examples, and follow performance over time.</p>
+    </header>
+    <div class="explore-grid">
+      <section class="explore-card explore-samples">
+        <div><h3><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="18" cy="17" r="3"/><path d="m20 19 2 2"/></svg></span>Inspect transcript samples</h3><p>Explore saved examples and compare model outputs with the reference.</p></div>
+        <button id="explore-samples" type="button">Inspect samples →</button>
+      </section>
+      <section class="explore-card explore-samples explore-time" aria-labelledby="explore-time-title">
+        <div id="explore-time-graph" class="explore-time-graph" aria-hidden="true"></div>
+        <div><h3 id="explore-time-title"><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Performance over time</h3><p>Follow the best mean WER as models are released and updated.</p></div>
+        <button id="explore-time-toggle" type="button" aria-controls="tab-time" aria-expanded="false">View history →</button>
+      </section>
+    <div id="tab-time" class="tab-pane active chart-page" hidden>
     <header class="page-hero">
       <p class="page-eyebrow">Leaderboard history</p>
       <h2>Performance over time</h2>
@@ -2635,6 +2722,18 @@
       </div>
     </div>
   </div>
+      <section class="explore-card" aria-labelledby="explore-trending-title">
+        <h3 id="explore-trending-title"><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 16 4-5 3 3 5-7"/></svg></span>Trending models</h3>
+        <p>Growth in rolling 30-day downloads over the last 7 snapshot intervals.</p>
+        <ol class="explore-list" id="explore-trending"></ol>
+      </section>
+      <section class="explore-card" aria-labelledby="explore-new-title">
+        <h3 id="explore-new-title"><span class="chart-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></span>Recently submitted</h3>
+        <p>Latest evaluation submissions to the leaderboard.</p>
+        <ol class="explore-list" id="explore-recent"></ol>
+      </section>
+    </div>
+  </div>
 
   <!-- Model comparison tab -->
   <div id="tab-compare" class="tab-pane">
@@ -2672,14 +2771,17 @@
         <div class="compare-controls"><div class="compare-control"><label for="compare-breakdown-dataset">Test set</label><select id="compare-breakdown-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="ftspeech">FTSpeech</option></select></div><div class="compare-control"><label for="compare-breakdown-dimension">Group</label><select id="compare-breakdown-dimension"><option value="gender">Gender</option><option value="dialect">Dialect</option></select></div></div>
         <div id="compare-breakdown" aria-live="polite">Loading speaker breakdown…</div>
       </section>
-      <section class="compare-section compare-transcripts-section">
+      <section id="compare-transcripts" class="compare-section compare-transcripts-section">
         <h3>Compare transcripts</h3>
-        <p class="compare-note">Inspect high-disagreement clips, not a representative accuracy sample. Switch between original transcripts and the text used for scoring. Highlights show differences in the selected view; dotted underlines mark omissions. Clip WER/CER always use scored text and can exceed 100%.</p>
+        <p class="compare-note">Highlights are high-disagreement clips, not a representative accuracy sample. Browse all clips or switch between original transcripts and the text used for scoring. Highlights show differences in the selected view; dotted underlines mark omissions. Clip WER/CER always use scored text and can exceed 100%.</p>
+        <button id="compare-change-models" class="compare-hypothesis compare-change-models" type="button"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Add/change models</button>
         <div class="compare-example-toolbar">
           <div class="compare-controls"><div class="compare-control"><label for="compare-output-dataset" hidden>Test set</label><select id="compare-output-dataset"><option value="coral_conversation">CoRal conversation</option><option value="coral_read_aloud">CoRal read-aloud</option><option value="cv17_da">Common Voice (da)</option><option value="fleurs_da">FLEURS (da_dk)</option><option value="ftspeech">FTSpeech</option></select></div></div>
+          <div class="compare-text-mode" role="group" aria-label="Clips to browse"><button id="compare-clips-highlights" type="button" aria-pressed="true">Highlights</button><button id="compare-clips-all" type="button" aria-pressed="false">All clips</button></div>
           <div class="compare-text-mode" role="group" aria-label="Transcript display"><button id="compare-text-raw" type="button" aria-pressed="true">Original</button><button id="compare-text-normalized" type="button" aria-pressed="false">Scored text</button></div>
           <div class="compare-example-nav"><button id="compare-example-prev" type="button" aria-label="Previous clip">←</button><span id="compare-example-count"></span><button id="compare-example-next" type="button" aria-label="Next clip">→</button></div>
         </div>
+        <form id="compare-clip-search" class="compare-clip-search" hidden><input id="compare-clip-id" aria-label="Find clip ID" type="search" placeholder="Find clip ID" autocomplete="off"><button type="submit">Find</button><span id="compare-clip-message" role="status"></span></form>
         <div id="compare-example" aria-live="polite">Loading saved transcripts…</div>
       </section>
     </div>
@@ -3764,12 +3866,20 @@ function buildRow(row, cols, maxVals) {
 
       td.appendChild(meta);
 
-    } else if (c.key === 'mean_wer' || c.key === 'mean_cer') {
-      td.style.fontWeight = '700';
-      if (v != null) {
-        td.textContent = v.toFixed(2);
-        appendCI(td, row[c.key + '_ci'], x => x.toFixed(2));
-      } else { td.textContent = '—'; }
+    } else if ((c.key === 'mean_wer' || c.key === 'mean_cer' ||
+                COMPARE_DATASETS.some(([key]) => c.key === `${key}_wer` || c.key === `${key}_cer`)) && Number.isFinite(v)) {
+      if (c.key.startsWith('mean_')) td.style.fontWeight = '700';
+      const dataset = c.key.startsWith('mean_') ? '' : c.key.replace(/_(wer|cer)$/, '');
+      const link = document.createElement('a');
+      link.className = 'score-samples';
+      link.href = samplesURL(row.name, dataset);
+      link.dataset.sampleModel = row.name;
+      link.dataset.sampleDataset = dataset;
+      link.textContent = v.toFixed(2);
+      link.setAttribute('aria-label', `Inspect ${row.name} transcript samples${dataset ? ` for ${c.label}` : ''}; ${c.key.endsWith('_wer') ? 'WER' : 'CER'} ${v.toFixed(2)}%`);
+      link.title = 'Inspect transcript samples';
+      td.appendChild(link);
+      if (c.key.startsWith('mean_')) appendCI(td, row[c.key + '_ci'], x => x.toFixed(2));
 
     } else if (c.key === 'speed_x') {
       td.textContent = v != null ? v.toFixed(1) + 'x' : '—';
@@ -5532,6 +5642,214 @@ function makeCompareCsv(rows, rankOf, metric) {
   }));
 }
 
+let openSamples = null;
+function samplesURL(model, dataset = '') {
+  const url = new URL(window.location.href);
+  url.searchParams.set('view', 'compare');
+  url.searchParams.delete('model');
+  url.searchParams.append('model', model);
+  url.searchParams.delete('clip');
+  if (dataset) url.searchParams.set('dataset', dataset);
+  else url.searchParams.delete('dataset');
+  url.hash = 'compare-transcripts';
+  return url.href;
+}
+
+// Public Apps Script web-app URL; empty until the private review sheet is configured.
+const CORRECTION_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwMeAX2DrfwPeOPSq80BHab5u5AGRnWnDQHIgvrdagqlJth8PlvpTz4PHEmeduJRVFSmQ/exec';
+
+function correctionStatus(endpoint, id) {
+  return new Promise((resolve, reject) => {
+    if (!/^[a-f0-9]{32}$/.test(id)) { reject(new Error('Invalid request')); return; }
+    const callback = `__correction_${id}`;
+    const frame = document.createElement('iframe');
+    frame.hidden = true;
+    frame.setAttribute('sandbox', 'allow-scripts');
+    const timer = setTimeout(() => finish(new Error('Status request timed out')), 5000);
+    function finish(error, status) {
+      clearTimeout(timer);
+      window.removeEventListener('message', receive);
+      frame.remove();
+      error ? reject(error) : resolve(status);
+    }
+    function receive(event) {
+      if (event.source !== frame.contentWindow || event.data?.type !== 'correction-status') return;
+      if (!['ok', 'pending', 'error'].includes(event.data.status)) return;
+      finish(null, event.data.status);
+    }
+    const url = new URL(endpoint);
+    url.searchParams.set('id', id);
+    url.searchParams.set('callback', callback);
+    const source = JSON.stringify(url.href).replace(/</g, '\\u003c');
+    // Isolate the JSONP response from the leaderboard's origin.
+    frame.srcdoc = `<script>window[${JSON.stringify(callback)}] = status => parent.postMessage({type:'correction-status', status}, '*');` +
+      `const script = document.createElement('script'); script.src = ${source};` +
+      `script.onerror = () => parent.postMessage({type:'correction-status', status:'error'}, '*');` +
+      `document.head.appendChild(script);<\/script>`;
+    window.addEventListener('message', receive);
+    document.body.appendChild(frame);
+  });
+}
+
+async function submitCorrection(endpoint, payload) {
+  // Apps Script's cross-origin POST response is opaque; verify the saved status separately.
+  await fetch(endpoint, {method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type': 'text/plain;charset=UTF-8'}, body: JSON.stringify(payload)});
+  for (let attempt = 0; attempt < 10; attempt++) {
+    const status = await correctionStatus(endpoint, payload.id);
+    if (status === 'ok') return;
+    if (status !== 'pending') throw new Error('Submission was not saved');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  }
+  throw new Error('Submission could not be confirmed');
+}
+
+function referenceIssueURL(dataset, clip, models, pageURL) {
+  const sample = new URL(pageURL);
+  sample.search = '';
+  sample.searchParams.set('view', 'compare');
+  models.forEach(name => sample.searchParams.append('model', name));
+  sample.searchParams.set('dataset', dataset);
+  sample.searchParams.set('clip', clip);
+  sample.hash = 'compare-transcripts';
+  const body = [
+    `Test set: ${dataset}`,
+    `Clip ID: ${clip}`,
+    ...(['http:', 'https:'].includes(sample.protocol) && !['localhost', '127.0.0.1', '[::1]'].includes(sample.hostname)
+      ? [`Sample: ${sample.href}`] : []),
+    '', 'Suggested reference:', '',
+    'Optional or uncertain words can be marked in [brackets].', '', 'Why should this be changed?',
+  ].join('\n');
+  const issue = new URL('https://github.com/Rye-A1/danish-asr-leaderboard/issues/new');
+  issue.search = new URLSearchParams({title: `Reference suggestion: ${dataset} / ${clip}`, body});
+  return issue.href;
+}
+
+function downloadGrowth(row) {
+  const history = row.hf_download_history;
+  if (!Array.isArray(history) || history.length < 8) return null;
+  const previous = history.at(-8), latest = history.at(-1);
+  return Number.isFinite(previous) && previous > 0 && Number.isFinite(latest)
+    ? (latest - previous) / previous * 100 : null;
+}
+
+function setupExplore(data, refreshTime) {
+  const ranks = new Map(data.wer.filter(row => Number.isFinite(row.mean_wer))
+    .sort((a, b) => a.mean_wer - b.mean_wer).map((row, index) => [row.name, index + 1]));
+  const stat = (value, caption) => {
+    const group = document.createElement('div');
+    group.className = 'explore-stat';
+    const number = document.createElement('span');
+    number.className = 'explore-value';
+    number.textContent = value;
+    const label = document.createElement('span');
+    label.className = 'explore-caption';
+    label.textContent = caption;
+    group.append(number, label);
+    return group;
+  };
+  const showList = (id, rows, trending) => {
+    const list = document.getElementById(id);
+    for (const row of rows.slice(0, 5)) {
+      const item = document.createElement('li');
+      const identity = document.createElement('div');
+      identity.className = 'explore-identity';
+      const avatar = document.createElement('span');
+      avatar.className = 'explore-avatar';
+      avatar.setAttribute('aria-hidden', 'true');
+      avatar.appendChild(modelAvatar(row));
+      const details = document.createElement('div');
+      details.className = 'explore-details';
+      const link = document.createElement('a');
+      link.href = samplesURL(row.name);
+      link.dataset.sampleModel = row.name;
+      link.textContent = row.name;
+      link.title = row.name;
+      link.setAttribute('aria-label', `Inspect transcript samples for ${row.name}`);
+      details.appendChild(link);
+      if (!trending) {
+        const date = document.createElement('span');
+        date.className = 'explore-date';
+        date.textContent = `Submitted ${row.submitted}`;
+        details.appendChild(date);
+      }
+      identity.append(avatar, details);
+      const metrics = document.createElement('div');
+      metrics.className = 'explore-metrics';
+      if (trending) {
+        const trend = document.createElement('div');
+        trend.className = 'explore-trend';
+        const history = row.hf_download_history;
+        const wrap = document.createElement('div');
+        wrap.className = 'download-wrap';
+        const number = document.createElement('span');
+        number.className = 'download-num';
+        const count = document.createElement('span');
+        count.className = 'explore-download-count';
+        count.textContent = new Intl.NumberFormat('en', {notation: 'compact', maximumFractionDigits: 1}).format(row.hf_downloads);
+        const growth = document.createElement('span');
+        growth.className = 'explore-growth';
+        growth.textContent = `+${downloadGrowth(row).toFixed(1)}%`;
+        number.append(count, growth);
+        wrap.append(downloadSparkline(history), number);
+        trend.title = `${row.hf_downloads.toLocaleString('en-US')} downloads in the last 30 days; ${growth.textContent} over 7 snapshot intervals`;
+        trend.appendChild(wrap);
+        metrics.appendChild(trend);
+      } else {
+        metrics.append(stat(ranks.has(row.name) ? `#${ranks.get(row.name)}` : '—', 'WER rank'),
+          stat(Number.isFinite(row.mean_wer) ? `${row.mean_wer.toFixed(2)}%` : '—', 'mean WER'));
+      }
+      item.append(identity, metrics);
+      list.appendChild(item);
+    }
+    if (!rows.length) {
+      const item = document.createElement('li');
+      item.textContent = 'No data available yet.';
+      list.appendChild(item);
+    }
+  };
+  const trending = data.wer.filter(row => Number.isFinite(row.hf_downloads) && downloadGrowth(row) > 0)
+    .sort((a, b) => downloadGrowth(b) - downloadGrowth(a) || a.name.localeCompare(b.name));
+  const recent = data.wer.filter(row => /^\d{4}-\d{2}-\d{2}$/.test(row.submitted || ''))
+    .sort((a, b) => b.submitted.localeCompare(a.submitted) || a.name.localeCompare(b.name));
+  showList('explore-trending', trending, true);
+  showList('explore-recent', recent, false);
+  document.getElementById('explore-samples').addEventListener('click', () => openSamples?.());
+
+  const historyRows = chartWerRows(data.wer, 30).flatMap(row => [
+    ...(row.history || []).map(h => ({...row, ...h, released: h.submitted})), row,
+  ]);
+  const records = timeChartData(historyRows, 'wer', 'mean').records;
+  if (records.length > 1) {
+    const start = new Date(records[0].t), end = new Date(records.at(-1).t);
+    const scores = [];
+    let index = 0, best = null;
+    for (let t = Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 1, 1);
+      t <= Date.UTC(end.getUTCFullYear(), end.getUTCMonth() + 1, 1);
+      t = Date.UTC(new Date(t).getUTCFullYear(), new Date(t).getUTCMonth() + 1, 1)) {
+      while (index < records.length && records[index].t < t) best = records[index++].yv;
+      if (best != null) scores.push(best);
+    }
+    if (scores.length > 1) document.getElementById('explore-time-graph').appendChild(downloadSparkline(scores.map(score => -score)));
+  }
+  const time = document.getElementById('tab-time');
+  const toggle = document.getElementById('explore-time-toggle');
+  toggle.addEventListener('click', () => {
+    time.hidden = !time.hidden;
+    toggle.setAttribute('aria-expanded', String(!time.hidden));
+    toggle.textContent = time.hidden ? 'View history →' : 'Hide history ↑';
+    if (!time.hidden) requestAnimationFrame(() => refreshTime());
+  });
+  if (new URL(window.location.href).searchParams.get('view') === 'time') toggle.click();
+}
+
+document.addEventListener('click', event => {
+  const link = event.target.closest('a[data-sample-model]');
+  if (!link || !openSamples || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  openSamples(link.dataset.sampleModel, link.dataset.sampleDataset);
+});
+
 function setupCompare(data) {
   const werRanks = new Map(data.wer.map(row => [row.name, row.rank]));
   const rankOf = name => werRanks.get(name) ?? Infinity;
@@ -5547,6 +5865,7 @@ function setupCompare(data) {
   const pickers = document.getElementById('compare-pickers');
   const picker = document.getElementById('compare-picker');
   const add = document.getElementById('compare-add');
+  const changeModels = document.getElementById('compare-change-models');
   const list = document.getElementById('compare-options');
   const status = document.getElementById('compare-status');
   const copy = document.getElementById('compare-copy');
@@ -5554,10 +5873,23 @@ function setupCompare(data) {
   const downloadCompare = document.getElementById('download-compare');
   let metric = new URL(window.location.href).searchParams.get('metric') === 'cer' ? 'cer' : 'wer';
   let transcriptMode = new URL(window.location.href).searchParams.get('transcript_text') === 'normalized' ? 'normalized' : 'raw';
+  let browseMode = new URL(window.location.href).searchParams.get('clips') === 'all' ? 'all' : 'highlights';
+  let browseData = null, browseKey = '', browseLoading = '', browseError = '';
+  const browseCache = new Map();
   let extra = null;
   let extraPromise = null;
   let exampleIndex = 0;
+  const initialURL = new URL(window.location.href);
+  let requestedClip = initialURL.searchParams.get('clip');
+  let currentClip = null;
+  const outputDataset = document.getElementById('compare-output-dataset');
+  if ([...outputDataset.options].some(option => option.value === initialURL.searchParams.get('dataset')))
+    outputDataset.value = initialURL.searchParams.get('dataset');
   let fleursManifestPromise = null;
+  const coralLicenseKey = 'asr-coral-v3-license-ee93c98d';
+  let coralLicenseAccepted = false;
+  try { coralLicenseAccepted = localStorage.getItem(coralLicenseKey) === 'accepted'; } catch (_) {}
+  const coralManifests = {};
 
   const score = value => Number.isFinite(value) ? `${value.toFixed(2)}%` : '—';
   const count = (row, suffix) => COMPARE_DATASETS.filter(([key]) =>
@@ -5570,10 +5902,16 @@ function setupCompare(data) {
     if (metric === 'cer') url.searchParams.set('metric', 'cer');
     else url.searchParams.delete('metric');
     url.searchParams.delete('compare_mode'); // old links still open the combined view
+    if (browseMode === 'all') url.searchParams.set('clips', 'all');
+    else url.searchParams.delete('clips');
     if (transcriptMode === 'normalized') url.searchParams.set('transcript_text', 'normalized');
     else url.searchParams.delete('transcript_text');
     url.searchParams.delete('model');
     selected.forEach(name => url.searchParams.append('model', name));
+    if (selected.length) url.searchParams.set('dataset', outputDataset.value);
+    else url.searchParams.delete('dataset');
+    if (currentClip) url.searchParams.set('clip', currentClip);
+    else url.searchParams.delete('clip');
     return url;
   }
   function syncURL() {
@@ -5624,8 +5962,8 @@ function setupCompare(data) {
     selected.push(name);
     selected.sort(compareNames);
     hideOptions();
-    syncURL();
     render();
+    syncURL();
     if (!picker.hidden) add.focus();
     else [...pickers.querySelectorAll('.compare-chip button')]
       .find(button => button.getAttribute('aria-label') === `Remove ${name}`)?.focus();
@@ -5634,8 +5972,8 @@ function setupCompare(data) {
     const index = selected.indexOf(name);
     if (index < 0) return;
     selected.splice(index, 1);
-    syncURL();
     render();
+    syncURL();
     add.focus();
   }
   function renderChips() {
@@ -5836,32 +6174,150 @@ function setupCompare(data) {
     });
     target.append(document.createTextNode(value.slice(end)));
   }
-  function renderExample() {
-    if (!extra || !selected.length) return;
-    const dataset = document.getElementById('compare-output-dataset').value;
-    const candidates = extra.examples?.[dataset] || [];
+  function browseFetch(path) {
+    if (browseCache.has(path)) {
+      const request = browseCache.get(path);
+      browseCache.delete(path);
+      browseCache.set(path, request);
+      return request;
+    }
+    const request = fetch(path, path === 'compare-all/manifest.json' ? {cache: 'no-cache'} : {}).then(response => {
+      if (!response.ok) {
+        const error = new Error(`HTTP ${response.status}`);
+        error.status = response.status;
+        throw error;
+      }
+      return response.json();
+    }).catch(error => { if (browseCache.get(path) === request) browseCache.delete(path); throw error; });
+    browseCache.set(path, request);
+    if (browseCache.size > 16) browseCache.delete(browseCache.keys().next().value);
+    return request;
+  }
+  async function browseDataset(dataset, models, retried = false) {
+    try {
+      const manifest = await browseFetch('compare-all/manifest.json');
+      const path = manifest.references?.[dataset];
+      if (!path) throw new Error('Reference data unavailable');
+      const [references, ...outputs] = await Promise.all([
+        browseFetch(path), ...models.map(model => {
+          const slug = model.replace(/[^a-zA-Z0-9_-]/g, '__');
+          const modelPath = manifest.models?.[slug]?.paths?.[dataset];
+          return modelPath ? browseFetch(modelPath) : Promise.resolve({});
+        })
+      ]);
+      return {references, outputs, models};
+    } catch (error) {
+      // A deployment can remove files named by the manifest cached in this tab.
+      if (!retried && error.status === 404) {
+        browseCache.delete('compare-all/manifest.json');
+        return browseDataset(dataset, models, true);
+      }
+      throw error;
+    }
+  }
+  function loadBrowse(dataset, key) {
+    if (browseLoading === key) return;
+    browseLoading = key;
+    browseError = '';
+    const requestedModels = [...selected];
+    browseDataset(dataset, requestedModels).then(data => {
+      if (browseLoading !== key) return;
+      browseData = data;
+      browseKey = key;
+      browseLoading = '';
+      renderExample();
+      syncURL();
+    }).catch(() => {
+      if (browseLoading !== key) return;
+      browseLoading = '';
+      browseError = key;
+      renderExample();
+    });
+  }
+  function highlightExamples(candidates, models, mode) {
+    const field = mode === 'normalized' ? 'normalized_hypotheses' : 'hypotheses';
     const comparable = candidates.map((item, index) => {
-      const hypotheses = selected.map(model => item.hypotheses[model.replace(/[^a-zA-Z0-9_-]/g, '__')])
+      const hypotheses = models.map(model => item[field]?.[model.replace(/[^a-zA-Z0-9_-]/g, '__')])
         .filter(value => typeof value === 'string')
-        .map(value => value.normalize('NFKC').toLocaleLowerCase('da-DK').replace(/[^\p{L}\p{N}]+/gu, ' ').trim());
+        .map(value => JSON.stringify(compareWords(value).map(word => word.text)));
       return {item, index, diversity: new Set(hypotheses).size};
     });
-    const differing = selected.length > 1 ? comparable.filter(row => row.diversity > 1) : comparable;
-    const examples = (differing.length ? differing : comparable)
+    const differing = models.length > 1 ? comparable.filter(row => row.diversity > 1) : comparable;
+    return (differing.length ? differing : comparable)
       .sort((a, b) => b.diversity - a.diversity || a.index - b.index)
       .map(row => row.item);
-    exampleIndex = Math.max(0, Math.min(exampleIndex, examples.length - 1));
+  }
+  function renderExample() {
+    if (!extra || !selected.length) return;
+    const dataset = outputDataset.value;
+    const candidates = extra.examples?.[dataset] || [];
+    if (requestedClip && browseMode === 'highlights' && !candidates.some(item => item.id === requestedClip)) {
+      browseMode = 'all';
+    }
+    document.getElementById('compare-clips-highlights').setAttribute('aria-pressed', String(browseMode === 'highlights'));
+    document.getElementById('compare-clips-all').setAttribute('aria-pressed', String(browseMode === 'all'));
+    document.getElementById('compare-clip-search').hidden = browseMode !== 'all';
     const target = document.getElementById('compare-example');
     target.replaceChildren();
+    let examples;
+    if (browseMode === 'all') {
+      const key = JSON.stringify([dataset, ...selected]);
+      if (browseKey !== key) {
+        document.getElementById('compare-example-count').textContent = '';
+        document.getElementById('compare-example-prev').disabled = true;
+        document.getElementById('compare-example-next').disabled = true;
+        if (browseError === key) {
+          target.textContent = 'Could not load all clips. ';
+          const retry = document.createElement('button');
+          retry.type = 'button';
+          retry.textContent = 'Try again';
+          retry.addEventListener('click', () => { browseError = ''; renderExample(); });
+          target.appendChild(retry);
+        } else {
+          target.textContent = 'Loading clips and model outputs…';
+          loadBrowse(dataset, key);
+        }
+        return;
+      }
+      examples = browseData.references;
+    } else {
+      examples = highlightExamples(candidates, selected, transcriptMode);
+    }
+    if (requestedClip) {
+      let index = examples.findIndex(item => (browseMode === 'all' ? item[0] : item.id) === requestedClip);
+      if (index < 0 && browseMode === 'highlights') {
+        const requested = candidates.find(item => item.id === requestedClip);
+        if (requested) { examples.push(requested); index = examples.length - 1; }
+      }
+      if (index >= 0) exampleIndex = index;
+      else document.getElementById('compare-clip-message').textContent = 'Clip ID not found.';
+      requestedClip = null;
+    }
+    exampleIndex = Math.max(0, Math.min(exampleIndex, examples.length - 1));
     document.getElementById('compare-example-count').textContent = examples.length
-      ? `Clip ${exampleIndex + 1} of ${examples.length}` : 'No examples';
+      ? `Clip ${exampleIndex + 1} of ${examples.length.toLocaleString()}` : 'No examples';
     document.getElementById('compare-example-prev').disabled = exampleIndex === 0;
     document.getElementById('compare-example-next').disabled = exampleIndex >= examples.length - 1;
-    if (!examples.length) { target.textContent = 'No saved examples for this test set.'; return; }
-    const item = examples[exampleIndex];
+    if (!examples.length) { currentClip = null; target.textContent = 'No saved examples for this test set.'; target.appendChild(changeModels); return; }
+    let item = examples[exampleIndex];
+    if (browseMode === 'all') {
+      const [id, reference, normalized_reference] = item;
+      item = {id, reference, normalized_reference, hypotheses: {}, normalized_hypotheses: {}, scores: {}};
+      browseData.models.forEach((model, i) => {
+        const slug = model.replace(/[^a-zA-Z0-9_-]/g, '__');
+        const output = browseData.outputs[i]?.[id];
+        if (output) {
+          item.hypotheses[slug] = output[0];
+          item.normalized_hypotheses[slug] = output[1];
+          item.scores[slug] = {wer: output[2], cer: output[3]};
+        }
+      });
+    }
+    currentClip = item.id;
     const normalized = transcriptMode === 'normalized';
     if (normalized && typeof item.normalized_reference !== 'string') {
       target.textContent = 'Scored text is unavailable for this clip. Reload the page to try again.';
+      target.appendChild(changeModels);
       return;
     }
     const displayedReference = normalized ? item.normalized_reference : item.reference;
@@ -5904,7 +6360,81 @@ function setupCompare(data) {
       }
       columns.appendChild(card);
     });
+    columns.appendChild(changeModels);
     appendMarkedWords(refText, displayedReference, refOmissions, 'compare-word-omitted');
+    const report = document.createElement('div');
+    report.className = 'compare-report correction-preview';
+    const heading = document.createElement('button');
+    heading.type = 'button';
+    heading.className = 'correction-toggle';
+    heading.setAttribute('aria-expanded', 'false');
+    heading.setAttribute('aria-controls', 'correction-panel');
+    heading.append(_icon(['M12 20h9', 'M16.5 3.5a2.12 2.12 0 0 1 3 3L9 17l-4 1 1-4Z'], 'correction-edit'),
+      'Suggest a correction', _icon(['m6 9 6 6 6-6'], 'correction-chevron'));
+    const panel = document.createElement('div');
+    panel.id = 'correction-panel';
+    panel.hidden = true;
+    heading.addEventListener('click', () => {
+      panel.hidden = !panel.hidden;
+      heading.setAttribute('aria-expanded', String(!panel.hidden));
+    });
+    const label = document.createElement('label');
+    label.htmlFor = 'correction-proposal-preview';
+    label.textContent = 'Suggested reference';
+    const field = document.createElement('textarea');
+    field.id = 'correction-proposal-preview';
+    field.rows = 3;
+    field.value = item.reference;
+    const guidance = document.createElement('p');
+    guidance.textContent = 'Edit the text above. Suggestions are reviewed before being applied.';
+    const trap = document.createElement('input');
+    trap.className = 'correction-honeypot';
+    trap.type = 'text';
+    trap.tabIndex = -1;
+    trap.autocomplete = 'off';
+    trap.setAttribute('aria-hidden', 'true');
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'correction-send';
+    button.textContent = 'Send suggestion';
+    const notice = document.createElement('p');
+    notice.setAttribute('role', 'status');
+    notice.setAttribute('aria-live', 'polite');
+    const configured = /^https:\/\/script\.google\.com\/macros\/s\/[A-Za-z0-9_-]+\/exec$/.test(CORRECTION_ENDPOINT);
+    let sending = false, lastText = '', lastId = '';
+    const updateButton = () => {
+      const value = field.value.trim();
+      button.disabled = !configured || sending || !value || value.length > 2000 || value === item.reference.trim();
+      button.setAttribute('aria-busy', String(sending));
+    };
+    if (!configured) notice.textContent = 'Submissions are not connected yet.';
+    field.addEventListener('input', () => { if (!sending && configured) notice.textContent = ''; updateButton(); });
+    button.addEventListener('click', async () => {
+      const suggested = field.value.trim();
+      sending = true;
+      updateButton();
+      notice.textContent = 'Sending…';
+      try {
+        if (suggested !== lastText) { lastId = crypto.randomUUID().replace(/-/g, ''); lastText = suggested; }
+        await submitCorrection(CORRECTION_ENDPOINT, {id:lastId, dataset, clip:item.id, model:selected[0],
+          original:item.reference, suggested, website:trap.value});
+        notice.textContent = 'Thank you — your suggestion was saved for review.';
+        field.value = item.reference;
+      } catch (_) {
+        notice.textContent = 'Could not confirm your suggestion was saved. Please try again.';
+      } finally { sending = false; updateButton(); }
+    });
+    updateButton();
+    panel.append(label, field, guidance, trap, button, notice);
+    const issue = document.createElement('a');
+    issue.textContent = 'Report via GitHub ↗';
+    issue.target = '_blank';
+    issue.rel = 'noopener noreferrer';
+    issue.href = referenceIssueURL(dataset, item.id, selected, window.location.href);
+    issue.hidden = configured;
+    panel.appendChild(issue);
+    report.append(heading, panel);
+    reference.appendChild(report);
     target.append(reference, columns);
     renderExampleAudio(reference, refHead, dataset, item);
   }
@@ -5913,7 +6443,7 @@ function setupCompare(data) {
     box.className = 'compare-audio';
     const message = document.createElement('span');
     box.appendChild(message);
-    reference.appendChild(box);
+    reference.insertBefore(box, reference.querySelector('.compare-report'));
     const source = document.createElement('a');
     source.className = 'compare-source';
     source.target = '_blank';
@@ -5933,7 +6463,55 @@ function setupCompare(data) {
       });
       message.replaceWith(player);
     };
-    if (dataset === 'fleurs_da' && /^fleurs_da_\d{5}\.wav$/.test(item.id)) {
+    if ((dataset === 'coral_conversation' || dataset === 'coral_read_aloud') &&
+        new RegExp(`^${dataset}_\\d{5}\\.wav$`).test(item.id)) {
+      source.href = 'https://huggingface.co/datasets/CoRal-project/coral-v3';
+      source.textContent = 'CoRal v3 · OpenRAIL-D ↗';
+      refHead.appendChild(source);
+      message.textContent = 'Loading audio availability…';
+      const coralAudio = `https://huggingface.co/datasets/RyeAI/coral-v3-test-playback/resolve/main/audio/${dataset}`;
+      try {
+        coralManifests[dataset] ||= fetch(`${coralAudio}/manifest.json`).then(response => {
+          if (!response.ok) throw new Error('CoRal manifest unavailable');
+          return response.json();
+        });
+        const manifest = await coralManifests[dataset];
+        if (manifest.examples?.[item.id] !== item.reference) throw new Error('CoRal reference mismatch');
+        if (!reference.isConnected) return;
+        const enable = () => {
+          message.textContent = 'Loading audio…';
+          available(`${coralAudio}/${item.id}`);
+        };
+        if (coralLicenseAccepted) {
+          enable();
+        } else {
+          message.textContent = 'CoRal audio is available after accepting its license.';
+          const consent = document.createElement('div');
+          consent.className = 'coral-audio-consent';
+          consent.append('By enabling audio, you agree to the ');
+          const terms = document.createElement('a');
+          terms.href = `${coralAudio}/LICENSE`;
+          terms.target = '_blank';
+          terms.rel = 'noopener noreferrer';
+          terms.textContent = 'CoRal license and its use restrictions';
+          consent.append(terms, '.');
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.textContent = 'Agree and enable CoRal audio';
+          button.addEventListener('click', () => {
+            coralLicenseAccepted = true;
+            try { localStorage.setItem(coralLicenseKey, 'accepted'); } catch (_) {}
+            consent.remove();
+            enable();
+          });
+          consent.appendChild(button);
+          box.appendChild(consent);
+        }
+      } catch (_) {
+        delete coralManifests[dataset];
+        if (reference.isConnected) message.textContent = 'Playback audio is unavailable for this test set.';
+      }
+    } else if (dataset === 'fleurs_da' && /^fleurs_da_\d{5}\.wav$/.test(item.id)) {
       source.href = 'https://huggingface.co/datasets/google/fleurs';
       source.textContent = 'FLEURS · CC BY 4.0 ↗';
       refHead.appendChild(source);
@@ -6098,15 +6676,35 @@ function setupCompare(data) {
   });
   clearAll.addEventListener('click', () => {
     selected.length = 0;
-    syncURL();
+    currentClip = null;
     render();
+    syncURL();
     add.focus();
   });
   ['wer', 'cer'].forEach(key => document.getElementById(`compare-${key}`)
     .addEventListener('click', () => { metric = key; syncURL(); render(); }));
   ['compare-breakdown-dataset', 'compare-breakdown-dimension'].forEach(id =>
     document.getElementById(id).addEventListener('change', renderExtra));
-  document.getElementById('compare-output-dataset').addEventListener('change', () => { exampleIndex = 0; renderExample(); });
+  outputDataset.addEventListener('change', () => { exampleIndex = 0; requestedClip = null; browseLoading = ''; document.getElementById('compare-clip-message').textContent = ''; renderExample(); syncURL(); });
+  ['highlights', 'all'].forEach(mode => document.getElementById(`compare-clips-${mode}`).addEventListener('click', () => {
+    if (browseMode === mode) return;
+    browseMode = mode;
+    requestedClip = mode === 'all' ? currentClip : null;
+    exampleIndex = 0;
+    browseLoading = '';
+    browseError = '';
+    document.getElementById('compare-clip-message').textContent = '';
+    renderExample();
+    syncURL();
+  }));
+  document.getElementById('compare-clip-search').addEventListener('submit', event => {
+    event.preventDefault();
+    if (!browseData || browseKey !== JSON.stringify([outputDataset.value, ...selected])) return;
+    const query = document.getElementById('compare-clip-id').value.trim().toLocaleLowerCase();
+    const index = query ? browseData.references.findIndex(row => row[0].toLocaleLowerCase().includes(query)) : -1;
+    document.getElementById('compare-clip-message').textContent = index < 0 ? 'Clip ID not found.' : '';
+    if (index >= 0) { exampleIndex = index; renderExample(); syncURL(); }
+  });
   function updateTranscriptMode() {
     document.getElementById('compare-text-raw').setAttribute('aria-pressed', String(transcriptMode === 'raw'));
     document.getElementById('compare-text-normalized').setAttribute('aria-pressed', String(transcriptMode === 'normalized'));
@@ -6119,8 +6717,8 @@ function setupCompare(data) {
       renderExample();
     }));
   updateTranscriptMode();
-  document.getElementById('compare-example-prev').addEventListener('click', () => { exampleIndex--; renderExample(); });
-  document.getElementById('compare-example-next').addEventListener('click', () => { exampleIndex++; renderExample(); });
+  document.getElementById('compare-example-prev').addEventListener('click', () => { exampleIndex--; renderExample(); syncURL(); });
+  document.getElementById('compare-example-next').addEventListener('click', () => { exampleIndex++; renderExample(); syncURL(); });
   ['compare-breakdown-dataset', 'compare-breakdown-dimension', 'compare-output-dataset']
     .forEach(id => upgradeCompareSelect(document.getElementById(id)));
   copy.addEventListener('click', async () => {
@@ -6138,14 +6736,48 @@ function setupCompare(data) {
       `danish-asr-comparison-${data.updated || 'results'}.csv`);
   });
 
+  changeModels.addEventListener('click', () => {
+    document.querySelector('.compare-hero').scrollIntoView({behavior: 'smooth', block: 'start'});
+    add.focus({preventScroll: true});
+  });
+
+  openSamples = (model, dataset) => {
+    if (model && models.has(model)) selected.splice(0, selected.length, model);
+    else if (!model) {
+      const topOpen = data.wer.filter(row => row.access === 'open' && row.entry_kind === 'model' && Number.isFinite(row.mean_wer))
+        .sort((a, b) => a.mean_wer - b.mean_wer).slice(0, 3).map(row => row.name);
+      selected.splice(0, selected.length, ...topOpen);
+    }
+    if (!selected.length && names.length) selected.push(names[0]);
+    if ([...outputDataset.options].some(option => option.value === dataset)) outputDataset.value = dataset;
+    else if (model) outputDataset.value = 'coral_conversation';
+    styledSelects.get(outputDataset)?.sync();
+    exampleIndex = 0;
+    browseMode = 'highlights';
+    browseLoading = '';
+    requestedClip = null;
+    currentClip = null;
+    document.querySelector('[data-tab="compare"]').click();
+    render();
+    const url = shareURL();
+    url.hash = 'compare-transcripts';
+    window.history.replaceState(null, '', url);
+    requestAnimationFrame(() => document.getElementById('compare-transcripts').scrollIntoView());
+  };
+
   const url = new URL(window.location.href);
   for (const name of url.searchParams.getAll('model').slice(0, COMPARE_MAX_MODELS)) {
     if (models.has(name) && !selected.includes(name)) selected.push(name);
   }
   render();
   if (url.searchParams.has('compare_mode')) syncURL();
-  if (url.searchParams.get('view') === 'compare')
+  if (url.searchParams.get('view') === 'compare') {
     document.querySelector('[data-tab="compare"]').click();
+    if (url.hash === '#compare-transcripts' && selected.length)
+      requestAnimationFrame(() => document.getElementById('compare-transcripts').scrollIntoView());
+  } else if (url.searchParams.get('view') === 'explore' || url.searchParams.get('view') === 'time') {
+    document.querySelector('[data-tab="explore"]').click();
+  }
 }
 
 async function init() {
@@ -6542,6 +7174,7 @@ async function init() {
       });
     });
 
+    setupExplore(data, () => applyTime());
     setupCompare(data);
 
     /* Last updated */
@@ -6562,27 +7195,29 @@ async function init() {
 document.querySelectorAll('.tab-btn').forEach(btn =>
   btn.addEventListener('click', () => {
     document.querySelectorAll('.settings-sheet[open]').forEach(sheet => sheet.close());
-    document.querySelectorAll('.tab-btn, .tab-pane')
+    if (!btn.classList.contains('active')) window.scrollTo(0, 0);
+    document.querySelectorAll('.tab-btn, .app > .tab-pane')
             .forEach(el => el.classList.remove('active'));
     btn.classList.add('active');
     const tab = btn.dataset.tab;
     document.getElementById('tab-' + tab).classList.add('active');
     centerTabButton(btn);
     const url = new URL(window.location.href);
-    if (tab === 'compare') url.searchParams.set('view', 'compare');
-    else if (url.searchParams.get('view') === 'compare') url.searchParams.delete('view');
+    if (tab === 'compare' || tab === 'explore') url.searchParams.set('view', tab);
+    else url.searchParams.delete('view');
+    if (tab !== 'compare' && url.hash === '#compare-transcripts') url.hash = '';
     window.history.replaceState(null, '', url);
     if (tab === 'analysis') {
       document.getElementById('tog-analysis-wer').classList.toggle('active', _chartState.analysis.sourceTab === 'wer');
       document.getElementById('tog-analysis-cer').classList.toggle('active', _chartState.analysis.sourceTab === 'cer');
     }
-    if (tab === 'time') {
+    if (tab === 'explore') {
       document.getElementById('tog-time-wer').classList.toggle('active', _chartState.time.sourceTab === 'wer');
       document.getElementById('tog-time-cer').classList.toggle('active', _chartState.time.sourceTab === 'cer');
     }
     /* 'cer' is gone -- the Leaderboard carries a Metric toggle instead. */
-    if (tab === 'wer' || tab === 'analysis' || tab === 'time') {
-      requestAnimationFrame(() => redrawChart(tab));
+    if (tab === 'wer' || tab === 'analysis' || tab === 'explore') {
+      requestAnimationFrame(() => redrawChart(tab === 'explore' ? 'time' : tab));
     }
   })
 );

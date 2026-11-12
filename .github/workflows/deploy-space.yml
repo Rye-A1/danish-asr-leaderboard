@@ -16,6 +16,7 @@ on:
       - 'scripts/push_outputs.py'
       - 'scripts/extract_compare_metadata.py'
       - 'scripts/build_compare_data.py'
+      - 'scripts/build_browse_data.py'
       - 'scripts/update_dataset_card.py'
       - '.github/workflows/deploy-space.yml'
   workflow_dispatch:
@@ -100,6 +101,9 @@ jobs:
             --preserve-examples-from huggingface/space/compare_data.json \
             --reuse-published \
             --require-results-dir results
+
+      - name: Update full transcript browser data
+        run: python scripts/build_browse_data.py --out "$RUNNER_TEMP/browse" --cache-dir "$RUNNER_TEMP/browse-cache" --publish
 
       - name: Deploy Space
         run: uv run --no-project --with pandas --with pyarrow --with requests --with huggingface_hub --with pillow --with numpy python scripts/update_space.py
