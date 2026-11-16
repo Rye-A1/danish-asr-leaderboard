@@ -1,0 +1,19 @@
+{
+  "model": "[FermionResearch/Phonon-2.5](https://huggingface.co/FermionResearch/Phonon-2.5)",
+  "params_b": 0.6,
+  "coral_conversation_wer": 46.4,
+  "coral_read_aloud_wer": 34.03,
+  "cv17_da_wer": 16.45,
+  "fleurs_da_wer": 17.21,
+  "ftspeech_wer": 19.38,
+  "mean_wer": 26.69,
+  "coral_conversation_cer": 29.68,
+  "coral_read_aloud_cer": 12.74,
+  "cv17_da_cer": 5.54,
+  "fleurs_da_cer": 5.88,
+  "ftspeech_cer": 10.18,
+  "mean_cer": 12.8,
+  "speed_x": null,
+  "submitted": "2026-11-16",
+  "access": "open"
+}

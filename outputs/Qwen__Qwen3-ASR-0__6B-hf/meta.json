@@ -1,0 +1,26 @@
+{
+  "model": "Qwen/Qwen3-ASR-0.6B-hf",
+  "model_link": "[Qwen/Qwen3-ASR-0.6B-hf](https://huggingface.co/Qwen/Qwen3-ASR-0.6B-hf)",
+  "params_b": 0.6,
+  "access": "open",
+  "submitted": "2026-11-15",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 44.5,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "model_revision": "7f1569a48a89f3e3f4dc3a5c9d28bddd903bc76c",
+  "backend": "qwen3-asr",
+  "decoding": "greedy",
+  "dtype": "bfloat16",
+  "batch_size": 16,
+  "speed_hardware": "NVIDIA A100 80GB PCIe",
+  "target_language": "da",
+  "max_new_tokens": 256
+}
