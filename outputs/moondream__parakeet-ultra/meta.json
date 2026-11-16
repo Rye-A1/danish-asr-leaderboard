@@ -1,0 +1,31 @@
+{
+  "model": "moondream/parakeet-ultra",
+  "model_link": "[moondream/parakeet-ultra](https://huggingface.co/moondream/parakeet-ultra)",
+  "params_b": 0.6,
+  "access": "open",
+  "submitted": "2026-11-16",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 379.4,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "model_revision": "73175eb7aeb0d82f1e2a6b53b3aabc10a90bcd0b",
+  "backend": "ultra-nemo",
+  "decoding": "greedy_batch, NeMo TDT",
+  "dtype": "float32",
+  "batch_size": 16,
+  "speed_hardware": "NVIDIA A100 80GB PCIe",
+  "language_route": "automatic",
+  "runtime": "NeMo 3.0; original Ultra tensors, NVIDIA v3 tokenizer and preprocessor",
+  "base_model": "nvidia/parakeet-tdt-0.6b-v3",
+  "base_model_revision": "541d1f99c6b0c3cd0b11a95167540bb8edefd82b",
+  "max_symbols_per_frame": 10,
+  "converted_tensor_count": 723,
+  "vad_head_omitted": true
+}

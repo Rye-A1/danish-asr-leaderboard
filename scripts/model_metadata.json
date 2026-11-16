@@ -678,5 +678,50 @@
     "model_card": "https://huggingface.co/nvidia/nemotron-labs-unified-asr-0.6b",
     "paper": null,
     "license_evidence": "https://openmdw.ai/license/1-1/"
+  },
+  "FermionResearch/Phonon-2.5": {
+    "entry_kind": "model",
+    "configuration": "Quantized · RP 1.05",
+    "released": {
+      "date": "2026-10-22",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/FermionResearch/Phonon-2.5",
+    "paper": null
+  },
+  "FluidVoice-Labs/fluid-speech-pro": {
+    "entry_kind": "model",
+    "released": {
+      "date": "2026-10-30",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/FluidVoice-Labs/fluid-speech-pro",
+    "paper": null
+  },
+  "Qwen/Qwen3-ASR-0.6B-hf": {
+    "entry_kind": "model",
+    "released": {
+      "date": "2026-06-26",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/Qwen/Qwen3-ASR-0.6B-hf",
+    "paper": "https://arxiv.org/abs/2601.21337"
+  },
+  "moondream/parakeet-ultra": {
+    "entry_kind": "model",
+    "released": {
+      "date": "2026-09-22",
+      "source": "huggingface"
+    },
+    "training_code": null,
+    "training_data": null,
+    "model_card": "https://huggingface.co/moondream/parakeet-ultra",
+    "paper": null
   }
 }

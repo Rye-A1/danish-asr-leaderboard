@@ -1,0 +1,19 @@
+{
+  "model": "[moondream/parakeet-ultra](https://huggingface.co/moondream/parakeet-ultra)",
+  "params_b": 0.6,
+  "coral_conversation_wer": 41.65,
+  "coral_read_aloud_wer": 33.49,
+  "cv17_da_wer": 15.35,
+  "fleurs_da_wer": 15.43,
+  "ftspeech_wer": 21.83,
+  "mean_wer": 25.55,
+  "coral_conversation_cer": 25.98,
+  "coral_read_aloud_cer": 12.57,
+  "cv17_da_cer": 5.06,
+  "fleurs_da_cer": 5.1,
+  "ftspeech_cer": 11.71,
+  "mean_cer": 12.08,
+  "speed_x": 379.4,
+  "submitted": "2026-11-16",
+  "access": "open"
+}

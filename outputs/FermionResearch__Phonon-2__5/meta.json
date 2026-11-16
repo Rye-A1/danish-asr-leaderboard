@@ -1,0 +1,26 @@
+{
+  "model": "FermionResearch/Phonon-2.5",
+  "model_link": "[FermionResearch/Phonon-2.5](https://huggingface.co/FermionResearch/Phonon-2.5)",
+  "params_b": 0.6,
+  "access": "open",
+  "submitted": "2026-11-16",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": null,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "model_revision": "2af4bb8ccceb66a8ce06c4081bb968f1802c1e58",
+  "backend": "phonon-2.5",
+  "decoding": "greedy; repetition_penalty=1.05 (default)",
+  "dtype": "five-value quantized (CPU)",
+  "batch_size": 1,
+  "speed_hardware": "AMD EPYC 7V13 CPU, 4 pinned vCPUs",
+  "language_route": "automatic",
+  "cpu_speed_x": 24.2
+}

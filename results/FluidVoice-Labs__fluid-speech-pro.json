@@ -1,0 +1,19 @@
+{
+  "model": "[FluidVoice-Labs/fluid-speech-pro](https://huggingface.co/FluidVoice-Labs/fluid-speech-pro)",
+  "params_b": 0.63,
+  "coral_conversation_wer": 45.61,
+  "coral_read_aloud_wer": 37.57,
+  "cv17_da_wer": 16.26,
+  "fleurs_da_wer": 15.67,
+  "ftspeech_wer": 19.65,
+  "mean_wer": 26.95,
+  "coral_conversation_cer": 29.38,
+  "coral_read_aloud_cer": 14.66,
+  "cv17_da_cer": 5.62,
+  "fleurs_da_cer": 5.15,
+  "ftspeech_cer": 9.9,
+  "mean_cer": 12.94,
+  "speed_x": 302.4,
+  "submitted": "2026-11-15",
+  "access": "open"
+}

@@ -1,0 +1,26 @@
+{
+  "model": "FluidVoice-Labs/fluid-speech-pro",
+  "model_link": "[FluidVoice-Labs/fluid-speech-pro](https://huggingface.co/FluidVoice-Labs/fluid-speech-pro)",
+  "params_b": 0.63,
+  "access": "open",
+  "submitted": "2026-11-15",
+  "unicode_form": "NFKC",
+  "number_words": true,
+  "filler_words": true,
+  "speed_x": 302.4,
+  "datasets": [
+    "coral_conversation",
+    "coral_read_aloud",
+    "cv17_da",
+    "fleurs_da",
+    "ftspeech"
+  ],
+  "model_revision": "46027a3bffc5817ce8f9b29add0a062610134a90",
+  "backend": "fluid-speech-pro",
+  "decoding": "greedy_batch",
+  "dtype": "float32",
+  "batch_size": 16,
+  "speed_hardware": "NVIDIA A100 80GB PCIe",
+  "clean_mode": false,
+  "language_route": "automatic"
+}
